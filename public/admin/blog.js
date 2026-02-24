@@ -13,7 +13,13 @@ function showTab(tabName) {
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
     });
-    event.target.classList.add('active');
+    
+    // Find and activate the correct tab
+    document.querySelectorAll('.tab').forEach(tab => {
+        if (tab.getAttribute('onclick')?.includes(tabName)) {
+            tab.classList.add('active');
+        }
+    });
     
     // Show selected tab
     document.querySelectorAll('.tab-content').forEach(content => {
@@ -99,5 +105,6 @@ async function loadPosts() {
         }
     } catch (error) {
         postsList.innerHTML = '<p>Error loading posts.</p>';
+        console.error('Error:', error);
     }
 }
