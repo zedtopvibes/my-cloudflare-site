@@ -6,7 +6,7 @@ if (localStorage.getItem('adminLoggedIn') !== 'true') {
     document.getElementById('auth-check').style.display = 'none';
     document.getElementById('blog-admin').style.display = 'block';
     loadPosts();
-} 
+}
 
 function showTab(tabName) {
     // Update tab buttons
