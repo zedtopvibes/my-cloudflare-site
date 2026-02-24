@@ -8,20 +8,39 @@ if (localStorage.getItem('adminLoggedIn') !== 'true') {
     loadPosts();
 }
 
+// Message display functions
+function showSuccess(message) {
+    const successDiv = document.getElementById('success-message');
+    successDiv.textContent = message;
+    successDiv.style.display = 'block';
+    setTimeout(() => {
+        successDiv.style.display = 'none';
+    }, 3000);
+}
+
+function showError(message) {
+    const errorDiv = document.getElementById('error-message');
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    setTimeout(() => {
+        errorDiv.style.display = 'none';
+    }, 3000);
+}
+
 function showTab(tabName) {
     // Update tab buttons
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Find and activate the correct tab
+    // Find and activate the correct tab by its onclick attribute
     document.querySelectorAll('.tab').forEach(tab => {
         if (tab.getAttribute('onclick')?.includes(tabName)) {
             tab.classList.add('active');
         }
     });
     
-    // Show selected tab
+    // Show selected tab content
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.remove('active');
     });
@@ -34,16 +53,31 @@ function showTab(tabName) {
 }
 
 async function createPost() {
-    const title = document.getElementById('post-title').value;
-    const description = document.getElementById('post-description').value;
-    const content = document.getElementById('post-content').value;
-    const image_path = document.getElementById('post-image').value;
-    const audio_path = document.getElementById('post-audio').value;
+    const title = document.getElementById('post-title').value.trim();
+    const description = document.getElementById('post-description').value.trim();
+    const content = document.getElementById('post-content').value.trim();
+    const image_path = document.getElementById('post-image').value.trim();
+    const audio_path = document.getElementById('post-audio').value.trim();
     
-    if (!title || !description || !content) {
-        alert('Please fill in title, description, and content');
+    // Validate required fields
+    if (!title) {
+        showError('Please enter a title');
         return;
     }
+    if (!description) {
+        showError('Please enter a description');
+        return;
+    }
+    if (!content) {
+        showError('Please enter content');
+        return;
+    }
+    
+    // Disable button during submission
+    const submitBtn = event.target;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Creating...';
+    submitBtn.disabled = true;
     
     try {
         const response = await fetch('/api/posts', {
@@ -55,15 +89,16 @@ async function createPost() {
                 title,
                 description,
                 content,
-                image_path,
-                audio_path
+                image_path: image_path || null,
+                audio_path: audio_path || null
             })
         });
         
         const data = await response.json();
         
         if (response.ok) {
-            alert('Post created successfully!');
+            showSuccess('Post created successfully!');
+            
             // Clear form
             document.getElementById('post-title').value = '';
             document.getElementById('post-description').value = '';
@@ -74,10 +109,14 @@ async function createPost() {
             // Switch to list tab
             showTab('list');
         } else {
-            alert('Error: ' + data.message);
+            showError('Error: ' + (data.message || 'Unknown error'));
         }
     } catch (error) {
-        alert('Error: ' + error.message);
+        showError('Error: ' + error.message);
+    } finally {
+        // Re-enable button
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     }
 }
 
@@ -88,23 +127,87 @@ async function loadPosts() {
         const response = await fetch('/api/posts');
         const data = await response.json();
         
-        if (data.success && data.posts.length > 0) {
-            postsList.innerHTML = data.posts.map(post => `
-                <div class="post-item">
-                    <div>
-                        <div class="post-title">${post.title}</div>
-                        <div class="post-date">${post.date} · ${post.views} views</div>
+        if (data.success) {
+            if (data.posts && data.posts.length > 0) {
+                // Sort posts by date (newest first)
+                const sortedPosts = data.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                postsList.innerHTML = sortedPosts.map(post => `
+                    <div class="post-item">
+                        <div style="flex: 1;">
+                            <div class="post-title">${escapeHtml(post.title)}</div>
+                            <div class="post-date">${formatDate(post.date)}</div>
+                            <div class="post-stats">
+                                <span>👁️ ${post.views || 0} views</span>
+                                <span>📝 ${post.description ? post.description.substring(0, 50) + '...' : 'No description'}</span>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <a href="/post/${post.slug}" target="_blank" class="btn-small">View</a>
+                            <button onclick="deletePost(${post.id})" class="btn-small delete">Delete</button>
+                        </div>
                     </div>
-                    <div>
-                        <a href="/post/${post.slug}" target="_blank" class="btn-small" style="background:#667eea; color:white; text-decoration:none; padding:0.25rem 0.75rem; border-radius:3px;">View</a>
+                `).join('');
+            } else {
+                postsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>📭 No posts yet</p>
+                        <p>Click the "New Post" tab to create your first blog post!</p>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }
         } else {
-            postsList.innerHTML = '<p>No posts yet. Create your first post!</p>';
+            showError('Failed to load posts');
+            postsList.innerHTML = '<div class="empty-state"><p>Error loading posts. Please try again.</p></div>';
         }
     } catch (error) {
-        postsList.innerHTML = '<p>Error loading posts.</p>';
-        console.error('Error:', error);
+        showError('Error loading posts: ' + error.message);
+        postsList.innerHTML = '<div class="empty-state"><p>Error loading posts. Please refresh the page.</p></div>';
     }
 }
+
+async function deletePost(postId) {
+    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/posts/${postId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showSuccess('Post deleted successfully');
+            loadPosts(); // Reload the list
+        } else {
+            showError('Error: ' + (data.message || 'Failed to delete post'));
+        }
+    } catch (error) {
+        showError('Error: ' + error.message);
+    }
+}
+
+// Helper function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Helper function to format date
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
+
+// Load posts when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+        loadPosts();
+    }
+});
