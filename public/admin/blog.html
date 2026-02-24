@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Blog - Admin</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .blog-form {
+            text-align: left;
+            margin: 2rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+        
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .posts-list {
+            text-align: left;
+            margin-top: 3rem;
+        }
+        
+        .post-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .post-title {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .post-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .btn-small {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: #666;
+            border-radius: 5px;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Blog Management</h1>
+        
+        <!-- Check if logged in -->
+        <div id="auth-check" style="display: none;">
+            <p>Please <a href="/admin/">login first</a> to manage blog posts.</p>
+        </div>
+        
+        <div id="blog-admin" style="display: none;">
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('new')">➕ New Post</div>
+                <div class="tab" onclick="showTab('list')">📋 All Posts</div>
+            </div>
+            
+            <!-- New Post Tab -->
+            <div id="tab-new" class="tab-content active">
+                <h2>Create New Post</h2>
+                <div class="blog-form">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="post-title" placeholder="Enter post title">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description (excerpt)</label>
+                        <textarea id="post-description" placeholder="Brief description..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea id="post-content" placeholder="Full post content..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Image Path (R2 URL)</label>
+                        <input type="text" id="post-image" placeholder="/images/post-image.jpg">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Audio Path (R2 URL - optional)</label>
+                        <input type="text" id="post-audio" placeholder="/audio/episode.mp3">
+                    </div>
+                    
+                    <button onclick="createPost()" class="btn btn-primary" style="width:100%;">Publish Post</button>
+                </div>
+            </div>
+            
+            <!-- Posts List Tab -->
+            <div id="tab-list" class="tab-content">
+                <h2>All Posts</h2>
+                <div id="posts-list" class="posts-list">
+                    <p>Loading posts...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <a href="/admin/">← Back to Admin Dashboard</a>
+        </div>
+    </div>
+    
+    <script src="/admin/blog.js"></script>
+</body>
+</html>
