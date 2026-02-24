@@ -3,7 +3,7 @@ export async function onRequest(context) {
     
     if (request.method !== 'GET') {
         return new Response('Method not allowed', { status: 405 });
-    }
+    } 
     
     try {
         // Check if migrations table exists
