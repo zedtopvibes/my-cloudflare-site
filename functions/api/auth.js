@@ -1,6 +1,17 @@
 export async function onRequest(context) {
     const { request, env } = context;
     
+    // Handle CORS preflight requests
+    if (request.method === 'OPTIONS') {
+        return new Response(null, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
+        });
+    }
+    
     // Only allow POST requests
     if (request.method !== 'POST') {
         return new Response(JSON.stringify({ 
@@ -17,6 +28,17 @@ export async function onRequest(context) {
     
     try {
         const { username, password } = await request.json();
+        
+        // Check if username and password are provided
+        if (!username || !password) {
+            return new Response(JSON.stringify({ 
+                success: false,
+                message: 'Username and password required' 
+            }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
         
         // Check username and password against environment variables
         if (username === env.ADMIN_USERNAME && password === env.ADMIN_PASSWORD) {
@@ -38,7 +60,7 @@ export async function onRequest(context) {
     } catch (e) {
         return new Response(JSON.stringify({ 
             success: false,
-            message: 'Invalid request' 
+            message: 'Invalid request format' 
         }), {
             status: 400,
             headers: { 'Content-Type': 'application/json' }
