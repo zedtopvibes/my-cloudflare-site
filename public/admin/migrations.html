@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Migrations - Admin</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .migration-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .migration-card.executed {
+            border-left-color: #28a745;
+            opacity: 0.8;
+        }
+        
+        .migration-card h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .migration-card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge.executed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .sql-preview {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ Database Migrations</h1>
+        
+        <div class="warning">
+            ⚠️ Warning: Migrations can modify your database structure. 
+            Always backup before running migrations in production.
+        </div>
+        
+        <div id="auth-check" style="display: none;">
+            <p>Please <a href="/admin/">login first</a> to manage migrations.</p>
+        </div>
+        
+        <div id="migrations-admin" style="display: none;">
+            <div id="migrations-list">
+                <p>Loading migrations...</p>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <h3>Available Migrations</h3>
+                
+                <div class="migration-card">
+                    <span class="badge pending">Pending</span>
+                    <h3>001_initial_schema.sql</h3>
+                    <p>Creates posts table and migrations tracking table</p>
+                    <button onclick="runMigration('001')" class="btn btn-primary">Run Migration</button>
+                </div>
+                
+                <div class="migration-card">
+                    <span class="badge pending">Pending</span>
+                    <h3>002_add_tags.sql</h3>
+                    <p>Adds tags and post_tags tables for categorizing posts</p>
+                    <button onclick="runMigration('002')" class="btn btn-primary">Run Migration</button>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <a href="/admin/">← Back to Admin Dashboard</a>
+        </div>
+    </div>
+    
+    <script src="/admin/migrations.js"></script>
+</body>
+</html>
