@@ -4,6 +4,7 @@ export default {
         
         // Handle admin API requests
         if (url.pathname === '/api/auth') {
+            // Only allow POST requests to /api/auth
             if (request.method === 'POST') {
                 try {
                     const { password } = await request.json();
@@ -34,10 +35,22 @@ export default {
                         headers: { 'Content-Type': 'application/json' }
                     });
                 }
+            } else {
+                // Return 405 Method Not Allowed for non-POST requests
+                return new Response(JSON.stringify({ 
+                    success: false,
+                    message: 'Method not allowed. Use POST.' 
+                }), {
+                    status: 405,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Allow': 'POST'
+                    }
+                });
             }
         }
         
-        // Serve static files from Pages
+        // Serve static files from Pages for all other routes
         return env.ASSETS.fetch(request);
     }
 }
