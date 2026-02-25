@@ -225,6 +225,13 @@
             font-size: 14px;
             color: #666;
             margin-bottom: 4px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .post-artist:hover {
+            color: #ff5500;
+            text-decoration: underline;
         }
 
         .post-date {
@@ -311,7 +318,6 @@
             100% { background-color: #e0e0e0; }
         }
 
-        /* Track list skeleton */
         .skeleton-track {
             display: flex;
             align-items: center;
@@ -358,7 +364,6 @@
             animation: skeleton-loading 1s linear infinite alternate;
         }
 
-        /* Trending skeleton */
         .skeleton-trending {
             padding: 12px 18px;
             display: flex;
@@ -396,7 +401,6 @@
             animation: skeleton-loading 1s linear infinite alternate;
         }
 
-        /* Genre skeleton */
         .skeleton-genres {
             padding: 15px 18px;
             display: flex;
@@ -412,7 +416,6 @@
             animation: skeleton-loading 1s linear infinite alternate;
         }
 
-        /* Artist skeleton */
         .skeleton-artist-item {
             padding: 12px 18px;
             display: flex;
@@ -517,7 +520,7 @@
 
     <!-- MAIN LAYOUT CONTAINER -->
     <div class="main-content-container">
-        <!-- LEFT SIDEBAR - MAIN CONTENT (LATEST RELEASES) -->
+        <!-- LEFT SIDEBAR - MAIN CONTENT -->
         <aside class="left-sidebar">
             <div class="section-header">
                 <h2 class="section-title">LATEST RELEASES</h2>
@@ -525,7 +528,6 @@
             </div>
             
             <div class="post-list" id="tracksList">
-                <!-- Loading skeletons will be replaced by JavaScript -->
                 <div class="skeleton-track">
                     <div class="skeleton-image"></div>
                     <div class="skeleton-content">
@@ -679,25 +681,43 @@
         // API Base URL
         const API_BASE = '/api';
 
-        // Fetch and display tracks
+        // ===== NAVIGATION FUNCTIONS =====
+        function goToSongDetail(trackId) {
+            fetch(`${API_BASE}/tracks/${trackId}/view`, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).catch(err => console.error('View count error:', err));
+            
+            window.location.href = `/song.html?id=${trackId}`;
+        }
+
+        // NEW: Go to artist page
+        function goToArtist(artistName) {
+            window.location.href = `/artist.html?name=${encodeURIComponent(artistName)}`;
+        }
+
+        function filterByGenre(genre) {
+            alert(`Filtering by genre: ${genre} (coming soon!)`);
+        }
+
+        // ===== DATA LOADING FUNCTIONS =====
         async function loadTracks() {
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
                 const tracks = await response.json();
                 
                 const tracksList = document.getElementById('tracksList');
-                tracksList.innerHTML = ''; // Remove skeletons
+                tracksList.innerHTML = '';
                 
                 tracks.forEach(track => {
                     const trackEl = document.createElement('div');
                     trackEl.className = 'post-item';
-                    trackEl.onclick = () => goToSongDetail(track.id);
                     
                     trackEl.innerHTML = `
-                        <div class="post-image">${getEmojiForGenre(track.genre)}</div>
+                        <div class="post-image" onclick="goToSongDetail(${track.id})">${getEmojiForGenre(track.genre)}</div>
                         <div class="post-content">
-                            <div class="post-title">${track.title}</div>
-                            <div class="post-artist">${track.artist}</div>
+                            <div class="post-title" onclick="goToSongDetail(${track.id})">${track.title}</div>
+                            <div class="post-artist" onclick="goToArtist('${encodeURIComponent(track.artist)}')">${track.artist}</div>
                             <div class="post-date">${formatDate(track.uploaded_at)} • ${formatNumber(track.views)} views</div>
                         </div>
                     `;
@@ -705,29 +725,26 @@
                 });
             } catch (error) {
                 console.error('Error loading tracks:', error);
-                document.getElementById('tracksList').innerHTML = '<div class="loading">Error loading tracks</div>';
             }
         }
 
-        // Load trending tracks
         async function loadTrending() {
             try {
                 const response = await fetch(`${API_BASE}/trending`);
                 const trending = await response.json();
                 
                 const trendingList = document.getElementById('trendingList');
-                trendingList.innerHTML = ''; // Remove skeletons
+                trendingList.innerHTML = '';
                 
                 trending.forEach((track, index) => {
                     const trackEl = document.createElement('div');
                     trackEl.className = 'trending-item';
-                    trackEl.onclick = () => goToSongDetail(track.id);
                     
                     trackEl.innerHTML = `
-                        <span class="trending-number">${String(index + 1).padStart(2, '0')}</span>
+                        <span class="trending-number" onclick="goToSongDetail(${track.id})">${String(index + 1).padStart(2, '0')}</span>
                         <div class="trending-info">
-                            <h4>${track.title}</h4>
-                            <p>${track.artist} • ${formatNumber(track.plays)} plays</p>
+                            <h4 onclick="goToSongDetail(${track.id})">${track.title}</h4>
+                            <p onclick="goToArtist('${encodeURIComponent(track.artist)}')" style="cursor: pointer;">${track.artist} • ${formatNumber(track.plays)} plays</p>
                         </div>
                     `;
                     trendingList.appendChild(trackEl);
@@ -737,17 +754,15 @@
             }
         }
 
-        // Load genres from tracks
         async function loadGenres() {
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
                 const tracks = await response.json();
                 
-                // Extract unique genres
                 const genres = [...new Set(tracks.map(t => t.genre))];
                 
                 const genresList = document.getElementById('genresList');
-                genresList.innerHTML = ''; // Remove skeletons
+                genresList.innerHTML = '';
                 
                 const genresContainer = document.createElement('div');
                 genresContainer.style.padding = '15px 18px';
@@ -766,13 +781,11 @@
             }
         }
 
-        // Load artists
         async function loadArtists() {
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
                 const tracks = await response.json();
                 
-                // Group by artist
                 const artistMap = new Map();
                 tracks.forEach(track => {
                     if (!artistMap.has(track.artist)) {
@@ -789,12 +802,12 @@
                 const artists = Array.from(artistMap.values());
                 
                 const artistsList = document.getElementById('artistsList');
-                artistsList.innerHTML = ''; // Remove skeletons
+                artistsList.innerHTML = '';
                 
                 artists.slice(0, 3).forEach(artist => {
                     const artistEl = document.createElement('div');
                     artistEl.className = 'artist-item';
-                    artistEl.onclick = () => filterByArtist(artist.name);
+                    artistEl.onclick = () => goToArtist(artist.name);
                     
                     artistEl.innerHTML = `
                         <div class="artist-avatar" style="background: ${getRandomColor()}"></div>
@@ -810,7 +823,7 @@
             }
         }
 
-        // Helper functions
+        // ===== HELPER FUNCTIONS =====
         function getEmojiForGenre(genre) {
             const emojis = {
                 'electronic': '🎵',
@@ -854,31 +867,12 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        function goToSongDetail(trackId) {
-            // Increment view count
-            fetch(`${API_BASE}/tracks/${trackId}/view`, { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            }).catch(err => console.error('View count error:', err));
-            
-            window.location.href = `/song.html?id=${trackId}`;
-        }
-
-        function filterByGenre(genre) {
-            alert(`Filtering by genre: ${genre} (coming soon!)`);
-        }
-
-        function filterByArtist(artist) {
-            alert(`Filtering by artist: ${artist} (coming soon!)`);
-        }
-
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            // Will implement search later
         });
 
-        // Load all data (this will replace skeletons)
+        // Load all data
         loadTracks();
         loadTrending();
         loadGenres();
@@ -886,7 +880,7 @@
 
         // Hamburger menu
         document.querySelector('.hamburger').addEventListener('click', function() {
-            alert('Menu coming soon! 🎵');
+            window.location.href = '/';
         });
     </script>
 </body>
