@@ -434,6 +434,19 @@
             color: #ff5500;
         }
 
+        /* DEBUG INFO */
+        .debug-info {
+            background: #f0f0f0;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 12px;
+            max-height: 300px;
+            overflow: auto;
+        }
+
         /* LOADING SKELETONS */
         .skeleton {
             animation: skeleton-loading 1s linear infinite alternate;
@@ -509,7 +522,6 @@
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeleton -->
         <div style="text-align: center; padding: 60px; width: 100%;">Loading playlist...</div>
     </div>
 
@@ -545,7 +557,7 @@
         }
 
         function formatNumber(num) {
-            if (!num) return '0';
+            if (!num && num !== 0) return '0';
             if (num >= 1000) {
                 return (num / 1000).toFixed(1) + 'k';
             }
@@ -560,6 +572,7 @@
         }
 
         function calculateTotalDuration(tracks) {
+            if (!tracks || tracks.length === 0) return '0 min';
             const totalSeconds = tracks.reduce((sum, track) => sum + (track.duration || 0), 0);
             const hours = Math.floor(totalSeconds / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -577,6 +590,9 @@
             }
 
             try {
+                // Show loading state
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading playlist...</div>';
+                
                 // Increment view count
                 fetch(`${API_BASE}/playlists/${playlistId}/view`, { 
                     method: 'POST',
@@ -584,12 +600,28 @@
                 }).catch(err => console.error('View count error:', err));
 
                 // Fetch playlist details
+                console.log('Fetching playlist:', playlistId);
                 const response = await fetch(`${API_BASE}/playlists/${playlistId}`);
-                if (!response.ok) throw new Error('Playlist not found');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const data = await response.json();
+                console.log('Raw API response:', data);
+                
+                // Check if we have data
+                if (!data || Object.keys(data).length === 0) {
+                    throw new Error('Empty playlist data');
+                }
+                
+                // Extract data with fallbacks
                 const playlist = data;
                 const tracks = data.tracks || [];
+                
+                // Log what fields we have
+                console.log('Playlist fields:', Object.keys(playlist));
+                console.log('Tracks count:', tracks.length);
                 
                 // Calculate totals
                 const totalDuration = calculateTotalDuration(tracks);
@@ -597,7 +629,17 @@
                 const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
                 
                 // Get unique artists
-                const artists = [...new Set(tracks.map(t => t.artist))].slice(0, 3);
+                const artists = [...new Set(tracks.map(t => t.artist).filter(a => a))].slice(0, 3);
+
+                // Format date
+                let createdDate = 'Unknown';
+                if (playlist.created_at) {
+                    try {
+                        createdDate = new Date(playlist.created_at).toLocaleDateString();
+                    } catch (e) {
+                        console.error('Date error:', e);
+                    }
+                }
 
                 const content = document.getElementById('content');
                 content.innerHTML = `
@@ -607,14 +649,14 @@
                         <div class="breadcrumbs">
                             <a href="/">Home</a> / 
                             <a href="/playlists.html">Playlists</a> / 
-                            <span>${playlist.name}</span>
+                            <span>${playlist.name || 'Untitled'}</span>
                         </div>
                         
                         <!-- Playlist Header -->
                         <div class="playlist-header">
                             <div class="playlist-cover">${playlist.cover_emoji || '📋'}</div>
                             <div class="playlist-info">
-                                <h1 class="playlist-title">${playlist.name}</h1>
+                                <h1 class="playlist-title">${playlist.name || 'Untitled Playlist'}</h1>
                                 <div class="playlist-meta">
                                     <span class="playlist-stats"><i class="fas fa-music"></i> ${tracks.length} tracks</span>
                                     <span class="playlist-stats"><i class="fas fa-clock"></i> ${totalDuration}</span>
@@ -623,7 +665,7 @@
                                     <span class="playlist-stats"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span>
                                 </div>
                                 <p class="playlist-description">${playlist.description || 'No description available.'}</p>
-                                <div class="playlist-created">Created by ${playlist.created_by || 'Zedtopvibes'} • ${new Date(playlist.created_at).toLocaleDateString()}</div>
+                                <div class="playlist-created">Created by ${playlist.created_by || 'Zedtopvibes'} • ${createdDate}</div>
                             </div>
                         </div>
                         
@@ -634,12 +676,12 @@
                         </div>
                         
                         <div class="track-list">
-                            ${tracks.map((track, index) => `
+                            ${tracks.length > 0 ? tracks.map((track, index) => `
                                 <div class="track-item" onclick="goToTrack(${track.id})">
                                     <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
                                     <div class="track-info">
-                                        <div class="track-title">${track.title}</div>
-                                        <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(track.artist)}')">${track.artist}</div>
+                                        <div class="track-title">${track.title || 'Unknown'}</div>
+                                        <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(track.artist || '')}')">${track.artist || 'Unknown'}</div>
                                     </div>
                                     <div class="track-meta">
                                         <span class="track-duration"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
@@ -647,7 +689,21 @@
                                         <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
                                     </div>
                                 </div>
-                            `).join('')}
+                            `).join('') : '<div style="padding: 20px; text-align: center; color: #888;">No tracks in this playlist</div>'}
+                        </div>
+                        
+                        <!-- Debug Info (remove after fixing) -->
+                        <div class="debug-info">
+                            <strong>Debug Info:</strong>
+                            <br>Playlist ID: ${playlist.id}
+                            <br>Name: ${playlist.name}
+                            <br>Description: ${playlist.description}
+                            <br>Views: ${playlist.views}
+                            <br>Plays: ${playlist.plays}
+                            <br>Downloads: ${playlist.downloads}
+                            <br>Cover: ${playlist.cover_emoji}
+                            <br>Created: ${playlist.created_at}
+                            <br>Raw Data: ${JSON.stringify(playlist, null, 2)}
                         </div>
                     </aside>
                     
@@ -659,7 +715,7 @@
                                 <h2 class="section-title">Similar Playlists</h2>
                                 <a href="/playlists.html" class="view-all">View All ➔</a>
                             </div>
-                            <div id="similarPlaylists"></div>
+                            <div id="similarPlaylists">Loading...</div>
                         </section>
                         
                         <!-- Featured Artists -->
@@ -669,7 +725,7 @@
                                 <a href="#" class="view-all">View All ➔</a>
                             </div>
                             <div id="featuredArtists">
-                                ${artists.map(artist => `
+                                ${artists.length > 0 ? artists.map(artist => `
                                     <div class="sidebar-item" onclick="goToArtist('${encodeURIComponent(artist)}')">
                                         <div class="sidebar-thumb">👤</div>
                                         <div class="sidebar-info">
@@ -677,7 +733,7 @@
                                             <div class="sidebar-sub">Featured in this playlist</div>
                                         </div>
                                     </div>
-                                `).join('')}
+                                `).join('') : '<div style="padding: 15px; text-align: center;">No artists found</div>'}
                             </div>
                         </section>
                         
@@ -689,7 +745,7 @@
                             <div>
                                 <div class="info-row">
                                     <span class="info-label">Created</span>
-                                    <span class="info-value">${new Date(playlist.created_at).toLocaleDateString()}</span>
+                                    <span class="info-value">${createdDate}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">By</span>
@@ -725,33 +781,56 @@
 
             } catch (error) {
                 console.error('Error loading playlist:', error);
-                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Error loading playlist</div>';
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <p style="color: #ff5500; margin-bottom: 20px;">Error loading playlist</p>
+                        <p style="color: #666; font-size: 14px;">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
+                        <div class="debug-info">
+                            <strong>Error Details:</strong>
+                            <br>${error.stack}
+                        </div>
+                    </div>
+                `;
             }
         }
 
         async function loadSimilarPlaylists(currentPlaylistId) {
             try {
                 const response = await fetch(`${API_BASE}/playlists`);
+                if (!response.ok) throw new Error('Failed to fetch playlists');
+                
                 const playlists = await response.json();
                 
                 const similar = playlists
                     .filter(p => p.id != currentPlaylistId)
                     .slice(0, 3);
                 
-                document.getElementById('similarPlaylists').innerHTML = similar.map(playlist => `
-                    <div class="sidebar-item" onclick="goToPlaylist(${playlist.id})">
-                        <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
-                        <div class="sidebar-info">
-                            <div class="sidebar-title">${playlist.name}</div>
-                            <div class="sidebar-sub">
-                                <span>${playlist.track_count || 0} tracks</span>
-                                <span><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
+                const container = document.getElementById('similarPlaylists');
+                if (container) {
+                    if (similar.length > 0) {
+                        container.innerHTML = similar.map(playlist => `
+                            <div class="sidebar-item" onclick="goToPlaylist(${playlist.id})">
+                                <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
+                                <div class="sidebar-info">
+                                    <div class="sidebar-title">${playlist.name}</div>
+                                    <div class="sidebar-sub">
+                                        <span>${playlist.track_count || 0} tracks</span>
+                                        <span><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                `).join('');
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No similar playlists</div>';
+                    }
+                }
             } catch (error) {
                 console.error('Error loading similar playlists:', error);
+                const container = document.getElementById('similarPlaylists');
+                if (container) {
+                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Error loading</div>';
+                }
             }
         }
 
