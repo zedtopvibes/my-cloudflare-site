@@ -667,12 +667,12 @@
             window.location.href = `/artist/${slug}`;
         }
 
-        function goToTrack(id) {
-            window.location.href = `/song.html?id=${id}`;
-        }
-
-        function goToAlbum(id) {
-            window.location.href = `/album.html?id=${id}`;
+        function goToTrack(id, slug) {
+            if (slug) {
+                window.location.href = `/song/${slug}`;
+            } else {
+                window.location.href = `/song.html?id=${id}`;
+            }
         }
 
         function goToAlbumBySlug(slug) {
@@ -825,7 +825,7 @@
                     
                     <div class="track-list">
                         ${tracks.length > 0 ? tracks.map((track, index) => `
-                            <div class="track-item" onclick="goToTrack(${track.id})">
+                            <div class="track-item" onclick="goToTrack(${track.id}, '${track.slug}')">
                                 <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
                                 <div class="track-info">
                                     <div class="track-title">${track.title}</div>
@@ -850,7 +850,6 @@
                             <a href="#" onclick="goToArtist('${album.artist.replace(/'/g, "\\'")}')" class="view-all">View All ➔</a>
                         </div>
                         <div id="moreByArtist" class="latest-albums-list">
-                            <!-- Will be loaded dynamically -->
                             <div class="loading">Loading...</div>
                         </div>
                     </section>
@@ -862,7 +861,6 @@
                             <a href="/albums.html" class="view-all">View All ➔</a>
                         </div>
                         <div id="similarAlbums" class="latest-albums-list">
-                            <!-- Will be loaded dynamically -->
                             <div class="loading">Loading...</div>
                         </div>
                     </section>
