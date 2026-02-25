@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zedtopvibes • Playlists</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            color: #333;
+        }
+
+        .site-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .site-title a {
+            text-decoration: none;
+        }
+
+        .right-spacer {
+            width: 40px;
+        }
+
+        /* Search Bar */
+        .search-section {
+            max-width: 1400px;
+            margin: 15px auto 5px;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 8px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-icon {
+            color: #ff5500;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .search-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            padding: 8px 0;
+            background: transparent;
+        }
+
+        .search-container input::placeholder {
+            color: #aaa;
+        }
+
+        /* MAIN LAYOUT CONTAINER */
+        .main-content-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+
+        /* LEFT SIDEBAR - PLAYLISTS LIST */
+        .left-sidebar {
+            flex: 3;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e8e8e8;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        /* RIGHT SIDEBAR */
+        .right-sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 300px;
+        }
+
+        .section-block {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e8e8e8;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        /* SECTION HEADER */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                #ff5500 20%, 
+                #ff5500 80%, 
+                transparent 95%
+            );
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: "📋";
+            font-size: 1.1rem;
+            color: #ff5500;
+        }
+
+        .view-all {
+            color: #ff5500;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border: 1px solid #ff5500;
+            border-radius: 20px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .view-all:hover {
+            background: #ff5500;
+            color: white;
+        }
+
+        /* BREADCRUMBS */
+        .breadcrumbs {
+            padding: 15px 18px;
+            background: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .breadcrumbs a {
+            color: #ff5500;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* PLAYLIST ITEMS */
+        .playlist-list {
+            padding: 5px 0;
+        }
+
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .playlist-item:hover {
+            background: #fff9f5;
+        }
+
+        .playlist-item:last-child {
+            border-bottom: none;
+        }
+
+        .playlist-thumb {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .playlist-info {
+            flex: 1;
+        }
+
+        .playlist-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 8px;
+        }
+
+        .playlist-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .playlist-badge {
+            color: #ff5500;
+            background: rgba(255,85,0,0.08);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .playlist-stats {
+            color: #666;
+            background: #f5f5f5;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .playlist-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* RIGHT SIDEBAR ITEMS */
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            gap: 15px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background: #fff9f5;
+        }
+
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .sidebar-info {
+            flex: 1;
+        }
+
+        .sidebar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-sub {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* PAGINATION */
+        .pagination-container {
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            color: #666;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .pagination-item:hover {
+            background: #f5f5f5;
+            border-color: #ff5500;
+            color: #ff5500;
+        }
+
+        .pagination-item.active {
+            background: #ff5500;
+            border-color: #ff5500;
+            color: white;
+        }
+
+        /* LOADING SKELETONS */
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-color: #f0f0f0; }
+            100% { background-color: #e0e0e0; }
+        }
+
+        .skeleton-playlist {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 18px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .skeleton-thumb {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            background: #e0e0e0;
+        }
+
+        .skeleton-info {
+            flex: 1;
+        }
+
+        .skeleton-title {
+            width: 60%;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-meta {
+            width: 40%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-desc {
+            width: 80%;
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        /* Footer */
+        .footer {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 20px 20px 0;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .main-content-container {
+                flex-direction: column;
+            }
+            
+            .right-sidebar {
+                min-width: auto;
+            }
+            
+            .playlist-thumb {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .playlist-thumb {
+                width: 70px;
+                height: 70px;
+                font-size: 28px;
+            }
+            
+            .playlist-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
+            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
+            <div class="right-spacer"></div>
+        </div>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="search-section">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search playlists...">
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="main-content-container" id="content">
+        <!-- Loading skeletons will be shown here -->
+        <aside class="left-sidebar">
+            <div class="breadcrumbs">
+                <span class="skeleton" style="display: inline-block; width: 200px; height: 20px;"></span>
+            </div>
+            
+            <div class="section-header">
+                <h2 class="section-title">All Playlists</h2>
+                <a href="#" class="view-all">View All ➔</a>
+            </div>
+            
+            <div class="playlist-list">
+                <div class="skeleton-playlist">
+                    <div class="skeleton-thumb"></div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-meta"></div>
+                        <div class="skeleton-desc"></div>
+                    </div>
+                </div>
+                <div class="skeleton-playlist">
+                    <div class="skeleton-thumb"></div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-meta"></div>
+                        <div class="skeleton-desc"></div>
+                    </div>
+                </div>
+                <div class="skeleton-playlist">
+                    <div class="skeleton-thumb"></div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-meta"></div>
+                        <div class="skeleton-desc"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <div class="right-sidebar">
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Featured Playlists</h2>
+                    <a href="#" class="view-all">View All ➔</a>
+                </div>
+                <div>
+                    <div class="sidebar-item">
+                        <div class="skeleton" style="width: 60px; height: 60px; border-radius: 8px;"></div>
+                        <div class="sidebar-info">
+                            <div class="skeleton" style="width: 120px; height: 16px; margin-bottom: 5px;"></div>
+                            <div class="skeleton" style="width: 80px; height: 12px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="copyright">
+            © 2024 Zedtopvibes. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // API Base URL
+        const API_BASE = '/api';
+
+        // Temporary placeholder data until we create the API
+        const placeholderPlaylists = [
+            {
+                id: 1,
+                name: "Zambian Hits 2024",
+                description: "The biggest Zambian tracks of the year",
+                cover_emoji: "🇿🇲",
+                track_count: 24,
+                is_featured: true
+            },
+            {
+                id: 2,
+                name: "Chill Lo-Fi Beats",
+                description: "Relax and unwind with these smooth beats",
+                cover_emoji: "🌙",
+                track_count: 18,
+                is_featured: true
+            },
+            {
+                id: 3,
+                name: "Workout Mix",
+                description: "High energy tracks for your workout",
+                cover_emoji: "💪",
+                track_count: 32,
+                is_featured: false
+            },
+            {
+                id: 4,
+                name: "Sunday Vibes",
+                description: "Perfect for a lazy Sunday afternoon",
+                cover_emoji: "☀️",
+                track_count: 21,
+                is_featured: true
+            },
+            {
+                id: 5,
+                name: "Zam Hip-Hop",
+                description: "The best of Zambian hip-hop",
+                cover_emoji: "🎤",
+                track_count: 15,
+                is_featured: false
+            }
+        ];
+
+        function goToPlaylist(id) {
+            alert(`Navigate to playlist ${id} - Coming in Step 2!`);
+        }
+
+        function renderPlaylists() {
+            const content = document.getElementById('content');
+            
+            content.innerHTML = `
+                <aside class="left-sidebar">
+                    <div class="breadcrumbs">
+                        <a href="/">Home</a> / <span>Playlists</span>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h2 class="section-title">All Playlists</h2>
+                        <a href="#" class="view-all">View All ➔</a>
+                    </div>
+                    
+                    <div class="playlist-list">
+                        ${placeholderPlaylists.map(playlist => `
+                            <div class="playlist-item" onclick="goToPlaylist(${playlist.id})">
+                                <div class="playlist-thumb">${playlist.cover_emoji}</div>
+                                <div class="playlist-info">
+                                    <div class="playlist-title">${playlist.name}</div>
+                                    <div class="playlist-meta">
+                                        <span class="playlist-badge">${playlist.track_count} tracks</span>
+                                        ${playlist.is_featured ? '<span class="playlist-badge">Featured</span>' : ''}
+                                    </div>
+                                    <div class="playlist-description">${playlist.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </aside>
+                
+                <div class="right-sidebar">
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Featured Playlists</h2>
+                            <a href="#" class="view-all">View All ➔</a>
+                        </div>
+                        <div>
+                            ${placeholderPlaylists.filter(p => p.is_featured).slice(0, 3).map(playlist => `
+                                <div class="sidebar-item" onclick="goToPlaylist(${playlist.id})">
+                                    <div class="sidebar-thumb">${playlist.cover_emoji}</div>
+                                    <div class="sidebar-info">
+                                        <div class="sidebar-title">${playlist.name}</div>
+                                        <div class="sidebar-sub">${playlist.track_count} tracks</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </section>
+                    
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Create Playlist</h2>
+                        </div>
+                        <div style="padding: 15px; text-align: center;">
+                            <p style="color: #666; margin-bottom: 10px;">Curate your own music collection</p>
+                            <button onclick="alert('Create playlist coming soon!')" style="background: #ff5500; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">Create New Playlist</button>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        // Load playlists (using placeholder data for now)
+        renderPlaylists();
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                alert('Search playlists: ' + e.target.value);
+            }
+        });
+    </script>
+</body>
+</html>
