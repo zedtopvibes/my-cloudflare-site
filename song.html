@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zedtopvibes • Song Details</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -61,19 +63,58 @@
             width: 40px;
         }
 
+        /* Search Bar */
+        .search-section {
+            max-width: 1400px;
+            margin: 15px auto 5px;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 8px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-icon {
+            color: #ff5500;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .search-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            padding: 8px 0;
+            background: transparent;
+        }
+
+        .search-container input::placeholder {
+            color: #aaa;
+        }
+
         /* MAIN LAYOUT CONTAINER */
         .main-content-container {
-            width: 100%;
             max-width: 1400px;
             margin: 20px auto;
-            padding: 0 15px;
+            padding: 0 20px;
             display: flex;
-            flex-direction: column;
             gap: 20px;
+            width: 100%;
         }
 
         /* LEFT SIDEBAR */
         .left-sidebar {
+            flex: 3;
             background: #ffffff;
             border-radius: 12px;
             border: 1px solid #e8e8e8;
@@ -83,9 +124,11 @@
 
         /* RIGHT SIDEBAR */
         .right-sidebar {
+            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            min-width: 300px;
         }
 
         .section-block {
@@ -104,12 +147,37 @@
             padding: 14px 18px;
             background: #fff;
             border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                #ff5500 20%, 
+                #ff5500 80%, 
+                transparent 95%
+            );
         }
 
         .section-title {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #222;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: "🎵";
+            font-size: 1.1rem;
+            color: #ff5500;
         }
 
         .view-all {
@@ -117,10 +185,11 @@
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: 600;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border: 1px solid #ff5500;
             border-radius: 20px;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .view-all:hover {
@@ -130,7 +199,7 @@
 
         /* BREADCRUMBS */
         .breadcrumbs {
-            padding: 12px 18px;
+            padding: 15px 18px;
             background: #fafafa;
             border-bottom: 1px solid #e8e8e8;
             font-size: 0.9rem;
@@ -154,33 +223,33 @@
         /* SONG HEADER */
         .song-header {
             display: flex;
+            align-items: center;
             gap: 25px;
             padding: 25px;
+            background: linear-gradient(135deg, rgba(255,85,0,0.05) 0%, rgba(255,140,0,0.05) 100%);
             border-bottom: 1px solid #e8e8e8;
         }
 
-        .album-art {
+        .song-cover {
             width: 150px;
             height: 150px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #ffd6b3, #ffb38c);
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
-            color: #ff5500;
+            font-size: 64px;
+            color: white;
             box-shadow: 0 4px 12px rgba(255,85,0,0.2);
+            flex-shrink: 0;
         }
 
         .song-info {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
 
         .song-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
             color: #222;
             margin-bottom: 8px;
@@ -188,34 +257,43 @@
 
         .song-artist {
             font-size: 1.2rem;
-            color: #666;
+            color: #ff5500;
             margin-bottom: 15px;
             cursor: pointer;
             display: inline-block;
         }
 
         .song-artist:hover {
-            color: #ff5500;
             text-decoration: underline;
         }
 
         .song-meta {
             display: flex;
-            gap: 25px;
-            color: #888;
-            font-size: 0.95rem;
+            gap: 15px;
             flex-wrap: wrap;
+            margin-bottom: 15px;
         }
 
-        .meta-item {
+        .song-stats {
             display: flex;
             align-items: center;
             gap: 5px;
+            background: rgba(255,85,0,0.08);
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: #666;
+            font-size: 0.9rem;
         }
 
-        .meta-item strong {
+        .song-stats i {
             color: #ff5500;
-            font-weight: 600;
+        }
+
+        .song-description {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            max-width: 600px;
         }
 
         /* COMPACT PLAYER BAR */
@@ -303,126 +381,6 @@
             border-color: #ff5500;
         }
 
-        /* DESCRIPTION */
-        .description {
-            padding: 25px;
-            color: #555;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        /* SECTION SPACER */
-        .section-spacer {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #ddd, transparent);
-            margin: 0 25px;
-        }
-
-        /* POST LIST STYLING */
-        .post-list {
-            padding: 5px 0;
-        }
-
-        .post-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 18px;
-            text-decoration: none;
-            color: inherit;
-            transition: background 0.2s;
-            border-bottom: 1px solid #f5f5f5;
-            cursor: pointer;
-        }
-
-        .post-item:last-child {
-            border-bottom: none;
-        }
-
-        .post-item:hover {
-            background: #fff9f5;
-        }
-
-        .post-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 6px;
-            margin-right: 15px;
-            background: linear-gradient(135deg, #ffd6b3, #ffb38c);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #ff5500;
-        }
-
-        .post-content {
-            flex: 1;
-        }
-
-        .post-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 3px;
-        }
-
-        .post-artist {
-            font-size: 13px;
-            color: #666;
-            cursor: pointer;
-        }
-
-        .post-artist:hover {
-            color: #ff5500;
-            text-decoration: underline;
-        }
-
-        .post-stats {
-            font-size: 12px;
-            color: #999;
-            display: flex;
-            gap: 15px;
-            margin-top: 3px;
-        }
-
-        /* QUICK INFO */
-        .quick-info {
-            padding: 15px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .info-value {
-            color: #222;
-            font-weight: 500;
-        }
-
-        /* GENRE TAGS */
-        .genre-tag {
-            display: inline-block;
-            padding: 4px 12px;
-            background: #f5f5f5;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #666;
-            margin: 2px;
-        }
-
         /* Now Playing Bar */
         .now-playing-bar {
             position: fixed;
@@ -454,12 +412,11 @@
 
         .now-playing-artist {
             font-size: 12px;
-            color: #888;
+            color: #ff5500;
             cursor: pointer;
         }
 
         .now-playing-artist:hover {
-            color: #ff5500;
             text-decoration: underline;
         }
 
@@ -496,7 +453,55 @@
             background: #ff7000;
         }
 
-        /* ===== LOADING SKELETONS ===== */
+        /* RIGHT SIDEBAR ITEMS */
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            gap: 15px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background: #fff9f5;
+        }
+
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .sidebar-info {
+            flex: 1;
+        }
+
+        .sidebar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-sub {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* LOADING SKELETONS */
         .skeleton {
             animation: skeleton-loading 1s linear infinite alternate;
         }
@@ -506,214 +511,37 @@
             100% { background-color: #e0e0e0; }
         }
 
-        .skeleton-song-header {
-            display: flex;
-            gap: 25px;
-            padding: 25px;
-            border-bottom: 1px solid #e8e8e8;
-        }
-
-        .skeleton-album-art {
-            width: 150px;
-            height: 150px;
-            border-radius: 12px;
-            background: #e0e0e0;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-song-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .skeleton-song-title {
-            width: 70%;
-            height: 36px;
-            background: #e0e0e0;
-            border-radius: 8px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-song-artist {
-            width: 40%;
-            height: 24px;
-            background: #e0e0e0;
-            border-radius: 6px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-meta {
-            display: flex;
-            gap: 25px;
-            margin-top: 10px;
-        }
-
-        .skeleton-meta-item {
-            width: 80px;
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-player-bar {
-            padding: 15px 25px;
-            background: #fafafa;
-            border-bottom: 1px solid #e8e8e8;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .skeleton-controls {
-            display: flex;
-            gap: 15px;
-        }
-
-        .skeleton-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-play-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-left: auto;
-        }
-
-        .skeleton-action {
-            width: 80px;
-            height: 36px;
-            border-radius: 25px;
-            background: #e0e0e0;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-description {
-            padding: 25px;
-        }
-
-        .skeleton-desc-line {
-            width: 100%;
-            height: 16px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-desc-line:nth-child(2) {
-            width: 90%;
-        }
-
-        .skeleton-desc-line:nth-child(3) {
-            width: 80%;
-        }
-
-        .skeleton-track-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 18px;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-        .skeleton-track-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 6px;
-            background: #e0e0e0;
-            margin-right: 15px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-track-content {
-            flex: 1;
-        }
-
-        .skeleton-track-title {
-            width: 60%;
-            height: 16px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 6px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-track-artist {
-            width: 40%;
-            height: 14px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .skeleton-info-label {
-            width: 60px;
-            height: 16px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-info-value {
-            width: 100px;
-            height: 16px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        /* LOADING */
-        .loading {
+        /* Footer */
+        .footer {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 20px 20px 0;
+            border-top: 1px solid #ddd;
             text-align: center;
-            padding: 40px;
-            color: #999;
+            color: #888;
+            font-size: 13px;
+            width: 100%;
         }
 
-        /* TABLET & DESKTOP */
-        @media (min-width: 768px) {
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
             .main-content-container {
-                flex-direction: row;
-            }
-            
-            .left-sidebar {
-                flex: 3;
+                flex-direction: column;
             }
             
             .right-sidebar {
-                flex: 1;
-                min-width: 300px;
+                min-width: auto;
             }
-        }
-
-        /* MOBILE */
-        @media (max-width: 600px) {
+            
             .song-header {
                 flex-direction: column;
-                align-items: center;
                 text-align: center;
+            }
+            
+            .song-cover {
+                width: 120px;
+                height: 120px;
+                font-size: 48px;
             }
             
             .song-meta {
@@ -729,36 +557,6 @@
                 margin-left: 0;
                 justify-content: center;
             }
-            
-            .album-art {
-                width: 120px;
-                height: 120px;
-                font-size: 40px;
-            }
-            
-            .song-title {
-                font-size: 1.8rem;
-            }
-
-            .skeleton-song-header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            
-            .skeleton-meta {
-                justify-content: center;
-            }
-            
-            .skeleton-player-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .skeleton-action-buttons {
-                margin-left: 0;
-                justify-content: center;
-            }
         }
     </style>
 </head>
@@ -766,159 +564,24 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="hamburger">☰</div>
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
             <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
             <div class="right-spacer"></div>
         </div>
     </nav>
 
-    <!-- MAIN LAYOUT CONTAINER -->
-    <div class="main-content-container" id="content">
-        <!-- Loading skeletons will be shown here -->
-        <aside class="left-sidebar">
-            <div class="breadcrumbs">
-                <span class="skeleton" style="display: inline-block; width: 200px; height: 16px;"></span>
-            </div>
-            
-            <div class="skeleton-song-header">
-                <div class="skeleton-album-art"></div>
-                <div class="skeleton-song-info">
-                    <div class="skeleton-song-title"></div>
-                    <div class="skeleton-song-artist"></div>
-                    <div class="skeleton-meta">
-                        <div class="skeleton-meta-item"></div>
-                        <div class="skeleton-meta-item"></div>
-                        <div class="skeleton-meta-item"></div>
-                        <div class="skeleton-meta-item"></div>
-                        <div class="skeleton-meta-item"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="skeleton-player-bar">
-                <div class="skeleton-controls">
-                    <div class="skeleton-btn"></div>
-                    <div class="skeleton-play-btn"></div>
-                    <div class="skeleton-btn"></div>
-                </div>
-                <div class="skeleton-action-buttons">
-                    <div class="skeleton-action"></div>
-                    <div class="skeleton-action"></div>
-                    <div class="skeleton-action"></div>
-                    <div class="skeleton-action"></div>
-                </div>
-            </div>
-            
-            <div class="skeleton-description">
-                <div class="skeleton-desc-line"></div>
-                <div class="skeleton-desc-line"></div>
-                <div class="skeleton-desc-line"></div>
-            </div>
-            
-            <div class="section-spacer"></div>
-            
-            <div class="playlist-main-section">
-                <div class="section-header">
-                    <h2 class="section-title">More from Artist</h2>
-                    <a href="#" class="view-all">View All</a>
-                </div>
-                <div class="post-list">
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-image"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title"></div>
-                            <div class="skeleton-track-artist"></div>
-                        </div>
-                    </div>
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-image"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title"></div>
-                            <div class="skeleton-track-artist"></div>
-                        </div>
-                    </div>
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-image"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title"></div>
-                            <div class="skeleton-track-artist"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        
-        <div class="right-sidebar">
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Albums by Artist</h2>
-                    <a href="#" class="view-all">View All</a>
-                </div>
-                <div class="post-list">
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-image"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title"></div>
-                            <div class="skeleton-track-artist"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Similar Songs</h2>
-                    <a href="#" class="view-all">View All</a>
-                </div>
-                <div class="post-list">
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-image"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title"></div>
-                            <div class="skeleton-track-artist"></div>
-                        </div>
-                    </div>
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-image"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title"></div>
-                            <div class="skeleton-track-artist"></div>
-                        </div>
-                    </div>
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-image"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title"></div>
-                            <div class="skeleton-track-artist"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Quick Info</h2>
-                </div>
-                <div class="quick-info">
-                    <div class="skeleton-info-row">
-                        <div class="skeleton-info-label"></div>
-                        <div class="skeleton-info-value"></div>
-                    </div>
-                    <div class="skeleton-info-row">
-                        <div class="skeleton-info-label"></div>
-                        <div class="skeleton-info-value"></div>
-                    </div>
-                    <div class="skeleton-info-row">
-                        <div class="skeleton-info-label"></div>
-                        <div class="skeleton-info-value"></div>
-                    </div>
-                    <div class="skeleton-info-row">
-                        <div class="skeleton-info-label"></div>
-                        <div class="skeleton-info-value"></div>
-                    </div>
-                </div>
-            </section>
+    <!-- Search Bar -->
+    <div class="search-section">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search tracks...">
         </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="main-content-container" id="content">
+        <!-- Loading skeleton -->
+        <div style="text-align: center; padding: 60px; width: 100%;">Loading song...</div>
     </div>
 
     <!-- Now Playing Bar -->
@@ -933,31 +596,69 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="copyright">
+            © 2024 Zedtopvibes. All rights reserved.
+        </div>
+    </footer>
+
     <script>
         // API Base URL
         const API_BASE = '/api';
         
-        // Get track ID from URL
+        // Get song identifier from multiple sources
         const urlParams = new URLSearchParams(window.location.search);
-        const trackId = urlParams.get('id');
+        const songId = urlParams.get('id');
+
+        // Check if we're using a clean URL with slug (from data attribute)
+        const contentDiv = document.getElementById('content');
+        const songSlug = contentDiv ? contentDiv.dataset.songSlug : null;
+
+        // Determine which identifier to use
+        let songIdentifier = null;
+        let useSlug = false;
+
+        if (songSlug) {
+            // Clean URL format: /song/slap-dee-hello
+            songIdentifier = songSlug;
+            useSlug = true;
+            console.log('Using slug from attribute:', songIdentifier);
+        } else if (songId) {
+            // Old format: ?id=1
+            songIdentifier = songId;
+            useSlug = false;
+            console.log('Using ID from query:', songIdentifier);
+        }
 
         // Audio player
         let audioPlayer = null;
         let currentTrack = null;
         let isPlaying = false;
 
-        // ===== NAVIGATION FUNCTIONS =====
-        function goToTrack(id) {
-            window.location.href = `/song.html?id=${id}`;
+        // Navigation functions
+        function goHome() {
+            window.location.href = '/';
         }
 
-        // NEW: Go to artist page
         function goToArtist(artistName) {
-            window.location.href = `/artist.html?name=${encodeURIComponent(artistName)}`;
+            // Generate slug for artist
+            const slug = artistName
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]/g, '')
+                .replace(/--+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            window.location.href = `/artist/${slug}`;
         }
 
-        // ===== HELPER FUNCTIONS =====
+        function goToSongBySlug(slug) {
+            window.location.href = `/song/${slug}`;
+        }
+
+        // Helper functions
         function formatNumber(num) {
+            if (!num && num !== 0) return '0';
             if (num >= 1000) {
                 return (num / 1000).toFixed(1) + 'k';
             }
@@ -983,71 +684,91 @@
             return emojis[genre] || emojis.default;
         }
 
-        // ===== DATA LOADING =====
-        async function loadTrackDetails() {
-            if (!trackId) {
-                document.getElementById('content').innerHTML = '<div class="loading">No track specified</div>';
+        // Load song data
+        async function loadSong() {
+            if (!songIdentifier) {
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No track specified</div>';
                 return;
             }
 
             try {
-                const response = await fetch(`${API_BASE}/tracks/${trackId}`);
+                // Show loading state
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading song...</div>';
+                
+                let apiUrl;
+                if (useSlug) {
+                    // New clean URL format
+                    apiUrl = `${API_BASE}/song/by-slug/${songIdentifier}`;
+                } else {
+                    // Old format with ID
+                    apiUrl = `${API_BASE}/tracks/${songIdentifier}`;
+                }
+                
+                console.log('Fetching from API:', apiUrl);
+                const response = await fetch(apiUrl);
+                
                 if (!response.ok) {
                     throw new Error('Track not found');
                 }
+                
                 const track = await response.json();
-                currentTrack = track;
-
-                fetch(`${API_BASE}/tracks/${trackId}/view`, { 
+                console.log('Track data received:', track);
+                
+                // Increment view count
+                fetch(`${API_BASE}/tracks/${track.id}/view`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('View count error:', err));
-
-                const allTracksResponse = await fetch(`${API_BASE}/tracks`);
-                const allTracks = await allTracksResponse.json();
-
-                const artistTracks = allTracks.filter(t => t.artist === track.artist && t.id !== track.id);
                 
-                const similarTracks = allTracks.filter(t => 
-                    t.genre === track.genre && 
-                    t.artist !== track.artist && 
-                    t.id !== track.id
-                ).slice(0, 3);
-
-                renderPage(track, artistTracks, similarTracks);
+                currentTrack = track;
+                
+                // Render the page
+                renderSong(track);
 
             } catch (error) {
                 console.error('Error loading track:', error);
-                document.getElementById('content').innerHTML = '<div class="loading">Error loading track details</div>';
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <p style="color: #ff5500; margin-bottom: 20px;">Error loading track</p>
+                        <p style="color: #666; font-size: 14px;">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
+                    </div>
+                `;
             }
         }
 
-        function renderPage(track, artistTracks, similarTracks) {
+        // Render song page
+        function renderSong(track) {
             const content = document.getElementById('content');
             
             content.innerHTML = `
+                <!-- LEFT SIDEBAR -->
                 <aside class="left-sidebar">
+                    <!-- Breadcrumbs -->
                     <div class="breadcrumbs">
                         <a href="/">Home</a> / 
-                        <a href="#">${track.genre || 'Music'}</a> / 
+                        <a href="#" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</a> / 
                         <span>${track.title}</span>
                     </div>
                     
+                    <!-- Song Header -->
                     <div class="song-header">
-                        <div class="album-art">${getEmojiForGenre(track.genre)}</div>
+                        <div class="song-cover">${getEmojiForGenre(track.genre)}</div>
                         <div class="song-info">
                             <h1 class="song-title">${track.title}</h1>
-                            <div class="song-artist" onclick="goToArtist('${encodeURIComponent(track.artist)}')">${track.artist}</div>
+                            <div class="song-artist" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</div>
                             <div class="song-meta">
-                                <div class="meta-item">📅 <strong>${new Date(track.uploaded_at).getFullYear()}</strong></div>
-                                <div class="meta-item">⏱️ <strong>${formatDuration(track.duration)}</strong></div>
-                                <div class="meta-item">👁️ <strong>${formatNumber(track.views)}</strong> views</div>
-                                <div class="meta-item">▶️ <strong>${formatNumber(track.plays)}</strong> plays</div>
-                                <div class="meta-item">⬇️ <strong>${formatNumber(track.downloads)}</strong> downloads</div>
+                                <span class="song-stats"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                                <span class="song-stats"><i class="fas fa-calendar"></i> ${new Date(track.uploaded_at).getFullYear()}</span>
+                                <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                <span class="song-stats"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
+                                <span class="song-stats"><i class="fas fa-eye"></i> ${formatNumber(track.views)}</span>
                             </div>
+                            <p class="song-description">${track.description || 'No description available.'}</p>
                         </div>
                     </div>
                     
+                    <!-- Compact Player Bar -->
                     <div class="compact-actions">
                         <div class="player-controls">
                             <button class="control-btn" onclick="playPrevious()">⏮</button>
@@ -1061,98 +782,117 @@
                             <button class="action-btn" onclick="shareTrack()">↗️ Share</button>
                         </div>
                     </div>
-                    
-                    <div class="description">
-                        <p>${track.description || 'No description available.'}</p>
-                    </div>
-                    
-                    <div class="section-spacer"></div>
-                    
-                    <div class="playlist-main-section">
-                        <div class="section-header">
-                            <h2 class="section-title" onclick="goToArtist('${encodeURIComponent(track.artist)}')" style="cursor: pointer;">More from ${track.artist}</h2>
-                            <a href="#" class="view-all">View All</a>
-                        </div>
-                        <div class="post-list">
-                            ${artistTracks.length > 0 ? artistTracks.map(t => `
-                                <div class="post-item" onclick="goToTrack(${t.id})">
-                                    <div class="post-image">${getEmojiForGenre(t.genre)}</div>
-                                    <div class="post-content">
-                                        <div class="post-title">${t.title}</div>
-                                        <div class="post-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(t.artist)}')">${t.artist}</div>
-                                        <div class="post-stats">▶️ ${formatNumber(t.plays)} plays</div>
-                                    </div>
-                                </div>
-                            `).join('') : '<div class="loading">No other tracks by this artist</div>'}
-                        </div>
-                    </div>
                 </aside>
                 
+                <!-- RIGHT SIDEBAR -->
                 <div class="right-sidebar">
+                    <!-- More by Artist -->
                     <section class="section-block">
                         <div class="section-header">
-                            <h2 class="section-title">Albums by Artist</h2>
-                            <a href="#" class="view-all">View All</a>
+                            <h2 class="section-title">More by ${track.artist}</h2>
+                            <a href="#" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')" class="view-all">View All ➔</a>
                         </div>
-                        <div class="post-list">
-                            <div class="post-item">
-                                <div class="post-image">💿</div>
-                                <div class="post-content">
-                                    <div class="post-title">Singles</div>
-                                    <div class="post-artist">${track.artist}</div>
-                                </div>
-                            </div>
+                        <div id="moreByArtist" class="latest-albums-list">
+                            <div class="loading">Loading...</div>
                         </div>
                     </section>
                     
+                    <!-- In Albums -->
                     <section class="section-block">
                         <div class="section-header">
-                            <h2 class="section-title">Similar Songs</h2>
-                            <a href="#" class="view-all">View All</a>
+                            <h2 class="section-title">Appears On</h2>
+                            <a href="/albums.html" class="view-all">View All ➔</a>
                         </div>
-                        <div class="post-list">
-                            ${similarTracks.length > 0 ? similarTracks.map(t => `
-                                <div class="post-item" onclick="goToTrack(${t.id})">
-                                    <div class="post-image">${getEmojiForGenre(t.genre)}</div>
-                                    <div class="post-content">
-                                        <div class="post-title">${t.title}</div>
-                                        <div class="post-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(t.artist)}')">${t.artist}</div>
-                                    </div>
-                                </div>
-                            `).join('') : '<div class="loading">No similar tracks found</div>'}
+                        <div id="appearsOn" class="latest-albums-list">
+                            <div class="loading">Loading...</div>
                         </div>
                     </section>
                     
+                    <!-- In Playlists -->
                     <section class="section-block">
                         <div class="section-header">
-                            <h2 class="section-title">Quick Info</h2>
+                            <h2 class="section-title">In Playlists</h2>
+                            <a href="/playlists.html" class="view-all">View All ➔</a>
                         </div>
-                        <div class="quick-info">
-                            <div class="info-row">
-                                <span class="info-label">Genre</span>
-                                <span class="info-value">
-                                    <span class="genre-tag">#${track.genre || 'unknown'}</span>
-                                </span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Release Date</span>
-                                <span class="info-value">${new Date(track.uploaded_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Duration</span>
-                                <span class="info-value">${formatDuration(track.duration)}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Track ID</span>
-                                <span class="info-value">#${track.id}</span>
-                            </div>
+                        <div id="inPlaylists" class="latest-albums-list">
+                            <div class="loading">Loading...</div>
                         </div>
                     </section>
                 </div>
             `;
+
+            // Load more by artist
+            loadMoreByArtist(track.artist, track.id);
+            
+            // Load albums containing this track
+            loadAlbumsWithTrack(track.id);
+            
+            // Load playlists containing this track
+            loadPlaylistsWithTrack(track.id);
         }
 
-        // ===== AUDIO FUNCTIONS =====
+        // Load more tracks by same artist
+        async function loadMoreByArtist(artist, currentTrackId) {
+            try {
+                const response = await fetch(`${API_BASE}/tracks`);
+                const tracks = await response.json();
+                
+                const moreTracks = tracks
+                    .filter(t => t.artist === artist && t.id != currentTrackId)
+                    .slice(0, 3);
+                
+                const container = document.getElementById('moreByArtist');
+                if (container) {
+                    if (moreTracks.length > 0) {
+                        container.innerHTML = moreTracks.map(track => `
+                            <div class="sidebar-item" onclick="goToSongBySlug('${track.slug}')">
+                                <div class="sidebar-thumb">${getEmojiForGenre(track.genre)}</div>
+                                <div class="sidebar-info">
+                                    <div class="sidebar-title">${track.title}</div>
+                                    <div class="sidebar-sub">
+                                        <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No other tracks by this artist</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading more by artist:', error);
+            }
+        }
+
+        // Load albums containing this track
+        async function loadAlbumsWithTrack(trackId) {
+            try {
+                // This would need an API endpoint to get albums by track
+                // For now, show placeholder
+                const container = document.getElementById('appearsOn');
+                if (container) {
+                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Coming soon</div>';
+                }
+            } catch (error) {
+                console.error('Error loading albums:', error);
+            }
+        }
+
+        // Load playlists containing this track
+        async function loadPlaylistsWithTrack(trackId) {
+            try {
+                // This would need an API endpoint to get playlists by track
+                // For now, show placeholder
+                const container = document.getElementById('inPlaylists');
+                if (container) {
+                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Coming soon</div>';
+                }
+            } catch (error) {
+                console.error('Error loading playlists:', error);
+            }
+        }
+
+        // Audio playback functions
         function playCurrentTrack() {
             if (!currentTrack) return;
             playTrack(currentTrack.id, currentTrack.r2_key, currentTrack.title, currentTrack.artist);
@@ -1160,11 +900,13 @@
 
         async function playTrack(id, r2Key, title, artist) {
             try {
+                // Increment play count
                 fetch(`${API_BASE}/tracks/${id}/play`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('Play count error:', err));
 
+                // Create audio URL
                 const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
                 
                 if (audioPlayer) {
@@ -1172,38 +914,19 @@
                     audioPlayer = null;
                 }
                 
-                audioPlayer = new Audio();
+                audioPlayer = new Audio(audioUrl);
                 
                 audioPlayer.onerror = (e) => {
                     console.error('Audio error:', e);
-                    let errorMsg = 'Error playing audio. ';
-                    if (audioPlayer.error) {
-                        switch(audioPlayer.error.code) {
-                            case 1: errorMsg += 'The audio loading was aborted.'; break;
-                            case 2: errorMsg += 'A network error occurred.'; break;
-                            case 3: errorMsg += 'Audio decoding failed.'; break;
-                            case 4: errorMsg += 'Audio format not supported.'; break;
-                            default: errorMsg += audioPlayer.error.message;
-                        }
-                    }
-                    alert(errorMsg);
-                    document.getElementById('nowPlayingBar').style.display = 'none';
+                    alert('Error playing audio');
                 };
 
-                audioPlayer.oncanplay = () => {
-                    audioPlayer.play().catch(e => {
-                        console.error('Play failed:', e);
-                    });
-                };
-
-                audioPlayer.src = audioUrl;
-                audioPlayer.load();
-                
+                await audioPlayer.play();
                 isPlaying = true;
                 
                 document.getElementById('nowPlayingTitle').textContent = title;
                 document.getElementById('nowPlayingArtist').textContent = artist;
-                document.getElementById('nowPlayingArtist').onclick = () => goToArtist(encodeURIComponent(artist));
+                document.getElementById('nowPlayingArtist').onclick = () => goToArtist(artist);
                 document.getElementById('playPauseBtn').textContent = '⏸️';
                 document.getElementById('nowPlayingBar').style.display = 'flex';
                 
@@ -1224,9 +947,7 @@
                 audioPlayer.pause();
                 document.getElementById('playPauseBtn').textContent = '▶️';
             } else {
-                audioPlayer.play().catch(e => {
-                    console.error('Resume failed:', e);
-                });
+                audioPlayer.play();
                 document.getElementById('playPauseBtn').textContent = '⏸️';
             }
             isPlaying = !isPlaying;
@@ -1249,57 +970,45 @@
                 }).catch(err => console.error('Download count error:', err));
                 
                 const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
-                
-                const response = await fetch(audioUrl);
-                if (!response.ok) {
-                    throw new Error(`File not found (${response.status})`);
-                }
-                
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = currentTrack?.filename || `track-${id}.mp3`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
+                window.open(audioUrl, '_blank');
                 
             } catch (error) {
                 console.error('Download error:', error);
-                alert('Download failed: ' + error.message);
+                alert('Download failed');
             }
         }
 
         function playPrevious() {
-            alert('Previous track - would navigate to previous song in playlist');
+            alert('Previous track');
         }
 
         function playNext() {
-            alert('Next track - would navigate to next song in playlist');
+            alert('Next track');
         }
 
         function likeTrack(id) {
-            alert('Like feature coming soon! ❤️');
+            alert('Like feature coming soon!');
         }
 
         function addToPlaylist(id) {
-            alert('Playlists coming soon! 📋');
+            alert('Playlists coming soon!');
         }
 
         function shareTrack() {
             const url = window.location.href;
             navigator.clipboard.writeText(url);
-            alert('Link copied to clipboard! 🔗');
+            alert('Link copied!');
         }
 
-        // Hamburger menu
-        document.querySelector('.hamburger').addEventListener('click', function() {
-            window.location.href = '/';
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = '/?search=' + encodeURIComponent(e.target.value);
+            }
         });
 
-        // Load track details
-        loadTrackDetails();
+        // Load song
+        loadSong();
     </script>
 </body>
 </html>
