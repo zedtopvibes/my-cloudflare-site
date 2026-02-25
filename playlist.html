@@ -434,19 +434,6 @@
             color: #ff5500;
         }
 
-        /* DEBUG INFO */
-        .debug-info {
-            background: #f0f0f0;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 8px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            font-size: 12px;
-            max-height: 300px;
-            overflow: auto;
-        }
-
         /* LOADING SKELETONS */
         .skeleton {
             animation: skeleton-loading 1s linear infinite alternate;
@@ -590,9 +577,6 @@
             }
 
             try {
-                // Show loading state
-                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading playlist...</div>';
-                
                 // Increment view count
                 fetch(`${API_BASE}/playlists/${playlistId}/view`, { 
                     method: 'POST',
@@ -600,28 +584,16 @@
                 }).catch(err => console.error('View count error:', err));
 
                 // Fetch playlist details
-                console.log('Fetching playlist:', playlistId);
                 const response = await fetch(`${API_BASE}/playlists/${playlistId}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                const data = await response.json();
-                console.log('Raw API response:', data);
+                const playlist = await response.json();
                 
-                // Check if we have data
-                if (!data || Object.keys(data).length === 0) {
-                    throw new Error('Empty playlist data');
-                }
-                
-                // Extract data with fallbacks
-                const playlist = data;
-                const tracks = data.tracks || [];
-                
-                // Log what fields we have
-                console.log('Playlist fields:', Object.keys(playlist));
-                console.log('Tracks count:', tracks.length);
+                // Get tracks array
+                const tracks = playlist.tracks || [];
                 
                 // Calculate totals
                 const totalDuration = calculateTotalDuration(tracks);
@@ -634,11 +606,7 @@
                 // Format date
                 let createdDate = 'Unknown';
                 if (playlist.created_at) {
-                    try {
-                        createdDate = new Date(playlist.created_at).toLocaleDateString();
-                    } catch (e) {
-                        console.error('Date error:', e);
-                    }
+                    createdDate = new Date(playlist.created_at).toLocaleDateString();
                 }
 
                 const content = document.getElementById('content');
@@ -690,20 +658,6 @@
                                     </div>
                                 </div>
                             `).join('') : '<div style="padding: 20px; text-align: center; color: #888;">No tracks in this playlist</div>'}
-                        </div>
-                        
-                        <!-- Debug Info (remove after fixing) -->
-                        <div class="debug-info">
-                            <strong>Debug Info:</strong>
-                            <br>Playlist ID: ${playlist.id}
-                            <br>Name: ${playlist.name}
-                            <br>Description: ${playlist.description}
-                            <br>Views: ${playlist.views}
-                            <br>Plays: ${playlist.plays}
-                            <br>Downloads: ${playlist.downloads}
-                            <br>Cover: ${playlist.cover_emoji}
-                            <br>Created: ${playlist.created_at}
-                            <br>Raw Data: ${JSON.stringify(playlist, null, 2)}
                         </div>
                     </aside>
                     
@@ -786,10 +740,6 @@
                         <p style="color: #ff5500; margin-bottom: 20px;">Error loading playlist</p>
                         <p style="color: #666; font-size: 14px;">${error.message}</p>
                         <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
-                        <div class="debug-info">
-                            <strong>Error Details:</strong>
-                            <br>${error.stack}
-                        </div>
                     </div>
                 `;
             }
