@@ -7,6 +7,7 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Keep your existing CSS */
         * {
             margin: 0;
             padding: 0;
@@ -752,27 +753,30 @@
         }
 
         // ===== NAVIGATION FUNCTIONS =====
-        function goToSongDetail(trackId) {
+        function goToSongDetail(id, slug) {
             // Increment view count
-            fetch(`${API_BASE}/tracks/${trackId}/view`, { 
+            fetch(`${API_BASE}/tracks/${id}/view`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             }).catch(err => console.error('View count error:', err));
             
-            window.location.href = `/song.html?id=${trackId}`;
+            // Use slug if available, otherwise fall back to ID
+            if (slug) {
+                window.location.href = `/song/${slug}`;
+            } else {
+                window.location.href = `/song.html?id=${id}`;
+            }
         }
 
-        // UPDATED: Go to artist page with clean URL
         function goToArtist(artistName) {
             // Generate slug: "Ice Spice" → "ice-spice"
             const slug = artistName
                 .toLowerCase()
-                .replace(/\s+/g, '-')           // spaces to hyphens
-                .replace(/[^\w-]/g, '')          // remove special chars
-                .replace(/--+/g, '-')            // remove multiple hyphens
-                .replace(/^-+|-+$/g, '');        // trim hyphens
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]/g, '')
+                .replace(/--+/g, '-')
+                .replace(/^-+|-+$/g, '');
             
-            // Navigate to clean URL
             window.location.href = `/artist/${slug}`;
         }
 
@@ -794,9 +798,9 @@
                     trackEl.className = 'post-item';
                     
                     trackEl.innerHTML = `
-                        <div class="post-image" onclick="goToSongDetail(${track.id})">${getEmojiForGenre(track.genre)}</div>
+                        <div class="post-image" onclick="goToSongDetail(${track.id}, '${track.slug}')">${getEmojiForGenre(track.genre)}</div>
                         <div class="post-content">
-                            <div class="post-title" onclick="goToSongDetail(${track.id})">${track.title}</div>
+                            <div class="post-title" onclick="goToSongDetail(${track.id}, '${track.slug}')">${track.title}</div>
                             <div class="post-artist" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</div>
                             <div class="post-date">
                                 <span>${formatDate(track.uploaded_at)}</span>
@@ -827,9 +831,9 @@
                     trackEl.className = 'trending-item';
                     
                     trackEl.innerHTML = `
-                        <span class="trending-number" onclick="goToSongDetail(${track.id})">${String(index + 1).padStart(2, '0')}</span>
+                        <span class="trending-number" onclick="goToSongDetail(${track.id}, '${track.slug}')">${String(index + 1).padStart(2, '0')}</span>
                         <div class="trending-info">
-                            <h4 onclick="goToSongDetail(${track.id})">${track.title}</h4>
+                            <h4 onclick="goToSongDetail(${track.id}, '${track.slug}')">${track.title}</h4>
                             <p onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist} • ${formatNumber(track.plays)} plays</p>
                         </div>
                     `;
