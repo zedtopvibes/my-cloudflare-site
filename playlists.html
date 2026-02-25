@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zedtopvibes • Playlists</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -268,7 +270,7 @@
         .playlist-meta {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
             margin-bottom: 8px;
         }
@@ -283,11 +285,18 @@
         }
 
         .playlist-stats {
-            color: #666;
-            background: #f5f5f5;
-            padding: 4px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,85,0,0.08);
+            padding: 4px 8px;
             border-radius: 20px;
             font-size: 0.8rem;
+            color: #666;
+        }
+
+        .playlist-stats i {
+            color: #ff5500;
         }
 
         .playlist-description {
@@ -342,47 +351,8 @@
         .sidebar-sub {
             font-size: 12px;
             color: #888;
-        }
-
-        /* PAGINATION */
-        .pagination-container {
-            padding: 20px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .pagination {
             display: flex;
-            justify-content: center;
-            align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .pagination-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 40px;
-            height: 40px;
-            padding: 0 12px;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            color: #666;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .pagination-item:hover {
-            background: #f5f5f5;
-            border-color: #ff5500;
-            color: #ff5500;
-        }
-
-        .pagination-item.active {
-            background: #ff5500;
-            border-color: #ff5500;
-            color: white;
         }
 
         /* LOADING SKELETONS */
@@ -393,48 +363,6 @@
         @keyframes skeleton-loading {
             0% { background-color: #f0f0f0; }
             100% { background-color: #e0e0e0; }
-        }
-
-        .skeleton-playlist {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 16px 18px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .skeleton-thumb {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            background: #e0e0e0;
-        }
-
-        .skeleton-info {
-            flex: 1;
-        }
-
-        .skeleton-title {
-            width: 60%;
-            height: 24px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 12px;
-        }
-
-        .skeleton-meta {
-            width: 40%;
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .skeleton-desc {
-            width: 80%;
-            height: 16px;
-            background: #e0e0e0;
-            border-radius: 4px;
         }
 
         /* Footer */
@@ -476,6 +404,10 @@
             .playlist-title {
                 font-size: 1rem;
             }
+            
+            .playlist-meta {
+                gap: 5px;
+            }
         }
     </style>
 </head>
@@ -499,7 +431,7 @@
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons will be shown here -->
+        <!-- Loading skeletons -->
         <aside class="left-sidebar">
             <div class="breadcrumbs">
                 <span class="skeleton" style="display: inline-block; width: 200px; height: 20px;"></span>
@@ -510,31 +442,8 @@
                 <a href="#" class="view-all">View All ➔</a>
             </div>
             
-            <div class="playlist-list">
-                <div class="skeleton-playlist">
-                    <div class="skeleton-thumb"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta"></div>
-                        <div class="skeleton-desc"></div>
-                    </div>
-                </div>
-                <div class="skeleton-playlist">
-                    <div class="skeleton-thumb"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta"></div>
-                        <div class="skeleton-desc"></div>
-                    </div>
-                </div>
-                <div class="skeleton-playlist">
-                    <div class="skeleton-thumb"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta"></div>
-                        <div class="skeleton-desc"></div>
-                    </div>
-                </div>
+            <div class="playlist-list" id="playlistsList">
+                <!-- Skeletons will be replaced by JS -->
             </div>
         </aside>
         
@@ -544,14 +453,16 @@
                     <h2 class="section-title">Featured Playlists</h2>
                     <a href="#" class="view-all">View All ➔</a>
                 </div>
-                <div>
-                    <div class="sidebar-item">
-                        <div class="skeleton" style="width: 60px; height: 60px; border-radius: 8px;"></div>
-                        <div class="sidebar-info">
-                            <div class="skeleton" style="width: 120px; height: 16px; margin-bottom: 5px;"></div>
-                            <div class="skeleton" style="width: 80px; height: 12px;"></div>
-                        </div>
-                    </div>
+                <div id="featuredPlaylists"></div>
+            </section>
+            
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Create Playlist</h2>
+                </div>
+                <div style="padding: 15px; text-align: center;">
+                    <p style="color: #666; margin-bottom: 10px;">Curate your own music collection</p>
+                    <button onclick="alert('Create playlist coming soon!')" style="background: #ff5500; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">Create New Playlist</button>
                 </div>
             </section>
         </div>
@@ -568,126 +479,74 @@
         // API Base URL
         const API_BASE = '/api';
 
-        // Temporary placeholder data until we create the API
-        const placeholderPlaylists = [
-            {
-                id: 1,
-                name: "Zambian Hits 2024",
-                description: "The biggest Zambian tracks of the year",
-                cover_emoji: "🇿🇲",
-                track_count: 24,
-                is_featured: true
-            },
-            {
-                id: 2,
-                name: "Chill Lo-Fi Beats",
-                description: "Relax and unwind with these smooth beats",
-                cover_emoji: "🌙",
-                track_count: 18,
-                is_featured: true
-            },
-            {
-                id: 3,
-                name: "Workout Mix",
-                description: "High energy tracks for your workout",
-                cover_emoji: "💪",
-                track_count: 32,
-                is_featured: false
-            },
-            {
-                id: 4,
-                name: "Sunday Vibes",
-                description: "Perfect for a lazy Sunday afternoon",
-                cover_emoji: "☀️",
-                track_count: 21,
-                is_featured: true
-            },
-            {
-                id: 5,
-                name: "Zam Hip-Hop",
-                description: "The best of Zambian hip-hop",
-                cover_emoji: "🎤",
-                track_count: 15,
-                is_featured: false
-            }
-        ];
+        function goHome() {
+            window.location.href = '/';
+        }
 
         function goToPlaylist(id) {
-            alert(`Navigate to playlist ${id} - Coming in Step 2!`);
+            window.location.href = `/playlist.html?id=${id}`;
         }
 
-        function renderPlaylists() {
-            const content = document.getElementById('content');
-            
-            content.innerHTML = `
-                <aside class="left-sidebar">
-                    <div class="breadcrumbs">
-                        <a href="/">Home</a> / <span>Playlists</span>
-                    </div>
-                    
-                    <div class="section-header">
-                        <h2 class="section-title">All Playlists</h2>
-                        <a href="#" class="view-all">View All ➔</a>
-                    </div>
-                    
-                    <div class="playlist-list">
-                        ${placeholderPlaylists.map(playlist => `
-                            <div class="playlist-item" onclick="goToPlaylist(${playlist.id})">
-                                <div class="playlist-thumb">${playlist.cover_emoji}</div>
-                                <div class="playlist-info">
-                                    <div class="playlist-title">${playlist.name}</div>
-                                    <div class="playlist-meta">
-                                        <span class="playlist-badge">${playlist.track_count} tracks</span>
-                                        ${playlist.is_featured ? '<span class="playlist-badge">Featured</span>' : ''}
-                                    </div>
-                                    <div class="playlist-description">${playlist.description}</div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </aside>
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num;
+        }
+
+        async function loadPlaylists() {
+            try {
+                const response = await fetch(`${API_BASE}/playlists`);
+                const playlists = await response.json();
                 
-                <div class="right-sidebar">
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Featured Playlists</h2>
-                            <a href="#" class="view-all">View All ➔</a>
+                const playlistsList = document.getElementById('playlistsList');
+                playlistsList.innerHTML = playlists.map(playlist => `
+                    <div class="playlist-item" onclick="goToPlaylist(${playlist.id})">
+                        <div class="playlist-thumb">${playlist.cover_emoji || '📋'}</div>
+                        <div class="playlist-info">
+                            <div class="playlist-title">${playlist.name}</div>
+                            <div class="playlist-meta">
+                                <span class="playlist-badge">${playlist.track_count || 0} tracks</span>
+                                <span class="playlist-stats"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays)}</span>
+                                <span class="playlist-stats"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads)}</span>
+                                <span class="playlist-stats"><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
+                                ${playlist.is_featured ? '<span class="playlist-badge">Featured</span>' : ''}
+                            </div>
+                            <div class="playlist-description">${playlist.description || 'No description'}</div>
                         </div>
-                        <div>
-                            ${placeholderPlaylists.filter(p => p.is_featured).slice(0, 3).map(playlist => `
-                                <div class="sidebar-item" onclick="goToPlaylist(${playlist.id})">
-                                    <div class="sidebar-thumb">${playlist.cover_emoji}</div>
-                                    <div class="sidebar-info">
-                                        <div class="sidebar-title">${playlist.name}</div>
-                                        <div class="sidebar-sub">${playlist.track_count} tracks</div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </section>
-                    
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Create Playlist</h2>
-                        </div>
-                        <div style="padding: 15px; text-align: center;">
-                            <p style="color: #666; margin-bottom: 10px;">Curate your own music collection</p>
-                            <button onclick="alert('Create playlist coming soon!')" style="background: #ff5500; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">Create New Playlist</button>
-                        </div>
-                    </section>
-                </div>
-            `;
-        }
+                    </div>
+                `).join('');
 
-        // Load playlists (using placeholder data for now)
-        renderPlaylists();
+                // Load featured playlists
+                const featured = playlists.filter(p => p.is_featured).slice(0, 3);
+                document.getElementById('featuredPlaylists').innerHTML = featured.map(playlist => `
+                    <div class="sidebar-item" onclick="goToPlaylist(${playlist.id})">
+                        <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
+                        <div class="sidebar-info">
+                            <div class="sidebar-title">${playlist.name}</div>
+                            <div class="sidebar-sub">
+                                <span>${playlist.track_count || 0} tracks</span>
+                                <span><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading playlists:', error);
+            }
+        }
 
         // Search functionality
         document.getElementById('searchInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                alert('Search playlists: ' + e.target.value);
+                window.location.href = '/?search=' + encodeURIComponent(e.target.value);
             }
         });
+
+        // Load playlists
+        loadPlaylists();
     </script>
 </body>
 </html>
