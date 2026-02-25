@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zedtopvibes • music finds</title>
     <style>
-        /* ALL YOUR EXISTING CSS STYLES HERE - unchanged */
+        /* ALL YOUR EXISTING CSS STYLES - unchanged */
         * {
             margin: 0;
             padding: 0;
@@ -455,7 +455,8 @@
                 tracks.forEach(track => {
                     const trackEl = document.createElement('div');
                     trackEl.className = 'post-item';
-                    trackEl.onclick = () => playTrack(track);
+                    // UPDATED: Now goes to song detail page
+                    trackEl.onclick = () => goToSongDetail(track.id);
                     
                     // Get first letter for avatar
                     const initial = track.title.charAt(0);
@@ -465,7 +466,7 @@
                         <div class="post-content">
                             <div class="post-title">${track.title}</div>
                             <div class="post-artist">${track.artist}</div>
-                            <div class="post-date">${formatDate(track.uploaded_at)} • ${track.views} views</div>
+                            <div class="post-date">${formatDate(track.uploaded_at)} • ${formatNumber(track.views)} views</div>
                         </div>
                     `;
                     tracksList.appendChild(trackEl);
@@ -488,13 +489,14 @@
                 trending.forEach((track, index) => {
                     const trackEl = document.createElement('div');
                     trackEl.className = 'trending-item';
-                    trackEl.onclick = () => playTrack(track);
+                    // UPDATED: Now goes to song detail page
+                    trackEl.onclick = () => goToSongDetail(track.id);
                     
                     trackEl.innerHTML = `
                         <span class="trending-number">${String(index + 1).padStart(2, '0')}</span>
                         <div class="trending-info">
                             <h4>${track.title}</h4>
-                            <p>${track.artist} • ${formatPlays(track.plays)}</p>
+                            <p>${track.artist} • ${formatNumber(track.plays)} plays</p>
                         </div>
                     `;
                     trendingList.appendChild(trackEl);
@@ -599,11 +601,11 @@
             }
         }
 
-        function formatPlays(plays) {
-            if (plays >= 1000) {
-                return `${(plays / 1000).toFixed(1)}k plays`;
+        function formatNumber(num) {
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
             }
-            return `${plays} plays`;
+            return num;
         }
 
         function getRandomColor() {
@@ -616,29 +618,27 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // Actions
-        function playTrack(track) {
+        // NEW FUNCTION: Navigate to song detail page
+        function goToSongDetail(trackId) {
             // Increment view count
-            fetch(`${API_BASE}/tracks/${track.id}/view`, { method: 'POST' });
-            
-            alert(`Now playing: ${track.title} by ${track.artist}\n\n${track.description || ''}`);
-            // In Stage 5 we'll add real audio player
+            fetch(`${API_BASE}/tracks/${trackId}/view`, { method: 'POST' });
+            // Navigate to song detail page
+            window.location.href = `/song.html?id=${trackId}`;
         }
 
+        // Actions (keep these for now)
         function filterByGenre(genre) {
             alert(`Filtering by genre: ${genre}`);
-            // We'll implement this in Stage 5
         }
 
         function filterByArtist(artist) {
             alert(`Filtering by artist: ${artist}`);
-            // We'll implement this in Stage 5
         }
 
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            // We'll implement search in Stage 5
+            // We'll implement search later
         });
 
         // Load all data
