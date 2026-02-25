@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zedtopvibes • music finds</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -219,24 +221,39 @@
             color: #222;
             margin-bottom: 4px;
             line-height: 1.3;
+            cursor: pointer;
         }
 
         .post-artist {
             font-size: 14px;
-            color: #666;
+            color: #ff5500;
             margin-bottom: 4px;
             cursor: pointer;
             display: inline-block;
         }
 
         .post-artist:hover {
-            color: #ff5500;
             text-decoration: underline;
         }
 
         .post-date {
             font-size: 12px;
             color: #999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 10px;
+            color: #888;
+            font-size: 11px;
+        }
+
+        .post-stats i {
+            color: #ff5500;
+            margin-right: 2px;
         }
 
         /* RIGHT SIDEBAR CONTENT */
@@ -281,11 +298,18 @@
         .trending-info h4 {
             font-size: 15px;
             margin-bottom: 3px;
+            cursor: pointer;
         }
 
         .trending-info p {
             font-size: 12px;
-            color: #999;
+            color: #ff5500;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .trending-info p:hover {
+            text-decoration: underline;
         }
 
         .artist-item {
@@ -504,7 +528,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="hamburger">☰</div>
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
             <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
             <div class="right-spacer"></div>
         </div>
@@ -528,6 +552,7 @@
             </div>
             
             <div class="post-list" id="tracksList">
+                <!-- Loading skeletons -->
                 <div class="skeleton-track">
                     <div class="skeleton-image"></div>
                     <div class="skeleton-content">
@@ -671,8 +696,6 @@
             <a href="#">Contact</a>
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
-<!-- In navbar or menu -->
-<a href="/albums.html" class="nav-link">Albums</a>
         </div>
         <div class="copyright">
             © 2024 Zedtopvibes. All rights reserved.
@@ -683,8 +706,54 @@
         // API Base URL
         const API_BASE = '/api';
 
+        // ===== HELPER FUNCTIONS =====
+        function formatNumber(num) {
+            if (!num && num !== 0) return '0';
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 24 * 60 * 60 * 1000) {
+                return 'Today';
+            } else if (diff < 48 * 60 * 60 * 1000) {
+                return 'Yesterday';
+            } else {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+        }
+
+        function getEmojiForGenre(genre) {
+            const emojis = {
+                'electronic': '🎵',
+                'synthwave': '🎸',
+                'hiphop': '🎤',
+                'lofi': '🌅',
+                'ambient': '✨',
+                'default': '🎵'
+            };
+            return emojis[genre] || emojis.default;
+        }
+
+        function getRandomColor() {
+            const colors = [
+                'linear-gradient(135deg, #ff6b6b, #ff8e8e)',
+                'linear-gradient(135deg, #4ecdc4, #45b7d1)',
+                'linear-gradient(135deg, #96ceb4, #ffeead)',
+                'linear-gradient(135deg, #ffcc5c, #ff6f69)'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
         // ===== NAVIGATION FUNCTIONS =====
         function goToSongDetail(trackId) {
+            // Increment view count
             fetch(`${API_BASE}/tracks/${trackId}/view`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
@@ -693,9 +762,18 @@
             window.location.href = `/song.html?id=${trackId}`;
         }
 
-        // NEW: Go to artist page
+        // UPDATED: Go to artist page with clean URL
         function goToArtist(artistName) {
-            window.location.href = `/artist.html?name=${encodeURIComponent(artistName)}`;
+            // Generate slug: "Ice Spice" → "ice-spice"
+            const slug = artistName
+                .toLowerCase()
+                .replace(/\s+/g, '-')           // spaces to hyphens
+                .replace(/[^\w-]/g, '')          // remove special chars
+                .replace(/--+/g, '-')            // remove multiple hyphens
+                .replace(/^-+|-+$/g, '');        // trim hyphens
+            
+            // Navigate to clean URL
+            window.location.href = `/artist/${slug}`;
         }
 
         function filterByGenre(genre) {
@@ -719,8 +797,14 @@
                         <div class="post-image" onclick="goToSongDetail(${track.id})">${getEmojiForGenre(track.genre)}</div>
                         <div class="post-content">
                             <div class="post-title" onclick="goToSongDetail(${track.id})">${track.title}</div>
-                            <div class="post-artist" onclick="goToArtist('${encodeURIComponent(track.artist)}')">${track.artist}</div>
-                            <div class="post-date">${formatDate(track.uploaded_at)} • ${formatNumber(track.views)} views</div>
+                            <div class="post-artist" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</div>
+                            <div class="post-date">
+                                <span>${formatDate(track.uploaded_at)}</span>
+                                <span class="post-stats">
+                                    <i class="fas fa-headphones"></i> ${formatNumber(track.plays)}
+                                    <i class="fas fa-eye"></i> ${formatNumber(track.views)}
+                                </span>
+                            </div>
                         </div>
                     `;
                     tracksList.appendChild(trackEl);
@@ -746,7 +830,7 @@
                         <span class="trending-number" onclick="goToSongDetail(${track.id})">${String(index + 1).padStart(2, '0')}</span>
                         <div class="trending-info">
                             <h4 onclick="goToSongDetail(${track.id})">${track.title}</h4>
-                            <p onclick="goToArtist('${encodeURIComponent(track.artist)}')" style="cursor: pointer;">${track.artist} • ${formatNumber(track.plays)} plays</p>
+                            <p onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist} • ${formatNumber(track.plays)} plays</p>
                         </div>
                     `;
                     trendingList.appendChild(trackEl);
@@ -825,53 +909,11 @@
             }
         }
 
-        // ===== HELPER FUNCTIONS =====
-        function getEmojiForGenre(genre) {
-            const emojis = {
-                'electronic': '🎵',
-                'synthwave': '🎸',
-                'hiphop': '🎤',
-                'lofi': '🌅',
-                'ambient': '✨',
-                'default': '🎵'
-            };
-            return emojis[genre] || emojis.default;
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diff = now - date;
-            
-            if (diff < 24 * 60 * 60 * 1000) {
-                return 'Today';
-            } else if (diff < 48 * 60 * 60 * 1000) {
-                return 'Yesterday';
-            } else {
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            }
-        }
-
-        function formatNumber(num) {
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'k';
-            }
-            return num;
-        }
-
-        function getRandomColor() {
-            const colors = [
-                'linear-gradient(135deg, #ff6b6b, #ff8e8e)',
-                'linear-gradient(135deg, #4ecdc4, #45b7d1)',
-                'linear-gradient(135deg, #96ceb4, #ffeead)',
-                'linear-gradient(135deg, #ffcc5c, #ff6f69)'
-            ];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
         // Search functionality
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = '/?search=' + encodeURIComponent(e.target.value);
+            }
         });
 
         // Load all data
