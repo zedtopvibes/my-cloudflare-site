@@ -4,23 +4,22 @@ export async function onRequest(context) {
   try {
     const slug = params.slug;
     
-    // Convert slug to artist name (e.g., "ice-spice" → "Ice Spice")
-    const artistName = slug.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    // Fetch the artist.html template
+    const htmlResponse = await env.ASSETS.fetch(new URL('/artist.html', request.url));
+    let html = await htmlResponse.text();
     
-    // Encode exactly once for the working format
-    const encodedName = encodeURIComponent(artistName);
+    // Inject the slug for the frontend to use directly
+    // This replaces the loading div with one that has the slug
+    html = html.replace(
+      '<div class="main-content-container" id="content">',
+      `<div class="main-content-container" id="content" data-artist-slug="${slug}">`
+    );
     
-    // Redirect to the working URL
-    const redirectUrl = `/artist?name=${encodedName}`;
-    
-    return new Response(null, {
-      status: 302,
-      headers: { 'Location': redirectUrl }
+    return new Response(html, {
+      headers: { 'Content-Type': 'text/html' }
     });
     
   } catch (error) {
-    return new Response('Error', { status: 500 });
+    return new Response('Error loading artist', { status: 500 });
   }
 }
