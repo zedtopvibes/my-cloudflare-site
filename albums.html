@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zedtopvibes • Albums</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,7 +15,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f5f5f5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -61,6 +63,45 @@
             width: 40px;
         }
 
+        /* Search Bar */
+        .search-section {
+            max-width: 1400px;
+            margin: 15px auto 5px;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 8px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-icon {
+            color: #ff5500;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .search-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            padding: 8px 0;
+            background: transparent;
+        }
+
+        .search-container input::placeholder {
+            color: #aaa;
+        }
+
         /* MAIN LAYOUT CONTAINER */
         .main-content-container {
             max-width: 1400px;
@@ -78,7 +119,6 @@
             border-radius: 12px;
             border: 1px solid #e8e8e8;
             overflow: hidden;
-            min-width: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
@@ -107,6 +147,22 @@
             padding: 14px 18px;
             background: #fff;
             border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                #ff5500 20%, 
+                #ff5500 80%, 
+                transparent 95%
+            );
         }
 
         .section-title {
@@ -119,7 +175,7 @@
         }
 
         .section-title::before {
-            content: "🎵";
+            content: "💿";
             font-size: 1.1rem;
             color: #ff5500;
         }
@@ -142,43 +198,30 @@
         }
 
         /* BREADCRUMBS */
-        .breadcrumbs-left {
-            padding: 15px 18px 5px;
-        }
-
-        .breadcrumb-nav {
-            background: #f9f9f9;
-            border-radius: 8px;
-            padding: 10px 15px;
-            border: 1px solid #e8e8e8;
+        .breadcrumbs {
+            padding: 15px 18px;
+            background: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
             font-size: 0.9rem;
-        }
-
-        .breadcrumb-list {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
             color: #888;
         }
 
-        .breadcrumb-link {
+        .breadcrumbs a {
             color: #ff5500;
-            cursor: pointer;
             text-decoration: none;
         }
 
-        .breadcrumb-link:hover {
+        .breadcrumbs a:hover {
             text-decoration: underline;
         }
 
-        .breadcrumb-current {
+        .breadcrumbs span {
             color: #333;
             font-weight: 500;
         }
 
         /* ALBUM ITEMS */
-        .latest-albums-list {
+        .album-list {
             padding: 5px 0;
         }
 
@@ -200,34 +243,28 @@
             border-bottom: none;
         }
 
-        .album-thumbnail {
+        .album-thumb {
             width: 100px;
             height: 100px;
-            flex-shrink: 0;
             border-radius: 8px;
-            background: linear-gradient(135deg, #ffd6b3, #ffb38c);
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
-            color: #ff5500;
-        }
-
-        .album-thumbnail.artist-thumbnail {
-            background: linear-gradient(135deg, #a8b8ff, #ff7eb3);
             color: white;
+            flex-shrink: 0;
         }
 
         .album-info {
-            flex-grow: 1;
-            min-width: 0;
+            flex: 1;
         }
 
         .album-title {
             font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 8px;
             color: #222;
+            margin-bottom: 8px;
         }
 
         .album-meta {
@@ -245,18 +282,15 @@
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
+            cursor: pointer;
+        }
+
+        .album-artist:hover {
+            background: #ff5500;
+            color: white;
         }
 
         .album-tracks {
-            color: #6b8cff;
-            background: rgba(107,140,255,0.08);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .album-genre {
             color: #666;
             background: #f5f5f5;
             padding: 4px 10px;
@@ -264,87 +298,81 @@
             font-size: 0.8rem;
         }
 
-        .album-date {
+        .album-stats {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,85,0,0.08);
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .album-stats i {
+            color: #ff5500;
+            font-size: 0.8rem;
+        }
+
+        .album-year {
             color: #888;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .album-date::before {
-            content: "📅";
-            font-size: 0.85rem;
-        }
-
-        /* RIGHT SIDEBAR ALBUM ITEMS */
-        .right-sidebar .album-item {
+        /* RIGHT SIDEBAR ITEMS */
+        .sidebar-item {
+            display: flex;
+            align-items: center;
             padding: 12px 15px;
             gap: 15px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .right-sidebar .album-thumbnail {
-            width: 70px;
-            height: 70px;
-            font-size: 30px;
+        .sidebar-item:hover {
+            background: #fff9f5;
         }
 
-        .right-sidebar .album-title {
-            font-size: 1rem;
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .sidebar-info {
+            flex: 1;
+        }
+
+        .sidebar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
             margin-bottom: 4px;
         }
 
-        .right-sidebar .album-meta {
-            gap: 6px;
-            margin-bottom: 0;
-        }
-
-        /* PAGINATION */
-        .pagination-container {
-            padding: 20px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .pagination {
+        .sidebar-sub {
+            font-size: 12px;
+            color: #888;
             display: flex;
-            justify-content: center;
-            align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
         }
 
-        .pagination-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 40px;
-            height: 40px;
-            padding: 0 12px;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            color: #666;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .pagination-item:hover {
-            background: #f5f5f5;
-            border-color: #ff5500;
-            color: #ff5500;
-        }
-
-        .pagination-item.active {
-            background: #ff5500;
-            border-color: #ff5500;
-            color: white;
-        }
-
-        .pagination-prev, .pagination-next {
-            background: #f9f9f9;
-        }
-
-        /* ===== LOADING SKELETONS ===== */
+        /* LOADING SKELETONS */
         .skeleton {
             animation: skeleton-loading 1s linear infinite alternate;
         }
@@ -354,55 +382,16 @@
             100% { background-color: #e0e0e0; }
         }
 
-        .skeleton-album-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 16px 18px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .skeleton-thumbnail {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            background: #e0e0e0;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-info {
-            flex: 1;
-        }
-
-        .skeleton-title {
-            width: 60%;
-            height: 24px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 12px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-meta {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .skeleton-badge {
-            width: 80px;
-            height: 28px;
-            background: #e0e0e0;
-            border-radius: 20px;
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        .skeleton-date {
-            width: 100px;
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            animation: skeleton-loading 1s linear infinite alternate;
+        /* Footer */
+        .footer {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 20px 20px 0;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            width: 100%;
         }
 
         /* RESPONSIVE */
@@ -415,20 +404,15 @@
                 min-width: auto;
             }
             
-            .album-thumbnail {
+            .album-thumb {
                 width: 80px;
                 height: 80px;
                 font-size: 32px;
             }
-            
-            .skeleton-thumbnail {
-                width: 80px;
-                height: 80px;
-            }
         }
 
         @media (max-width: 480px) {
-            .album-thumbnail {
+            .album-thumb {
                 width: 70px;
                 height: 70px;
                 font-size: 28px;
@@ -438,14 +422,8 @@
                 font-size: 1rem;
             }
             
-            .album-item {
-                padding: 12px;
-                gap: 12px;
-            }
-            
-            .skeleton-thumbnail {
-                width: 70px;
-                height: 70px;
+            .album-meta {
+                gap: 5px;
             }
         }
     </style>
@@ -454,392 +432,151 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="hamburger">☰</div>
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
             <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
             <div class="right-spacer"></div>
         </div>
     </nav>
 
-    <!-- MAIN LAYOUT CONTAINER -->
+    <!-- Search Bar -->
+    <div class="search-section">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search albums...">
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons will be shown here -->
+        <!-- Loading skeletons -->
         <aside class="left-sidebar">
-            <!-- Breadcrumbs skeleton -->
-            <div class="breadcrumbs-left">
-                <div class="breadcrumb-nav">
-                    <div class="breadcrumb-list">
-                        <span class="skeleton" style="width: 60px; height: 20px;"></span>
-                        <span>›</span>
-                        <span class="skeleton" style="width: 80px; height: 20px;"></span>
-                    </div>
-                </div>
+            <div class="breadcrumbs">
+                <span class="skeleton" style="display: inline-block; width: 200px; height: 20px;"></span>
             </div>
             
-            <!-- All Albums Header -->
             <div class="section-header">
                 <h2 class="section-title">All Albums</h2>
+                <a href="#" class="view-all">View All ➔</a>
             </div>
             
-            <!-- Albums List Skeletons -->
-            <div class="latest-albums-list" id="albumsList">
-                <div class="skeleton-album-item">
-                    <div class="skeleton-thumbnail"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta">
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                        </div>
-                        <div class="skeleton-date"></div>
-                    </div>
-                </div>
-                <div class="skeleton-album-item">
-                    <div class="skeleton-thumbnail"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta">
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                        </div>
-                        <div class="skeleton-date"></div>
-                    </div>
-                </div>
-                <div class="skeleton-album-item">
-                    <div class="skeleton-thumbnail"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta">
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                        </div>
-                        <div class="skeleton-date"></div>
-                    </div>
-                </div>
-                <div class="skeleton-album-item">
-                    <div class="skeleton-thumbnail"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta">
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                        </div>
-                        <div class="skeleton-date"></div>
-                    </div>
-                </div>
-                <div class="skeleton-album-item">
-                    <div class="skeleton-thumbnail"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta">
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                        </div>
-                        <div class="skeleton-date"></div>
-                    </div>
-                </div>
-                <div class="skeleton-album-item">
-                    <div class="skeleton-thumbnail"></div>
-                    <div class="skeleton-info">
-                        <div class="skeleton-title"></div>
-                        <div class="skeleton-meta">
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                            <div class="skeleton-badge"></div>
-                        </div>
-                        <div class="skeleton-date"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pagination skeleton -->
-            <div class="pagination-container">
-                <div class="pagination">
-                    <span class="skeleton" style="width: 60px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 40px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 40px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 40px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 20px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 40px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 60px; height: 40px;"></span>
-                </div>
+            <div class="album-list" id="albumsList">
+                <!-- Skeletons will be replaced by JS -->
             </div>
         </aside>
         
-        <!-- RIGHT SIDEBAR skeletons -->
         <div class="right-sidebar">
-            <!-- Featured Albums -->
             <section class="section-block">
                 <div class="section-header">
                     <h2 class="section-title">Featured Albums</h2>
                     <a href="#" class="view-all">View All ➔</a>
                 </div>
-                <div class="latest-albums-list" id="featuredAlbums">
-                    <div class="skeleton-album-item">
-                        <div class="skeleton-thumbnail" style="width: 70px; height: 70px;"></div>
-                        <div class="skeleton-info">
-                            <div class="skeleton-title" style="width: 80%;"></div>
-                            <div class="skeleton-meta">
-                                <div class="skeleton-badge" style="width: 60px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="featuredAlbums"></div>
             </section>
             
-            <!-- Top Artists -->
             <section class="section-block">
                 <div class="section-header">
                     <h2 class="section-title">Top Artists</h2>
                     <a href="#" class="view-all">View All ➔</a>
                 </div>
-                <div class="latest-albums-list" id="topArtists">
-                    <div class="skeleton-album-item">
-                        <div class="skeleton-thumbnail" style="width: 70px; height: 70px;"></div>
-                        <div class="skeleton-info">
-                            <div class="skeleton-title" style="width: 70%;"></div>
-                            <div class="skeleton-meta">
-                                <div class="skeleton-badge" style="width: 50px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Genres -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Genres</h2>
-                    <a href="#" class="view-all">Browse All</a>
-                </div>
-                <div class="latest-albums-list" id="genres">
-                    <div class="skeleton-album-item">
-                        <div class="skeleton-thumbnail" style="width: 70px; height: 70px;"></div>
-                        <div class="skeleton-info">
-                            <div class="skeleton-title" style="width: 60%;"></div>
-                            <div class="skeleton-meta">
-                                <div class="skeleton-badge" style="width: 40px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- New Releases -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">New Releases</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div class="latest-albums-list" id="newReleases">
-                    <div class="skeleton-album-item">
-                        <div class="skeleton-thumbnail" style="width: 70px; height: 70px;"></div>
-                        <div class="skeleton-info">
-                            <div class="skeleton-title" style="width: 75%;"></div>
-                            <div class="skeleton-meta">
-                                <div class="skeleton-badge" style="width: 50px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="topArtists"></div>
             </section>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="copyright">
+            © 2024 Zedtopvibes. All rights reserved.
+        </div>
+    </footer>
 
     <script>
         // API Base URL
         const API_BASE = '/api';
 
-        // ===== NAVIGATION FUNCTIONS =====
-        function goToHome() {
+        function goHome() {
             window.location.href = '/';
         }
 
-        function goToAlbum(albumId) {
-            window.location.href = `/album.html?id=${albumId}`;
+        function goToAlbum(id) {
+            window.location.href = `/album.html?id=${id}`;
         }
 
         function goToArtist(artistName) {
             window.location.href = `/artist.html?name=${encodeURIComponent(artistName)}`;
         }
 
-        // ===== HELPER FUNCTIONS =====
         function formatNumber(num) {
+            if (!num) return '0';
             if (num >= 1000) {
                 return (num / 1000).toFixed(1) + 'k';
             }
             return num;
         }
 
-        function getRandomColor() {
-            const colors = [
-                'linear-gradient(135deg, #ff6b6b, #ff8e8e)',
-                'linear-gradient(135deg, #4ecdc4, #45b7d1)',
-                'linear-gradient(135deg, #96ceb4, #ffeead)',
-                'linear-gradient(135deg, #ffcc5c, #ff6f69)',
-                'linear-gradient(135deg, #a8b8ff, #ff7eb3)',
-                'linear-gradient(135deg, #ffd6b3, #ffb38c)'
-            ];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        // ===== DATA LOADING =====
         async function loadAlbums() {
             try {
-                // Fetch all tracks
-                const response = await fetch(`${API_BASE}/tracks`);
-                const tracks = await response.json();
-
-                // Group tracks by album (using title as album name for now)
-                // In a real app, you'd have an albums table
-                const albumMap = new Map();
+                const response = await fetch(`${API_BASE}/albums`);
+                const albums = await response.json();
                 
-                tracks.forEach(track => {
-                    // Use track title + artist as album key (temporary)
-                    const albumKey = `${track.title} - ${track.artist}`;
-                    
-                    if (!albumMap.has(albumKey)) {
-                        albumMap.set(albumKey, {
-                            id: track.id,
-                            title: track.title,
-                            artist: track.artist,
-                            genre: track.genre,
-                            year: new Date(track.uploaded_at).getFullYear(),
-                            trackCount: 1,
-                            tracks: [track]
-                        });
-                    } else {
-                        const album = albumMap.get(albumKey);
-                        album.trackCount++;
-                        album.tracks.push(track);
-                    }
-                });
-
-                const albums = Array.from(albumMap.values());
-                
-                // Sort by year (newest first)
-                albums.sort((a, b) => b.year - a.year);
-
-                // Render albums
                 const albumsList = document.getElementById('albumsList');
                 albumsList.innerHTML = albums.map(album => `
                     <div class="album-item" onclick="goToAlbum(${album.id})">
-                        <div class="album-thumbnail">💿</div>
+                        <div class="album-thumb">${album.cover_emoji || '💿'}</div>
                         <div class="album-info">
                             <div class="album-title">${album.title}</div>
                             <div class="album-meta">
                                 <span class="album-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(album.artist)}')">${album.artist}</span>
-                                <span class="album-tracks">${album.trackCount} ${album.trackCount === 1 ? 'track' : 'tracks'}</span>
-                                <span class="album-genre">${album.genre || 'Various'}</span>
+                                <span class="album-tracks">${album.track_count || 0} tracks</span>
+                                <span class="album-stats"><i class="fas fa-headphones"></i> ${formatNumber(album.plays)}</span>
+                                <span class="album-stats"><i class="fas fa-download"></i> ${formatNumber(album.downloads)}</span>
+                                <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
                             </div>
-                            <div class="album-date">${album.year}</div>
+                            <div class="album-year">📅 ${album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown'}</div>
                         </div>
                     </div>
                 `).join('');
 
-                // Load right sidebar sections
-                loadFeaturedAlbums(albums);
-                loadTopArtists(tracks);
-                loadGenres(tracks);
-                loadNewReleases(albums);
+                // Load featured albums
+                const featured = albums.filter(a => a.is_featured).slice(0, 3);
+                document.getElementById('featuredAlbums').innerHTML = featured.map(album => `
+                    <div class="sidebar-item" onclick="goToAlbum(${album.id})">
+                        <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
+                        <div class="sidebar-info">
+                            <div class="sidebar-title">${album.title}</div>
+                            <div class="sidebar-sub">
+                                <span>${album.artist}</span>
+                                <span><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Load top artists
+                const artists = [...new Set(albums.map(a => a.artist))].slice(0, 3);
+                document.getElementById('topArtists').innerHTML = artists.map(artist => `
+                    <div class="sidebar-item" onclick="goToArtist('${encodeURIComponent(artist)}')">
+                        <div class="sidebar-thumb">👤</div>
+                        <div class="sidebar-info">
+                            <div class="sidebar-title">${artist}</div>
+                            <div class="sidebar-sub">Artist</div>
+                        </div>
+                    </div>
+                `).join('');
 
             } catch (error) {
                 console.error('Error loading albums:', error);
-                document.getElementById('albumsList').innerHTML = '<div style="padding: 40px; text-align: center;">Error loading albums</div>';
             }
         }
 
-        function loadFeaturedAlbums(albums) {
-            const featured = albums.slice(0, 3);
-            const container = document.getElementById('featuredAlbums');
-            container.innerHTML = featured.map(album => `
-                <div class="album-item" onclick="goToAlbum(${album.id})">
-                    <div class="album-thumbnail">💿</div>
-                    <div class="album-info">
-                        <div class="album-title">${album.title}</div>
-                        <div class="album-meta">
-                            <span class="album-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(album.artist)}')">${album.artist}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function loadTopArtists(tracks) {
-            const artistMap = new Map();
-            tracks.forEach(track => {
-                if (!artistMap.has(track.artist)) {
-                    artistMap.set(track.artist, {
-                        name: track.artist,
-                        trackCount: 1
-                    });
-                } else {
-                    const artist = artistMap.get(track.artist);
-                    artist.trackCount++;
-                }
-            });
-
-            const artists = Array.from(artistMap.values())
-                .sort((a, b) => b.trackCount - a.trackCount)
-                .slice(0, 3);
-
-            const container = document.getElementById('topArtists');
-            container.innerHTML = artists.map(artist => `
-                <div class="album-item" onclick="goToArtist('${encodeURIComponent(artist.name)}')">
-                    <div class="album-thumbnail artist-thumbnail">👤</div>
-                    <div class="album-info">
-                        <div class="album-title">${artist.name}</div>
-                        <div class="album-meta">
-                            <span class="album-tracks">${artist.trackCount} songs</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function loadGenres(tracks) {
-            const genres = [...new Set(tracks.map(t => t.genre))].slice(0, 3);
-            const container = document.getElementById('genres');
-            container.innerHTML = genres.map(genre => `
-                <div class="album-item" onclick="alert('Filter by genre: ${genre}')">
-                    <div class="album-thumbnail">🏷️</div>
-                    <div class="album-info">
-                        <div class="album-title">${genre.charAt(0).toUpperCase() + genre.slice(1)}</div>
-                        <div class="album-meta">
-                            <span class="album-tracks">${tracks.filter(t => t.genre === genre).length} tracks</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function loadNewReleases(albums) {
-            const newReleases = albums.slice(0, 3);
-            const container = document.getElementById('newReleases');
-            container.innerHTML = newReleases.map(album => `
-                <div class="album-item" onclick="goToAlbum(${album.id})">
-                    <div class="album-thumbnail">🆕</div>
-                    <div class="album-info">
-                        <div class="album-title">${album.title}</div>
-                        <div class="album-meta">
-                            <span class="album-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(album.artist)}')">${album.artist}</span>
-                            <span class="album-date">${album.year}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Hamburger menu
-        document.querySelector('.hamburger').addEventListener('click', function() {
-            window.location.href = '/';
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = '/?search=' + encodeURIComponent(e.target.value);
+            }
         });
 
-        // Load albums when page loads
+        // Load albums
         loadAlbums();
     </script>
 </body>
