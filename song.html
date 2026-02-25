@@ -620,9 +620,7 @@
                 // Increment view count
                 fetch(`${API_BASE}/tracks/${trackId}/view`, { 
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('View count error:', err));
 
                 // Fetch all tracks for "More from Artist" and "Similar Songs"
@@ -707,7 +705,7 @@
                             <h2 class="section-title">More from ${track.artist}</h2>
                             <a href="#" class="view-all">View All</a>
                         </div>
-                        <div class="post-list" id="artistTracksList">
+                        <div class="post-list">
                             ${artistTracks.length > 0 ? artistTracks.map(t => `
                                 <div class="post-item" onclick="goToTrack(${t.id})">
                                     <div class="post-image">${getEmojiForGenre(t.genre)}</div>
@@ -724,7 +722,7 @@
                 
                 <!-- RIGHT SIDEBAR -->
                 <div class="right-sidebar">
-                    <!-- Section 1: Albums by Artist (placeholder for now) -->
+                    <!-- Section 1: Albums by Artist -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">Albums by Artist</h2>
@@ -799,37 +797,55 @@
         async function playTrack(id, r2Key, title, artist) {
             try {
                 // Increment play count
-                const playResponse = await fetch(`${API_BASE}/tracks/${id}/play`, { 
+                fetch(`${API_BASE}/tracks/${id}/play`, { 
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!playResponse.ok) {
-                    console.error('Failed to increment play count');
-                }
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(err => console.error('Play count error:', err));
 
                 // Create audio URL
                 const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
+                console.log('Playing URL:', audioUrl);
                 
                 // Stop current playback if any
                 if (audioPlayer) {
                     audioPlayer.pause();
+                    audioPlayer = null;
                 }
                 
                 // Create new audio player
-                audioPlayer = new Audio(audioUrl);
+                audioPlayer = new Audio();
                 
-                // Add error handling
+                // Set up event listeners
                 audioPlayer.onerror = (e) => {
                     console.error('Audio error:', e);
-                    alert('Error playing audio. Make sure the file exists in R2.');
+                    console.error('Error code:', audioPlayer.error ? audioPlayer.error.code : 'unknown');
+                    
+                    let errorMsg = 'Error playing audio. ';
+                    if (audioPlayer.error) {
+                        switch(audioPlayer.error.code) {
+                            case 1: errorMsg += 'The audio loading was aborted.'; break;
+                            case 2: errorMsg += 'A network error occurred.'; break;
+                            case 3: errorMsg += 'Audio decoding failed.'; break;
+                            case 4: errorMsg += 'Audio format not supported.'; break;
+                            default: errorMsg += audioPlayer.error.message;
+                        }
+                    }
+                    alert(errorMsg);
                     document.getElementById('nowPlayingBar').style.display = 'none';
                 };
+
+                audioPlayer.oncanplay = () => {
+                    console.log('Can play, attempting playback');
+                    audioPlayer.play().catch(e => {
+                        console.error('Play failed:', e);
+                        alert('Play failed: ' + e.message);
+                    });
+                };
+
+                // Set the source and load
+                audioPlayer.src = audioUrl;
+                audioPlayer.load();
                 
-                // Play audio
-                await audioPlayer.play();
                 isPlaying = true;
                 
                 // Update now playing bar
@@ -844,9 +860,6 @@
                     document.getElementById('playPauseBtn').textContent = '▶️';
                 };
                 
-                // Update meta data in UI (optional)
-                updateTrackStats(id, 'plays');
-                
             } catch (error) {
                 console.error('Playback error:', error);
                 alert('Error playing track: ' + error.message);
@@ -860,7 +873,10 @@
                 audioPlayer.pause();
                 document.getElementById('playPauseBtn').textContent = '▶️';
             } else {
-                audioPlayer.play();
+                audioPlayer.play().catch(e => {
+                    console.error('Resume failed:', e);
+                    alert('Failed to resume: ' + e.message);
+                });
                 document.getElementById('playPauseBtn').textContent = '⏸️';
             }
             isPlaying = !isPlaying;
@@ -878,56 +894,38 @@
         async function downloadTrack(id, r2Key) {
             try {
                 // Increment download count
-                const downloadResponse = await fetch(`${API_BASE}/tracks/${id}/download`, { 
+                fetch(`${API_BASE}/tracks/${id}/download`, { 
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(err => console.error('Download count error:', err));
                 
-                if (!downloadResponse.ok) {
-                    console.error('Failed to increment download count');
+                // Create download URL
+                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
+                console.log('Download URL:', audioUrl);
+                
+                // Fetch the file first to ensure it exists
+                const response = await fetch(audioUrl);
+                if (!response.ok) {
+                    throw new Error(`File not found (${response.status})`);
                 }
                 
-                // Trigger download
-                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
+                // Get the blob and create download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = audioUrl;
-                a.download = currentTrack?.filename || 'track.mp3';
+                a.href = url;
+                a.download = currentTrack?.filename || `track-${id}.mp3`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
                 
-                // Update meta data in UI
-                updateTrackStats(id, 'downloads');
+                alert('Download started!');
                 
             } catch (error) {
                 console.error('Download error:', error);
                 alert('Download failed: ' + error.message);
             }
-        }
-
-        // Update track stats in UI without reloading
-        function updateTrackStats(id, statType) {
-            const metaItems = document.querySelectorAll('.meta-item');
-            metaItems.forEach(item => {
-                if (statType === 'plays' && item.innerHTML.includes('▶️')) {
-                    const countEl = item.querySelector('strong');
-                    if (countEl) {
-                        let current = parseInt(countEl.textContent.replace('k', '')) * (countEl.textContent.includes('k') ? 1000 : 1);
-                        current++;
-                        countEl.textContent = formatNumber(current);
-                    }
-                }
-                if (statType === 'downloads' && item.innerHTML.includes('⬇️')) {
-                    const countEl = item.querySelector('strong');
-                    if (countEl) {
-                        let current = parseInt(countEl.textContent.replace('k', '')) * (countEl.textContent.includes('k') ? 1000 : 1);
-                        current++;
-                        countEl.textContent = formatNumber(current);
-                    }
-                }
-            });
         }
 
         function playPrevious() {
