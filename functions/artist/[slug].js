@@ -4,39 +4,40 @@ export async function onRequest(context) {
   try {
     const slug = params.slug;
     
-    // First, verify this artist exists by checking the API
+    // First, check if this is a valid artist by calling the API
     const apiUrl = new URL(request.url);
     const apiReq = new Request(
       `${apiUrl.origin}/api/artist/${slug}`,
       { method: 'GET', headers: { 'Content-Type': 'application/json' } }
     );
     
-    const apiResponse = await env.ASSETS.fetch(apiReq);
+    const apiResponse = await fetch(apiReq);
     
-    // If artist not found, return 404
+    // If artist doesn't exist, return 404
     if (!apiResponse.ok) {
-      return new Response('Artist not found', { 
-        status: 404,
-        headers: { 'Content-Type': 'text/html' }
-      });
+      return new Response('Artist not found', { status: 404 });
     }
     
-    // Get the artist.html template
+    // Get the artist page HTML
     const htmlResponse = await env.ASSETS.fetch(new URL('/artist.html', request.url));
-    const htmlText = await htmlResponse.text();
+    let html = await htmlResponse.text();
     
-    // Inject the slug into the page so our frontend JavaScript can use it
-    const modifiedHtml = htmlText.replace(
-      '<div id="content"',
-      `<div id="content" data-artist-slug="${slug}"`
+    // Inject the artist name as a query parameter (for backward compatibility)
+    const artistData = await apiResponse.json();
+    const artistName = encodeURIComponent(artistData.name);
+    
+    // Modify the HTML to redirect to the working page
+    // This is a temporary solution - we'll update the HTML later to use slugs directly
+    html = html.replace(
+      '<body>',
+      `<body><script>window.ARTIST_SLUG = '${slug}'; window.ARTIST_NAME = '${artistData.name}';</script>`
     );
     
-    return new Response(modifiedHtml, {
+    return new Response(html, {
       headers: { 'Content-Type': 'text/html' }
     });
     
   } catch (error) {
-    console.error('Error serving artist page:', error);
     return new Response('Error loading artist', { status: 500 });
   }
 }
