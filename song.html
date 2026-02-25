@@ -477,6 +477,200 @@
             background: #ff7000;
         }
 
+        /* ===== LOADING SKELETONS ===== */
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-color: #f0f0f0; }
+            100% { background-color: #e0e0e0; }
+        }
+
+        /* Song header skeleton */
+        .skeleton-song-header {
+            display: flex;
+            gap: 25px;
+            padding: 25px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .skeleton-album-art {
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            background: #e0e0e0;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-song-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .skeleton-song-title {
+            width: 70%;
+            height: 36px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-song-artist {
+            width: 40%;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-meta {
+            display: flex;
+            gap: 25px;
+            margin-top: 10px;
+        }
+
+        .skeleton-meta-item {
+            width: 80px;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        /* Player bar skeleton */
+        .skeleton-player-bar {
+            padding: 15px 25px;
+            background: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .skeleton-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .skeleton-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-play-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .skeleton-action {
+            width: 80px;
+            height: 36px;
+            border-radius: 25px;
+            background: #e0e0e0;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        /* Description skeleton */
+        .skeleton-description {
+            padding: 25px;
+        }
+
+        .skeleton-desc-line {
+            width: 100%;
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-desc-line:nth-child(2) {
+            width: 90%;
+        }
+
+        .skeleton-desc-line:nth-child(3) {
+            width: 80%;
+        }
+
+        /* Track list skeleton */
+        .skeleton-track-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .skeleton-track-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            background: #e0e0e0;
+            margin-right: 15px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-track-content {
+            flex: 1;
+        }
+
+        .skeleton-track-title {
+            width: 60%;
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-track-artist {
+            width: 40%;
+            height: 14px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        /* Quick info skeleton */
+        .skeleton-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .skeleton-info-label {
+            width: 60px;
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        .skeleton-info-value {
+            width: 100px;
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
         /* LOADING */
         .loading {
             text-align: center;
@@ -531,6 +725,27 @@
             .song-title {
                 font-size: 1.8rem;
             }
+
+            /* Mobile skeletons */
+            .skeleton-song-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .skeleton-meta {
+                justify-content: center;
+            }
+            
+            .skeleton-player-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .skeleton-action-buttons {
+                margin-left: 0;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -546,7 +761,161 @@
 
     <!-- MAIN LAYOUT CONTAINER -->
     <div class="main-content-container" id="content">
-        <div class="loading">Loading track details...</div>
+        <!-- Loading skeletons will be shown here initially -->
+        <aside class="left-sidebar">
+            <!-- Breadcrumbs skeleton -->
+            <div class="breadcrumbs">
+                <span class="skeleton" style="display: inline-block; width: 200px; height: 16px;"></span>
+            </div>
+            
+            <!-- Song header skeleton -->
+            <div class="skeleton-song-header">
+                <div class="skeleton-album-art"></div>
+                <div class="skeleton-song-info">
+                    <div class="skeleton-song-title"></div>
+                    <div class="skeleton-song-artist"></div>
+                    <div class="skeleton-meta">
+                        <div class="skeleton-meta-item"></div>
+                        <div class="skeleton-meta-item"></div>
+                        <div class="skeleton-meta-item"></div>
+                        <div class="skeleton-meta-item"></div>
+                        <div class="skeleton-meta-item"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Player bar skeleton -->
+            <div class="skeleton-player-bar">
+                <div class="skeleton-controls">
+                    <div class="skeleton-btn"></div>
+                    <div class="skeleton-play-btn"></div>
+                    <div class="skeleton-btn"></div>
+                </div>
+                <div class="skeleton-action-buttons">
+                    <div class="skeleton-action"></div>
+                    <div class="skeleton-action"></div>
+                    <div class="skeleton-action"></div>
+                    <div class="skeleton-action"></div>
+                </div>
+            </div>
+            
+            <!-- Description skeleton -->
+            <div class="skeleton-description">
+                <div class="skeleton-desc-line"></div>
+                <div class="skeleton-desc-line"></div>
+                <div class="skeleton-desc-line"></div>
+            </div>
+            
+            <!-- Section spacer -->
+            <div class="section-spacer"></div>
+            
+            <!-- More from artist skeleton -->
+            <div class="playlist-main-section">
+                <div class="section-header">
+                    <h2 class="section-title">More from Artist</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div class="post-list">
+                    <div class="skeleton-track-item">
+                        <div class="skeleton-track-image"></div>
+                        <div class="skeleton-track-content">
+                            <div class="skeleton-track-title"></div>
+                            <div class="skeleton-track-artist"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-track-item">
+                        <div class="skeleton-track-image"></div>
+                        <div class="skeleton-track-content">
+                            <div class="skeleton-track-title"></div>
+                            <div class="skeleton-track-artist"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-track-item">
+                        <div class="skeleton-track-image"></div>
+                        <div class="skeleton-track-content">
+                            <div class="skeleton-track-title"></div>
+                            <div class="skeleton-track-artist"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- RIGHT SIDEBAR with skeletons -->
+        <div class="right-sidebar">
+            <!-- Albums by Artist skeleton -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Albums by Artist</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div class="post-list">
+                    <div class="skeleton-track-item">
+                        <div class="skeleton-track-image"></div>
+                        <div class="skeleton-track-content">
+                            <div class="skeleton-track-title"></div>
+                            <div class="skeleton-track-artist"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Similar Songs skeleton -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Similar Songs</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div class="post-list">
+                    <div class="skeleton-track-item">
+                        <div class="skeleton-track-image"></div>
+                        <div class="skeleton-track-content">
+                            <div class="skeleton-track-title"></div>
+                            <div class="skeleton-track-artist"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-track-item">
+                        <div class="skeleton-track-image"></div>
+                        <div class="skeleton-track-content">
+                            <div class="skeleton-track-title"></div>
+                            <div class="skeleton-track-artist"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-track-item">
+                        <div class="skeleton-track-image"></div>
+                        <div class="skeleton-track-content">
+                            <div class="skeleton-track-title"></div>
+                            <div class="skeleton-track-artist"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Quick Info skeleton -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Quick Info</h2>
+                </div>
+                <div class="quick-info">
+                    <div class="skeleton-info-row">
+                        <div class="skeleton-info-label"></div>
+                        <div class="skeleton-info-value"></div>
+                    </div>
+                    <div class="skeleton-info-row">
+                        <div class="skeleton-info-label"></div>
+                        <div class="skeleton-info-value"></div>
+                    </div>
+                    <div class="skeleton-info-row">
+                        <div class="skeleton-info-label"></div>
+                        <div class="skeleton-info-value"></div>
+                    </div>
+                    <div class="skeleton-info-row">
+                        <div class="skeleton-info-label"></div>
+                        <div class="skeleton-info-value"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 
     <!-- Now Playing Bar -->
@@ -637,7 +1006,7 @@
                     t.id !== track.id
                 ).slice(0, 3);
 
-                // Render the page
+                // Render the page with real data (replaces skeletons)
                 renderPage(track, artistTracks, similarTracks);
 
             } catch (error) {
@@ -646,7 +1015,7 @@
             }
         }
 
-        // Render the page with data
+        // Render the page with data (replaces skeletons)
         function renderPage(track, artistTracks, similarTracks) {
             const content = document.getElementById('content');
             
@@ -818,8 +1187,6 @@
                 // Set up event listeners
                 audioPlayer.onerror = (e) => {
                     console.error('Audio error:', e);
-                    console.error('Error code:', audioPlayer.error ? audioPlayer.error.code : 'unknown');
-                    
                     let errorMsg = 'Error playing audio. ';
                     if (audioPlayer.error) {
                         switch(audioPlayer.error.code) {
@@ -838,7 +1205,6 @@
                     console.log('Can play, attempting playback');
                     audioPlayer.play().catch(e => {
                         console.error('Play failed:', e);
-                        alert('Play failed: ' + e.message);
                     });
                 };
 
@@ -862,7 +1228,6 @@
                 
             } catch (error) {
                 console.error('Playback error:', error);
-                alert('Error playing track: ' + error.message);
             }
         }
 
@@ -875,7 +1240,6 @@
             } else {
                 audioPlayer.play().catch(e => {
                     console.error('Resume failed:', e);
-                    alert('Failed to resume: ' + e.message);
                 });
                 document.getElementById('playPauseBtn').textContent = '⏸️';
             }
@@ -901,7 +1265,6 @@
                 
                 // Create download URL
                 const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
-                console.log('Download URL:', audioUrl);
                 
                 // Fetch the file first to ensure it exists
                 const response = await fetch(audioUrl);
@@ -919,8 +1282,6 @@
                 a.click();
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
-                
-                alert('Download started!');
                 
             } catch (error) {
                 console.error('Download error:', error);
