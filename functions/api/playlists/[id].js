@@ -1,5 +1,5 @@
 export async function onRequest(context) {
-  const { request, env } = context;
+  const { request, env, params } = context;
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -22,23 +22,38 @@ export async function onRequest(context) {
   }
 
   try {
-    // Get featured playlists
-    const { results } = await env.DB.prepare(`
-      SELECT 
-        p.*,
-        COUNT(pt.track_id) as track_count
-      FROM playlists p
-      LEFT JOIN playlist_tracks pt ON p.id = pt.playlist_id
-      WHERE p.is_featured = 1
-      GROUP BY p.id
-      ORDER BY p.created_at DESC
-      LIMIT 5
-    `).all();
+    const id = params.id;
     
-    return new Response(JSON.stringify(results), { headers });
+    // Get playlist details - use .first() to get single object
+    const playlist = await env.DB.prepare(`
+      SELECT * FROM playlists WHERE id = ?
+    `).bind(id).first();
+    
+    if (!playlist) {
+      return new Response(JSON.stringify({ error: 'Playlist not found' }), { 
+        status: 404, 
+        headers 
+      });
+    }
+    
+    // Get tracks in this playlist
+    const { results: tracks } = await env.DB.prepare(`
+      SELECT 
+        t.*,
+        pt.position
+      FROM tracks t
+      JOIN playlist_tracks pt ON t.id = pt.track_id
+      WHERE pt.playlist_id = ?
+      ORDER BY pt.position
+    `).bind(id).all();
+    
+    // Add tracks to playlist object
+    playlist.tracks = tracks || [];
+    
+    return new Response(JSON.stringify(playlist), { headers });
     
   } catch (error) {
-    console.error('Error fetching featured playlists:', error);
+    console.error('Error fetching playlist:', error);
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500, 
       headers 
