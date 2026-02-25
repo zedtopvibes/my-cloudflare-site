@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zedtopvibes • Song Details</title>
     <style>
-        /* ALL YOUR EXISTING CSS FROM THE SONG DETAIL LAYOUT */
         * {
             margin: 0;
             padding: 0;
@@ -411,6 +410,73 @@
             margin: 2px;
         }
 
+        /* Now Playing Bar */
+        .now-playing-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            padding: 10px 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .now-playing-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .now-playing-title {
+            font-weight: 600;
+            color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .now-playing-artist {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .now-playing-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .now-playing-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #555;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .now-playing-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .now-playing-play {
+            background: #ff5500;
+            color: white;
+        }
+
+        .now-playing-play:hover {
+            background: #ff7000;
+        }
+
         /* LOADING */
         .loading {
             text-align: center;
@@ -483,6 +549,18 @@
         <div class="loading">Loading track details...</div>
     </div>
 
+    <!-- Now Playing Bar -->
+    <div id="nowPlayingBar" class="now-playing-bar">
+        <div class="now-playing-info">
+            <div id="nowPlayingTitle" class="now-playing-title">Not playing</div>
+            <div id="nowPlayingArtist" class="now-playing-artist"></div>
+        </div>
+        <div class="now-playing-controls">
+            <button class="now-playing-btn" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+            <button class="now-playing-btn" onclick="closePlayer()">✕</button>
+        </div>
+    </div>
+
     <script>
         // API Base URL
         const API_BASE = '/api';
@@ -490,6 +568,11 @@
         // Get track ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const trackId = urlParams.get('id');
+
+        // Audio player
+        let audioPlayer = null;
+        let currentTrack = null;
+        let isPlaying = false;
 
         // Helper functions
         function formatNumber(num) {
@@ -500,6 +583,7 @@
         }
 
         function formatDuration(seconds) {
+            if (!seconds) return '?:??';
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -531,6 +615,7 @@
                     throw new Error('Track not found');
                 }
                 const track = await response.json();
+                currentTrack = track;
 
                 // Increment view count
                 fetch(`${API_BASE}/tracks/${trackId}/view`, { method: 'POST' });
@@ -592,13 +677,13 @@
                     <div class="compact-actions">
                         <div class="player-controls">
                             <button class="control-btn" onclick="playPrevious()">⏮</button>
-                            <button class="control-btn play-btn" onclick="playTrack(${track.id})">▶</button>
+                            <button class="control-btn play-btn" onclick="playCurrentTrack()">▶</button>
                             <button class="control-btn" onclick="playNext()">⏭</button>
                         </div>
                         <div class="action-buttons">
                             <button class="action-btn" onclick="likeTrack(${track.id})">❤️ Like</button>
                             <button class="action-btn" onclick="addToPlaylist(${track.id})">➕ Playlist</button>
-                            <button class="action-btn download-btn" onclick="downloadTrack(${track.id})">⬇️ Download</button>
+                            <button class="action-btn download-btn" onclick="downloadTrack(${track.id}, '${track.r2_key}')">⬇️ Download</button>
                             <button class="action-btn" onclick="shareTrack(${track.id})">↗️ Share</button>
                         </div>
                     </div>
@@ -624,7 +709,7 @@
                                     <div class="post-content">
                                         <div class="post-title">${t.title}</div>
                                         <div class="post-artist">${t.artist}</div>
-                                        <div class="post-stats">▶️ ${formatNumber(t.plays)} plays • ${formatNumber(t.views)} views</div>
+                                        <div class="post-stats">▶️ ${formatNumber(t.plays)} plays</div>
                                     </div>
                                 </div>
                             `).join('') : '<div class="loading">No other tracks by this artist</div>'}
@@ -700,15 +785,96 @@
             `;
         }
 
-        // Actions
-        function playTrack(id) {
-            fetch(`${API_BASE}/tracks/${id}/play`, { method: 'POST' });
-            alert('Audio player coming in Stage 6! 🎵');
+        // Audio playback functions
+        function playCurrentTrack() {
+            if (!currentTrack) return;
+            playTrack(currentTrack.id, currentTrack.r2_key, currentTrack.title, currentTrack.artist);
         }
 
-        function downloadTrack(id) {
-            fetch(`${API_BASE}/tracks/${id}/download`, { method: 'POST' });
-            alert('Download functionality coming soon! ⬇️');
+        async function playTrack(id, r2Key, title, artist) {
+            try {
+                // Increment play count
+                await fetch(`${API_BASE}/tracks/${id}/play`, { method: 'POST' });
+                
+                // Create audio URL
+                const audioUrl = `${API_BASE}/stream/${r2Key}`;
+                
+                // Stop current playback if any
+                if (audioPlayer) {
+                    audioPlayer.pause();
+                }
+                
+                // Create new audio player
+                audioPlayer = new Audio(audioUrl);
+                audioPlayer.play();
+                isPlaying = true;
+                
+                // Update now playing bar
+                document.getElementById('nowPlayingTitle').textContent = title;
+                document.getElementById('nowPlayingArtist').textContent = artist;
+                document.getElementById('playPauseBtn').textContent = '⏸️';
+                document.getElementById('nowPlayingBar').style.display = 'flex';
+                
+                // Handle playback end
+                audioPlayer.onended = () => {
+                    isPlaying = false;
+                    document.getElementById('playPauseBtn').textContent = '▶️';
+                };
+                
+            } catch (error) {
+                console.error('Playback error:', error);
+                alert('Error playing track. Make sure the audio file exists in R2.');
+            }
+        }
+
+        function togglePlay() {
+            if (!audioPlayer) return;
+            
+            if (isPlaying) {
+                audioPlayer.pause();
+                document.getElementById('playPauseBtn').textContent = '▶️';
+            } else {
+                audioPlayer.play();
+                document.getElementById('playPauseBtn').textContent = '⏸️';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function closePlayer() {
+            if (audioPlayer) {
+                audioPlayer.pause();
+                audioPlayer = null;
+            }
+            document.getElementById('nowPlayingBar').style.display = 'none';
+            isPlaying = false;
+        }
+
+        async function downloadTrack(id, r2Key) {
+            try {
+                // Increment download count
+                await fetch(`${API_BASE}/tracks/${id}/download`, { method: 'POST' });
+                
+                // Trigger download
+                const audioUrl = `${API_BASE}/stream/${r2Key}`;
+                const a = document.createElement('a');
+                a.href = audioUrl;
+                a.download = currentTrack?.filename || 'track.mp3';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                alert('Download started!');
+            } catch (error) {
+                alert('Download failed: ' + error.message);
+            }
+        }
+
+        function playPrevious() {
+            alert('Previous track - would navigate to previous song in playlist');
+        }
+
+        function playNext() {
+            alert('Next track - would navigate to next song in playlist');
         }
 
         function likeTrack(id) {
@@ -720,15 +886,9 @@
         }
 
         function shareTrack(id) {
-            alert('Share feature coming soon! 🔗');
-        }
-
-        function playPrevious() {
-            alert('Previous track coming soon! ⏮️');
-        }
-
-        function playNext() {
-            alert('Next track coming soon! ⏭️');
+            const url = window.location.href;
+            navigator.clipboard.writeText(url);
+            alert('Link copied to clipboard! 🔗');
         }
 
         function goToTrack(id) {
@@ -737,7 +897,7 @@
 
         // Hamburger menu
         document.querySelector('.hamburger').addEventListener('click', function() {
-            alert('Menu coming soon! 🎵');
+            window.location.href = '/';
         });
 
         // Load track details when page loads
