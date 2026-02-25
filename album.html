@@ -450,6 +450,94 @@
             100% { background-color: #e0e0e0; }
         }
 
+        .skeleton-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            padding: 25px;
+        }
+
+        .skeleton-cover {
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            background: #e0e0e0;
+        }
+
+        .skeleton-info {
+            flex: 1;
+        }
+
+        .skeleton-title {
+            width: 70%;
+            height: 36px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .skeleton-artist {
+            width: 40%;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .skeleton-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .skeleton-stat {
+            width: 100px;
+            height: 32px;
+            background: #e0e0e0;
+            border-radius: 20px;
+        }
+
+        .skeleton-desc {
+            width: 80%;
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .skeleton-track {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .skeleton-number {
+            width: 40px;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .skeleton-track-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .skeleton-track-title {
+            width: 50%;
+            height: 18px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+
+        .skeleton-track-artist {
+            width: 30%;
+            height: 14px;
+            background: #e0e0e0;
+            border-radius: 4px;
+        }
+
         /* Footer */
         .footer {
             max-width: 1400px;
@@ -492,6 +580,15 @@
                 flex-direction: column;
                 gap: 5px;
             }
+            
+            .skeleton-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .skeleton-meta {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -515,7 +612,7 @@
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeleton -->
+        <!-- Loading skeletons will be shown here -->
         <div style="text-align: center; padding: 60px; width: 100%;">Loading album...</div>
     </div>
 
@@ -530,16 +627,44 @@
         // API Base URL
         const API_BASE = '/api';
         
-        // Get album ID from URL
+        // Get album identifier from multiple sources
         const urlParams = new URLSearchParams(window.location.search);
         const albumId = urlParams.get('id');
 
+        // Check if we're using a clean URL with slug (from data attribute)
+        const contentDiv = document.getElementById('content');
+        const albumSlug = contentDiv ? contentDiv.dataset.albumSlug : null;
+
+        // Determine which identifier to use
+        let albumIdentifier = null;
+        let useSlug = false;
+
+        if (albumSlug) {
+            // Clean URL format: /album/midnight-waves
+            albumIdentifier = albumSlug;
+            useSlug = true;
+            console.log('Using slug from attribute:', albumIdentifier);
+        } else if (albumId) {
+            // Old format: ?id=1
+            albumIdentifier = albumId;
+            useSlug = false;
+            console.log('Using ID from query:', albumIdentifier);
+        }
+
+        // Navigation functions
         function goHome() {
             window.location.href = '/';
         }
 
         function goToArtist(artistName) {
-            window.location.href = `/artist.html?name=${encodeURIComponent(artistName)}`;
+            // Generate slug for artist
+            const slug = artistName
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]/g, '')
+                .replace(/--+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            window.location.href = `/artist/${slug}`;
         }
 
         function goToTrack(id) {
@@ -550,8 +675,13 @@
             window.location.href = `/album.html?id=${id}`;
         }
 
+        function goToAlbumBySlug(slug) {
+            window.location.href = `/album/${slug}`;
+        }
+
+        // Helper functions
         function formatNumber(num) {
-            if (!num) return '0';
+            if (!num && num !== 0) return '0';
             if (num >= 1000) {
                 return (num / 1000).toFixed(1) + 'k';
             }
@@ -565,7 +695,20 @@
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
+        function getEmojiForGenre(genre) {
+            const emojis = {
+                'electronic': '🎵',
+                'synthwave': '🎸',
+                'hiphop': '🎤',
+                'lofi': '🌅',
+                'ambient': '✨',
+                'default': '🎵'
+            };
+            return emojis[genre] || emojis.default;
+        }
+
         function calculateTotalDuration(tracks) {
+            if (!tracks || tracks.length === 0) return '0 min';
             const totalSeconds = tracks.reduce((sum, track) => sum + (track.duration || 0), 0);
             const hours = Math.floor(totalSeconds / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -576,158 +719,201 @@
             return `${minutes} min`;
         }
 
+        // Load album data
         async function loadAlbum() {
-            if (!albumId) {
+            if (!albumIdentifier) {
                 document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No album specified</div>';
                 return;
             }
 
             try {
+                // Show loading state
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading album...</div>';
+                
+                let apiUrl;
+                if (useSlug) {
+                    // New clean URL format
+                    apiUrl = `${API_BASE}/album/by-slug/${albumIdentifier}`;
+                } else {
+                    // Old format with ID
+                    apiUrl = `${API_BASE}/albums/${albumIdentifier}`;
+                }
+                
+                console.log('Fetching from API:', apiUrl);
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error('Album not found');
+                }
+                
+                const data = await response.json();
+                console.log('Album data received:', data);
+                
                 // Increment view count
-                fetch(`${API_BASE}/albums/${albumId}/view`, { 
+                fetch(`${API_BASE}/albums/${data.id}/view`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('View count error:', err));
-
-                // Fetch album details
-                const response = await fetch(`${API_BASE}/albums/${albumId}`);
-                if (!response.ok) throw new Error('Album not found');
                 
-                const data = await response.json();
-                const album = data;
-                const tracks = data.tracks || [];
-                
-                // Calculate totals
-                const totalDuration = calculateTotalDuration(tracks);
-                const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
-                const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
-                
-                // Get release year
-                const releaseYear = album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown';
-
-                const content = document.getElementById('content');
-                content.innerHTML = `
-                    <!-- LEFT SIDEBAR -->
-                    <aside class="left-sidebar">
-                        <!-- Breadcrumbs -->
-                        <div class="breadcrumbs">
-                            <a href="/">Home</a> / 
-                            <a href="/albums.html">Albums</a> / 
-                            <a href="#" onclick="goToArtist('${encodeURIComponent(album.artist)}')">${album.artist}</a> / 
-                            <span>${album.title}</span>
-                        </div>
-                        
-                        <!-- Album Header -->
-                        <div class="album-header">
-                            <div class="album-cover">${album.cover_emoji || '💿'}</div>
-                            <div class="album-info">
-                                <h1 class="album-title">${album.title}</h1>
-                                <div class="album-artist" onclick="goToArtist('${encodeURIComponent(album.artist)}')">${album.artist}</div>
-                                <div class="album-meta">
-                                    <span class="album-stats"><i class="fas fa-music"></i> ${tracks.length} tracks</span>
-                                    <span class="album-stats"><i class="fas fa-clock"></i> ${totalDuration}</span>
-                                    <span class="album-stats"><i class="fas fa-calendar"></i> ${releaseYear}</span>
-                                    <span class="album-stats"><i class="fas fa-headphones"></i> ${formatNumber(album.plays || totalPlays)}</span>
-                                    <span class="album-stats"><i class="fas fa-download"></i> ${formatNumber(album.downloads || totalDownloads)}</span>
-                                    <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views || 0)}</span>
-                                </div>
-                                <p class="album-description">${album.description || 'No description available.'}</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Tracks Section -->
-                        <div class="section-header">
-                            <h2 class="section-title">Album Tracks</h2>
-                            <a href="#" class="view-all">View All ➔</a>
-                        </div>
-                        
-                        <div class="track-list">
-                            ${tracks.map((track, index) => `
-                                <div class="track-item" onclick="goToTrack(${track.id})">
-                                    <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
-                                    <div class="track-info">
-                                        <div class="track-title">${track.title}</div>
-                                        <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(track.artist)}')">${track.artist}</div>
-                                    </div>
-                                    <div class="track-meta">
-                                        <span class="track-duration"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
-                                        <span class="track-plays"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
-                                        <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </aside>
-                    
-                    <!-- RIGHT SIDEBAR -->
-                    <div class="right-sidebar">
-                        <!-- More by Artist -->
-                        <section class="section-block">
-                            <div class="section-header">
-                                <h2 class="section-title">More by ${album.artist}</h2>
-                                <a href="#" onclick="goToArtist('${encodeURIComponent(album.artist)}')" class="view-all">View All ➔</a>
-                            </div>
-                            <div id="moreByArtist"></div>
-                        </section>
-                        
-                        <!-- Similar Albums -->
-                        <section class="section-block">
-                            <div class="section-header">
-                                <h2 class="section-title">Similar Albums</h2>
-                                <a href="/albums.html" class="view-all">View All ➔</a>
-                            </div>
-                            <div id="similarAlbums"></div>
-                        </section>
-                        
-                        <!-- Album Info -->
-                        <section class="section-block">
-                            <div class="section-header">
-                                <h2 class="section-title">Album Info</h2>
-                            </div>
-                            <div>
-                                <div class="info-row">
-                                    <span class="info-label">Artist</span>
-                                    <span class="info-value">${album.artist}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Genre</span>
-                                    <span class="info-value">${album.genre || 'Various'}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Released</span>
-                                    <span class="info-value">${album.release_date ? new Date(album.release_date).toLocaleDateString() : 'Unknown'}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Label</span>
-                                    <span class="info-value">${album.label || 'Independent'}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Total Plays</span>
-                                    <span class="info-value"><i class="fas fa-headphones"></i> ${formatNumber(album.plays || totalPlays)}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Total Downloads</span>
-                                    <span class="info-value"><i class="fas fa-download"></i> ${formatNumber(album.downloads || totalDownloads)}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Total Views</span>
-                                    <span class="info-value"><i class="fas fa-eye"></i> ${formatNumber(album.views || 0)}</span>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                `;
-
-                // Load more by artist and similar albums
-                loadMoreByArtist(album.artist, album.id);
-                loadSimilarAlbums(album.genre, album.id);
+                // Render the page
+                renderAlbum(data);
 
             } catch (error) {
                 console.error('Error loading album:', error);
-                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Error loading album</div>';
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <p style="color: #ff5500; margin-bottom: 20px;">Error loading album</p>
+                        <p style="color: #666; font-size: 14px;">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
+                    </div>
+                `;
             }
         }
 
+        // Render album page
+        function renderAlbum(album) {
+            const tracks = album.tracks || [];
+            const stats = album.stats || {};
+            
+            // Calculate totals if not provided
+            const totalDuration = stats.total_duration ? 
+                formatDuration(stats.total_duration) : 
+                calculateTotalDuration(tracks);
+            
+            const totalPlays = stats.total_plays || tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+            const totalDownloads = stats.total_downloads || tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
+            
+            // Get release year
+            const releaseYear = album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown';
+
+            const content = document.getElementById('content');
+            
+            content.innerHTML = `
+                <!-- LEFT SIDEBAR -->
+                <aside class="left-sidebar">
+                    <!-- Breadcrumbs -->
+                    <div class="breadcrumbs">
+                        <a href="/">Home</a> / 
+                        <a href="/albums.html">Albums</a> / 
+                        <a href="#" onclick="goToArtist('${album.artist.replace(/'/g, "\\'")}')">${album.artist}</a> / 
+                        <span>${album.title}</span>
+                    </div>
+                    
+                    <!-- Album Header -->
+                    <div class="album-header">
+                        <div class="album-cover">${album.cover_emoji || '💿'}</div>
+                        <div class="album-info">
+                            <h1 class="album-title">${album.title}</h1>
+                            <div class="album-artist" onclick="goToArtist('${album.artist.replace(/'/g, "\\'")}')">${album.artist}</div>
+                            <div class="album-meta">
+                                <span class="album-stats"><i class="fas fa-music"></i> ${tracks.length} tracks</span>
+                                <span class="album-stats"><i class="fas fa-clock"></i> ${totalDuration}</span>
+                                <span class="album-stats"><i class="fas fa-calendar"></i> ${releaseYear}</span>
+                                <span class="album-stats"><i class="fas fa-headphones"></i> ${formatNumber(album.plays || totalPlays)}</span>
+                                <span class="album-stats"><i class="fas fa-download"></i> ${formatNumber(album.downloads || totalDownloads)}</span>
+                                <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views || 0)}</span>
+                            </div>
+                            <p class="album-description">${album.description || 'No description available.'}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Tracks Section -->
+                    <div class="section-header">
+                        <h2 class="section-title">Album Tracks</h2>
+                        <a href="#" class="view-all">View All ➔</a>
+                    </div>
+                    
+                    <div class="track-list">
+                        ${tracks.length > 0 ? tracks.map((track, index) => `
+                            <div class="track-item" onclick="goToTrack(${track.id})">
+                                <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
+                                <div class="track-info">
+                                    <div class="track-title">${track.title}</div>
+                                    <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</div>
+                                </div>
+                                <div class="track-meta">
+                                    <span class="track-duration"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                                    <span class="track-plays"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                    <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
+                                </div>
+                            </div>
+                        `).join('') : '<div style="padding: 20px; text-align: center; color: #888;">No tracks in this album</div>'}
+                    </div>
+                </aside>
+                
+                <!-- RIGHT SIDEBAR -->
+                <div class="right-sidebar">
+                    <!-- More by Artist -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">More by ${album.artist}</h2>
+                            <a href="#" onclick="goToArtist('${album.artist.replace(/'/g, "\\'")}')" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="moreByArtist" class="latest-albums-list">
+                            <!-- Will be loaded dynamically -->
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </section>
+                    
+                    <!-- Similar Albums -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Similar Albums</h2>
+                            <a href="/albums.html" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="similarAlbums" class="latest-albums-list">
+                            <!-- Will be loaded dynamically -->
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </section>
+                    
+                    <!-- Album Info -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Album Info</h2>
+                        </div>
+                        <div>
+                            <div class="info-row">
+                                <span class="info-label">Artist</span>
+                                <span class="info-value">${album.artist}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Genre</span>
+                                <span class="info-value">${album.genre || 'Various'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Released</span>
+                                <span class="info-value">${album.release_date ? new Date(album.release_date).toLocaleDateString() : 'Unknown'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Label</span>
+                                <span class="info-value">${album.label || 'Independent'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Total Plays</span>
+                                <span class="info-value"><i class="fas fa-headphones"></i> ${formatNumber(album.plays || totalPlays)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Total Downloads</span>
+                                <span class="info-value"><i class="fas fa-download"></i> ${formatNumber(album.downloads || totalDownloads)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Total Views</span>
+                                <span class="info-value"><i class="fas fa-eye"></i> ${formatNumber(album.views || 0)}</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+
+            // Load more by artist
+            loadMoreByArtist(album.artist, album.id);
+            
+            // Load similar albums
+            loadSimilarAlbums(album.genre, album.id, album.slug);
+        }
+
+        // Load more albums by same artist
         async function loadMoreByArtist(artist, currentAlbumId) {
             try {
                 const response = await fetch(`${API_BASE}/albums`);
@@ -737,23 +923,35 @@
                     .filter(a => a.artist === artist && a.id != currentAlbumId)
                     .slice(0, 3);
                 
-                document.getElementById('moreByArtist').innerHTML = moreAlbums.map(album => `
-                    <div class="sidebar-item" onclick="goToAlbum(${album.id})">
-                        <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
-                        <div class="sidebar-info">
-                            <div class="sidebar-title">${album.title}</div>
-                            <div class="sidebar-sub">
-                                <span><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
+                const container = document.getElementById('moreByArtist');
+                if (container) {
+                    if (moreAlbums.length > 0) {
+                        container.innerHTML = moreAlbums.map(album => `
+                            <div class="sidebar-item" onclick="goToAlbumBySlug('${album.slug}')">
+                                <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
+                                <div class="sidebar-info">
+                                    <div class="sidebar-title">${album.title}</div>
+                                    <div class="sidebar-sub">
+                                        <span><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                `).join('');
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No other albums by this artist</div>';
+                    }
+                }
             } catch (error) {
                 console.error('Error loading more by artist:', error);
+                const container = document.getElementById('moreByArtist');
+                if (container) {
+                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Error loading</div>';
+                }
             }
         }
 
-        async function loadSimilarAlbums(genre, currentAlbumId) {
+        // Load similar albums
+        async function loadSimilarAlbums(genre, currentAlbumId, currentSlug) {
             try {
                 const response = await fetch(`${API_BASE}/albums`);
                 const albums = await response.json();
@@ -762,17 +960,28 @@
                     .filter(a => a.genre === genre && a.id != currentAlbumId)
                     .slice(0, 3);
                 
-                document.getElementById('similarAlbums').innerHTML = similar.map(album => `
-                    <div class="sidebar-item" onclick="goToAlbum(${album.id})">
-                        <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
-                        <div class="sidebar-info">
-                            <div class="sidebar-title">${album.title}</div>
-                            <div class="sidebar-sub">${album.artist}</div>
-                        </div>
-                    </div>
-                `).join('');
+                const container = document.getElementById('similarAlbums');
+                if (container) {
+                    if (similar.length > 0) {
+                        container.innerHTML = similar.map(album => `
+                            <div class="sidebar-item" onclick="goToAlbumBySlug('${album.slug}')">
+                                <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
+                                <div class="sidebar-info">
+                                    <div class="sidebar-title">${album.title}</div>
+                                    <div class="sidebar-sub">${album.artist}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No similar albums</div>';
+                    }
+                }
             } catch (error) {
                 console.error('Error loading similar albums:', error);
+                const container = document.getElementById('similarAlbums');
+                if (container) {
+                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Error loading</div>';
+                }
             }
         }
 
