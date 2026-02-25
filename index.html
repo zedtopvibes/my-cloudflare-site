@@ -12,377 +12,326 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0a0a;
-            color: #ffffff;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #222;
             line-height: 1.6;
         }
 
-        /* Creative background with waves */
-        .background-art {
-            position: fixed;
+        /* Navigation */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #eee;
+            padding: 15px 20px;
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, #1a1a2e, #16213e, #1a1a2e);
-            z-index: -2;
-        }
-
-        .background-art::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 50%, rgba(100, 108, 255, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 80%, rgba(255, 71, 157, 0.1) 0%, transparent 50%);
-            animation: wave 20s ease-in-out infinite alternate;
-            z-index: -1;
-        }
-
-        @keyframes wave {
-            0% { transform: translate(-10%, -10%) rotate(0deg); }
-            100% { transform: translate(10%, 10%) rotate(5deg); }
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Creative header */
-        .header {
-            text-align: center;
-            padding: 60px 20px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff 0%, #a8b8ff 50%, #ff7eb3 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            letter-spacing: -2px;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-            animation: glow 3s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { filter: drop-shadow(0 10px 20px rgba(168, 184, 255, 0.3)); }
-            50% { filter: drop-shadow(0 10px 30px rgba(255, 126, 179, 0.5)); }
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            color: #888;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* Floating music cards */
-        .track-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-            padding: 40px 0;
-        }
-
-        .track-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 30px;
-            padding: 25px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .track-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            transition: left 0.7s;
-        }
-
-        .track-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            border-color: rgba(168, 184, 255, 0.5);
-            box-shadow: 0 30px 40px -20px rgba(0,0,0,0.5),
-                        0 0 0 1px rgba(168, 184, 255, 0.3) inset;
-        }
-
-        .track-card:hover::before {
-            left: 100%;
-        }
-
-        /* Creative album art placeholder */
-        .track-art {
-            width: 100%;
-            aspect-ratio: 1;
-            background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1);
-            border-radius: 20px;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .track-art::after {
-            content: '▶';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: white;
-            opacity: 0;
-            transition: opacity 0.3s;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-
-        .track-card:hover .track-art::after {
-            opacity: 1;
-        }
-
-        .track-info {
-            text-align: left;
-        }
-
-        .track-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            background: linear-gradient(135deg, #fff, #ccc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .track-artist {
-            color: #888;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .track-artist::before {
-            content: '🎤';
-            font-size: 0.9rem;
-            opacity: 0.5;
-        }
-
-        /* Creative player bar */
-        .player-bar {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 800px;
-            background: rgba(20, 20, 30, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 60px;
-            padding: 20px 30px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             z-index: 100;
-            animation: slideUp 0.5s ease-out;
         }
 
-        @keyframes slideUp {
-            from { bottom: -100px; opacity: 0; }
-            to { bottom: 30px; opacity: 1; }
-        }
-
-        .player-controls {
+        .nav-container {
+            max-width: 800px;
+            margin: 0 auto;
             display: flex;
-            gap: 20px;
             align-items: center;
+            justify-content: space-between;
         }
 
-        .control-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
+        .hamburger {
+            font-size: 24px;
             cursor: pointer;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
+            width: 40px;
+            color: #333;
+        }
+
+        .site-title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #000;
+        }
+
+        .site-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .right-spacer {
+            width: 40px;
+        }
+
+        /* Search Bar */
+        .search-section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 8px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .search-icon {
+            color: #999;
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .search-container input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            padding: 8px 0;
+            background: transparent;
+        }
+
+        .search-container input::placeholder {
+            color: #bbb;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Section Header */
+        .section-header {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Post List */
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .post-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .post-item:hover {
+            background: #f9f9f9;
+        }
+
+        .post-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            margin-right: 20px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #ddd, #f5f5f5);
+        }
+
+        .post-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #222;
+            line-height: 1.4;
+        }
+
+        .post-date {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Footer */
+        .footer {
+            max-width: 800px;
+            margin: 60px auto 40px;
+            padding: 30px 20px 0;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: #000;
+        }
+
+        .copyright {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        /* Sample image emojis as placeholders */
+        .post-image {
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
-            background: rgba(255,255,255,0.05);
-        }
-
-        .control-btn:hover {
-            background: rgba(255,255,255,0.15);
-            transform: scale(1.1);
-        }
-
-        .play-btn {
-            background: linear-gradient(135deg, #6b8cff, #b86bff);
-            color: white;
-            width: 55px;
-            height: 55px;
-            font-size: 1.8rem;
-        }
-
-        .play-btn:hover {
-            transform: scale(1.15);
-            box-shadow: 0 0 30px rgba(107, 140, 255, 0.5);
-        }
-
-        .player-info {
-            flex: 1;
-        }
-
-        .now-playing {
-            font-size: 0.9rem;
-            color: #888;
-            margin-bottom: 5px;
-        }
-
-        .track-name {
-            font-weight: 600;
-            color: white;
-        }
-
-        /* Sample tracks for demo */
-        .sample-badge {
-            text-align: center;
-            padding: 20px;
+            font-size: 24px;
+            background: #f0f0f0;
             color: #666;
-            font-style: italic;
         }
 
-        /* Mobile responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 3rem;
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .post-image {
+                width: 70px;
+                height: 70px;
+                margin-right: 15px;
             }
             
-            .player-bar {
-                flex-direction: column;
-                align-items: stretch;
-                border-radius: 30px;
-                bottom: 20px;
-                padding: 15px;
+            .post-title {
+                font-size: 16px;
             }
             
-            .player-controls {
-                justify-content: center;
+            .site-title {
+                font-size: 20px;
             }
-        }
-
-        /* Loading animation */
-        .vibes-tag {
-            text-align: center;
-            margin-top: 40px;
-            color: #444;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
         }
     </style>
 </head>
 <body>
-    <div class="background-art"></div>
-    
-    <div class="container">
-        <header class="header">
-            <h1>ZEDTOPVIBES</h1>
-            <p>feel the rhythm • find your vibe</p>
-        </header>
-
-        <!-- Track Grid - Sample tracks for now -->
-        <div class="track-grid">
-            <div class="track-card">
-                <div class="track-art"></div>
-                <div class="track-info">
-                    <div class="track-title">Midnight Waves</div>
-                    <div class="track-artist">Luna Eclipse</div>
-                </div>
-            </div>
-
-            <div class="track-card">
-                <div class="track-art" style="background: linear-gradient(135deg, #f093fb, #f5576c)"></div>
-                <div class="track-info">
-                    <div class="track-title">Neon Dreams</div>
-                    <div class="track-artist">Cyber Drift</div>
-                </div>
-            </div>
-
-            <div class="track-card">
-                <div class="track-art" style="background: linear-gradient(135deg, #4facfe, #00f2fe)"></div>
-                <div class="track-info">
-                    <div class="track-title">Urban Flow</div>
-                    <div class="track-artist">The City Lights</div>
-                </div>
-            </div>
-
-            <div class="track-card">
-                <div class="track-art" style="background: linear-gradient(135deg, #43e97b, #38f9d7)"></div>
-                <div class="track-info">
-                    <div class="track-title">Sunset Drive</div>
-                    <div class="track-artist">Coastal Vibes</div>
-                </div>
-            </div>
-
-            <div class="track-card">
-                <div class="track-art" style="background: linear-gradient(135deg, #fa709a, #fee140)"></div>
-                <div class="track-info">
-                    <div class="track-title">Starlight</div>
-                    <div class="track-artist">Aurora Sky</div>
-                </div>
-            </div>
-
-            <div class="track-card">
-                <div class="track-art" style="background: linear-gradient(135deg, #30cfd0, #330867)"></div>
-                <div class="track-info">
-                    <div class="track-title">Deep Focus</div>
-                    <div class="track-artist">Lofi Beats</div>
-                </div>
-            </div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="hamburger">☰</div>
+            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
+            <div class="right-spacer"></div>
         </div>
+    </nav>
 
-        <div class="sample-badge">
-            ⚡ sample tracks • real music coming soon ⚡
-        </div>
-
-        <!-- Creative Player Bar -->
-        <div class="player-bar">
-            <div class="player-controls">
-                <button class="control-btn">⏮</button>
-                <button class="control-btn play-btn">▶</button>
-                <button class="control-btn">⏭</button>
-            </div>
-            <div class="player-info">
-                <div class="now-playing">now browsing</div>
-                <div class="track-name">select a track to begin</div>
-            </div>
-            <div class="player-controls">
-                <button class="control-btn">🔊</button>
-            </div>
+    <!-- Search Bar -->
+    <div class="search-section">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search tracks...">
         </div>
     </div>
 
-    <div class="vibes-tag">
-        ✦ stage 2 • creative frontend ✦
-    </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Section Header -->
+        <div class="section-header">LATEST RELEASES</div>
+
+        <!-- Post List -->
+        <div class="post-list">
+            <!-- Post 1 -->
+            <a href="#" class="post-item">
+                <div class="post-image">🎵</div>
+                <div class="post-content">
+                    <div class="post-title">Midnight Waves - Luna Eclipse</div>
+                    <div class="post-date">March 15, 2024</div>
+                </div>
+            </a>
+
+            <!-- Post 2 -->
+            <a href="#" class="post-item">
+                <div class="post-image">🎸</div>
+                <div class="post-content">
+                    <div class="post-title">Neon Dreams - Cyber Drift</div>
+                    <div class="post-date">March 12, 2024</div>
+                </div>
+            </a>
+
+            <!-- Post 3 -->
+            <a href="#" class="post-item">
+                <div class="post-image">🎤</div>
+                <div class="post-content">
+                    <div class="post-title">Urban Flow - The City Lights</div>
+                    <div class="post-date">March 10, 2024</div>
+                </div>
+            </a>
+
+            <!-- Post 4 -->
+            <a href="#" class="post-item">
+                <div class="post-image">🌅</div>
+                <div class="post-content">
+                    <div class="post-title">Sunset Drive - Coastal Vibes</div>
+                    <div class="post-date">March 8, 2024</div>
+                </div>
+            </a>
+
+            <!-- Post 5 -->
+            <a href="#" class="post-item">
+                <div class="post-image">✨</div>
+                <div class="post-content">
+                    <div class="post-title">Starlight - Aurora Sky</div>
+                    <div class="post-date">March 5, 2024</div>
+                </div>
+            </a>
+
+            <!-- Post 6 -->
+            <a href="#" class="post-item">
+                <div class="post-image">🎹</div>
+                <div class="post-content">
+                    <div class="post-title">Deep Focus - Lofi Beats</div>
+                    <div class="post-date">March 3, 2024</div>
+                </div>
+            </a>
+
+            <!-- Post 7 -->
+            <a href="#" class="post-item">
+                <div class="post-image">🥁</div>
+                <div class="post-content">
+                    <div class="post-title">Rhythm & Soul - DJ Pulse</div>
+                    <div class="post-date">March 1, 2024</div>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#">about</a>
+            <a href="#">submit music</a>
+            <a href="#">contact</a>
+            <a href="#">privacy</a>
+        </div>
+        <div class="copyright">
+            © 2024 Zedtopvibes. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Simple hamburger menu functionality (optional) -->
+    <script>
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            alert('Menu will be here - we can add navigation links later!');
+        });
+    </script>
 </body>
 </html>
