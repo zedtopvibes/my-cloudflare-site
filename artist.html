@@ -533,21 +533,37 @@
 
     <!-- MAIN LAYOUT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons will be shown here -->
+        <!-- Loading will be handled by JavaScript -->
         <div style="text-align: center; padding: 60px; width: 100%;">Loading artist...</div>
     </div>
 
     <script>
         // API Base URL
         const API_BASE = '/api';
-        
-        // Get artist identifier from URL - supports both slug and query param
+
+        // Get artist identifier from multiple sources
         const urlParams = new URLSearchParams(window.location.search);
-        const artistName = urlParams.get('name');
-        
+        const queryName = urlParams.get('name');
+
         // Check if we're using a clean URL with slug (from data attribute)
         const contentDiv = document.getElementById('content');
-        const artistSlug = contentDiv.dataset.artistSlug;
+        const slugFromAttribute = contentDiv ? contentDiv.dataset.artistSlug : null;
+
+        // Determine which identifier to use
+        let artistIdentifier = null;
+        let isSlug = false;
+
+        if (slugFromAttribute) {
+            // Clean URL format: /artist/ice-spice
+            artistIdentifier = slugFromAttribute;
+            isSlug = true;
+            console.log('Using slug from attribute:', artistIdentifier);
+        } else if (queryName) {
+            // Query parameter format: ?name=Ice%20Spice
+            artistIdentifier = queryName;
+            isSlug = false;
+            console.log('Using name from query:', artistIdentifier);
+        }
 
         // Helper functions
         function formatNumber(num) {
@@ -590,7 +606,7 @@
         }
 
         function goToArtist(artistName) {
-            // Use slug format
+            // Use slug format for clean URLs
             const slug = artistName.toLowerCase()
                 .replace(/\s+/g, '-')
                 .replace(/[^\w-]/g, '')
@@ -600,32 +616,29 @@
 
         // Load artist data using the optimized API
         async function loadArtistData() {
-            try {
-                // Determine the identifier (slug or name)
-                let identifier = artistSlug || artistName;
-                
-                if (!identifier) {
-                    document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No artist specified</div>';
-                    return;
-                }
+            if (!artistIdentifier) {
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No artist specified</div>';
+                return;
+            }
 
+            try {
                 // Show loading state
                 document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading artist...</div>';
 
                 let apiUrl;
-                if (artistSlug) {
-                    // Using clean URL with slug
-                    apiUrl = `${API_BASE}/artist/${artistSlug}`;
+                if (isSlug) {
+                    // Direct slug lookup (clean URL)
+                    apiUrl = `${API_BASE}/artist/${artistIdentifier}`;
                 } else {
-                    // Using query parameter - convert name to slug
-                    const slug = artistName.toLowerCase()
+                    // Convert name to slug for API (backward compatibility)
+                    const slug = artistIdentifier.toLowerCase()
                         .replace(/\s+/g, '-')
                         .replace(/[^\w-]/g, '')
                         .replace(/-+$/, '');
                     apiUrl = `${API_BASE}/artist/${slug}`;
                 }
 
-                console.log('Fetching artist from:', apiUrl);
+                console.log('Fetching from API:', apiUrl);
                 const response = await fetch(apiUrl);
 
                 if (!response.ok) {
@@ -633,7 +646,7 @@
                 }
 
                 const data = await response.json();
-                console.log('Artist data:', data);
+                console.log('Artist data received:', data);
 
                 // Render the page with the data
                 renderPage(data.name, data.tracks, data.stats);
