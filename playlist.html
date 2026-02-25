@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zedtopvibes • Playlist Details</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -110,7 +112,7 @@
             width: 100%;
         }
 
-        /* LEFT SIDEBAR - PLAYLIST TRACKS */
+        /* LEFT SIDEBAR */
         .left-sidebar {
             flex: 3;
             background: #ffffff;
@@ -423,6 +425,13 @@
         .info-value {
             color: #222;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-value i {
+            color: #ff5500;
         }
 
         /* LOADING SKELETONS */
@@ -433,86 +442,6 @@
         @keyframes skeleton-loading {
             0% { background-color: #f0f0f0; }
             100% { background-color: #e0e0e0; }
-        }
-
-        .skeleton-header {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            padding: 25px;
-        }
-
-        .skeleton-cover {
-            width: 150px;
-            height: 150px;
-            border-radius: 12px;
-            background: #e0e0e0;
-        }
-
-        .skeleton-info {
-            flex: 1;
-        }
-
-        .skeleton-title {
-            width: 70%;
-            height: 36px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        .skeleton-meta {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .skeleton-stat {
-            width: 100px;
-            height: 32px;
-            background: #e0e0e0;
-            border-radius: 20px;
-        }
-
-        .skeleton-desc {
-            width: 80%;
-            height: 16px;
-            background: #e0e0e0;
-            border-radius: 4px;
-        }
-
-        .skeleton-track {
-            display: flex;
-            align-items: center;
-            padding: 12px 18px;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-        .skeleton-number {
-            width: 40px;
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 4px;
-        }
-
-        .skeleton-track-info {
-            flex: 1;
-            margin-left: 15px;
-        }
-
-        .skeleton-track-title {
-            width: 50%;
-            height: 18px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 6px;
-        }
-
-        .skeleton-track-artist {
-            width: 30%;
-            height: 14px;
-            background: #e0e0e0;
-            border-radius: 4px;
         }
 
         /* Footer */
@@ -580,73 +509,8 @@
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons -->
-        <aside class="left-sidebar">
-            <div class="breadcrumbs">
-                <span class="skeleton" style="display: inline-block; width: 300px; height: 20px;"></span>
-            </div>
-            
-            <div class="skeleton-header">
-                <div class="skeleton-cover"></div>
-                <div class="skeleton-info">
-                    <div class="skeleton-title"></div>
-                    <div class="skeleton-meta">
-                        <div class="skeleton-stat"></div>
-                        <div class="skeleton-stat"></div>
-                        <div class="skeleton-stat"></div>
-                        <div class="skeleton-stat"></div>
-                    </div>
-                    <div class="skeleton-desc"></div>
-                </div>
-            </div>
-            
-            <div class="section-header">
-                <h2 class="section-title">Playlist Tracks</h2>
-                <a href="#" class="view-all">View All ➔</a>
-            </div>
-            
-            <div class="track-list">
-                <div class="skeleton-track">
-                    <div class="skeleton-number"></div>
-                    <div class="skeleton-track-info">
-                        <div class="skeleton-track-title"></div>
-                        <div class="skeleton-track-artist"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track">
-                    <div class="skeleton-number"></div>
-                    <div class="skeleton-track-info">
-                        <div class="skeleton-track-title"></div>
-                        <div class="skeleton-track-artist"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track">
-                    <div class="skeleton-number"></div>
-                    <div class="skeleton-track-info">
-                        <div class="skeleton-track-title"></div>
-                        <div class="skeleton-track-artist"></div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        
-        <div class="right-sidebar">
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Similar Playlists</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div>
-                    <div class="sidebar-item">
-                        <div class="skeleton" style="width: 60px; height: 60px; border-radius: 8px;"></div>
-                        <div class="sidebar-info">
-                            <div class="skeleton" style="width: 120px; height: 16px; margin-bottom: 5px;"></div>
-                            <div class="skeleton" style="width: 80px; height: 12px;"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <!-- Loading skeleton -->
+        <div style="text-align: center; padding: 60px; width: 100%;">Loading playlist...</div>
     </div>
 
     <!-- Footer -->
@@ -662,9 +526,8 @@
         
         // Get playlist ID from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const playlistId = urlParams.get('id') || '1'; // Default to 1 for demo
+        const playlistId = urlParams.get('id');
 
-        // Navigation functions
         function goHome() {
             window.location.href = '/';
         }
@@ -681,8 +544,8 @@
             window.location.href = `/playlist.html?id=${id}`;
         }
 
-        // Helper functions
         function formatNumber(num) {
+            if (!num) return '0';
             if (num >= 1000) {
                 return (num / 1000).toFixed(1) + 'k';
             }
@@ -707,236 +570,190 @@
             return `${minutes} min`;
         }
 
-        // Placeholder data for demo
-        const placeholderPlaylist = {
-            id: 1,
-            name: "Zambian Hits 2024",
-            description: "The biggest Zambian tracks of the year. Updated weekly with the freshest sounds from Zambia's top artists.",
-            cover_emoji: "🇿🇲",
-            created_by: "Zedtopvibes",
-            created_at: "2024-01-15",
-            track_count: 24,
-            tracks: [
-                {
-                    id: 1,
-                    title: "Midnight Waves",
-                    artist: "Luna Eclipse",
-                    duration: 210,
-                    plays: 1245,
-                    downloads: 67,
-                    genre: "electronic"
-                },
-                {
-                    id: 2,
-                    title: "Neon Dreams",
-                    artist: "Cyber Drift",
-                    duration: 185,
-                    plays: 987,
-                    downloads: 43,
-                    genre: "synthwave"
-                },
-                {
-                    id: 3,
-                    title: "Urban Flow",
-                    artist: "The City Lights",
-                    duration: 195,
-                    plays: 756,
-                    downloads: 28,
-                    genre: "hiphop"
-                },
-                {
-                    id: 4,
-                    title: "Sunset Drive",
-                    artist: "Coastal Vibes",
-                    duration: 175,
-                    plays: 2341,
-                    downloads: 89,
-                    genre: "lofi"
-                },
-                {
-                    id: 5,
-                    title: "Starlight",
-                    artist: "Aurora Sky",
-                    duration: 225,
-                    plays: 623,
-                    downloads: 34,
-                    genre: "ambient"
-                },
-                {
-                    id: 6,
-                    title: "Deep Focus",
-                    artist: "Lofi Beats",
-                    duration: 240,
-                    plays: 3456,
-                    downloads: 156,
-                    genre: "lofi"
-                }
-            ]
-        };
-
-        const similarPlaylists = [
-            {
-                id: 2,
-                name: "Chill Lo-Fi Beats",
-                cover_emoji: "🌙",
-                track_count: 18
-            },
-            {
-                id: 4,
-                name: "Sunday Vibes",
-                cover_emoji: "☀️",
-                track_count: 21
-            },
-            {
-                id: 5,
-                name: "Zam Hip-Hop",
-                cover_emoji: "🎤",
-                track_count: 15
+        async function loadPlaylist() {
+            if (!playlistId) {
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No playlist specified</div>';
+                return;
             }
-        ];
 
-        function renderPlaylist() {
-            const playlist = placeholderPlaylist;
-            const tracks = playlist.tracks;
-            
-            // Calculate totals
-            const totalDuration = calculateTotalDuration(tracks);
-            const totalPlays = tracks.reduce((sum, t) => sum + t.plays, 0);
-            const totalDownloads = tracks.reduce((sum, t) => sum + t.downloads, 0);
-            
-            // Get unique artists
-            const artists = [...new Set(tracks.map(t => t.artist))].slice(0, 3);
+            try {
+                // Increment view count
+                fetch(`${API_BASE}/playlists/${playlistId}/view`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(err => console.error('View count error:', err));
 
-            const content = document.getElementById('content');
-            
-            content.innerHTML = `
-                <!-- LEFT SIDEBAR -->
-                <aside class="left-sidebar">
-                    <!-- Breadcrumbs -->
-                    <div class="breadcrumbs">
-                        <a href="/">Home</a> / 
-                        <a href="/playlists.html">Playlists</a> / 
-                        <span>${playlist.name}</span>
-                    </div>
-                    
-                    <!-- Playlist Header -->
-                    <div class="playlist-header">
-                        <div class="playlist-cover">${playlist.cover_emoji}</div>
-                        <div class="playlist-info">
-                            <h1 class="playlist-title">${playlist.name}</h1>
-                            <div class="playlist-meta">
-                                <span class="playlist-stats"><i class="fas fa-music"></i> ${tracks.length} tracks</span>
-                                <span class="playlist-stats"><i class="fas fa-clock"></i> ${totalDuration}</span>
-                                <span class="playlist-stats"><i class="fas fa-headphones"></i> ${formatNumber(totalPlays)} plays</span>
-                                <span class="playlist-stats"><i class="fas fa-download"></i> ${formatNumber(totalDownloads)} downloads</span>
-                            </div>
-                            <p class="playlist-description">${playlist.description}</p>
-                            <div class="playlist-created">Created by ${playlist.created_by} • ${new Date(playlist.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Tracks Section -->
-                    <div class="section-header">
-                        <h2 class="section-title">Playlist Tracks</h2>
-                        <a href="#" class="view-all">View All ➔</a>
-                    </div>
-                    
-                    <div class="track-list">
-                        ${tracks.map((track, index) => `
-                            <div class="track-item" onclick="goToTrack(${track.id})">
-                                <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
-                                <div class="track-info">
-                                    <div class="track-title">${track.title}</div>
-                                    <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(track.artist)}')">${track.artist}</div>
-                                </div>
-                                <div class="track-meta">
-                                    <span class="track-duration"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
-                                    <span class="track-plays"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
-                                    <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </aside>
+                // Fetch playlist details
+                const response = await fetch(`${API_BASE}/playlists/${playlistId}`);
+                if (!response.ok) throw new Error('Playlist not found');
                 
-                <!-- RIGHT SIDEBAR -->
-                <div class="right-sidebar">
-                    <!-- Similar Playlists -->
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Similar Playlists</h2>
-                            <a href="/playlists.html" class="view-all">View All ➔</a>
+                const data = await response.json();
+                const playlist = data;
+                const tracks = data.tracks || [];
+                
+                // Calculate totals
+                const totalDuration = calculateTotalDuration(tracks);
+                const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+                const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
+                
+                // Get unique artists
+                const artists = [...new Set(tracks.map(t => t.artist))].slice(0, 3);
+
+                const content = document.getElementById('content');
+                content.innerHTML = `
+                    <!-- LEFT SIDEBAR -->
+                    <aside class="left-sidebar">
+                        <!-- Breadcrumbs -->
+                        <div class="breadcrumbs">
+                            <a href="/">Home</a> / 
+                            <a href="/playlists.html">Playlists</a> / 
+                            <span>${playlist.name}</span>
                         </div>
-                        <div>
-                            ${similarPlaylists.map(p => `
-                                <div class="sidebar-item" onclick="goToPlaylist(${p.id})">
-                                    <div class="sidebar-thumb">${p.cover_emoji}</div>
-                                    <div class="sidebar-info">
-                                        <div class="sidebar-title">${p.name}</div>
-                                        <div class="sidebar-sub">${p.track_count} tracks</div>
-                                    </div>
+                        
+                        <!-- Playlist Header -->
+                        <div class="playlist-header">
+                            <div class="playlist-cover">${playlist.cover_emoji || '📋'}</div>
+                            <div class="playlist-info">
+                                <h1 class="playlist-title">${playlist.name}</h1>
+                                <div class="playlist-meta">
+                                    <span class="playlist-stats"><i class="fas fa-music"></i> ${tracks.length} tracks</span>
+                                    <span class="playlist-stats"><i class="fas fa-clock"></i> ${totalDuration}</span>
+                                    <span class="playlist-stats"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || totalPlays)}</span>
+                                    <span class="playlist-stats"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads || totalDownloads)}</span>
+                                    <span class="playlist-stats"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span>
                                 </div>
-                            `).join('')}
+                                <p class="playlist-description">${playlist.description || 'No description available.'}</p>
+                                <div class="playlist-created">Created by ${playlist.created_by || 'Zedtopvibes'} • ${new Date(playlist.created_at).toLocaleDateString()}</div>
+                            </div>
                         </div>
-                    </section>
-                    
-                    <!-- Featured Artists -->
-                    <section class="section-block">
+                        
+                        <!-- Tracks Section -->
                         <div class="section-header">
-                            <h2 class="section-title">Featured Artists</h2>
+                            <h2 class="section-title">Playlist Tracks</h2>
                             <a href="#" class="view-all">View All ➔</a>
                         </div>
-                        <div>
-                            ${artists.map(artist => `
-                                <div class="sidebar-item" onclick="goToArtist('${encodeURIComponent(artist)}')">
-                                    <div class="sidebar-thumb">👤</div>
-                                    <div class="sidebar-info">
-                                        <div class="sidebar-title">${artist}</div>
-                                        <div class="sidebar-sub">Featured in this playlist</div>
+                        
+                        <div class="track-list">
+                            ${tracks.map((track, index) => `
+                                <div class="track-item" onclick="goToTrack(${track.id})">
+                                    <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
+                                    <div class="track-info">
+                                        <div class="track-title">${track.title}</div>
+                                        <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(track.artist)}')">${track.artist}</div>
+                                    </div>
+                                    <div class="track-meta">
+                                        <span class="track-duration"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                                        <span class="track-plays"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                        <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
-                    </section>
+                    </aside>
                     
-                    <!-- Playlist Info -->
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Playlist Info</h2>
-                        </div>
-                        <div>
-                            <div class="info-row">
-                                <span class="info-label">Created</span>
-                                <span class="info-value">${new Date(playlist.created_at).toLocaleDateString()}</span>
+                    <!-- RIGHT SIDEBAR -->
+                    <div class="right-sidebar">
+                        <!-- Similar Playlists -->
+                        <section class="section-block">
+                            <div class="section-header">
+                                <h2 class="section-title">Similar Playlists</h2>
+                                <a href="/playlists.html" class="view-all">View All ➔</a>
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">By</span>
-                                <span class="info-value">${playlist.created_by}</span>
+                            <div id="similarPlaylists"></div>
+                        </section>
+                        
+                        <!-- Featured Artists -->
+                        <section class="section-block">
+                            <div class="section-header">
+                                <h2 class="section-title">Featured Artists</h2>
+                                <a href="#" class="view-all">View All ➔</a>
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">Tracks</span>
-                                <span class="info-value">${tracks.length}</span>
+                            <div id="featuredArtists">
+                                ${artists.map(artist => `
+                                    <div class="sidebar-item" onclick="goToArtist('${encodeURIComponent(artist)}')">
+                                        <div class="sidebar-thumb">👤</div>
+                                        <div class="sidebar-info">
+                                            <div class="sidebar-title">${artist}</div>
+                                            <div class="sidebar-sub">Featured in this playlist</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">Duration</span>
-                                <span class="info-value">${totalDuration}</span>
+                        </section>
+                        
+                        <!-- Playlist Info -->
+                        <section class="section-block">
+                            <div class="section-header">
+                                <h2 class="section-title">Playlist Info</h2>
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">Total Plays</span>
-                                <span class="info-value">${formatNumber(totalPlays)}</span>
+                            <div>
+                                <div class="info-row">
+                                    <span class="info-label">Created</span>
+                                    <span class="info-value">${new Date(playlist.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">By</span>
+                                    <span class="info-value">${playlist.created_by || 'Zedtopvibes'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Tracks</span>
+                                    <span class="info-value">${tracks.length}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Duration</span>
+                                    <span class="info-value">${totalDuration}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Total Plays</span>
+                                    <span class="info-value"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || totalPlays)}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Total Downloads</span>
+                                    <span class="info-value"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads || totalDownloads)}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Total Views</span>
+                                    <span class="info-value"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span>
+                                </div>
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">Total Downloads</span>
-                                <span class="info-value">${formatNumber(totalDownloads)}</span>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            `;
+                        </section>
+                    </div>
+                `;
+
+                // Load similar playlists
+                loadSimilarPlaylists(playlist.id);
+
+            } catch (error) {
+                console.error('Error loading playlist:', error);
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Error loading playlist</div>';
+            }
         }
 
-        // Load the playlist
-        renderPlaylist();
+        async function loadSimilarPlaylists(currentPlaylistId) {
+            try {
+                const response = await fetch(`${API_BASE}/playlists`);
+                const playlists = await response.json();
+                
+                const similar = playlists
+                    .filter(p => p.id != currentPlaylistId)
+                    .slice(0, 3);
+                
+                document.getElementById('similarPlaylists').innerHTML = similar.map(playlist => `
+                    <div class="sidebar-item" onclick="goToPlaylist(${playlist.id})">
+                        <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
+                        <div class="sidebar-info">
+                            <div class="sidebar-title">${playlist.name}</div>
+                            <div class="sidebar-sub">
+                                <span>${playlist.track_count || 0} tracks</span>
+                                <span><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading similar playlists:', error);
+            }
+        }
 
         // Search functionality
         document.getElementById('searchInput').addEventListener('keypress', (e) => {
@@ -944,6 +761,9 @@
                 window.location.href = '/?search=' + encodeURIComponent(e.target.value);
             }
         });
+
+        // Load playlist
+        loadPlaylist();
     </script>
 </body>
 </html>
