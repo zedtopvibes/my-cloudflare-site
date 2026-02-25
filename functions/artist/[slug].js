@@ -4,16 +4,16 @@ export async function onRequest(context) {
   try {
     const slug = params.slug;
     
-    // Convert slug to artist name with proper spacing
-    const baseName = slug.split('-').map(word => 
+    // Convert slug to artist name (e.g., "ice-spice" → "Ice Spice")
+    const artistName = slug.split('-').map(word => 
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
     
-    // Try both with and without trailing space
-    const artistName = baseName + ' '; // Add trailing space
+    // Encode exactly once for the working format
+    const encodedName = encodeURIComponent(artistName);
     
-    // Redirect to the working URL format (with double encoding)
-    const redirectUrl = '/artist?name=' + encodeURIComponent(encodeURIComponent(artistName));
+    // Redirect to the working URL
+    const redirectUrl = `/artist?name=${encodedName}`;
     
     return new Response(null, {
       status: 302,
