@@ -1,43 +1,77 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
   
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
+  };
+
+  // Handle OPTIONS request
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers });
+  }
+
+  // Only allow GET
+  if (request.method !== 'GET') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
+      status: 405, 
+      headers 
+    });
+  }
+
   try {
     const slug = params.slug;
     
-    // First, check if this is a valid artist by calling the API
-    const apiUrl = new URL(request.url);
-    const apiReq = new Request(
-      `${apiUrl.origin}/api/artist/${slug}`,
-      { method: 'GET', headers: { 'Content-Type': 'application/json' } }
-    );
+    // Find artist by slug
+    const tracks = await env.DB.prepare(`
+      SELECT * FROM tracks WHERE artist_slug = ?
+    `).bind(slug).all();
     
-    const apiResponse = await fetch(apiReq);
-    
-    // If artist doesn't exist, return 404
-    if (!apiResponse.ok) {
-      return new Response('Artist not found', { status: 404 });
+    if (!tracks.results || tracks.results.length === 0) {
+      return new Response(JSON.stringify({ error: 'Artist not found' }), { 
+        status: 404, 
+        headers 
+      });
     }
     
-    // Get the artist page HTML
-    const htmlResponse = await env.ASSETS.fetch(new URL('/artist.html', request.url));
-    let html = await htmlResponse.text();
+    // Get artist name from first track
+    const artistName = tracks.results[0].artist;
     
-    // Inject the artist name as a query parameter (for backward compatibility)
-    const artistData = await apiResponse.json();
-    const artistName = encodeURIComponent(artistData.name);
+    // Calculate artist stats
+    const stats = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) as track_count,
+        SUM(plays) as total_plays,
+        SUM(downloads) as total_downloads,
+        SUM(views) as total_views,
+        MIN(uploaded_at) as first_release,
+        MAX(uploaded_at) as latest_release,
+        GROUP_CONCAT(DISTINCT genre) as genres
+      FROM tracks WHERE artist_slug = ?
+    `).bind(slug).first();
     
-    // Modify the HTML to redirect to the working page
-    // This is a temporary solution - we'll update the HTML later to use slugs directly
-    html = html.replace(
-      '<body>',
-      `<body><script>window.ARTIST_SLUG = '${slug}'; window.ARTIST_NAME = '${artistData.name}';</script>`
-    );
-    
-    return new Response(html, {
-      headers: { 'Content-Type': 'text/html' }
-    });
+    return new Response(JSON.stringify({
+      name: artistName,
+      slug: slug,
+      tracks: tracks.results,
+      stats: {
+        track_count: stats.track_count || 0,
+        total_plays: stats.total_plays || 0,
+        total_downloads: stats.total_downloads || 0,
+        total_views: stats.total_views || 0,
+        first_release: stats.first_release,
+        latest_release: stats.latest_release,
+        genres: stats.genres ? stats.genres.split(',') : []
+      }
+    }), { headers });
     
   } catch (error) {
-    return new Response('Error loading artist', { status: 500 });
+    console.error('Error fetching artist:', error);
+    return new Response(JSON.stringify({ error: error.message }), { 
+      status: 500, 
+      headers 
+    });
   }
 }
