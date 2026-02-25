@@ -618,7 +618,12 @@
                 currentTrack = track;
 
                 // Increment view count
-                fetch(`${API_BASE}/tracks/${trackId}/view`, { method: 'POST' });
+                fetch(`${API_BASE}/tracks/${trackId}/view`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).catch(err => console.error('View count error:', err));
 
                 // Fetch all tracks for "More from Artist" and "Similar Songs"
                 const allTracksResponse = await fetch(`${API_BASE}/tracks`);
@@ -684,7 +689,7 @@
                             <button class="action-btn" onclick="likeTrack(${track.id})">❤️ Like</button>
                             <button class="action-btn" onclick="addToPlaylist(${track.id})">➕ Playlist</button>
                             <button class="action-btn download-btn" onclick="downloadTrack(${track.id}, '${track.r2_key}')">⬇️ Download</button>
-                            <button class="action-btn" onclick="shareTrack(${track.id})">↗️ Share</button>
+                            <button class="action-btn" onclick="shareTrack()">↗️ Share</button>
                         </div>
                     </div>
                     
@@ -794,10 +799,19 @@
         async function playTrack(id, r2Key, title, artist) {
             try {
                 // Increment play count
-                await fetch(`${API_BASE}/tracks/${id}/play`, { method: 'POST' });
+                const playResponse = await fetch(`${API_BASE}/tracks/${id}/play`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
+                if (!playResponse.ok) {
+                    console.error('Failed to increment play count');
+                }
+
                 // Create audio URL
-                const audioUrl = `${API_BASE}/stream/${r2Key}`;
+                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
                 
                 // Stop current playback if any
                 if (audioPlayer) {
@@ -806,7 +820,16 @@
                 
                 // Create new audio player
                 audioPlayer = new Audio(audioUrl);
-                audioPlayer.play();
+                
+                // Add error handling
+                audioPlayer.onerror = (e) => {
+                    console.error('Audio error:', e);
+                    alert('Error playing audio. Make sure the file exists in R2.');
+                    document.getElementById('nowPlayingBar').style.display = 'none';
+                };
+                
+                // Play audio
+                await audioPlayer.play();
                 isPlaying = true;
                 
                 // Update now playing bar
@@ -821,9 +844,12 @@
                     document.getElementById('playPauseBtn').textContent = '▶️';
                 };
                 
+                // Update meta data in UI (optional)
+                updateTrackStats(id, 'plays');
+                
             } catch (error) {
                 console.error('Playback error:', error);
-                alert('Error playing track. Make sure the audio file exists in R2.');
+                alert('Error playing track: ' + error.message);
             }
         }
 
@@ -852,10 +878,19 @@
         async function downloadTrack(id, r2Key) {
             try {
                 // Increment download count
-                await fetch(`${API_BASE}/tracks/${id}/download`, { method: 'POST' });
+                const downloadResponse = await fetch(`${API_BASE}/tracks/${id}/download`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!downloadResponse.ok) {
+                    console.error('Failed to increment download count');
+                }
                 
                 // Trigger download
-                const audioUrl = `${API_BASE}/stream/${r2Key}`;
+                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
                 const a = document.createElement('a');
                 a.href = audioUrl;
                 a.download = currentTrack?.filename || 'track.mp3';
@@ -863,10 +898,36 @@
                 a.click();
                 document.body.removeChild(a);
                 
-                alert('Download started!');
+                // Update meta data in UI
+                updateTrackStats(id, 'downloads');
+                
             } catch (error) {
+                console.error('Download error:', error);
                 alert('Download failed: ' + error.message);
             }
+        }
+
+        // Update track stats in UI without reloading
+        function updateTrackStats(id, statType) {
+            const metaItems = document.querySelectorAll('.meta-item');
+            metaItems.forEach(item => {
+                if (statType === 'plays' && item.innerHTML.includes('▶️')) {
+                    const countEl = item.querySelector('strong');
+                    if (countEl) {
+                        let current = parseInt(countEl.textContent.replace('k', '')) * (countEl.textContent.includes('k') ? 1000 : 1);
+                        current++;
+                        countEl.textContent = formatNumber(current);
+                    }
+                }
+                if (statType === 'downloads' && item.innerHTML.includes('⬇️')) {
+                    const countEl = item.querySelector('strong');
+                    if (countEl) {
+                        let current = parseInt(countEl.textContent.replace('k', '')) * (countEl.textContent.includes('k') ? 1000 : 1);
+                        current++;
+                        countEl.textContent = formatNumber(current);
+                    }
+                }
+            });
         }
 
         function playPrevious() {
@@ -885,7 +946,7 @@
             alert('Playlists coming soon! 📋');
         }
 
-        function shareTrack(id) {
+        function shareTrack() {
             const url = window.location.href;
             navigator.clipboard.writeText(url);
             alert('Link copied to clipboard! 🔗');
