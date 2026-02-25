@@ -190,6 +190,13 @@
             font-size: 1.2rem;
             color: #666;
             margin-bottom: 15px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .song-artist:hover {
+            color: #ff5500;
+            text-decoration: underline;
         }
 
         .song-meta {
@@ -363,6 +370,12 @@
         .post-artist {
             font-size: 13px;
             color: #666;
+            cursor: pointer;
+        }
+
+        .post-artist:hover {
+            color: #ff5500;
+            text-decoration: underline;
         }
 
         .post-stats {
@@ -442,6 +455,12 @@
         .now-playing-artist {
             font-size: 12px;
             color: #888;
+            cursor: pointer;
+        }
+
+        .now-playing-artist:hover {
+            color: #ff5500;
+            text-decoration: underline;
         }
 
         .now-playing-controls {
@@ -487,7 +506,6 @@
             100% { background-color: #e0e0e0; }
         }
 
-        /* Song header skeleton */
         .skeleton-song-header {
             display: flex;
             gap: 25px;
@@ -541,7 +559,6 @@
             animation: skeleton-loading 1s linear infinite alternate;
         }
 
-        /* Player bar skeleton */
         .skeleton-player-bar {
             padding: 15px 25px;
             background: #fafafa;
@@ -587,7 +604,6 @@
             animation: skeleton-loading 1s linear infinite alternate;
         }
 
-        /* Description skeleton */
         .skeleton-description {
             padding: 25px;
         }
@@ -609,7 +625,6 @@
             width: 80%;
         }
 
-        /* Track list skeleton */
         .skeleton-track-item {
             display: flex;
             align-items: center;
@@ -647,7 +662,6 @@
             animation: skeleton-loading 1s linear infinite alternate;
         }
 
-        /* Quick info skeleton */
         .skeleton-info-row {
             display: flex;
             justify-content: space-between;
@@ -726,7 +740,6 @@
                 font-size: 1.8rem;
             }
 
-            /* Mobile skeletons */
             .skeleton-song-header {
                 flex-direction: column;
                 align-items: center;
@@ -761,14 +774,12 @@
 
     <!-- MAIN LAYOUT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons will be shown here initially -->
+        <!-- Loading skeletons will be shown here -->
         <aside class="left-sidebar">
-            <!-- Breadcrumbs skeleton -->
             <div class="breadcrumbs">
                 <span class="skeleton" style="display: inline-block; width: 200px; height: 16px;"></span>
             </div>
             
-            <!-- Song header skeleton -->
             <div class="skeleton-song-header">
                 <div class="skeleton-album-art"></div>
                 <div class="skeleton-song-info">
@@ -784,7 +795,6 @@
                 </div>
             </div>
             
-            <!-- Player bar skeleton -->
             <div class="skeleton-player-bar">
                 <div class="skeleton-controls">
                     <div class="skeleton-btn"></div>
@@ -799,17 +809,14 @@
                 </div>
             </div>
             
-            <!-- Description skeleton -->
             <div class="skeleton-description">
                 <div class="skeleton-desc-line"></div>
                 <div class="skeleton-desc-line"></div>
                 <div class="skeleton-desc-line"></div>
             </div>
             
-            <!-- Section spacer -->
             <div class="section-spacer"></div>
             
-            <!-- More from artist skeleton -->
             <div class="playlist-main-section">
                 <div class="section-header">
                     <h2 class="section-title">More from Artist</h2>
@@ -841,9 +848,7 @@
             </div>
         </aside>
         
-        <!-- RIGHT SIDEBAR with skeletons -->
         <div class="right-sidebar">
-            <!-- Albums by Artist skeleton -->
             <section class="section-block">
                 <div class="section-header">
                     <h2 class="section-title">Albums by Artist</h2>
@@ -860,7 +865,6 @@
                 </div>
             </section>
             
-            <!-- Similar Songs skeleton -->
             <section class="section-block">
                 <div class="section-header">
                     <h2 class="section-title">Similar Songs</h2>
@@ -891,7 +895,6 @@
                 </div>
             </section>
             
-            <!-- Quick Info skeleton -->
             <section class="section-block">
                 <div class="section-header">
                     <h2 class="section-title">Quick Info</h2>
@@ -943,7 +946,17 @@
         let currentTrack = null;
         let isPlaying = false;
 
-        // Helper functions
+        // ===== NAVIGATION FUNCTIONS =====
+        function goToTrack(id) {
+            window.location.href = `/song.html?id=${id}`;
+        }
+
+        // NEW: Go to artist page
+        function goToArtist(artistName) {
+            window.location.href = `/artist.html?name=${encodeURIComponent(artistName)}`;
+        }
+
+        // ===== HELPER FUNCTIONS =====
         function formatNumber(num) {
             if (num >= 1000) {
                 return (num / 1000).toFixed(1) + 'k';
@@ -970,7 +983,7 @@
             return emojis[genre] || emojis.default;
         }
 
-        // Load track data
+        // ===== DATA LOADING =====
         async function loadTrackDetails() {
             if (!trackId) {
                 document.getElementById('content').innerHTML = '<div class="loading">No track specified</div>';
@@ -978,7 +991,6 @@
             }
 
             try {
-                // Fetch track details
                 const response = await fetch(`${API_BASE}/tracks/${trackId}`);
                 if (!response.ok) {
                     throw new Error('Track not found');
@@ -986,27 +998,22 @@
                 const track = await response.json();
                 currentTrack = track;
 
-                // Increment view count
                 fetch(`${API_BASE}/tracks/${trackId}/view`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('View count error:', err));
 
-                // Fetch all tracks for "More from Artist" and "Similar Songs"
                 const allTracksResponse = await fetch(`${API_BASE}/tracks`);
                 const allTracks = await allTracksResponse.json();
 
-                // Filter tracks by same artist
                 const artistTracks = allTracks.filter(t => t.artist === track.artist && t.id !== track.id);
                 
-                // Filter similar songs (same genre, different artist)
                 const similarTracks = allTracks.filter(t => 
                     t.genre === track.genre && 
                     t.artist !== track.artist && 
                     t.id !== track.id
                 ).slice(0, 3);
 
-                // Render the page with real data (replaces skeletons)
                 renderPage(track, artistTracks, similarTracks);
 
             } catch (error) {
@@ -1015,26 +1022,22 @@
             }
         }
 
-        // Render the page with data (replaces skeletons)
         function renderPage(track, artistTracks, similarTracks) {
             const content = document.getElementById('content');
             
             content.innerHTML = `
-                <!-- LEFT SIDEBAR - SONG DETAIL -->
                 <aside class="left-sidebar">
-                    <!-- Breadcrumbs -->
                     <div class="breadcrumbs">
                         <a href="/">Home</a> / 
                         <a href="#">${track.genre || 'Music'}</a> / 
                         <span>${track.title}</span>
                     </div>
                     
-                    <!-- Song Header -->
                     <div class="song-header">
                         <div class="album-art">${getEmojiForGenre(track.genre)}</div>
                         <div class="song-info">
                             <h1 class="song-title">${track.title}</h1>
-                            <div class="song-artist">${track.artist}</div>
+                            <div class="song-artist" onclick="goToArtist('${encodeURIComponent(track.artist)}')">${track.artist}</div>
                             <div class="song-meta">
                                 <div class="meta-item">📅 <strong>${new Date(track.uploaded_at).getFullYear()}</strong></div>
                                 <div class="meta-item">⏱️ <strong>${formatDuration(track.duration)}</strong></div>
@@ -1045,7 +1048,6 @@
                         </div>
                     </div>
                     
-                    <!-- Compact Player Bar -->
                     <div class="compact-actions">
                         <div class="player-controls">
                             <button class="control-btn" onclick="playPrevious()">⏮</button>
@@ -1060,18 +1062,15 @@
                         </div>
                     </div>
                     
-                    <!-- Description -->
                     <div class="description">
                         <p>${track.description || 'No description available.'}</p>
                     </div>
                     
-                    <!-- Section Spacer -->
                     <div class="section-spacer"></div>
                     
-                    <!-- More from Artist Section -->
                     <div class="playlist-main-section">
                         <div class="section-header">
-                            <h2 class="section-title">More from ${track.artist}</h2>
+                            <h2 class="section-title" onclick="goToArtist('${encodeURIComponent(track.artist)}')" style="cursor: pointer;">More from ${track.artist}</h2>
                             <a href="#" class="view-all">View All</a>
                         </div>
                         <div class="post-list">
@@ -1080,7 +1079,7 @@
                                     <div class="post-image">${getEmojiForGenre(t.genre)}</div>
                                     <div class="post-content">
                                         <div class="post-title">${t.title}</div>
-                                        <div class="post-artist">${t.artist}</div>
+                                        <div class="post-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(t.artist)}')">${t.artist}</div>
                                         <div class="post-stats">▶️ ${formatNumber(t.plays)} plays</div>
                                     </div>
                                 </div>
@@ -1089,9 +1088,7 @@
                     </div>
                 </aside>
                 
-                <!-- RIGHT SIDEBAR -->
                 <div class="right-sidebar">
-                    <!-- Section 1: Albums by Artist -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">Albums by Artist</h2>
@@ -1108,7 +1105,6 @@
                         </div>
                     </section>
                     
-                    <!-- Section 2: Similar Songs -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">Similar Songs</h2>
@@ -1120,14 +1116,13 @@
                                     <div class="post-image">${getEmojiForGenre(t.genre)}</div>
                                     <div class="post-content">
                                         <div class="post-title">${t.title}</div>
-                                        <div class="post-artist">${t.artist}</div>
+                                        <div class="post-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(t.artist)}')">${t.artist}</div>
                                     </div>
                                 </div>
                             `).join('') : '<div class="loading">No similar tracks found</div>'}
                         </div>
                     </section>
                     
-                    <!-- Section 3: Quick Info -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">Quick Info</h2>
@@ -1157,7 +1152,7 @@
             `;
         }
 
-        // Audio playback functions
+        // ===== AUDIO FUNCTIONS =====
         function playCurrentTrack() {
             if (!currentTrack) return;
             playTrack(currentTrack.id, currentTrack.r2_key, currentTrack.title, currentTrack.artist);
@@ -1165,26 +1160,20 @@
 
         async function playTrack(id, r2Key, title, artist) {
             try {
-                // Increment play count
                 fetch(`${API_BASE}/tracks/${id}/play`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('Play count error:', err));
 
-                // Create audio URL
                 const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
-                console.log('Playing URL:', audioUrl);
                 
-                // Stop current playback if any
                 if (audioPlayer) {
                     audioPlayer.pause();
                     audioPlayer = null;
                 }
                 
-                // Create new audio player
                 audioPlayer = new Audio();
                 
-                // Set up event listeners
                 audioPlayer.onerror = (e) => {
                     console.error('Audio error:', e);
                     let errorMsg = 'Error playing audio. ';
@@ -1202,25 +1191,22 @@
                 };
 
                 audioPlayer.oncanplay = () => {
-                    console.log('Can play, attempting playback');
                     audioPlayer.play().catch(e => {
                         console.error('Play failed:', e);
                     });
                 };
 
-                // Set the source and load
                 audioPlayer.src = audioUrl;
                 audioPlayer.load();
                 
                 isPlaying = true;
                 
-                // Update now playing bar
                 document.getElementById('nowPlayingTitle').textContent = title;
                 document.getElementById('nowPlayingArtist').textContent = artist;
+                document.getElementById('nowPlayingArtist').onclick = () => goToArtist(encodeURIComponent(artist));
                 document.getElementById('playPauseBtn').textContent = '⏸️';
                 document.getElementById('nowPlayingBar').style.display = 'flex';
                 
-                // Handle playback end
                 audioPlayer.onended = () => {
                     isPlaying = false;
                     document.getElementById('playPauseBtn').textContent = '▶️';
@@ -1257,22 +1243,18 @@
 
         async function downloadTrack(id, r2Key) {
             try {
-                // Increment download count
                 fetch(`${API_BASE}/tracks/${id}/download`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('Download count error:', err));
                 
-                // Create download URL
                 const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
                 
-                // Fetch the file first to ensure it exists
                 const response = await fetch(audioUrl);
                 if (!response.ok) {
                     throw new Error(`File not found (${response.status})`);
                 }
                 
-                // Get the blob and create download
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1311,16 +1293,12 @@
             alert('Link copied to clipboard! 🔗');
         }
 
-        function goToTrack(id) {
-            window.location.href = `/song.html?id=${id}`;
-        }
-
         // Hamburger menu
         document.querySelector('.hamburger').addEventListener('click', function() {
             window.location.href = '/';
         });
 
-        // Load track details when page loads
+        // Load track details
         loadTrackDetails();
     </script>
 </body>
