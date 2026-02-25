@@ -509,6 +509,7 @@
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
+        <!-- Loading skeletons will be shown here -->
         <div style="text-align: center; padding: 60px; width: 100%;">Loading playlist...</div>
     </div>
 
@@ -523,16 +524,44 @@
         // API Base URL
         const API_BASE = '/api';
         
-        // Get playlist ID from URL
+        // Get playlist identifier from multiple sources
         const urlParams = new URLSearchParams(window.location.search);
         const playlistId = urlParams.get('id');
 
+        // Check if we're using a clean URL with slug (from data attribute)
+        const contentDiv = document.getElementById('content');
+        const playlistSlug = contentDiv ? contentDiv.dataset.playlistSlug : null;
+
+        // Determine which identifier to use
+        let playlistIdentifier = null;
+        let useSlug = false;
+
+        if (playlistSlug) {
+            // Clean URL format: /playlist/zambian-hits-2024
+            playlistIdentifier = playlistSlug;
+            useSlug = true;
+            console.log('Using slug from attribute:', playlistIdentifier);
+        } else if (playlistId) {
+            // Old format: ?id=1
+            playlistIdentifier = playlistId;
+            useSlug = false;
+            console.log('Using ID from query:', playlistIdentifier);
+        }
+
+        // Navigation functions
         function goHome() {
             window.location.href = '/';
         }
 
         function goToArtist(artistName) {
-            window.location.href = `/artist.html?name=${encodeURIComponent(artistName)}`;
+            // Generate slug for artist
+            const slug = artistName
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]/g, '')
+                .replace(/--+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            window.location.href = `/artist/${slug}`;
         }
 
         function goToTrack(id) {
@@ -543,6 +572,11 @@
             window.location.href = `/playlist.html?id=${id}`;
         }
 
+        function goToPlaylistBySlug(slug) {
+            window.location.href = `/playlist/${slug}`;
+        }
+
+        // Helper functions
         function formatNumber(num) {
             if (!num && num !== 0) return '0';
             if (num >= 1000) {
@@ -570,168 +604,44 @@
             return `${minutes} min`;
         }
 
+        // Load playlist data
         async function loadPlaylist() {
-            if (!playlistId) {
+            if (!playlistIdentifier) {
                 document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No playlist specified</div>';
                 return;
             }
 
             try {
+                // Show loading state
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading playlist...</div>';
+                
+                let apiUrl;
+                if (useSlug) {
+                    // New clean URL format
+                    apiUrl = `${API_BASE}/playlist/by-slug/${playlistIdentifier}`;
+                } else {
+                    // Old format with ID
+                    apiUrl = `${API_BASE}/playlists/${playlistIdentifier}`;
+                }
+                
+                console.log('Fetching from API:', apiUrl);
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error('Playlist not found');
+                }
+                
+                const data = await response.json();
+                console.log('Playlist data received:', data);
+                
                 // Increment view count
-                fetch(`${API_BASE}/playlists/${playlistId}/view`, { 
+                fetch(`${API_BASE}/playlists/${data.id}/view`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('View count error:', err));
-
-                // Fetch playlist details
-                const response = await fetch(`${API_BASE}/playlists/${playlistId}`);
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const playlist = await response.json();
-                
-                // Get tracks array
-                const tracks = playlist.tracks || [];
-                
-                // Calculate totals
-                const totalDuration = calculateTotalDuration(tracks);
-                const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
-                const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
-                
-                // Get unique artists
-                const artists = [...new Set(tracks.map(t => t.artist).filter(a => a))].slice(0, 3);
-
-                // Format date
-                let createdDate = 'Unknown';
-                if (playlist.created_at) {
-                    createdDate = new Date(playlist.created_at).toLocaleDateString();
-                }
-
-                const content = document.getElementById('content');
-                content.innerHTML = `
-                    <!-- LEFT SIDEBAR -->
-                    <aside class="left-sidebar">
-                        <!-- Breadcrumbs -->
-                        <div class="breadcrumbs">
-                            <a href="/">Home</a> / 
-                            <a href="/playlists.html">Playlists</a> / 
-                            <span>${playlist.name || 'Untitled'}</span>
-                        </div>
-                        
-                        <!-- Playlist Header -->
-                        <div class="playlist-header">
-                            <div class="playlist-cover">${playlist.cover_emoji || '📋'}</div>
-                            <div class="playlist-info">
-                                <h1 class="playlist-title">${playlist.name || 'Untitled Playlist'}</h1>
-                                <div class="playlist-meta">
-                                    <span class="playlist-stats"><i class="fas fa-music"></i> ${tracks.length} tracks</span>
-                                    <span class="playlist-stats"><i class="fas fa-clock"></i> ${totalDuration}</span>
-                                    <span class="playlist-stats"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || totalPlays)}</span>
-                                    <span class="playlist-stats"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads || totalDownloads)}</span>
-                                    <span class="playlist-stats"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span>
-                                </div>
-                                <p class="playlist-description">${playlist.description || 'No description available.'}</p>
-                                <div class="playlist-created">Created by ${playlist.created_by || 'Zedtopvibes'} • ${createdDate}</div>
-                            </div>
-                        </div>
-                        
-                        <!-- Tracks Section -->
-                        <div class="section-header">
-                            <h2 class="section-title">Playlist Tracks</h2>
-                            <a href="#" class="view-all">View All ➔</a>
-                        </div>
-                        
-                        <div class="track-list">
-                            ${tracks.length > 0 ? tracks.map((track, index) => `
-                                <div class="track-item" onclick="goToTrack(${track.id})">
-                                    <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
-                                    <div class="track-info">
-                                        <div class="track-title">${track.title || 'Unknown'}</div>
-                                        <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${encodeURIComponent(track.artist || '')}')">${track.artist || 'Unknown'}</div>
-                                    </div>
-                                    <div class="track-meta">
-                                        <span class="track-duration"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
-                                        <span class="track-plays"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
-                                        <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
-                                    </div>
-                                </div>
-                            `).join('') : '<div style="padding: 20px; text-align: center; color: #888;">No tracks in this playlist</div>'}
-                        </div>
-                    </aside>
-                    
-                    <!-- RIGHT SIDEBAR -->
-                    <div class="right-sidebar">
-                        <!-- Similar Playlists -->
-                        <section class="section-block">
-                            <div class="section-header">
-                                <h2 class="section-title">Similar Playlists</h2>
-                                <a href="/playlists.html" class="view-all">View All ➔</a>
-                            </div>
-                            <div id="similarPlaylists">Loading...</div>
-                        </section>
-                        
-                        <!-- Featured Artists -->
-                        <section class="section-block">
-                            <div class="section-header">
-                                <h2 class="section-title">Featured Artists</h2>
-                                <a href="#" class="view-all">View All ➔</a>
-                            </div>
-                            <div id="featuredArtists">
-                                ${artists.length > 0 ? artists.map(artist => `
-                                    <div class="sidebar-item" onclick="goToArtist('${encodeURIComponent(artist)}')">
-                                        <div class="sidebar-thumb">👤</div>
-                                        <div class="sidebar-info">
-                                            <div class="sidebar-title">${artist}</div>
-                                            <div class="sidebar-sub">Featured in this playlist</div>
-                                        </div>
-                                    </div>
-                                `).join('') : '<div style="padding: 15px; text-align: center;">No artists found</div>'}
-                            </div>
-                        </section>
-                        
-                        <!-- Playlist Info -->
-                        <section class="section-block">
-                            <div class="section-header">
-                                <h2 class="section-title">Playlist Info</h2>
-                            </div>
-                            <div>
-                                <div class="info-row">
-                                    <span class="info-label">Created</span>
-                                    <span class="info-value">${createdDate}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">By</span>
-                                    <span class="info-value">${playlist.created_by || 'Zedtopvibes'}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Tracks</span>
-                                    <span class="info-value">${tracks.length}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Duration</span>
-                                    <span class="info-value">${totalDuration}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Total Plays</span>
-                                    <span class="info-value"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || totalPlays)}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Total Downloads</span>
-                                    <span class="info-value"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads || totalDownloads)}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Total Views</span>
-                                    <span class="info-value"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                `;
-
-                // Load similar playlists
-                loadSimilarPlaylists(playlist.id);
+                // Render the page
+                renderPlaylist(data);
 
             } catch (error) {
                 console.error('Error loading playlist:', error);
@@ -745,7 +655,156 @@
             }
         }
 
-        async function loadSimilarPlaylists(currentPlaylistId) {
+        // Render playlist page
+        function renderPlaylist(playlist) {
+            const tracks = playlist.tracks || [];
+            const stats = playlist.stats || {};
+            
+            // Calculate totals if not provided
+            const totalDuration = stats.total_duration ? 
+                formatDuration(stats.total_duration) : 
+                calculateTotalDuration(tracks);
+            
+            const totalPlays = stats.total_plays || tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+            const totalDownloads = stats.total_downloads || tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
+            
+            // Format date
+            const createdDate = playlist.created_at ? new Date(playlist.created_at).toLocaleDateString() : 'Unknown';
+
+            // Get unique artists
+            const artists = [...new Set(tracks.map(t => t.artist).filter(a => a))].slice(0, 3);
+
+            const content = document.getElementById('content');
+            
+            content.innerHTML = `
+                <!-- LEFT SIDEBAR -->
+                <aside class="left-sidebar">
+                    <!-- Breadcrumbs -->
+                    <div class="breadcrumbs">
+                        <a href="/">Home</a> / 
+                        <a href="/playlists.html">Playlists</a> / 
+                        <span>${playlist.name}</span>
+                    </div>
+                    
+                    <!-- Playlist Header -->
+                    <div class="playlist-header">
+                        <div class="playlist-cover">${playlist.cover_emoji || '📋'}</div>
+                        <div class="playlist-info">
+                            <h1 class="playlist-title">${playlist.name}</h1>
+                            <div class="playlist-meta">
+                                <span class="playlist-stats"><i class="fas fa-music"></i> ${tracks.length} tracks</span>
+                                <span class="playlist-stats"><i class="fas fa-clock"></i> ${totalDuration}</span>
+                                <span class="playlist-stats"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || totalPlays)}</span>
+                                <span class="playlist-stats"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads || totalDownloads)}</span>
+                                <span class="playlist-stats"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span>
+                            </div>
+                            <p class="playlist-description">${playlist.description || 'No description available.'}</p>
+                            <div class="playlist-created">Created by ${playlist.created_by || 'Zedtopvibes'} • ${createdDate}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tracks Section -->
+                    <div class="section-header">
+                        <h2 class="section-title">Playlist Tracks</h2>
+                        <a href="#" class="view-all">View All ➔</a>
+                    </div>
+                    
+                    <div class="track-list">
+                        ${tracks.length > 0 ? tracks.map((track, index) => `
+                            <div class="track-item" onclick="goToTrack(${track.id})">
+                                <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
+                                <div class="track-info">
+                                    <div class="track-title">${track.title}</div>
+                                    <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</div>
+                                </div>
+                                <div class="track-meta">
+                                    <span class="track-duration"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                                    <span class="track-plays"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                    <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
+                                </div>
+                            </div>
+                        `).join('') : '<div style="padding: 20px; text-align: center; color: #888;">No tracks in this playlist</div>'}
+                    </div>
+                </aside>
+                
+                <!-- RIGHT SIDEBAR -->
+                <div class="right-sidebar">
+                    <!-- Similar Playlists -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Similar Playlists</h2>
+                            <a href="/playlists.html" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="similarPlaylists" class="latest-albums-list">
+                            <!-- Will be loaded dynamically -->
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </section>
+                    
+                    <!-- Featured Artists -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Featured Artists</h2>
+                            <a href="#" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="featuredArtists" class="latest-albums-list">
+                            ${artists.length > 0 ? artists.map(artist => `
+                                <div class="sidebar-item" onclick="goToArtist('${artist.replace(/'/g, "\\'")}')">
+                                    <div class="sidebar-thumb">👤</div>
+                                    <div class="sidebar-info">
+                                        <div class="sidebar-title">${artist}</div>
+                                        <div class="sidebar-sub">Featured in this playlist</div>
+                                    </div>
+                                </div>
+                            `).join('') : '<div style="padding: 15px; text-align: center;">No artists found</div>'}
+                        </div>
+                    </section>
+                    
+                    <!-- Playlist Info -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Playlist Info</h2>
+                        </div>
+                        <div>
+                            <div class="info-row">
+                                <span class="info-label">Created</span>
+                                <span class="info-value">${createdDate}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">By</span>
+                                <span class="info-value">${playlist.created_by || 'Zedtopvibes'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Tracks</span>
+                                <span class="info-value">${tracks.length}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Duration</span>
+                                <span class="info-value">${totalDuration}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Total Plays</span>
+                                <span class="info-value"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || totalPlays)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Total Downloads</span>
+                                <span class="info-value"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads || totalDownloads)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Total Views</span>
+                                <span class="info-value"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+
+            // Load similar playlists
+            loadSimilarPlaylists(playlist.id, playlist.slug);
+        }
+
+        // Load similar playlists
+        async function loadSimilarPlaylists(currentPlaylistId, currentSlug) {
             try {
                 const response = await fetch(`${API_BASE}/playlists`);
                 if (!response.ok) throw new Error('Failed to fetch playlists');
@@ -760,7 +819,7 @@
                 if (container) {
                     if (similar.length > 0) {
                         container.innerHTML = similar.map(playlist => `
-                            <div class="sidebar-item" onclick="goToPlaylist(${playlist.id})">
+                            <div class="sidebar-item" onclick="goToPlaylistBySlug('${playlist.slug}')">
                                 <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
                                 <div class="sidebar-info">
                                     <div class="sidebar-title">${playlist.name}</div>
