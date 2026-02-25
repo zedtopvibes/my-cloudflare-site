@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -107,6 +107,22 @@
             padding: 14px 18px;
             background: #fff;
             border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                #ff5500 20%, 
+                #ff5500 80%, 
+                transparent 95%
+            );
         }
 
         .section-title {
@@ -119,7 +135,7 @@
         }
 
         .section-title::before {
-            content: "🎵";
+            content: "👤";
             font-size: 1.1rem;
             color: #ff5500;
         }
@@ -601,16 +617,22 @@
             window.location.href = '/';
         }
 
-        function goToTrack(id) {
-            window.location.href = `/song.html?id=${id}`;
+        function goToTrack(id, slug) {
+            if (slug) {
+                window.location.href = `/song/${slug}`;
+            } else {
+                window.location.href = `/song.html?id=${id}`;
+            }
         }
 
         function goToArtist(artistName) {
             // Use slug format for clean URLs
-            const slug = artistName.toLowerCase()
+            const slug = artistName
+                .toLowerCase()
                 .replace(/\s+/g, '-')
                 .replace(/[^\w-]/g, '')
-                .replace(/-+$/, '');
+                .replace(/--+/g, '-')
+                .replace(/^-+|-+$/g, '');
             window.location.href = `/artist/${slug}`;
         }
 
@@ -631,10 +653,12 @@
                     apiUrl = `${API_BASE}/artist/${artistIdentifier}`;
                 } else {
                     // Convert name to slug for API (backward compatibility)
-                    const slug = artistIdentifier.toLowerCase()
+                    const slug = artistIdentifier
+                        .toLowerCase()
                         .replace(/\s+/g, '-')
                         .replace(/[^\w-]/g, '')
-                        .replace(/-+$/, '');
+                        .replace(/--+/g, '-')
+                        .replace(/^-+|-+$/g, '');
                     apiUrl = `${API_BASE}/artist/${slug}`;
                 }
 
@@ -715,7 +739,7 @@
                     
                     <div class="latest-albums-list" id="tracksList">
                         ${tracks.slice(0, 10).map(track => `
-                            <div class="album-item" onclick="goToTrack(${track.id})">
+                            <div class="album-item" onclick="goToTrack(${track.id}, '${track.slug}')">
                                 <div class="album-thumbnail">${getEmojiForGenre(track.genre)}</div>
                                 <div class="album-info">
                                     <div class="album-title">${track.title}</div>
