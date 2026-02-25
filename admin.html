@@ -558,7 +558,7 @@
             if (password === ADMIN_PASSWORD) {
                 document.getElementById('passwordModal').style.display = 'none';
                 document.getElementById('adminContent').style.display = 'block';
-                loadTracks(); // Load tracks after authentication
+                loadTracks();
                 showStatus('success', 'Access granted! Welcome to admin panel.');
             } else {
                 alert('Incorrect password');
@@ -650,9 +650,26 @@
             showStatus('info', 'Uploading track...');
 
             try {
-                // TODO: Implement actual upload to R2
-                // For now, simulate upload
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Create form data
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('title', title);
+                formData.append('artist', artist);
+                formData.append('description', document.getElementById('description').value);
+                formData.append('genre', document.getElementById('genre').value);
+                formData.append('duration', document.getElementById('duration').value);
+
+                // Send to API
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Upload failed');
+                }
                 
                 showStatus('success', 'Track uploaded successfully!');
                 clearSelectedFile();
@@ -706,11 +723,20 @@
         async function deleteTrack(id) {
             if (confirm('Are you sure you want to delete this track?')) {
                 showStatus('info', 'Deleting track...');
-                // TODO: Implement delete
-                setTimeout(() => {
+                try {
+                    const response = await fetch(`${API_BASE}/delete/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Delete failed');
+                    }
+                    
                     showStatus('success', 'Track deleted');
                     loadTracks();
-                }, 1000);
+                } catch (error) {
+                    showStatus('error', 'Delete failed: ' + error.message);
+                }
             }
         }
 
@@ -738,6 +764,7 @@
             const statusEl = document.getElementById('statusMessage');
             statusEl.className = 'status-message status-' + type;
             statusEl.textContent = message;
+            statusEl.style.display = 'block';
             
             setTimeout(() => {
                 statusEl.style.display = 'none';
