@@ -237,6 +237,10 @@
             color: #555;
         }
 
+        .artist-stats i {
+            color: #ff5500;
+        }
+
         .artist-stats strong {
             color: #ff5500;
             font-weight: 700;
@@ -278,11 +282,6 @@
             color: #ff5500;
         }
 
-        .album-thumbnail.playlist-thumbnail {
-            background: linear-gradient(135deg, #6b8cff, #9f7aff);
-            color: white;
-        }
-
         .album-info {
             flex-grow: 1;
             min-width: 0;
@@ -304,13 +303,18 @@
             font-size: 0.9rem;
         }
 
-        .playlist-songs {
-            color: #6b8cff;
-            background: rgba(107, 140, 255, 0.08);
-            padding: 4px 10px;
+        .album-stats-small {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,85,0,0.08);
+            padding: 4px 8px;
             border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .album-stats-small i {
+            color: #ff5500;
         }
 
         /* RIGHT SIDEBAR ALBUM ITEMS */
@@ -370,11 +374,7 @@
             color: white;
         }
 
-        .pagination-prev, .pagination-next {
-            background: #f9f9f9;
-        }
-
-        /* ===== LOADING SKELETONS ===== */
+        /* LOADING SKELETONS */
         .skeleton {
             animation: skeleton-loading 1s linear infinite alternate;
         }
@@ -518,12 +518,14 @@
             }
         }
     </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="hamburger">☰</div>
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
             <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
             <div class="right-spacer"></div>
         </div>
@@ -532,174 +534,24 @@
     <!-- MAIN LAYOUT CONTAINER -->
     <div class="main-content-container" id="content">
         <!-- Loading skeletons will be shown here -->
-        <aside class="left-sidebar">
-            <!-- Breadcrumbs skeleton -->
-            <div class="breadcrumbs-left">
-                <div class="breadcrumb-nav">
-                    <div class="breadcrumb-list">
-                        <span class="skeleton" style="width: 60px; height: 20px;"></span>
-                        <span>›</span>
-                        <span class="skeleton" style="width: 80px; height: 20px;"></span>
-                        <span>›</span>
-                        <span class="skeleton" style="width: 100px; height: 20px;"></span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Artist header skeleton -->
-            <div class="skeleton-artist-header">
-                <div class="skeleton-cover"></div>
-                <div class="skeleton-artist-info">
-                    <div class="skeleton-artist-title"></div>
-                    <div class="skeleton-artist-genre"></div>
-                    <div class="skeleton-meta">
-                        <div class="skeleton-stat"></div>
-                        <div class="skeleton-stat"></div>
-                        <div class="skeleton-stat"></div>
-                        <div class="skeleton-stat"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Songs section header -->
-            <div class="section-header">
-                <h2 class="section-title">Songs by Artist</h2>
-                <a href="#" class="view-all">View All ➔</a>
-            </div>
-            
-            <!-- Track skeletons -->
-            <div class="latest-albums-list">
-                <div class="skeleton-track-item">
-                    <div class="skeleton-track-thumb"></div>
-                    <div class="skeleton-track-content">
-                        <div class="skeleton-track-title"></div>
-                        <div class="skeleton-track-meta"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track-item">
-                    <div class="skeleton-track-thumb"></div>
-                    <div class="skeleton-track-content">
-                        <div class="skeleton-track-title"></div>
-                        <div class="skeleton-track-meta"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track-item">
-                    <div class="skeleton-track-thumb"></div>
-                    <div class="skeleton-track-content">
-                        <div class="skeleton-track-title"></div>
-                        <div class="skeleton-track-meta"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track-item">
-                    <div class="skeleton-track-thumb"></div>
-                    <div class="skeleton-track-content">
-                        <div class="skeleton-track-title"></div>
-                        <div class="skeleton-track-meta"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track-item">
-                    <div class="skeleton-track-thumb"></div>
-                    <div class="skeleton-track-content">
-                        <div class="skeleton-track-title"></div>
-                        <div class="skeleton-track-meta"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pagination skeleton -->
-            <div class="pagination-container">
-                <div class="pagination">
-                    <span class="skeleton" style="width: 60px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 40px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 40px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 40px; height: 40px;"></span>
-                    <span class="skeleton" style="width: 60px; height: 40px;"></span>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- RIGHT SIDEBAR skeletons -->
-        <div class="right-sidebar">
-            <!-- Albums skeleton -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Albums by Artist</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div class="latest-albums-list">
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-thumb" style="width: 60px; height: 60px;"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title" style="width: 80%;"></div>
-                            <div class="skeleton-track-meta" style="width: 40%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Playlists skeleton -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Featured in Playlists</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div class="latest-albums-list">
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-thumb" style="width: 60px; height: 60px;"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title" style="width: 70%;"></div>
-                            <div class="skeleton-track-meta" style="width: 30%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Collaborations skeleton -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Collaborations</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div class="latest-albums-list">
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-thumb" style="width: 60px; height: 60px;"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title" style="width: 75%;"></div>
-                            <div class="skeleton-track-meta" style="width: 35%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Similar Artists skeleton -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Similar Artists</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div class="latest-albums-list">
-                    <div class="skeleton-track-item">
-                        <div class="skeleton-track-thumb" style="width: 60px; height: 60px;"></div>
-                        <div class="skeleton-track-content">
-                            <div class="skeleton-track-title" style="width: 65%;"></div>
-                            <div class="skeleton-track-meta" style="width: 40%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <div style="text-align: center; padding: 60px; width: 100%;">Loading artist...</div>
     </div>
 
     <script>
         // API Base URL
         const API_BASE = '/api';
         
-        // Get artist name from URL
+        // Get artist identifier from URL - supports both slug and query param
         const urlParams = new URLSearchParams(window.location.search);
         const artistName = urlParams.get('name');
+        
+        // Check if we're using a clean URL with slug (from data attribute)
+        const contentDiv = document.getElementById('content');
+        const artistSlug = contentDiv.dataset.artistSlug;
 
         // Helper functions
         function formatNumber(num) {
+            if (!num && num !== 0) return '0';
             if (num >= 1000) {
                 return (num / 1000).toFixed(1) + 'k';
             }
@@ -729,66 +581,85 @@
             return name ? name.charAt(0).toUpperCase() : '🎵';
         }
 
-        // Load artist data
+        function goHome() {
+            window.location.href = '/';
+        }
+
+        function goToTrack(id) {
+            window.location.href = `/song.html?id=${id}`;
+        }
+
+        function goToArtist(artistName) {
+            // Use slug format
+            const slug = artistName.toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]/g, '')
+                .replace(/-+$/, '');
+            window.location.href = `/artist/${slug}`;
+        }
+
+        // Load artist data using the optimized API
         async function loadArtistData() {
-            if (!artistName) {
-                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No artist specified</div>';
-                return;
-            }
-
             try {
-                // Fetch all tracks
-                const response = await fetch(`${API_BASE}/tracks`);
-                const allTracks = await response.json();
-
-                // Filter tracks by artist (case-insensitive)
-                const artistTracks = allTracks.filter(t => 
-                    t.artist.toLowerCase() === decodeURIComponent(artistName).toLowerCase()
-                );
-
-                if (artistTracks.length === 0) {
-                    document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Artist not found</div>';
+                // Determine the identifier (slug or name)
+                let identifier = artistSlug || artistName;
+                
+                if (!identifier) {
+                    document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No artist specified</div>';
                     return;
                 }
 
-                // Get unique genres for this artist
-                const genres = [...new Set(artistTracks.map(t => t.genre))];
-                
-                // Calculate stats
-                const totalPlays = artistTracks.reduce((sum, t) => sum + t.plays, 0);
-                const totalDownloads = artistTracks.reduce((sum, t) => sum + t.downloads, 0);
-                const totalViews = artistTracks.reduce((sum, t) => sum + t.views, 0);
-                
-                // Get earliest and latest year
-                const years = artistTracks.map(t => new Date(t.uploaded_at).getFullYear());
-                const earliestYear = Math.min(...years);
-                const latestYear = Math.max(...years);
+                // Show loading state
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading artist...</div>';
 
-                // Get other artists in same genre (for similar artists)
-                const similarArtists = allTracks
-                    .filter(t => t.genre === artistTracks[0].genre && t.artist !== artistTracks[0].artist)
-                    .map(t => t.artist)
-                    .filter((value, index, self) => self.indexOf(value) === index)
-                    .slice(0, 3);
+                let apiUrl;
+                if (artistSlug) {
+                    // Using clean URL with slug
+                    apiUrl = `${API_BASE}/artist/${artistSlug}`;
+                } else {
+                    // Using query parameter - convert name to slug
+                    const slug = artistName.toLowerCase()
+                        .replace(/\s+/g, '-')
+                        .replace(/[^\w-]/g, '')
+                        .replace(/-+$/, '');
+                    apiUrl = `${API_BASE}/artist/${slug}`;
+                }
 
-                // Render the page
-                renderPage(artistTracks[0].artist, artistTracks, genres, {
-                    totalPlays,
-                    totalDownloads,
-                    totalViews,
-                    earliestYear,
-                    latestYear,
-                    similarArtists
-                });
+                console.log('Fetching artist from:', apiUrl);
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    throw new Error('Artist not found');
+                }
+
+                const data = await response.json();
+                console.log('Artist data:', data);
+
+                // Render the page with the data
+                renderPage(data.name, data.tracks, data.stats);
 
             } catch (error) {
                 console.error('Error loading artist:', error);
-                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Error loading artist data</div>';
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <p style="color: #ff5500; margin-bottom: 20px;">Error loading artist data</p>
+                        <p style="color: #666; font-size: 14px;">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
+                    </div>
+                `;
             }
         }
 
         // Render page with real data
-        function renderPage(artistName, tracks, genres, stats) {
+        function renderPage(artistName, tracks, stats) {
+            // Get unique genres
+            const genres = stats.genres || [...new Set(tracks.map(t => t.genre))];
+            
+            // Get release year range
+            const years = tracks.map(t => new Date(t.uploaded_at).getFullYear());
+            const earliestYear = Math.min(...years);
+            const latestYear = Math.max(...years);
+
             const content = document.getElementById('content');
             
             content.innerHTML = `
@@ -800,7 +671,7 @@
                             <div class="breadcrumb-list">
                                 <span class="breadcrumb-link" onclick="goHome()">Home</span>
                                 <span>›</span>
-                                <span class="breadcrumb-link" onclick="goToArtists()">Artists</span>
+                                <span class="breadcrumb-link" onclick="window.location.href='/artists.html'">Artists</span>
                                 <span>›</span>
                                 <span class="breadcrumb-current">${artistName}</span>
                             </div>
@@ -814,10 +685,11 @@
                             <h1 class="artist-title">${artistName}</h1>
                             <div class="artist-genre">${genres.join(' • ')}</div>
                             <div class="artist-meta">
-                                <span class="artist-stats">🎵 <strong>${tracks.length}</strong> Songs</span>
-                                <span class="artist-stats">📅 <strong>${stats.earliestYear} - ${stats.latestYear}</strong></span>
-                                <span class="artist-stats">🎧 <strong>${formatNumber(stats.totalPlays)}</strong> Plays</span>
-                                <span class="artist-stats">⬇️ <strong>${formatNumber(stats.totalDownloads)}</strong> Downloads</span>
+                                <span class="artist-stats"><i class="fas fa-music"></i> <strong>${tracks.length}</strong> Songs</span>
+                                <span class="artist-stats"><i class="fas fa-calendar"></i> <strong>${earliestYear} - ${latestYear}</strong></span>
+                                <span class="artist-stats"><i class="fas fa-headphones"></i> <strong>${formatNumber(stats.total_plays)}</strong> Plays</span>
+                                <span class="artist-stats"><i class="fas fa-download"></i> <strong>${formatNumber(stats.total_downloads)}</strong> Downloads</span>
+                                <span class="artist-stats"><i class="fas fa-eye"></i> <strong>${formatNumber(stats.total_views)}</strong> Views</span>
                             </div>
                         </div>
                     </div>
@@ -835,9 +707,9 @@
                                 <div class="album-info">
                                     <div class="album-title">${track.title}</div>
                                     <div class="album-meta">
-                                        <span>${formatDuration(track.duration)}</span>
-                                        <span>🎧 ${formatNumber(track.plays)} plays</span>
-                                        <span>👁️ ${formatNumber(track.views)} views</span>
+                                        <span class="album-stats-small"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                                        <span class="album-stats-small"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                        <span class="album-stats-small"><i class="fas fa-eye"></i> ${formatNumber(track.views)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -868,7 +740,7 @@
                             <a href="#" class="view-all">View All ➔</a>
                         </div>
                         <div class="latest-albums-list">
-                            <div class="album-item">
+                            <div class="album-item" onclick="window.location.href='/albums.html'">
                                 <div class="album-thumbnail">💿</div>
                                 <div class="album-info">
                                     <div class="album-title">Singles & EPs</div>
@@ -878,37 +750,18 @@
                         </div>
                     </section>
                     
-                    <!-- PLAYLISTS FEATURING ARTIST -->
+                    <!-- Featured in Playlists -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">Featured in Playlists</h2>
-                            <a href="#" class="view-all">View All ➔</a>
+                            <a href="/playlists.html" class="view-all">View All ➔</a>
                         </div>
-                        <div class="latest-albums-list">
+                        <div class="latest-albums-list" id="featuredPlaylists">
                             <div class="album-item">
-                                <div class="album-thumbnail playlist-thumbnail">📋</div>
-                                <div class="album-info">
-                                    <div class="album-title">Zedtopvibes Picks</div>
-                                    <div class="album-meta">
-                                        <span class="playlist-songs">Coming soon</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    
-                    <!-- Collaborations -->
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Collaborations</h2>
-                            <a href="#" class="view-all">View All ➔</a>
-                        </div>
-                        <div class="latest-albums-list">
-                            <div class="album-item">
-                                <div class="album-thumbnail">🤝</div>
+                                <div class="album-thumbnail">📋</div>
                                 <div class="album-info">
                                     <div class="album-title">Coming Soon</div>
-                                    <div class="album-meta">Feature in development</div>
+                                    <div class="album-meta">Playlists feature in development</div>
                                 </div>
                             </div>
                         </div>
@@ -920,16 +773,8 @@
                             <h2 class="section-title">Similar Artists</h2>
                             <a href="#" class="view-all">View All ➔</a>
                         </div>
-                        <div class="latest-albums-list">
-                            ${stats.similarArtists.map(artist => `
-                                <div class="album-item" onclick="goToArtist('${encodeURIComponent(artist)}')">
-                                    <div class="album-thumbnail">👤</div>
-                                    <div class="album-info">
-                                        <div class="album-title">${artist}</div>
-                                        <div class="album-meta">${genres[0]}</div>
-                                    </div>
-                                </div>
-                            `).join('')}
+                        <div class="latest-albums-list" id="similarArtists">
+                            <div class="loading">Loading similar artists...</div>
                         </div>
                     </section>
                     
@@ -943,33 +788,57 @@
                                 ${artistName} has ${tracks.length} tracks available on Zedtopvibes.
                                 Their music spans genres including ${genres.join(', ')}.
                             </p>
+                            <p style="color: #888; font-size: 0.9rem; margin-top: 10px;">
+                                <i class="fas fa-calendar"></i> First release: ${new Date(stats.first_release).toLocaleDateString()}<br>
+                                <i class="fas fa-clock"></i> Latest release: ${new Date(stats.latest_release).toLocaleDateString()}
+                            </p>
                         </div>
                     </section>
                 </div>
             `;
+
+            // Load similar artists
+            loadSimilarArtists(genres[0], artistName);
         }
 
-        // Navigation functions
-        function goHome() {
-            window.location.href = '/';
+        // Load similar artists based on genre
+        async function loadSimilarArtists(genre, currentArtist) {
+            try {
+                const response = await fetch(`${API_BASE}/tracks`);
+                const allTracks = await response.json();
+                
+                // Get unique artists in same genre
+                const similarArtists = [...new Set(
+                    allTracks
+                        .filter(t => t.genre === genre && t.artist !== currentArtist)
+                        .map(t => t.artist)
+                )].slice(0, 3);
+                
+                const container = document.getElementById('similarArtists');
+                
+                if (container) {
+                    if (similarArtists.length > 0) {
+                        container.innerHTML = similarArtists.map(artist => `
+                            <div class="album-item" onclick="goToArtist('${artist}')">
+                                <div class="album-thumbnail">👤</div>
+                                <div class="album-info">
+                                    <div class="album-title">${artist}</div>
+                                    <div class="album-meta">${genre}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No similar artists found</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading similar artists:', error);
+                const container = document.getElementById('similarArtists');
+                if (container) {
+                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Error loading</div>';
+                }
+            }
         }
-
-        function goToArtists() {
-            alert('Artists page coming soon!');
-        }
-
-        function goToTrack(id) {
-            window.location.href = `/song.html?id=${id}`;
-        }
-
-        function goToArtist(name) {
-            window.location.href = `/artist.html?name=${name}`;
-        }
-
-        // Hamburger menu
-        document.querySelector('.hamburger').addEventListener('click', function() {
-            window.location.href = '/';
-        });
 
         // Load artist data
         loadArtistData();
