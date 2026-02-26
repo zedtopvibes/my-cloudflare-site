@@ -2,118 +2,209 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Albums | Zedtopvibes</title>
-<link rel="stylesheet" href="/css/shared/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zedtopvibes • Albums</title>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="/css/shared/main.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Header will be injected by template-loader.js -->
+
+    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <div style="text-align: center; padding: 60px; width: 100%;">Loading albums...</div>
+        <!-- Loading state - will be replaced by JS -->
+        <aside class="left-sidebar">
+            <div class="breadcrumbs">
+                <span class="skeleton" style="display: inline-block; width: 200px; height: 20px;"></span>
+            </div>
+            
+            <div class="section-header">
+                <h2 class="section-title">All Albums</h2>
+                <a href="#" class="view-all">View All ➔</a>
+            </div>
+            
+            <div class="album-list" id="albumsList">
+                <!-- Loading skeletons -->
+                <div class="skeleton-track">
+                    <div class="skeleton-image" style="width: 100px; height: 100px;"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="skeleton-track">
+                    <div class="skeleton-image" style="width: 100px; height: 100px;"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="skeleton-track">
+                    <div class="skeleton-image" style="width: 100px; height: 100px;"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- RIGHT SIDEBAR -->
+        <div class="right-sidebar">
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Featured Albums</h2>
+                    <a href="#" class="view-all">View All ➔</a>
+                </div>
+                <div id="featuredAlbums" class="latest-albums-list">
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                </div>
+            </section>
+            
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Top Artists</h2>
+                    <a href="#" class="view-all">View All ➔</a>
+                </div>
+                <div id="topArtists" class="latest-albums-list">
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                </div>
+            </section>
+        </div>
     </div>
 
-    <script type="module">
-        import { API_BASE, formatNumber, getRandomColor } from '/js/shared/helpers.js';
-        import { goToArtist, goToAlbumBySlug } from '/js/shared/navigation.js';
-        import { fetchAlbums } from '/js/shared/api.js';
-        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+    <!-- Footer will be injected by template-loader.js -->
 
-        // Load albums
+    <script type="module">
+        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+        import { API_BASE, formatNumber, getRandomColor } from '/js/shared/helpers.js';
+        import { goHome, goToArtist, goToAlbumBySlug } from '/js/shared/navigation.js';
+
+        // Load albums data
         async function loadAlbums() {
             try {
-                const skeleton = await loadTemplate('loading-skeleton');
-                document.getElementById('content').innerHTML = skeleton;
-
-                const albums = await fetchAlbums();
+                const response = await fetch(`${API_BASE}/albums`);
+                const albums = await response.json();
+                
                 renderAlbums(albums);
+                renderFeaturedAlbums(albums);
+                renderTopArtists(albums);
 
             } catch (error) {
                 console.error('Error loading albums:', error);
+                document.getElementById('albumsList').innerHTML = '<div style="padding: 20px; text-align: center;">Error loading albums</div>';
             }
         }
 
+        // Render main albums list
         function renderAlbums(albums) {
-            const content = document.getElementById('content');
+            const container = document.getElementById('albumsList');
             
-            content.innerHTML = `
-                <aside class="left-sidebar">
-                    <div class="breadcrumbs">
-                        <a href="/">Home</a> / <span>Albums</span>
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="goToAlbumBySlug('${album.slug}')">
+                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title || 'Untitled'}</div>
+                        <div class="album-meta">
+                            <span class="album-artist" onclick="event.stopPropagation(); goToArtist('${album.artist?.replace(/'/g, "\\'") || ''}')">${album.artist || 'Unknown Artist'}</span>
+                            <span class="album-tracks">${album.track_count || 0} tracks</span>
+                            <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
+                            <span class="album-stats"><i class="fas fa-headphones"></i> ${formatNumber(album.plays)}</span>
+                        </div>
+                        <div class="album-year">📅 ${album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown'}</div>
                     </div>
-                    
-                    <div class="section-header">
-                        <h2 class="section-title">All Albums</h2>
-                        <a href="#" class="view-all">View All ➔</a>
-                    </div>
-                    
-                    <div class="album-list">
-                        ${albums.map(album => `
-                            <div class="album-item" onclick="goToAlbumBySlug('${album.slug}')">
-                                <div class="album-thumb">${album.cover_emoji || '💿'}</div>
-                                <div class="album-info">
-                                    <div class="album-title">${album.title}</div>
-                                    <div class="album-meta">
-                                        <span class="album-artist" onclick="event.stopPropagation(); goToArtist('${album.artist.replace(/'/g, "\\'")}')">${album.artist}</span>
-                                        <span class="album-tracks">${album.track_count || 0} tracks</span>
-                                        <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
-                                    </div>
-                                    <div class="album-year">📅 ${album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown'}</div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </aside>
-                
-                <div class="right-sidebar">
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Featured Albums</h2>
-                            <a href="#" class="view-all">View All ➔</a>
-                        </div>
-                        <div>
-                            ${albums.filter(a => a.is_featured).slice(0, 3).map(album => `
-                                <div class="sidebar-item" onclick="goToAlbumBySlug('${album.slug}')">
-                                    <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
-                                    <div class="sidebar-info">
-                                        <div class="sidebar-title">${album.title}</div>
-                                        <div class="sidebar-sub">${album.artist}</div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </section>
-                    
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Top Artists</h2>
-                            <a href="#" class="view-all">View All ➔</a>
-                        </div>
-                        <div>
-                            ${[...new Set(albums.map(a => a.artist))].slice(0, 3).map(artist => `
-                                <div class="sidebar-item" onclick="goToArtist('${artist.replace(/'/g, "\\'")}')">
-                                    <div class="sidebar-thumb">👤</div>
-                                    <div class="sidebar-info">
-                                        <div class="sidebar-title">${artist}</div>
-                                        <div class="sidebar-sub">Artist</div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </section>
                 </div>
-            `;
+            `).join('');
+        }
+
+        // Render featured albums in sidebar
+        function renderFeaturedAlbums(albums) {
+            const container = document.getElementById('featuredAlbums');
+            const featured = albums.filter(a => a.is_featured).slice(0, 3);
+            
+            if (featured.length > 0) {
+                container.innerHTML = featured.map(album => `
+                    <div class="sidebar-item" onclick="goToAlbumBySlug('${album.slug}')">
+                        <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
+                        <div class="sidebar-info">
+                            <div class="sidebar-title">${album.title}</div>
+                            <div class="sidebar-sub">${album.artist}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div style="padding: 15px; text-align: center;">No featured albums</div>';
+            }
+        }
+
+        // Render top artists in sidebar
+        function renderTopArtists(albums) {
+            const container = document.getElementById('topArtists');
+            
+            // Get unique artists with album counts
+            const artistMap = new Map();
+            albums.forEach(album => {
+                if (!artistMap.has(album.artist)) {
+                    artistMap.set(album.artist, {
+                        name: album.artist,
+                        count: 1
+                    });
+                } else {
+                    const artist = artistMap.get(album.artist);
+                    artist.count++;
+                }
+            });
+            
+            const artists = Array.from(artistMap.values())
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 3);
+            
+            if (artists.length > 0) {
+                container.innerHTML = artists.map(artist => `
+                    <div class="sidebar-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
+                        <div class="sidebar-thumb">👤</div>
+                        <div class="sidebar-info">
+                            <div class="sidebar-title">${artist.name}</div>
+                            <div class="sidebar-sub">${artist.count} albums</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div style="padding: 15px; text-align: center;">No artists found</div>';
+            }
         }
 
         // Initialize page
         async function initPage() {
+            // Inject header and footer templates
             await injectTemplates();
             const footerHtml = await loadTemplate('footer');
             document.body.insertAdjacentHTML('beforeend', footerHtml);
+            
+            // Make goHome available globally for hamburger menu
+            window.goHome = goHome;
+            
+            // Update hamburger menu to use goHome
+            const hamburger = document.querySelector('.hamburger');
+            if (hamburger) {
+                hamburger.onclick = goHome;
+            }
+            
+            // Load albums data
             await loadAlbums();
         }
 
-        initPage();
-        
+        // Make navigation functions globally available
         window.goToArtist = goToArtist;
         window.goToAlbumBySlug = goToAlbumBySlug;
+
+        // Start everything
+        initPage();
     </script>
 </body>
 </html>
