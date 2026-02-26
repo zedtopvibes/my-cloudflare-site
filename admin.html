@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Zedtopvibes • Admin Upload</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Admin-specific styles */
         * {
             margin: 0;
             padding: 0;
@@ -17,48 +20,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-        }
-
-        /* Navigation */
-        .navbar {
-            background: white;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 12px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 600px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .hamburger {
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            color: #333;
-        }
-
-        .site-title {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .site-title a {
-            text-decoration: none;
-        }
-
-        .right-spacer {
-            width: 40px;
         }
 
         /* Admin Container */
@@ -416,28 +377,16 @@
             cursor: pointer;
         }
 
-        /* Footer */
-        .footer {
-            max-width: 600px;
-            margin: 30px auto;
-            padding: 20px 15px 0;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            color: #888;
-            font-size: 13px;
-            width: 100%;
+        /* Responsive */
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="hamburger">☰</div>
-            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
-            <div class="right-spacer"></div>
-        </div>
-    </nav>
+    <!-- Header will be injected by template-loader.js -->
 
     <!-- Password Modal -->
     <div id="passwordModal" class="password-modal">
@@ -536,24 +485,20 @@
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="copyright">
-                © 2024 Zedtopvibes • Admin Panel
-            </div>
-        </footer>
     </div>
 
-    <script>
+    <!-- Footer will be injected by template-loader.js -->
+
+    <script type="module">
+        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+        import { API_BASE, formatNumber, getEmojiForGenre } from '/js/shared/helpers.js';
+        import { goHome } from '/js/shared/navigation.js';
+
         // Simple password protection (you can change this)
         const ADMIN_PASSWORD = "zedtop123"; // CHANGE THIS!
 
-        // API Base
-        const API_BASE = '/api';
-
         // Check password
-        function checkPassword() {
+        window.checkPassword = function() {
             const password = document.getElementById('passwordInput').value;
             if (password === ADMIN_PASSWORD) {
                 document.getElementById('passwordModal').style.display = 'none';
@@ -563,7 +508,7 @@
             } else {
                 alert('Incorrect password');
             }
-        }
+        };
 
         // File upload handling
         const uploadArea = document.getElementById('uploadArea');
@@ -615,13 +560,13 @@
             submitBtn.disabled = false;
         }
 
-        function clearSelectedFile() {
+        window.clearSelectedFile = function() {
             selectedFile = null;
             fileInput.value = '';
             fileInfo.style.display = 'none';
             uploadArea.style.display = 'block';
             submitBtn.disabled = true;
-        }
+        };
 
         function formatFileSize(bytes) {
             if (bytes < 1024) return bytes + ' B';
@@ -720,7 +665,7 @@
         }
 
         // Delete track
-        async function deleteTrack(id) {
+        window.deleteTrack = async function(id) {
             if (confirm('Are you sure you want to delete this track?')) {
                 showStatus('info', 'Deleting track...');
                 try {
@@ -738,27 +683,7 @@
                     showStatus('error', 'Delete failed: ' + error.message);
                 }
             }
-        }
-
-        // Helper functions
-        function getEmojiForGenre(genre) {
-            const emojis = {
-                'electronic': '🎵',
-                'synthwave': '🎸',
-                'hiphop': '🎤',
-                'lofi': '🌅',
-                'ambient': '✨',
-                'default': '🎵'
-            };
-            return emojis[genre] || emojis.default;
-        }
-
-        function formatNumber(num) {
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'k';
-            }
-            return num;
-        }
+        };
 
         function showStatus(type, message) {
             const statusEl = document.getElementById('statusMessage');
@@ -771,17 +696,32 @@
             }, 5000);
         }
 
-        // Hamburger menu
-        document.querySelector('.hamburger').addEventListener('click', function() {
-            window.location.href = '/';
-        });
-
         // Allow Enter key in password field
         document.getElementById('passwordInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 checkPassword();
             }
         });
+
+        // Initialize page with templates
+        async function initPage() {
+            // Inject header and footer templates
+            await injectTemplates();
+            const footerHtml = await loadTemplate('footer');
+            document.body.insertAdjacentHTML('beforeend', footerHtml);
+            
+            // Make goHome available globally for hamburger menu
+            window.goHome = goHome;
+            
+            // Update hamburger menu to use goHome
+            const hamburger = document.querySelector('.hamburger');
+            if (hamburger) {
+                hamburger.onclick = goHome;
+            }
+        }
+
+        // Start everything
+        initPage();
     </script>
 </body>
 </html>
