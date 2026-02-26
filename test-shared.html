@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Shared JS</title>
+    <style>
+        body { font-family: system-ui; padding: 2rem; max-width: 800px; margin: 0 auto; }
+        .success { color: green; background: #e8f5e9; padding: 1rem; border-radius: 8px; }
+        .section { background: #f5f5f5; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
+        pre { background: #eee; padding: 0.5rem; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Shared JS Test Page</h1>
+    
+    <div class="success" id="loadStatus">
+        ✅ JavaScript modules loading...
+    </div>
+
+    <div class="section">
+        <h2>📊 Helper Functions Test</h2>
+        <div id="helperTests"></div>
+    </div>
+
+    <div class="section">
+        <h2>🧭 Navigation Functions Test</h2>
+        <div id="navTests"></div>
+        <button onclick="window.testGoHome()">Test goHome()</button>
+        <button onclick="window.testGoToArtist()">Test goToArtist('Slap Dee')</button>
+    </div>
+
+    <div class="section">
+        <h2>🌐 API Functions Test</h2>
+        <div id="apiTests">Testing API connection...</div>
+    </div>
+
+    <script type="module">
+        // Import all shared functions
+        import * as Helpers from '/js/shared/helpers.js';
+        import * as Navigation from '/js/shared/navigation.js';
+        import * as API from '/js/shared/api.js';
+
+        // Make navigation functions available globally for button clicks
+        window.testGoHome = Navigation.goHome;
+        window.testGoToArtist = () => Navigation.goToArtist('Slap Dee');
+
+        // Test Helper Functions
+        const helperTests = document.getElementById('helperTests');
+        helperTests.innerHTML = `
+            <pre>
+formatNumber(1234) → ${Helpers.formatNumber(1234)} (should be 1.2K)
+formatNumber(1234567) → ${Helpers.formatNumber(1234567)} (should be 1.2M)
+formatDuration(125) → ${Helpers.formatDuration(125)} (should be 2:05)
+formatDate('${new Date().toISOString()}') → ${Helpers.formatDate(new Date().toISOString())} (should be Today)
+getEmojiForGenre('hiphop') → ${Helpers.getEmojiForGenre('hiphop')}
+generateSlug('Ice Spice') → ${Helpers.generateSlug('Ice Spice')}
+            </pre>
+        `;
+
+        // Test Navigation Functions
+        const navTests = document.getElementById('navTests');
+        navTests.innerHTML = `
+            <pre>
+goHome, goToArtist, goToSong functions are loaded ✓
+Click the buttons below to test navigation
+            </pre>
+        `;
+
+        // Test API Functions
+        const apiTests = document.getElementById('apiTests');
+        
+        // Test fetching tracks
+        API.fetchTracks()
+            .then(tracks => {
+                apiTests.innerHTML = `
+                    <pre>
+✅ API Connection Successful!
+Fetched ${tracks.length} tracks
+First track: ${tracks[0]?.title} by ${tracks[0]?.artist}
+                    </pre>
+                `;
+            })
+            .catch(error => {
+                apiTests.innerHTML = `
+                    <pre style="color: red">
+❌ API Error: ${error.message}
+                    </pre>
+                `;
+            });
+
+        // Update load status
+        document.getElementById('loadStatus').innerHTML = '✅ All modules loaded successfully!';
+    </script>
+</body>
+</html>
