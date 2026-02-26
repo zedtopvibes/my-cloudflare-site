@@ -10,11 +10,12 @@
     </div>
 
     <script type="module">
-        import { API_BASE, formatNumber, formatDuration } from '/js/shared/helpers.js';
-        import { goToArtist, goToSong, goToAlbum } from '/js/shared/navigation.js';
+        import { API_BASE, formatNumber, formatDuration, getEmojiForGenre } from '/js/shared/helpers.js';
+        import { goToArtist, goToSong, goToAlbumBySlug } from '/js/shared/navigation.js';
         import { fetchAlbum } from '/js/shared/api.js';
         import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
 
+        // Get album identifier
         const urlParams = new URLSearchParams(window.location.search);
         const albumId = urlParams.get('id');
         const contentDiv = document.getElementById('content');
@@ -23,6 +24,16 @@
         let albumIdentifier = albumSlug || albumId;
         let useSlug = !!albumSlug;
 
+        // Calculate total duration
+        function calculateTotalDuration(tracks) {
+            if (!tracks || tracks.length === 0) return '0 min';
+            const totalSeconds = tracks.reduce((sum, track) => sum + (track.duration || 0), 0);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            return hours > 0 ? `${hours} hr ${minutes} min` : `${minutes} min`;
+        }
+
+        // Load album data
         async function loadAlbum() {
             if (!albumIdentifier) {
                 document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No album specified</div>';
@@ -41,19 +52,150 @@
                 if (!response.ok) throw new Error('Album not found');
                 
                 const data = await response.json();
+                
+                // Increment view count
+                fetch(`${API_BASE}/albums/${data.id}/view`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(err => console.error('View count error:', err));
+                
                 renderAlbum(data);
 
             } catch (error) {
-                document.getElementById('content').innerHTML = `<div style="text-align: center; padding: 60px;">Error: ${error.message}</div>`;
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <p style="color: #ff5500;">Error: ${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
+                    </div>
+                `;
             }
         }
 
+        // Render album page
         function renderAlbum(album) {
             const tracks = album.tracks || [];
-            // ... rest of your album rendering logic
-            // (copy from your existing album.html)
+            const stats = album.stats || {};
+            
+            const totalDuration = stats.total_duration ? 
+                formatDuration(stats.total_duration) : 
+                calculateTotalDuration(tracks);
+            
+            const totalPlays = stats.total_plays || tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+            const totalDownloads = stats.total_downloads || tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
+            const releaseYear = album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown';
+
+            const content = document.getElementById('content');
+            
+            content.innerHTML = `
+                <aside class="left-sidebar">
+                    <div class="breadcrumbs">
+                        <a href="/">Home</a> / 
+                        <a href="/albums.html">Albums</a> / 
+                        <a href="#" onclick="goToArtist('${album.artist.replace(/'/g, "\\'")}')">${album.artist}</a> / 
+                        <span>${album.title}</span>
+                    </div>
+                    
+                    <div class="album-header">
+                        <div class="album-cover">${album.cover_emoji || '💿'}</div>
+                        <div class="album-info">
+                            <h1 class="album-title">${album.title}</h1>
+                            <div class="album-artist" onclick="goToArtist('${album.artist.replace(/'/g, "\\'")}')">${album.artist}</div>
+                            <div class="album-meta">
+                                <span class="album-stats"><i class="fas fa-music"></i> ${tracks.length} tracks</span>
+                                <span class="album-stats"><i class="fas fa-clock"></i> ${totalDuration}</span>
+                                <span class="album-stats"><i class="fas fa-calendar"></i> ${releaseYear}</span>
+                                <span class="album-stats"><i class="fas fa-headphones"></i> ${formatNumber(album.plays || totalPlays)}</span>
+                                <span class="album-stats"><i class="fas fa-download"></i> ${formatNumber(album.downloads || totalDownloads)}</span>
+                                <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views || 0)}</span>
+                            </div>
+                            <p class="album-description">${album.description || 'No description available.'}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h2 class="section-title">Album Tracks</h2>
+                        <a href="#" class="view-all">View All ➔</a>
+                    </div>
+                    
+                    <div class="track-list">
+                        ${tracks.length > 0 ? tracks.map((track, index) => `
+                            <div class="track-item" onclick="goToSong(${track.id}, '${track.slug}')">
+                                <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
+                                <div class="track-info">
+                                    <div class="track-title">${track.title}</div>
+                                    <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</div>
+                                </div>
+                                <div class="track-meta">
+                                    <span class="track-duration"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                                    <span class="track-plays"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                    <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
+                                </div>
+                            </div>
+                        `).join('') : '<div style="padding: 20px; text-align: center;">No tracks in this album</div>'}
+                    </div>
+                </aside>
+                
+                <div class="right-sidebar">
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">More by ${album.artist}</h2>
+                            <a href="#" onclick="goToArtist('${album.artist.replace(/'/g, "\\'")}')" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="moreByArtist" class="latest-albums-list">Loading...</div>
+                    </section>
+                    
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Album Info</h2>
+                        </div>
+                        <div>
+                            <div class="info-row"><span class="info-label">Artist</span><span class="info-value">${album.artist}</span></div>
+                            <div class="info-row"><span class="info-label">Genre</span><span class="info-value">${album.genre || 'Various'}</span></div>
+                            <div class="info-row"><span class="info-label">Released</span><span class="info-value">${album.release_date ? new Date(album.release_date).toLocaleDateString() : 'Unknown'}</span></div>
+                            <div class="info-row"><span class="info-label">Total Plays</span><span class="info-value"><i class="fas fa-headphones"></i> ${formatNumber(album.plays || totalPlays)}</span></div>
+                            <div class="info-row"><span class="info-label">Total Downloads</span><span class="info-value"><i class="fas fa-download"></i> ${formatNumber(album.downloads || totalDownloads)}</span></div>
+                            <div class="info-row"><span class="info-label">Total Views</span><span class="info-value"><i class="fas fa-eye"></i> ${formatNumber(album.views || 0)}</span></div>
+                        </div>
+                    </section>
+                </div>
+            `;
+
+            // Load more by artist
+            loadMoreByArtist(album.artist, album.id);
         }
 
+        // Load more albums by same artist
+        async function loadMoreByArtist(artist, currentAlbumId) {
+            try {
+                const response = await fetch(`${API_BASE}/albums`);
+                const albums = await response.json();
+                
+                const moreAlbums = albums
+                    .filter(a => a.artist === artist && a.id != currentAlbumId)
+                    .slice(0, 3);
+                
+                const container = document.getElementById('moreByArtist');
+                if (container) {
+                    if (moreAlbums.length > 0) {
+                        container.innerHTML = moreAlbums.map(album => `
+                            <div class="sidebar-item" onclick="goToAlbumBySlug('${album.slug}')">
+                                <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
+                                <div class="sidebar-info">
+                                    <div class="sidebar-title">${album.title}</div>
+                                    <div class="sidebar-sub"><i class="fas fa-eye"></i> ${formatNumber(album.views)}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No other albums</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading more by artist:', error);
+            }
+        }
+
+        // Initialize page
         async function initPage() {
             await injectTemplates();
             const footerHtml = await loadTemplate('footer');
@@ -62,9 +204,11 @@
         }
 
         initPage();
+        
+        // Make navigation functions global
         window.goToArtist = goToArtist;
         window.goToSong = goToSong;
-        window.goToAlbum = goToAlbum;
+        window.goToAlbumBySlug = goToAlbumBySlug;
     </script>
 </body>
 </html>
