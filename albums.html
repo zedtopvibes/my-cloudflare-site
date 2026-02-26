@@ -10,100 +10,132 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Header will be injected by template-loader.js -->
-
+    <!-- Header will be injected by JavaScript -->
+    
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading state - will be replaced by JS -->
-        <aside class="left-sidebar">
-            <div class="breadcrumbs">
-                <span class="skeleton" style="display: inline-block; width: 200px; height: 20px;"></span>
-            </div>
-            
-            <div class="section-header">
-                <h2 class="section-title">All Albums</h2>
-                <a href="#" class="view-all">View All ➔</a>
-            </div>
-            
-            <div class="album-list" id="albumsList">
-                <!-- Loading skeletons -->
-                <div class="skeleton-track">
-                    <div class="skeleton-image" style="width: 100px; height: 100px;"></div>
-                    <div class="skeleton-content">
-                        <div class="skeleton-line short"></div>
-                        <div class="skeleton-line medium"></div>
-                        <div class="skeleton-line long"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track">
-                    <div class="skeleton-image" style="width: 100px; height: 100px;"></div>
-                    <div class="skeleton-content">
-                        <div class="skeleton-line short"></div>
-                        <div class="skeleton-line medium"></div>
-                        <div class="skeleton-line long"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track">
-                    <div class="skeleton-image" style="width: 100px; height: 100px;"></div>
-                    <div class="skeleton-content">
-                        <div class="skeleton-line short"></div>
-                        <div class="skeleton-line medium"></div>
-                        <div class="skeleton-line long"></div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- RIGHT SIDEBAR -->
-        <div class="right-sidebar">
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Featured Albums</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div id="featuredAlbums" class="latest-albums-list">
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
-                </div>
-            </section>
-            
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Top Artists</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div id="topArtists" class="latest-albums-list">
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
-                </div>
-            </section>
-        </div>
+        <!-- Content will be populated by JavaScript -->
     </div>
 
-    <!-- Footer will be injected by template-loader.js -->
+    <!-- Footer will be injected by JavaScript -->
 
     <script type="module">
         import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
-        import { API_BASE, formatNumber, getRandomColor } from '/js/shared/helpers.js';
+        import { API_BASE, formatNumber } from '/js/shared/helpers.js';
         import { goHome, goToArtist, goToAlbumBySlug } from '/js/shared/navigation.js';
+
+        // Initialize page with templates
+        async function initPage() {
+            try {
+                // Inject header and get footer HTML
+                await injectTemplates();
+                
+                // Load and inject footer separately
+                const footerHtml = await loadTemplate('footer');
+                document.body.insertAdjacentHTML('beforeend', footerHtml);
+                
+                // Make goHome available for hamburger
+                window.goHome = goHome;
+                
+                // Update hamburger menu
+                const hamburger = document.querySelector('.hamburger');
+                if (hamburger) {
+                    hamburger.onclick = goHome;
+                }
+
+                // Now load the albums data
+                await loadAlbums();
+
+            } catch (error) {
+                console.error('Error initializing page:', error);
+                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Error loading page</div>';
+            }
+        }
 
         // Load albums data
         async function loadAlbums() {
+            const contentDiv = document.getElementById('content');
+            
+            // Show loading state
+            contentDiv.innerHTML = `
+                <aside class="left-sidebar">
+                    <div class="breadcrumbs">
+                        <span class="skeleton" style="display: inline-block; width: 200px; height: 20px;"></span>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h2 class="section-title">All Albums</h2>
+                        <a href="#" class="view-all">View All ➔</a>
+                    </div>
+                    
+                    <div class="album-list" id="albumsList">
+                        <div class="skeleton-track">
+                            <div class="skeleton-image" style="width: 100px; height: 100px;"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line medium"></div>
+                                <div class="skeleton-line long"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-track">
+                            <div class="skeleton-image" style="width: 100px; height: 100px;"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line medium"></div>
+                                <div class="skeleton-line long"></div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                
+                <div class="right-sidebar">
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Featured Albums</h2>
+                            <a href="#" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="featuredAlbums" class="latest-albums-list">
+                            <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                        </div>
+                    </section>
+                    
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Top Artists</h2>
+                            <a href="#" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="topArtists" class="latest-albums-list">
+                            <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                        </div>
+                    </section>
+                </div>
+            `;
+
             try {
+                // Fetch albums from API
                 const response = await fetch(`${API_BASE}/albums`);
                 const albums = await response.json();
                 
+                // Render the content
                 renderAlbums(albums);
                 renderFeaturedAlbums(albums);
                 renderTopArtists(albums);
 
             } catch (error) {
                 console.error('Error loading albums:', error);
-                document.getElementById('albumsList').innerHTML = '<div style="padding: 20px; text-align: center;">Error loading albums</div>';
+                document.getElementById('albumsList').innerHTML = '<div style="padding: 20px; text-align: center; color: #ff5500;">Error loading albums</div>';
             }
         }
 
         // Render main albums list
         function renderAlbums(albums) {
             const container = document.getElementById('albumsList');
+            if (!container) return;
+            
+            if (albums.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; text-align: center;">No albums found</div>';
+                return;
+            }
             
             container.innerHTML = albums.map(album => `
                 <div class="album-item" onclick="goToAlbumBySlug('${album.slug}')">
@@ -114,7 +146,6 @@
                             <span class="album-artist" onclick="event.stopPropagation(); goToArtist('${album.artist?.replace(/'/g, "\\'") || ''}')">${album.artist || 'Unknown Artist'}</span>
                             <span class="album-tracks">${album.track_count || 0} tracks</span>
                             <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
-                            <span class="album-stats"><i class="fas fa-headphones"></i> ${formatNumber(album.plays)}</span>
                         </div>
                         <div class="album-year">📅 ${album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown'}</div>
                     </div>
@@ -122,9 +153,11 @@
             `).join('');
         }
 
-        // Render featured albums in sidebar
+        // Render featured albums
         function renderFeaturedAlbums(albums) {
             const container = document.getElementById('featuredAlbums');
+            if (!container) return;
+            
             const featured = albums.filter(a => a.is_featured).slice(0, 3);
             
             if (featured.length > 0) {
@@ -142,19 +175,20 @@
             }
         }
 
-        // Render top artists in sidebar
+        // Render top artists
         function renderTopArtists(albums) {
             const container = document.getElementById('topArtists');
+            if (!container) return;
             
-            // Get unique artists with album counts
+            // Get unique artists
             const artistMap = new Map();
             albums.forEach(album => {
-                if (!artistMap.has(album.artist)) {
+                if (album.artist && !artistMap.has(album.artist)) {
                     artistMap.set(album.artist, {
                         name: album.artist,
                         count: 1
                     });
-                } else {
+                } else if (album.artist) {
                     const artist = artistMap.get(album.artist);
                     artist.count++;
                 }
@@ -179,32 +213,12 @@
             }
         }
 
-        // Initialize page
-        async function initPage() {
-            // Inject header and footer templates
-            await injectTemplates();
-            const footerHtml = await loadTemplate('footer');
-            document.body.insertAdjacentHTML('beforeend', footerHtml);
-            
-            // Make goHome available globally for hamburger menu
-            window.goHome = goHome;
-            
-            // Update hamburger menu to use goHome
-            const hamburger = document.querySelector('.hamburger');
-            if (hamburger) {
-                hamburger.onclick = goHome;
-            }
-            
-            // Load albums data
-            await loadAlbums();
-        }
-
-        // Make navigation functions globally available
-        window.goToArtist = goToArtist;
-        window.goToAlbumBySlug = goToAlbumBySlug;
-
         // Start everything
         initPage();
+
+        // Make navigation functions global
+        window.goToArtist = goToArtist;
+        window.goToAlbumBySlug = goToAlbumBySlug;
     </script>
 </body>
 </html>
