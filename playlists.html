@@ -2,34 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Playlists | Zedtopvibes</title>
-<link rel="stylesheet" href="/css/shared/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zedtopvibes • Playlists</title>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="/css/shared/main.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Simple header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
+            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
+            <div class="right-spacer"></div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <div style="text-align: center; padding: 60px; width: 100%;">Loading playlists...</div>
+        <div style="text-align: center; padding: 60px;">Loading playlists...</div>
     </div>
 
+    <!-- Simple footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/albums.html">Albums</a>
+            <a href="/playlists.html">Playlists</a>
+            <a href="/artists.html">Artists</a>
+        </div>
+        <div class="copyright">© 2024 Zedtopvibes</div>
+    </footer>
+
     <script type="module">
-        import { API_BASE, formatNumber } from '/js/shared/helpers.js';
-        import { goToPlaylistBySlug } from '/js/shared/navigation.js';
-        import { fetchPlaylists } from '/js/shared/api.js';
-        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+        // Try to import shared helpers, with fallback
+        let formatNumber = (num) => num;
+        
+        try {
+            const helpers = await import('/js/shared/helpers.js');
+            formatNumber = helpers.formatNumber;
+        } catch (e) {
+            console.log('Using fallback formatters');
+        }
+
+        // API Base
+        const API_BASE = '/api';
+
+        // Navigation functions
+        window.goHome = () => window.location.href = '/';
+        window.goToPlaylist = (slug) => window.location.href = `/playlist/${slug}`;
 
         // Load playlists
         async function loadPlaylists() {
             try {
-                const skeleton = await loadTemplate('loading-skeleton');
-                document.getElementById('content').innerHTML = skeleton;
-
-                const playlists = await fetchPlaylists();
+                const response = await fetch(`${API_BASE}/playlists`);
+                const playlists = await response.json();
+                
                 renderPlaylists(playlists);
+                renderFeaturedPlaylists(playlists);
 
             } catch (error) {
-                console.error('Error loading playlists:', error);
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <p style="color: #ff5500;">Error: ${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
+                    </div>
+                `;
             }
         }
 
+        // Render playlists
         function renderPlaylists(playlists) {
             const content = document.getElementById('content');
             
@@ -46,7 +89,7 @@
                     
                     <div class="playlist-list">
                         ${playlists.map(playlist => `
-                            <div class="playlist-item" onclick="goToPlaylistBySlug('${playlist.slug}')">
+                            <div class="playlist-item" onclick="goToPlaylist('${playlist.slug}')">
                                 <div class="playlist-thumb">${playlist.cover_emoji || '📋'}</div>
                                 <div class="playlist-info">
                                     <div class="playlist-title">${playlist.name}</div>
@@ -68,33 +111,45 @@
                             <h2 class="section-title">Featured Playlists</h2>
                             <a href="#" class="view-all">View All ➔</a>
                         </div>
-                        <div>
-                            ${playlists.filter(p => p.is_featured).slice(0, 3).map(playlist => `
-                                <div class="sidebar-item" onclick="goToPlaylistBySlug('${playlist.slug}')">
-                                    <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
-                                    <div class="sidebar-info">
-                                        <div class="sidebar-title">${playlist.name}</div>
-                                        <div class="sidebar-sub">${playlist.track_count || 0} tracks</div>
-                                    </div>
-                                </div>
-                            `).join('')}
+                        <div id="featuredPlaylists" class="latest-albums-list">
+                            ${renderFeaturedPlaylists(playlists)}
+                        </div>
+                    </section>
+                    
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Create Playlist</h2>
+                        </div>
+                        <div style="padding: 15px; text-align: center;">
+                            <p style="color: #666; margin-bottom: 10px;">Curate your own music collection</p>
+                            <button onclick="alert('Create playlist coming soon!')" style="background: #ff5500; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">Create New Playlist</button>
                         </div>
                     </section>
                 </div>
             `;
         }
 
-        // Initialize page
-        async function initPage() {
-            await injectTemplates();
-            const footerHtml = await loadTemplate('footer');
-            document.body.insertAdjacentHTML('beforeend', footerHtml);
-            await loadPlaylists();
+        // Render featured playlists
+        function renderFeaturedPlaylists(playlists) {
+            const featured = playlists.filter(p => p.is_featured).slice(0, 3);
+            
+            if (featured.length === 0) {
+                return '<div style="padding: 15px; text-align: center;">No featured playlists</div>';
+            }
+            
+            return featured.map(playlist => `
+                <div class="sidebar-item" onclick="goToPlaylist('${playlist.slug}')">
+                    <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
+                    <div class="sidebar-info">
+                        <div class="sidebar-title">${playlist.name}</div>
+                        <div class="sidebar-sub">${playlist.track_count || 0} tracks</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        initPage();
-        
-        window.goToPlaylistBySlug = goToPlaylistBySlug;
+        // Load playlists
+        loadPlaylists();
     </script>
 </body>
 </html>
