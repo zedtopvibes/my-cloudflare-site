@@ -418,85 +418,125 @@
             border-bottom-right-radius: 3px;
         }
         
-        .album-thumbnail {
-            width: 120px;
-            height: 120px;
+        /* Old design thumb classes - adding these back */
+        .album-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #1f405b, #0f2a3f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #9cc9ff;
+            border: 2px solid #1f4c73;
             flex-shrink: 0;
-            border-radius: 3px;
-            overflow: hidden;
-            background: #f0f0f0;
-            border: 2px solid #e0e0e0;
+        }
+        
+        .right-sidebar .album-thumb {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+        
+        /* Hide old new design thumbnails when using old design */
+        .album-thumbnail {
+            display: none;
+        }
+        
+        /* Sidebar item styles from old design */
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #1f405b;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(40, 60, 90, 0.5);
+        }
+        
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+        
+        .sidebar-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #1f405b, #0f2a3f);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            color: #9cc9ff;
+            border: 2px solid #1f4c73;
+            flex-shrink: 0;
         }
         
-        .album-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
+        .sidebar-info {
+            flex: 1;
         }
         
-        .album-thumbnail.placeholder {
-            background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #aaa;
-            font-size: 0.9rem;
+        .sidebar-title {
             font-weight: 600;
+            color: #ecf5ff;
+            margin-bottom: 4px;
         }
         
-        .album-thumbnail.placeholder::before {
-            content: "ALBUM";
-            letter-spacing: 1px;
+        .sidebar-sub {
+            font-size: 0.85rem;
+            color: #90a9c9;
         }
         
-        .album-thumbnail.song-thumbnail {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            color: white;
-            position: relative;
-            overflow: hidden;
+        .item-metric {
+            margin-left: 8px;
+            color: #70c8ff;
         }
         
-        .album-thumbnail.song-thumbnail::before {
-            content: "\f001";
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 2rem;
-            opacity: 0.8;
+        .right-sidebar .album-item {
+            padding: 12px 15px;
+            gap: 15px;
         }
         
-        .album-thumbnail.artist-thumbnail {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
-            color: white;
-            position: relative;
-            overflow: hidden;
+        .right-sidebar .album-title {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            color: #ecf5ff;
         }
         
-        .album-thumbnail.artist-thumbnail::before {
-            content: "\f007";
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 2rem;
-            opacity: 0.8;
+        .right-sidebar .album-meta {
+            gap: 6px;
+            margin-top: 4px;
         }
         
-        .album-thumbnail.playlist-thumbnail {
-            background: linear-gradient(135deg, #4a90e2, #9013fe);
-            color: white;
-            position: relative;
-            overflow: hidden;
+        .right-sidebar .album-artist {
+            background: rgba(60, 140, 210, 0.2);
+            color: #aad0ff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
         }
         
-        .album-thumbnail.playlist-thumbnail::before {
-            content: "\f001";
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 2rem;
-            opacity: 0.8;
+        .right-sidebar .song-stats,
+        .right-sidebar .artist-stats,
+        .right-sidebar .album-stats {
+            background: rgba(40, 180, 140, 0.25);
+            color: #b3ffe6;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+        
+        .right-sidebar .album-genre {
+            background: #1c3f55;
+            color: #b0d4ff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
         }
         
         .album-info {
@@ -508,7 +548,7 @@
         .album-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #222;
+            color: #ecf5ff;
             margin-bottom: 8px;
             display: block;
             white-space: normal;
@@ -517,22 +557,6 @@
             letter-spacing: 0.2px;
             line-height: 1.4;
             max-height: 3.6em;
-        }
-        
-        .album-date {
-            color: #666;
-            font-size: 0.8rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            letter-spacing: 0.1px;
-        }
-        
-        .album-date::before {
-            content: "📅";
-            font-size: 0.75rem;
-            color: #999;
         }
         
         .album-meta {
@@ -546,10 +570,9 @@
         .album-artist,
         .album-genre,
         .album-tracks,
-        .track-duration,
         .artist-stats,
-        .playlist-songs,
-        .song-stats {
+        .song-stats,
+        .album-stats {
             font-size: 0.75rem;
             font-weight: 600;
             padding: 3px 8px;
@@ -559,68 +582,24 @@
         }
         
         .album-artist {
-            color: #ff5500;
-            background: rgba(255, 85, 0, 0.08);
+            background: rgba(60, 140, 210, 0.2);
+            color: #aad0ff;
         }
         
         .album-genre {
-            color: #666;
-            background: #f5f5f5;
+            background: #1c3f55;
+            color: #b0d4ff;
         }
         
         .artist-stats {
-            color: #9b59b6;
-            background: rgba(155, 89, 182, 0.08);
+            background: rgba(130, 90, 200, 0.3);
+            color: #dbbaff;
         }
         
-        .playlist-songs {
-            color: #4a90e2;
-            background: rgba(74, 144, 226, 0.08);
-        }
-        
-        .song-stats {
-            color: #2ecc71;
-            background: rgba(46, 204, 113, 0.08);
-        }
-        
-        .right-sidebar .album-item {
-            padding: 12px 15px;
-            gap: 15px;
-        }
-        
-        .right-sidebar .album-thumbnail {
-            width: 80px;
-            height: 80px;
-        }
-        
-        .right-sidebar .album-title {
-            font-size: 0.95rem;
-            margin-bottom: 4px;
-            max-height: 2.8em;
-        }
-        
-        .right-sidebar .album-meta {
-            gap: 6px;
-            margin-top: 4px;
-        }
-        
-        .right-sidebar .album-date {
-            font-size: 0.75rem;
-        }
-        
-        .left-sidebar .album-artist,
-        .left-sidebar .album-genre {
-            font-size: 0.75rem;
-            padding: 3px 8px;
-        }
-        
-        .left-sidebar .album-date {
-            font-size: 0.75rem;
-        }
-        
-        .left-sidebar .album-meta {
-            gap: 8px;
-            margin-top: 6px;
+        .song-stats,
+        .album-stats {
+            background: rgba(40, 180, 140, 0.25);
+            color: #b3ffe6;
         }
         
         .site-footer {
@@ -831,14 +810,22 @@
                 padding: 14px 16px;
             }
             
-            .album-thumbnail {
-                width: 100px;
-                height: 100px;
+            .album-thumb {
+                width: 70px !important;
+                height: 70px !important;
+                font-size: 1.5rem;
             }
             
-            .right-sidebar .album-thumbnail {
-                width: 80px;
-                height: 80px;
+            .right-sidebar .album-thumb {
+                width: 50px !important;
+                height: 50px !important;
+                font-size: 1.2rem;
+            }
+            
+            .sidebar-thumb {
+                width: 40px !important;
+                height: 40px !important;
+                font-size: 1.2rem;
             }
         }
         
@@ -880,72 +867,22 @@
                 gap: 15px;
             }
             
-            .left-sidebar .album-thumbnail {
-                width: 70px;
-                height: 70px;
+            .album-thumb {
+                width: 60px !important;
+                height: 60px !important;
+                font-size: 1.3rem;
             }
             
-            .right-sidebar .album-thumbnail {
-                width: 70px;
-                height: 70px;
+            .right-sidebar .album-thumb {
+                width: 45px !important;
+                height: 45px !important;
+                font-size: 1.1rem;
             }
             
-            .left-sidebar .album-title {
-                font-size: 0.95rem;
-            }
-            
-            .pagination-item {
-                width: 36px;
-                height: 36px;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .main-content-container {
-                padding: 10px;
-            }
-            
-            .site-logo {
-                font-size: 20px;
-            }
-            
-            .search-section {
-                padding: 15px 10px;
-            }
-            
-            .search-container {
-                max-width: 100%;
-                width: 100%;
-            }
-            
-            .search-input {
-                padding: 12px 16px;
-                font-size: 14px;
-            }
-            
-            .search-button {
-                padding: 0 16px;
-            }
-            
-            .section-header {
-                height: auto;
-                min-height: 50px;
-                padding: 10px 12px;
-            }
-            
-            .left-sidebar .album-item {
-                padding: 12px 15px;
-                gap: 15px;
-            }
-            
-            .left-sidebar .album-thumbnail {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .right-sidebar .album-thumbnail {
-                width: 70px;
-                height: 70px;
+            .sidebar-thumb {
+                width: 35px !important;
+                height: 35px !important;
+                font-size: 1rem;
             }
             
             .left-sidebar .album-title {
@@ -1013,63 +950,24 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Base skeleton thumbnail styles */
-        .skeleton-thumbnail {
+        /* Base skeleton thumbnail styles - updated for old design */
+        .skeleton-thumb {
+            width: 80px;
+            height: 80px;
             background: #1f2e40;
-            border-radius: 3px;
+            border-radius: 4px;
             animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+        
+        .right-sidebar .skeleton-thumb {
+            width: 60px;
+            height: 60px;
         }
         
         @keyframes skeleton-pulse {
             0% { opacity: 0.6; }
             50% { opacity: 1; }
             100% { opacity: 0.6; }
-        }
-        
-        /* Left sidebar thumbnails - desktop */
-        .left-sidebar .skeleton-thumbnail {
-            width: 120px;
-            height: 120px;
-        }
-        
-        /* Right sidebar thumbnails - desktop */
-        .right-sidebar .skeleton-thumbnail {
-            width: 80px;
-            height: 80px;
-        }
-        
-        /* Mobile overrides - applied immediately, no glitch */
-        @media (max-width: 768px) {
-            .left-sidebar .skeleton-thumbnail {
-                width: 100px;
-                height: 100px;
-            }
-            .right-sidebar .skeleton-thumbnail {
-                width: 80px;
-                height: 80px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .left-sidebar .skeleton-thumbnail {
-                width: 70px !important;
-                height: 70px !important;
-            }
-            .right-sidebar .skeleton-thumbnail {
-                width: 70px !important;
-                height: 70px !important;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .left-sidebar .skeleton-thumbnail {
-                width: 60px !important;
-                height: 60px !important;
-            }
-            .right-sidebar .skeleton-thumbnail {
-                width: 60px !important;
-                height: 60px !important;
-            }
         }
         
         /* Skeleton lines */
@@ -1110,21 +1008,55 @@
         .section-title::before { content: "🌊"; font-size: 1.2rem; opacity: 1; }
         .view-all { border-color: #2f8ed0; color: #bbdbff; background: #1d3142; }
         .view-all:hover { background: #2f6f9f; color: #fff; }
-        .album-item:not(:last-child)::after { background: #1f405b; }
-        .album-item:hover { background: rgba(40, 60, 90, 0.5); backdrop-filter: blur(4px); }
-        .album-thumbnail { border: 2px solid #1f4c73; box-shadow: 0 4px 15px #00000080; }
-        .album-thumbnail.placeholder { background: linear-gradient(135deg, #1f405b, #0f2a3f); color: #9cc9ff; }
-        .album-thumbnail.song-thumbnail { background: linear-gradient(135deg, #1f6f5a, #1d9f8f); }
-        .album-thumbnail.artist-thumbnail { background: linear-gradient(135deg, #6b4f9f, #a07dd0); }
-        .album-thumbnail.playlist-thumbnail { background: linear-gradient(135deg, #2f6f9f, #5fa8e8); }
-        .album-title { color: #ecf5ff; text-shadow: 0 2px 4px #00000060; }
-        .album-date { color: #afc9f0; }
-        .album-date::before { color: #78aeff; }
-        .album-artist { background: rgba(60, 140, 210, 0.2); color: #aad0ff; }
-        .album-genre { background: #1c3f55; color: #b0d4ff; }
-        .artist-stats { background: rgba(130, 90, 200, 0.3); color: #dbbaff; }
-        .playlist-songs { background: rgba(70, 140, 230, 0.25); color: #c0e1ff; }
-        .song-stats { background: rgba(40, 180, 140, 0.25); color: #b3ffe6; }
+        
+        /* Update old design colors to match new theme */
+        .album-thumb {
+            background: linear-gradient(135deg, #1f405b, #0f2a3f);
+            border: 2px solid #2f6f9f;
+            color: #9cc9ff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar-thumb {
+            background: linear-gradient(135deg, #1f405b, #0f2a3f);
+            border: 2px solid #2f6f9f;
+            color: #9cc9ff;
+        }
+        
+        .album-item:not(:last-child)::after {
+            background: #1f405b;
+        }
+        
+        .album-item:hover {
+            background: rgba(40, 60, 90, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .album-item:hover::after {
+            background: #2f8ed0;
+        }
+        
+        .album-artist {
+            background: rgba(60, 140, 210, 0.2);
+            color: #aad0ff;
+        }
+        
+        .album-genre {
+            background: #1c3f55;
+            color: #b0d4ff;
+        }
+        
+        .artist-stats {
+            background: rgba(130, 90, 200, 0.3);
+            color: #dbbaff;
+        }
+        
+        .song-stats,
+        .album-stats {
+            background: rgba(40, 180, 140, 0.25);
+            color: #b3ffe6;
+        }
+        
         .site-footer { background: #121b28; border-top: 3px solid #1f6f9f; box-shadow: 0 -10px 30px #00000050; }
         .site-footer p { color: #ffffff; }
         .site-footer p:last-child { color: #8fcbff; }
@@ -1199,8 +1131,10 @@
         /* scrollbar matches theme */
         ::-webkit-scrollbar-thumb { background: #1f6f9f; }
         ::-webkit-scrollbar-thumb:hover { background: #4a9fd0; }
-        /* force skeleton bg to match new dark scheme but keep original pulse */
-        .skeleton-thumbnail { background: #1f2e40; }
+        /* Update skeleton to match old design */
+        .skeleton-thumb {
+            background: #1f2e40;
+        }
         .skeleton-line { background: #1f2e40; }
     </style>
 </head>
@@ -1247,7 +1181,7 @@
             <div class="latest-albums-list" id="allAlbumsList">
                 <!-- Loading skeletons with proper responsive sizing -->
                 <div class="album-item">
-                    <div class="skeleton-thumbnail"></div>
+                    <div class="skeleton-thumb"></div>
                     <div class="album-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
@@ -1255,7 +1189,7 @@
                     </div>
                 </div>
                 <div class="album-item">
-                    <div class="skeleton-thumbnail"></div>
+                    <div class="skeleton-thumb"></div>
                     <div class="album-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
@@ -1263,7 +1197,7 @@
                     </div>
                 </div>
                 <div class="album-item">
-                    <div class="skeleton-thumbnail"></div>
+                    <div class="skeleton-thumb"></div>
                     <div class="album-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
@@ -1271,7 +1205,7 @@
                     </div>
                 </div>
                 <div class="album-item">
-                    <div class="skeleton-thumbnail"></div>
+                    <div class="skeleton-thumb"></div>
                     <div class="album-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
@@ -1279,7 +1213,7 @@
                     </div>
                 </div>
                 <div class="album-item">
-                    <div class="skeleton-thumbnail"></div>
+                    <div class="skeleton-thumb"></div>
                     <div class="album-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
@@ -1316,14 +1250,14 @@
                 <div class="latest-albums-list" id="newReleases">
                     <!-- Loading skeletons -->
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
                         </div>
                     </div>
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
@@ -1342,14 +1276,14 @@
                 <div class="latest-albums-list" id="popularAlbums">
                     <!-- Loading skeletons -->
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
                         </div>
                     </div>
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
@@ -1368,14 +1302,14 @@
                 <div class="latest-albums-list" id="classicAlbums">
                     <!-- Loading skeletons -->
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
                         </div>
                     </div>
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
@@ -1394,14 +1328,14 @@
                 <div class="latest-albums-list" id="featuredAlbums">
                     <!-- Loading skeletons -->
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
                         </div>
                     </div>
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
@@ -1420,14 +1354,14 @@
                 <div class="latest-albums-list" id="upcomingAlbums">
                     <!-- Loading skeletons -->
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
                         </div>
                     </div>
                     <div class="album-item">
-                        <div class="skeleton-thumbnail"></div>
+                        <div class="skeleton-thumb"></div>
                         <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
@@ -1559,20 +1493,20 @@
             });
             
             document.addEventListener('mouseenter', function(e) {
-                const thumbnail = e.target.closest('.album-item')?.querySelector('.album-thumbnail');
-                if (thumbnail) {
-                    thumbnail.style.transform = 'scale(1.05)';
-                    thumbnail.style.borderColor = '#70c8ff';
-                    thumbnail.style.boxShadow = '0 8px 18px #0088dd';
+                const thumb = e.target.closest('.album-item')?.querySelector('.album-thumb');
+                if (thumb) {
+                    thumb.style.transform = 'scale(1.05)';
+                    thumb.style.borderColor = '#70c8ff';
+                    thumb.style.boxShadow = '0 8px 18px #0088dd';
                 }
             }, true);
             
             document.addEventListener('mouseleave', function(e) {
-                const thumbnail = e.target.closest('.album-item')?.querySelector('.album-thumbnail');
-                if (thumbnail) {
-                    thumbnail.style.transform = 'scale(1)';
-                    thumbnail.style.borderColor = '#1f4c73';
-                    thumbnail.style.boxShadow = 'none';
+                const thumb = e.target.closest('.album-item')?.querySelector('.album-thumb');
+                if (thumb) {
+                    thumb.style.transform = 'scale(1)';
+                    thumb.style.borderColor = '#2f6f9f';
+                    thumb.style.boxShadow = 'none';
                 }
             }, true);
             
