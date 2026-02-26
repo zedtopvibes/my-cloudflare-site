@@ -4,35 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zedtopvibes • Albums</title>
-    <style>
-        body { font-family: system-ui; padding: 20px; }
-        .album { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
-    </style>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="/css/shared/main.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <h1>Albums</h1>
-    <div id="albums">Loading albums...</div>
+    <!-- Simple header fallback -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
+            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
+            <div class="right-spacer"></div>
+        </div>
+    </nav>
 
-    <script>
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="main-content-container" id="content">
+        <div style="text-align: center; padding: 60px;">Loading albums...</div>
+    </div>
+
+    <!-- Simple footer fallback -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/albums.html">Albums</a>
+            <a href="/playlists.html">Playlists</a>
+        </div>
+        <div class="copyright">© 2024 Zedtopvibes</div>
+    </footer>
+
+    <script type="module">
+        // Import only if available, with fallback
+        let formatNumber = (num) => num;
+        let goToAlbumBySlug = (slug) => { window.location.href = `/album/${slug}`; };
+        let goToArtist = (name) => { window.location.href = `/artist/${name}`; };
+        
+        try {
+            const helpers = await import('/js/shared/helpers.js');
+            formatNumber = helpers.formatNumber;
+        } catch (e) {
+            console.log('Using fallback formatters');
+        }
+
+        // API Base
+        const API_BASE = '/api';
+
+        // Load albums
         async function loadAlbums() {
             try {
-                const response = await fetch('/api/albums');
+                const response = await fetch(`${API_BASE}/albums`);
                 const albums = await response.json();
                 
-                const html = albums.map(album => `
-                    <div class="album">
-                        <h3>${album.title}</h3>
-                        <p>By: ${album.artist}</p>
-                        <p>Tracks: ${album.track_count || 0}</p>
-                    </div>
-                `).join('');
+                const content = document.getElementById('content');
                 
-                document.getElementById('albums').innerHTML = html || 'No albums found';
+                content.innerHTML = `
+                    <aside class="left-sidebar">
+                        <div class="breadcrumbs">
+                            <a href="/">Home</a> / <span>Albums</span>
+                        </div>
+                        
+                        <div class="section-header">
+                            <h2 class="section-title">All Albums</h2>
+                            <a href="#" class="view-all">View All ➔</a>
+                        </div>
+                        
+                        <div class="album-list">
+                            ${albums.map(album => `
+                                <div class="album-item" onclick="window.location.href='/album/${album.slug}'">
+                                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
+                                    <div class="album-info">
+                                        <div class="album-title">${album.title}</div>
+                                        <div class="album-meta">
+                                            <span class="album-artist" onclick="event.stopPropagation(); window.location.href='/artist/${album.artist_slug}'">${album.artist}</span>
+                                            <span class="album-tracks">${album.track_count || 0} tracks</span>
+                                            <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </aside>
+                    
+                    <div class="right-sidebar">
+                        <section class="section-block">
+                            <div class="section-header">
+                                <h2 class="section-title">Featured Albums</h2>
+                                <a href="#" class="view-all">View All ➔</a>
+                            </div>
+                            <div>
+                                ${albums.filter(a => a.is_featured).slice(0, 3).map(album => `
+                                    <div class="sidebar-item" onclick="window.location.href='/album/${album.slug}'">
+                                        <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
+                                        <div class="sidebar-info">
+                                            <div class="sidebar-title">${album.title}</div>
+                                            <div class="sidebar-sub">${album.artist}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </section>
+                    </div>
+                `;
+                
             } catch (error) {
-                document.getElementById('albums').innerHTML = 'Error loading albums: ' + error.message;
+                document.getElementById('content').innerHTML = `<div style="padding: 60px; text-align: center;">Error: ${error.message}</div>`;
             }
         }
-        
+
         loadAlbums();
     </script>
 </body>
