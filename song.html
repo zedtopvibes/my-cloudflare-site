@@ -2,590 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zedtopvibes • Song Details</title>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navigation */
-        .navbar {
-            background: white;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 12px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .hamburger {
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            color: #333;
-        }
-
-        .site-title {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .site-title a {
-            text-decoration: none;
-        }
-
-        .right-spacer {
-            width: 40px;
-        }
-
-        /* Search Bar */
-        .search-section {
-            max-width: 1400px;
-            margin: 15px auto 5px;
-            padding: 0 20px;
-            width: 100%;
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 30px;
-            padding: 8px 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .search-icon {
-            color: #ff5500;
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .search-container input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 15px;
-            padding: 8px 0;
-            background: transparent;
-        }
-
-        .search-container input::placeholder {
-            color: #aaa;
-        }
-
-        /* MAIN LAYOUT CONTAINER */
-        .main-content-container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 20px;
-            display: flex;
-            gap: 20px;
-            width: 100%;
-        }
-
-        /* LEFT SIDEBAR */
-        .left-sidebar {
-            flex: 3;
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        /* RIGHT SIDEBAR */
-        .right-sidebar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            min-width: 300px;
-        }
-
-        .section-block {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        /* SECTION HEADER */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 18px;
-            background: #fff;
-            border-bottom: 1px solid #f0f0f0;
-            position: relative;
-        }
-
-        .section-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 5%, 
-                #ff5500 20%, 
-                #ff5500 80%, 
-                transparent 95%
-            );
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #222;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title::before {
-            content: "🎵";
-            font-size: 1.1rem;
-            color: #ff5500;
-        }
-
-        .view-all {
-            color: #ff5500;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 4px 12px;
-            border: 1px solid #ff5500;
-            border-radius: 20px;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .view-all:hover {
-            background: #ff5500;
-            color: white;
-        }
-
-        /* BREADCRUMBS */
-        .breadcrumbs {
-            padding: 15px 18px;
-            background: #fafafa;
-            border-bottom: 1px solid #e8e8e8;
-            font-size: 0.9rem;
-            color: #888;
-        }
-
-        .breadcrumbs a {
-            color: #ff5500;
-            text-decoration: none;
-        }
-
-        .breadcrumbs a:hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumbs span {
-            color: #333;
-            font-weight: 500;
-        }
-
-        /* SONG HEADER */
-        .song-header {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            padding: 25px;
-            background: linear-gradient(135deg, rgba(255,85,0,0.05) 0%, rgba(255,140,0,0.05) 100%);
-            border-bottom: 1px solid #e8e8e8;
-        }
-
-        .song-cover {
-            width: 150px;
-            height: 150px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 64px;
-            color: white;
-            box-shadow: 0 4px 12px rgba(255,85,0,0.2);
-            flex-shrink: 0;
-        }
-
-        .song-info {
-            flex: 1;
-        }
-
-        .song-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 8px;
-        }
-
-        .song-artist {
-            font-size: 1.2rem;
-            color: #ff5500;
-            margin-bottom: 15px;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .song-artist:hover {
-            text-decoration: underline;
-        }
-
-        .song-meta {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .song-stats {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255,85,0,0.08);
-            padding: 6px 12px;
-            border-radius: 20px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .song-stats i {
-            color: #ff5500;
-        }
-
-        .song-description {
-            color: #555;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            max-width: 600px;
-        }
-
-        /* COMPACT PLAYER BAR */
-        .compact-actions {
-            padding: 15px 25px;
-            background: #fafafa;
-            border-bottom: 1px solid #e8e8e8;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .control-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: none;
-            background: white;
-            color: #333;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-        }
-
-        .control-btn:hover {
-            background: #ff5500;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .play-btn {
-            width: 55px;
-            height: 55px;
-            background: #ff5500;
-            color: white;
-            font-size: 1.4rem;
-        }
-
-        .play-btn:hover {
-            background: #ff7000;
-            box-shadow: 0 0 15px rgba(255,85,0,0.4);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-left: auto;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 8px 20px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            background: white;
-            color: #555;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .action-btn:hover {
-            background: #ff5500;
-            color: white;
-            border-color: #ff5500;
-        }
-
-        .download-btn {
-            background: #ff5500;
-            color: white;
-            border-color: #ff5500;
-        }
-
-        /* Now Playing Bar */
-        .now-playing-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            padding: 10px 20px;
-            display: none;
-            align-items: center;
-            gap: 15px;
-            z-index: 1000;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        }
-
-        .now-playing-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .now-playing-title {
-            font-weight: 600;
-            color: #222;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .now-playing-artist {
-            font-size: 12px;
-            color: #ff5500;
-            cursor: pointer;
-        }
-
-        .now-playing-artist:hover {
-            text-decoration: underline;
-        }
-
-        .now-playing-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .now-playing-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #555;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .now-playing-btn:hover {
-            background: #f0f0f0;
-        }
-
-        .now-playing-play {
-            background: #ff5500;
-            color: white;
-        }
-
-        .now-playing-play:hover {
-            background: #ff7000;
-        }
-
-        /* RIGHT SIDEBAR ITEMS */
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            gap: 15px;
-            border-bottom: 1px solid #f5f5f5;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .sidebar-item:hover {
-            background: #fff9f5;
-        }
-
-        .sidebar-item:last-child {
-            border-bottom: none;
-        }
-
-        .sidebar-thumb {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .sidebar-info {
-            flex: 1;
-        }
-
-        .sidebar-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 4px;
-        }
-
-        .sidebar-sub {
-            font-size: 12px;
-            color: #888;
-        }
-
-        /* LOADING SKELETONS */
-        .skeleton {
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        @keyframes skeleton-loading {
-            0% { background-color: #f0f0f0; }
-            100% { background-color: #e0e0e0; }
-        }
-
-        /* Footer */
-        .footer {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 20px 20px 0;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            color: #888;
-            font-size: 13px;
-            width: 100%;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .main-content-container {
-                flex-direction: column;
-            }
-            
-            .right-sidebar {
-                min-width: auto;
-            }
-            
-            .song-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .song-cover {
-                width: 120px;
-                height: 120px;
-                font-size: 48px;
-            }
-            
-            .song-meta {
-                justify-content: center;
-            }
-            
-            .compact-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .action-buttons {
-                margin-left: 0;
-                justify-content: center;
-            }
-        }
-    </style>
+    <title>Song | Zedtopvibes</title>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="hamburger" onclick="window.location.href='/'">☰</div>
-            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
-            <div class="right-spacer"></div>
-        </div>
-    </nav>
-
-    <!-- Search Bar -->
-    <div class="search-section">
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search tracks...">
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeleton -->
         <div style="text-align: center; padding: 60px; width: 100%;">Loading song...</div>
     </div>
 
-    <!-- Now Playing Bar -->
-    <div id="nowPlayingBar" class="now-playing-bar">
+    <div id="nowPlayingBar" class="now-playing-bar" style="display: none;">
         <div class="now-playing-info">
             <div id="nowPlayingTitle" class="now-playing-title">Not playing</div>
             <div id="nowPlayingArtist" class="now-playing-artist"></div>
@@ -596,93 +20,25 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="copyright">
-            © 2024 Zedtopvibes. All rights reserved.
-        </div>
-    </footer>
+    <script type="module">
+        import { API_BASE, formatNumber, formatDuration, getEmojiForGenre } from '/js/shared/helpers.js';
+        import { goToArtist, goToSong } from '/js/shared/navigation.js';
+        import { fetchSong, incrementPlays } from '/js/shared/api.js';
+        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
 
-    <script>
-        // API Base URL
-        const API_BASE = '/api';
-        
-        // Get song identifier from multiple sources
+        // Get song identifier
         const urlParams = new URLSearchParams(window.location.search);
         const songId = urlParams.get('id');
-
-        // Check if we're using a clean URL with slug (from data attribute)
         const contentDiv = document.getElementById('content');
-        const songSlug = contentDiv ? contentDiv.dataset.songSlug : null;
+        const songSlug = contentDiv?.dataset.songSlug;
 
-        // Determine which identifier to use
-        let songIdentifier = null;
-        let useSlug = false;
-
-        if (songSlug) {
-            // Clean URL format: /song/slap-dee-hello
-            songIdentifier = songSlug;
-            useSlug = true;
-            console.log('Using slug from attribute:', songIdentifier);
-        } else if (songId) {
-            // Old format: ?id=1
-            songIdentifier = songId;
-            useSlug = false;
-            console.log('Using ID from query:', songIdentifier);
-        }
-
+        let songIdentifier = songSlug || songId;
+        let useSlug = !!songSlug;
+        
         // Audio player
         let audioPlayer = null;
         let currentTrack = null;
         let isPlaying = false;
-
-        // Navigation functions
-        function goHome() {
-            window.location.href = '/';
-        }
-
-        function goToArtist(artistName) {
-            // Generate slug for artist
-            const slug = artistName
-                .toLowerCase()
-                .replace(/\s+/g, '-')
-                .replace(/[^\w-]/g, '')
-                .replace(/--+/g, '-')
-                .replace(/^-+|-+$/g, '');
-            window.location.href = `/artist/${slug}`;
-        }
-
-        function goToSongBySlug(slug) {
-            window.location.href = `/song/${slug}`;
-        }
-
-        // Helper functions
-        function formatNumber(num) {
-            if (!num && num !== 0) return '0';
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'k';
-            }
-            return num;
-        }
-
-        function formatDuration(seconds) {
-            if (!seconds) return '?:??';
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        function getEmojiForGenre(genre) {
-            const emojis = {
-                'electronic': '🎵',
-                'synthwave': '🎸',
-                'hiphop': '🎤',
-                'lofi': '🌅',
-                'ambient': '✨',
-                'default': '🎵'
-            };
-            return emojis[genre] || emojis.default;
-        }
 
         // Load song data
         async function loadSong() {
@@ -692,27 +48,17 @@
             }
 
             try {
-                // Show loading state
-                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading song...</div>';
-                
-                let apiUrl;
-                if (useSlug) {
-                    // New clean URL format
-                    apiUrl = `${API_BASE}/song/by-slug/${songIdentifier}`;
-                } else {
-                    // Old format with ID
-                    apiUrl = `${API_BASE}/tracks/${songIdentifier}`;
-                }
-                
-                console.log('Fetching from API:', apiUrl);
+                const skeleton = await loadTemplate('loading-skeleton');
+                document.getElementById('content').innerHTML = skeleton;
+
+                const apiUrl = useSlug 
+                    ? `${API_BASE}/song/by-slug/${songIdentifier}`
+                    : `${API_BASE}/tracks/${songIdentifier}`;
+
                 const response = await fetch(apiUrl);
-                
-                if (!response.ok) {
-                    throw new Error('Track not found');
-                }
+                if (!response.ok) throw new Error('Track not found');
                 
                 const track = await response.json();
-                console.log('Track data received:', track);
                 
                 // Increment view count
                 fetch(`${API_BASE}/tracks/${track.id}/view`, { 
@@ -721,16 +67,12 @@
                 }).catch(err => console.error('View count error:', err));
                 
                 currentTrack = track;
-                
-                // Render the page
                 renderSong(track);
 
             } catch (error) {
-                console.error('Error loading track:', error);
                 document.getElementById('content').innerHTML = `
                     <div style="text-align: center; padding: 60px;">
-                        <p style="color: #ff5500; margin-bottom: 20px;">Error loading track</p>
-                        <p style="color: #666; font-size: 14px;">${error.message}</p>
+                        <p style="color: #ff5500;">Error: ${error.message}</p>
                         <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
                     </div>
                 `;
@@ -742,16 +84,13 @@
             const content = document.getElementById('content');
             
             content.innerHTML = `
-                <!-- LEFT SIDEBAR -->
                 <aside class="left-sidebar">
-                    <!-- Breadcrumbs -->
                     <div class="breadcrumbs">
                         <a href="/">Home</a> / 
                         <a href="#" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</a> / 
                         <span>${track.title}</span>
                     </div>
                     
-                    <!-- Song Header -->
                     <div class="song-header">
                         <div class="song-cover">${getEmojiForGenre(track.genre)}</div>
                         <div class="song-info">
@@ -768,7 +107,6 @@
                         </div>
                     </div>
                     
-                    <!-- Compact Player Bar -->
                     <div class="compact-actions">
                         <div class="player-controls">
                             <button class="control-btn" onclick="playPrevious()">⏮</button>
@@ -778,57 +116,24 @@
                         <div class="action-buttons">
                             <button class="action-btn" onclick="likeTrack(${track.id})">❤️ Like</button>
                             <button class="action-btn" onclick="addToPlaylist(${track.id})">➕ Playlist</button>
-                            <button class="action-btn download-btn" onclick="downloadTrack(${track.id}, '${track.r2_key}')">⬇️ Download</button>
-                            <button class="action-btn" onclick="shareTrack()">↗️ Share</button>
+                            <button class="action-btn download-btn" onclick="downloadTrack('${track.r2_key}')">⬇️ Download</button>
                         </div>
                     </div>
                 </aside>
                 
-                <!-- RIGHT SIDEBAR -->
                 <div class="right-sidebar">
-                    <!-- More by Artist -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">More by ${track.artist}</h2>
                             <a href="#" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')" class="view-all">View All ➔</a>
                         </div>
-                        <div id="moreByArtist" class="latest-albums-list">
-                            <div class="loading">Loading...</div>
-                        </div>
-                    </section>
-                    
-                    <!-- In Albums -->
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Appears On</h2>
-                            <a href="/albums.html" class="view-all">View All ➔</a>
-                        </div>
-                        <div id="appearsOn" class="latest-albums-list">
-                            <div class="loading">Loading...</div>
-                        </div>
-                    </section>
-                    
-                    <!-- In Playlists -->
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">In Playlists</h2>
-                            <a href="/playlists.html" class="view-all">View All ➔</a>
-                        </div>
-                        <div id="inPlaylists" class="latest-albums-list">
-                            <div class="loading">Loading...</div>
-                        </div>
+                        <div id="moreByArtist" class="latest-albums-list">Loading...</div>
                     </section>
                 </div>
             `;
 
             // Load more by artist
             loadMoreByArtist(track.artist, track.id);
-            
-            // Load albums containing this track
-            loadAlbumsWithTrack(track.id);
-            
-            // Load playlists containing this track
-            loadPlaylistsWithTrack(track.id);
         }
 
         // Load more tracks by same artist
@@ -845,18 +150,16 @@
                 if (container) {
                     if (moreTracks.length > 0) {
                         container.innerHTML = moreTracks.map(track => `
-                            <div class="sidebar-item" onclick="goToSongBySlug('${track.slug}')">
+                            <div class="sidebar-item" onclick="goToSong(${track.id}, '${track.slug}')">
                                 <div class="sidebar-thumb">${getEmojiForGenre(track.genre)}</div>
                                 <div class="sidebar-info">
                                     <div class="sidebar-title">${track.title}</div>
-                                    <div class="sidebar-sub">
-                                        <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
-                                    </div>
+                                    <div class="sidebar-sub"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</div>
                                 </div>
                             </div>
                         `).join('');
                     } else {
-                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No other tracks by this artist</div>';
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No other tracks</div>';
                     }
                 }
             } catch (error) {
@@ -864,69 +167,27 @@
             }
         }
 
-        // Load albums containing this track
-        async function loadAlbumsWithTrack(trackId) {
-            try {
-                // This would need an API endpoint to get albums by track
-                // For now, show placeholder
-                const container = document.getElementById('appearsOn');
-                if (container) {
-                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Coming soon</div>';
-                }
-            } catch (error) {
-                console.error('Error loading albums:', error);
-            }
-        }
-
-        // Load playlists containing this track
-        async function loadPlaylistsWithTrack(trackId) {
-            try {
-                // This would need an API endpoint to get playlists by track
-                // For now, show placeholder
-                const container = document.getElementById('inPlaylists');
-                if (container) {
-                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Coming soon</div>';
-                }
-            } catch (error) {
-                console.error('Error loading playlists:', error);
-            }
-        }
-
-        // Audio playback functions
+        // Audio functions
         function playCurrentTrack() {
             if (!currentTrack) return;
-            playTrack(currentTrack.id, currentTrack.r2_key, currentTrack.title, currentTrack.artist);
+            playTrack(currentTrack);
         }
 
-        async function playTrack(id, r2Key, title, artist) {
+        async function playTrack(track) {
             try {
-                // Increment play count
-                fetch(`${API_BASE}/tracks/${id}/play`, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                }).catch(err => console.error('Play count error:', err));
-
-                // Create audio URL
-                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
+                await incrementPlays('track', track.id);
                 
-                if (audioPlayer) {
-                    audioPlayer.pause();
-                    audioPlayer = null;
-                }
+                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(track.r2_key)}`;
+                
+                if (audioPlayer) audioPlayer.pause();
                 
                 audioPlayer = new Audio(audioUrl);
-                
-                audioPlayer.onerror = (e) => {
-                    console.error('Audio error:', e);
-                    alert('Error playing audio');
-                };
-
                 await audioPlayer.play();
                 isPlaying = true;
                 
-                document.getElementById('nowPlayingTitle').textContent = title;
-                document.getElementById('nowPlayingArtist').textContent = artist;
-                document.getElementById('nowPlayingArtist').onclick = () => goToArtist(artist);
+                document.getElementById('nowPlayingTitle').textContent = track.title;
+                document.getElementById('nowPlayingArtist').textContent = track.artist;
+                document.getElementById('nowPlayingArtist').onclick = () => goToArtist(track.artist);
                 document.getElementById('playPauseBtn').textContent = '⏸️';
                 document.getElementById('nowPlayingBar').style.display = 'flex';
                 
@@ -934,7 +195,6 @@
                     isPlaying = false;
                     document.getElementById('playPauseBtn').textContent = '▶️';
                 };
-                
             } catch (error) {
                 console.error('Playback error:', error);
             }
@@ -942,7 +202,6 @@
 
         function togglePlay() {
             if (!audioPlayer) return;
-            
             if (isPlaying) {
                 audioPlayer.pause();
                 document.getElementById('playPauseBtn').textContent = '▶️';
@@ -962,53 +221,37 @@
             isPlaying = false;
         }
 
-        async function downloadTrack(id, r2Key) {
-            try {
-                fetch(`${API_BASE}/tracks/${id}/download`, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                }).catch(err => console.error('Download count error:', err));
-                
-                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
-                window.open(audioUrl, '_blank');
-                
-            } catch (error) {
-                console.error('Download error:', error);
-                alert('Download failed');
-            }
+        function downloadTrack(r2Key) {
+            const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
+            window.open(audioUrl, '_blank');
         }
 
-        function playPrevious() {
-            alert('Previous track');
+        function playPrevious() { alert('Previous track'); }
+        function playNext() { alert('Next track'); }
+        function likeTrack(id) { alert('Like feature coming soon!'); }
+        function addToPlaylist(id) { alert('Playlists coming soon!'); }
+
+        // Initialize page
+        async function initPage() {
+            await injectTemplates();
+            const footerHtml = await loadTemplate('footer');
+            document.body.insertAdjacentHTML('beforeend', footerHtml);
+            await loadSong();
         }
 
-        function playNext() {
-            alert('Next track');
-        }
-
-        function likeTrack(id) {
-            alert('Like feature coming soon!');
-        }
-
-        function addToPlaylist(id) {
-            alert('Playlists coming soon!');
-        }
-
-        function shareTrack() {
-            const url = window.location.href;
-            navigator.clipboard.writeText(url);
-            alert('Link copied!');
-        }
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                window.location.href = '/?search=' + encodeURIComponent(e.target.value);
-            }
-        });
-
-        // Load song
-        loadSong();
+        initPage();
+        
+        // Make functions global
+        window.goToArtist = goToArtist;
+        window.goToSong = goToSong;
+        window.togglePlay = togglePlay;
+        window.closePlayer = closePlayer;
+        window.playCurrentTrack = playCurrentTrack;
+        window.playPrevious = playPrevious;
+        window.playNext = playNext;
+        window.likeTrack = likeTrack;
+        window.addToPlaylist = addToPlaylist;
+        window.downloadTrack = downloadTrack;
     </script>
 </body>
 </html>
