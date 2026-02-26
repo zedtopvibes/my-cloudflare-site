@@ -2,117 +2,1788 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>ZEDALBUMS · AETHERIC EDITION · ALBUMS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zedtopvibes • Albums</title>
-    <!-- Shared CSS -->
-    <link rel="stylesheet" href="/css/shared/main.css">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <!-- Simple header fallback -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="hamburger" onclick="window.location.href='/'">☰</div>
-            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
-            <div class="right-spacer"></div>
-        </div>
-    </nav>
-
-    <!-- MAIN CONTENT CONTAINER -->
-    <div class="main-content-container" id="content">
-        <div style="text-align: center; padding: 60px;">Loading albums...</div>
-    </div>
-
-    <!-- Simple footer fallback -->
-    <footer class="footer">
-        <div class="footer-links">
-            <a href="/">Home</a>
-            <a href="/albums.html">Albums</a>
-            <a href="/playlists.html">Playlists</a>
-        </div>
-        <div class="copyright">© 2024 Zedtopvibes</div>
-    </footer>
-
-    <script type="module">
-        // Import only if available, with fallback
-        let formatNumber = (num) => num;
-        let goToAlbumBySlug = (slug) => { window.location.href = `/album/${slug}`; };
-        let goToArtist = (name) => { window.location.href = `/artist/${name}`; };
+    
+    <style>
+        /* YOUR EXACT CSS FRAMEWORK – KEPT 100% INTACT (layout, sizing, flex, drawer, etc.) 
+           Only colour / background / decorative variables are overridden later */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
-        try {
-            const helpers = await import('/js/shared/helpers.js');
-            formatNumber = helpers.formatNumber;
-        } catch (e) {
-            console.log('Using fallback formatters');
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8f9fa;
+            color: #333333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 10px;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .left-sidebar {
+            flex: 3;
+            background: #ffffff;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8e8e8;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .right-sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 300px;
+        }
+        
+        .pagination-container {
+            width: 100%;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            background: #ffffff;
+            display: none;
+        }
+        
+        .pagination-container.show {
+            display: block;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .pagination-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 3px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .pagination-item:hover {
+            background: #f5f5f5;
+            border-color: #ff5500;
+            color: #ff5500;
+            transform: translateY(-1px);
+        }
+        
+        .pagination-item.active {
+            background: #ff5500;
+            border-color: #ff5500;
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 85, 0, 0.2);
+        }
+        
+        .pagination-item.active:hover {
+            background: #ff6a1a;
+            transform: translateY(-1px);
+        }
+        
+        .pagination-ellipsis {
+            color: #999;
+            font-weight: 600;
+            padding: 0 5px;
+        }
+        
+        .pagination-prev,
+        .pagination-next {
+            width: auto;
+            padding: 0 15px;
+            gap: 6px;
+        }
+        
+        .pagination-prev i,
+        .pagination-next i {
+            font-size: 0.9rem;
+        }
+        
+        .pagination-prev.disabled,
+        .pagination-next.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .site-header {
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .branding-bar {
+            background-color: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+        
+        .site-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 22px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff, #fff5e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2);
+            position: relative;
+            margin: 0;
+        }
+        
+        .site-logo::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.1) 25%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.1) 75%, 
+                transparent 100%);
+            pointer-events: none;
+        }
+        
+        .hamburger-menu {
+            width: 24px;
+            height: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .hamburger-menu span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: #ff5500;
+            border-radius: 1.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-menu:hover span {
+            background-color: #ff8c00;
+        }
+        
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(255, 85, 0, 0.3);
+        }
+        
+        .profile-icon:hover {
+            background: linear-gradient(135deg, #ff6a1a, #ff9f1a);
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(255, 85, 0, 0.4);
+        }
+        
+        .search-section {
+            background: linear-gradient(135deg, #ff5500 0%, #ff8c00 100%);
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(255, 85, 0, 0.2);
+        }
+        
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+        
+        .search-bar {
+            display: flex;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 18px 25px;
+            border: none;
+            font-size: 16px;
+            color: #333;
+            background-color: #ffffff;
+            outline: none;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .search-input::placeholder {
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .search-button {
+            background: white;
+            color: #ff5500;
+            border: none;
+            border-left: 2px solid #ff5500;
+            padding: 0 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .search-button:hover {
+            background: #fff5e6;
+            border-left-color: #ff8c00;
+        }
+        
+        .search-button i {
+            font-size: 18px;
+        }
+        
+        .hero-section {
+            display: none;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: #fff;
+            border-bottom: 2px solid #f0f0f0;
+            transition: all 0.2s ease;
+            height: 56px;
+            position: relative;
+        }
+        
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                #ff5500 20%, 
+                #ff5500 80%, 
+                transparent 95%
+            );
+        }
+        
+        .section-header:hover {
+            background: #fafafa;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .section-title::before {
+            content: "♪";
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .view-all {
+            color: #ff5500;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border: 1px solid #ff5500;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .view-all:hover {
+            background: #ff5500;
+            color: white;
+            transform: translateX(2px);
+        }
+        
+        .section-block {
+            background: #ffffff;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8e8e8;
+        }
+        
+        .latest-albums-list {
+            padding: 5px 0;
+        }
+        
+        .album-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 18px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .album-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 18px;
+            right: 18px;
+            height: 1px;
+            background: #f0f0f0;
+        }
+        
+        .album-item:hover::after {
+            background: #ffddcc;
+        }
+        
+        .album-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .album-item:last-child {
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+        
+        .album-thumbnail {
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+            border-radius: 3px;
+            overflow: hidden;
+            background: #f0f0f0;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .album-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .album-thumbnail.placeholder {
+            background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .album-thumbnail.placeholder::before {
+            content: "ALBUM";
+            letter-spacing: 1px;
+        }
+        
+        .album-thumbnail.song-thumbnail {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail.song-thumbnail::before {
+            content: "\f001";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .album-thumbnail.artist-thumbnail {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail.artist-thumbnail::before {
+            content: "\f007";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .album-thumbnail.playlist-thumbnail {
+            background: linear-gradient(135deg, #4a90e2, #9013fe);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail.playlist-thumbnail::before {
+            content: "\f001";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .album-info {
+            flex-grow: 1;
+            min-width: 0;
+            padding-right: 10px;
+        }
+        
+        .album-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 8px;
+            display: block;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0.2px;
+            line-height: 1.4;
+            max-height: 3.6em;
+        }
+        
+        .album-date {
+            color: #666;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.1px;
+        }
+        
+        .album-date::before {
+            content: "📅";
+            font-size: 0.75rem;
+            color: #999;
+        }
+        
+        .album-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .album-artist,
+        .album-genre,
+        .album-tracks,
+        .track-duration,
+        .artist-stats,
+        .playlist-songs,
+        .song-stats {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            line-height: 1.2;
+        }
+        
+        .album-artist {
+            color: #ff5500;
+            background: rgba(255, 85, 0, 0.08);
+        }
+        
+        .album-genre {
+            color: #666;
+            background: #f5f5f5;
+        }
+        
+        .artist-stats {
+            color: #9b59b6;
+            background: rgba(155, 89, 182, 0.08);
+        }
+        
+        .playlist-songs {
+            color: #4a90e2;
+            background: rgba(74, 144, 226, 0.08);
+        }
+        
+        .song-stats {
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.08);
+        }
+        
+        .right-sidebar .album-item {
+            padding: 12px 15px;
+            gap: 15px;
+        }
+        
+        .right-sidebar .album-thumbnail {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .right-sidebar .album-title {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            max-height: 2.8em;
+        }
+        
+        .right-sidebar .album-meta {
+            gap: 6px;
+            margin-top: 4px;
+        }
+        
+        .right-sidebar .album-date {
+            font-size: 0.75rem;
+        }
+        
+        .left-sidebar .album-artist,
+        .left-sidebar .album-genre {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+        }
+        
+        .left-sidebar .album-date {
+            font-size: 0.75rem;
+        }
+        
+        .left-sidebar .album-meta {
+            gap: 8px;
+            margin-top: 6px;
+        }
+        
+        .site-footer {
+            text-align: center;
+            margin-top: 45px;
+            padding: 25px 20px;
+            border-top: 3px solid #ff5500;
+            background: #ffffff;
+            border-radius: 8px 8px 0 0;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
+        }
+        
+        .site-footer p {
+            margin: 10px 0;
+            color: #555;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        
+        .site-footer p:first-child {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .site-footer p:last-child {
+            font-size: 0.95rem;
+            color: #ff5500;
+            font-weight: 600;
+        }
+        
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            width: 85%;
+            max-width: 350px;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            display: none;
+        }
+        
+        .nav-drawer.left {
+            left: 0;
+            transform: translateX(-100%);
+        }
+        
+        .nav-drawer.right {
+            right: 0;
+            transform: translateX(100%);
+        }
+        
+        .nav-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            background: linear-gradient(135deg, #ff5500 0%, #ff8c00 100%);
+        }
+        
+        .nav-header .site-logo {
+            color: white;
+            text-shadow: none;
+            font-size: 18px;
+            background: none;
+            -webkit-text-fill-color: white;
+            text-shadow: none;
+        }
+        
+        .close-nav {
+            font-size: 32px;
+            cursor: pointer;
+            color: white;
+            line-height: 1;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-item i {
+            width: 24px;
+            margin-right: 10px;
+            color: #ff5500;
+        }
+        
+        .nav-item:hover {
+            background-color: #f8f8f8;
+            color: #ff5500;
+            border-left-color: #ff5500;
+        }
+        
+        .nav-item.active {
+            background-color: #f8f8f8;
+            color: #ff5500;
+            border-left-color: #ff5500;
+            font-weight: 600;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: #e8e8e8;
+            margin: 10px 0;
+        }
+        
+        .nav-section-title {
+            padding: 15px 25px 5px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            font-weight: 600;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2); }
+            50% { text-shadow: -2px 2px 0 #ff5500, -4px 4px 0 rgba(255, 85, 0, 0.2); }
+            100% { text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2); }
+        }
+        
+        .site-logo:hover {
+            animation: glitch 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
+            .branding-bar {
+                padding: 16px 20px;
+            }
+            
+            .site-logo {
+                font-size: 22px;
+            }
+            
+            .search-section {
+                padding: 25px 20px;
+            }
+            
+            .search-input {
+                padding: 18px 25px;
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .left-sidebar,
+            .right-sidebar {
+                min-width: auto;
+            }
+            
+            .branding-bar {
+                padding: 16px 20px;
+            }
+            
+            .site-logo {
+                font-size: 22px;
+            }
+            
+            .search-section {
+                padding: 20px 15px;
+            }
+            
+            .search-container {
+                max-width: 500px;
+            }
+            
+            .search-input {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+            
+            .search-button {
+                padding: 0 20px;
+            }
+            
+            .section-header {
+                padding: 12px 14px;
+                height: 52px;
+            }
+            
+            .album-item {
+                gap: 15px;
+                padding: 14px 16px;
+            }
+            
+            .album-thumbnail {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .right-sidebar .album-thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content-container {
+                padding: 10px;
+            }
+            
+            .site-logo {
+                font-size: 20px;
+            }
+            
+            .search-section {
+                padding: 15px 10px;
+            }
+            
+            .search-container {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .search-input {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+            
+            .search-button {
+                padding: 0 16px;
+            }
+            
+            .section-header {
+                height: auto;
+                min-height: 50px;
+                padding: 10px 12px;
+            }
+            
+            .left-sidebar .album-item {
+                padding: 12px 15px;
+                gap: 15px;
+            }
+            
+            .left-sidebar .album-thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .right-sidebar .album-thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .left-sidebar .album-title {
+                font-size: 0.95rem;
+            }
+            
+            .pagination-item {
+                width: 36px;
+                height: 36px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .main-content-container {
+                padding: 10px;
+            }
+            
+            .site-logo {
+                font-size: 20px;
+            }
+            
+            .search-section {
+                padding: 15px 10px;
+            }
+            
+            .search-container {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .search-input {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+            
+            .search-button {
+                padding: 0 16px;
+            }
+            
+            .section-header {
+                height: auto;
+                min-height: 50px;
+                padding: 10px 12px;
+            }
+            
+            .left-sidebar .album-item {
+                padding: 12px 15px;
+                gap: 15px;
+            }
+            
+            .left-sidebar .album-thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .right-sidebar .album-thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .left-sidebar .album-title {
+                font-size: 0.95rem;
+            }
+            
+            .pagination-item {
+                width: 36px;
+                height: 36px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .pagination-item {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+            
+            .pagination-prev,
+            .pagination-next {
+                padding: 0 10px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .left-sidebar,
+        .section-block,
+        .site-footer,
+        .pagination-container,
+        .search-section {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1f2e40;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #2f6f9f;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a9fd0;
         }
 
-        // API Base
+        /* ===== FIXED SKELETON STYLES - NO GLITCH ===== */
+        .skeleton {
+            background: linear-gradient(90deg, #1f2e40 25%, #2a3b4e 50%, #1f2e40 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Base skeleton thumbnail styles */
+        .skeleton-thumbnail {
+            background: #1f2e40;
+            border-radius: 3px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes skeleton-pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        /* Left sidebar thumbnails - desktop */
+        .left-sidebar .skeleton-thumbnail {
+            width: 120px;
+            height: 120px;
+        }
+        
+        /* Right sidebar thumbnails - desktop */
+        .right-sidebar .skeleton-thumbnail {
+            width: 80px;
+            height: 80px;
+        }
+        
+        /* Mobile overrides - applied immediately, no glitch */
+        @media (max-width: 768px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 100px;
+                height: 100px;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
+            }
+        }
+        
+        /* Skeleton lines */
+        .skeleton-line {
+            height: 16px;
+            background: #1f2e40;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+        
+        .skeleton-line.short { width: 60%; }
+        .skeleton-line.medium { width: 80%; }
+        .skeleton-line.long { width: 100%; }
+
+        /* ---------- UNIQUE VARIATION: LIQUID GLASS / AETHERIC EDITION ---------- */
+        /* All structural CSS unchanged — only colours, shadows, backgrounds reimagined */
+        body {
+            background: #0b0f1c;  /* deep cosmic base */
+            color: #e0e6f0;
+        }
+        .site-header { background: #121624; box-shadow: 0 10px 30px -10px rgba(0,20,40,0.8); }
+        .branding-bar { background: #121624; box-shadow: 0 2px 15px rgba(0,0,0,0.7); }
+        .site-logo { background: linear-gradient(135deg, #c0e0ff, #ffffff); -webkit-background-clip: text; text-shadow: 2px 2px 0 #0066cc, 4px 4px 0 rgba(0,150,255,0.3); }
+        .hamburger-menu span { background-color: #70c8ff; }
+        .profile-icon { background: linear-gradient(135deg, #2a6f9c, #4aa3e2); box-shadow: 0 2px 10px rgba(0,160,255,0.6); }
+        .profile-icon:hover { background: #3d8fd9; }
+        .search-section { background: radial-gradient(circle at 30% 30%, #1a3650, #0b1a2a); box-shadow: 0 8px 20px rgba(0,100,200,0.3); }
+        .search-bar { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); }
+        .search-input { background: #1e2638; color: #f0f4ff; }
+        .search-input::placeholder { color: #90a9c9; font-weight: 400; letter-spacing: 1px; }
+        .search-button { background: #1e2638; color: #70c8ff; border-left: 2px solid #2f6f9f; }
+        .search-button:hover { background: #253040; border-left-color: #9ad0ff; }
+        .left-sidebar, .section-block { background: rgba(22, 28, 40, 0.85); backdrop-filter: blur(8px); border: 1px solid #2a3b4e; box-shadow: 0 20px 40px -12px #00000080; }
+        .section-header { background: rgba(16, 22, 34, 0.9); border-bottom: 1px solid #1f3f5c; }
+        .section-header::after { background: linear-gradient(90deg, transparent 5%, #2f8ed0 20%, #70c8ff 80%, transparent 95%); }
+        .section-title { color: #deecff; }
+        .section-title::before { content: "🌊"; font-size: 1.2rem; opacity: 1; }
+        .view-all { border-color: #2f8ed0; color: #bbdbff; background: #1d3142; }
+        .view-all:hover { background: #2f6f9f; color: #fff; }
+        .album-item:not(:last-child)::after { background: #1f405b; }
+        .album-item:hover { background: rgba(40, 60, 90, 0.5); backdrop-filter: blur(4px); }
+        .album-thumbnail { border: 2px solid #1f4c73; box-shadow: 0 4px 15px #00000080; }
+        .album-thumbnail.placeholder { background: linear-gradient(135deg, #1f405b, #0f2a3f); color: #9cc9ff; }
+        .album-thumbnail.song-thumbnail { background: linear-gradient(135deg, #1f6f5a, #1d9f8f); }
+        .album-thumbnail.artist-thumbnail { background: linear-gradient(135deg, #6b4f9f, #a07dd0); }
+        .album-thumbnail.playlist-thumbnail { background: linear-gradient(135deg, #2f6f9f, #5fa8e8); }
+        .album-title { color: #ecf5ff; text-shadow: 0 2px 4px #00000060; }
+        .album-date { color: #afc9f0; }
+        .album-date::before { color: #78aeff; }
+        .album-artist { background: rgba(60, 140, 210, 0.2); color: #aad0ff; }
+        .album-genre { background: #1c3f55; color: #b0d4ff; }
+        .artist-stats { background: rgba(130, 90, 200, 0.3); color: #dbbaff; }
+        .playlist-songs { background: rgba(70, 140, 230, 0.25); color: #c0e1ff; }
+        .song-stats { background: rgba(40, 180, 140, 0.25); color: #b3ffe6; }
+        .site-footer { background: #121b28; border-top: 3px solid #1f6f9f; box-shadow: 0 -10px 30px #00000050; }
+        .site-footer p { color: #ffffff; }
+        .site-footer p:last-child { color: #8fcbff; }
+        .nav-drawer { background: #101c2c; box-shadow: 0 0 30px #000000cc; }
+        .nav-header { background: linear-gradient(135deg, #1f4460, #0f2f4f); }
+        .nav-item { color: #d5eaff; }
+        .nav-item i { color: #6ab0ff; }
+        .nav-item:hover { background-color: #122d44; color: #ffffff; border-left-color: #6ab0ff; }
+        .nav-item.active { background-color: #112b40; color: white; border-left-color: #8fcbff; }
+        .nav-divider { background: #264a66; }
+        .nav-section-title { color: #90b9e5; }
+        
+        /* ===== THEMED PAGINATION STYLES ===== */
+        .pagination-container {
+            background: rgba(22, 28, 40, 0.85);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid #1f3f5c;
+        }
+        
+        .pagination-item {
+            background: rgba(30, 38, 56, 0.8);
+            border: 1px solid #2f6f9f;
+            color: #bbdbff;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pagination-item:hover {
+            background: #2f6f9f;
+            border-color: #70c8ff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(47, 111, 159, 0.4);
+        }
+        
+        .pagination-item.active {
+            background: #2f6f9f;
+            border-color: #70c8ff;
+            color: white;
+            box-shadow: 0 2px 12px rgba(47, 111, 159, 0.6);
+        }
+        
+        .pagination-item.active:hover {
+            background: #3d8fd9;
+            border-color: #9ad0ff;
+        }
+        
+        .pagination-ellipsis {
+            color: #90a9c9;
+        }
+        
+        .pagination-prev,
+        .pagination-next {
+            background: rgba(30, 38, 56, 0.9);
+        }
+        
+        .pagination-prev.disabled,
+        .pagination-next.disabled {
+            opacity: 0.3;
+            border-color: #1f3f5c;
+            color: #90a9c9;
+            pointer-events: none;
+        }
+        
+        /* custom glitch for new vibe */
+        .site-logo:hover { animation: glitch-aether 0.3s ease; }
+        @keyframes glitch-aether {
+            0% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
+            50% { text-shadow: -2px 2px 0 #0088dd, -4px 4px 0 #0066aa; }
+            100% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
+        }
+        /* scrollbar matches theme */
+        ::-webkit-scrollbar-thumb { background: #1f6f9f; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a9fd0; }
+        /* force skeleton bg to match new dark scheme but keep original pulse */
+        .skeleton-thumbnail { background: #1f2e40; }
+        .skeleton-line { background: #1f2e40; }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="branding-bar">
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <div class="site-logo">ZED•AETHERIC</div>
+            
+            <div class="profile-icon" id="profileIcon">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
+        </div>
+        
+        <!-- SEARCH SECTION -->
+        <section class="search-section">
+            <div class="search-container">
+                <form action="/search" method="GET" style="display: flex; width: 100%;" onsubmit="event.preventDefault(); window.location.href='/search?q=' + encodeURIComponent(document.getElementById('searchInput').value)">
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" name="q" class="search-input" placeholder="DIVE INTO SONIC WAVES..." value="">
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </header>
+    
+    <!-- MAIN CONTENT CONTAINER - ALBUMS PAGE -->
+    <div class="main-content-container" id="content">
+        <!-- LEFT SIDEBAR - ALL ALBUMS (MAIN CONTENT) -->
+        <aside class="left-sidebar">
+            <div class="section-header">
+                <h2 class="section-title">all albums</h2>
+                <span class="view-all" style="cursor: default;">total: <span id="albumCount">0</span></span>
+            </div>
+            
+            <div class="latest-albums-list" id="allAlbumsList">
+                <!-- Loading skeletons with proper responsive sizing -->
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination - Now Themed -->
+            <div class="pagination-container show" id="albumsPagination">
+                <div class="pagination">
+                    <span class="pagination-item pagination-prev disabled"><i class="fas fa-chevron-left"></i> Prev</span>
+                    <span class="pagination-item active">1</span>
+                    <span class="pagination-item">2</span>
+                    <span class="pagination-item">3</span>
+                    <span class="pagination-item">4</span>
+                    <span class="pagination-ellipsis">...</span>
+                    <span class="pagination-item">10</span>
+                    <span class="pagination-item pagination-next">Next <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- RIGHT SIDEBAR - ALBUM-FOCUSED SECTIONS -->
+        <div class="right-sidebar">
+            
+            <!-- 1. NEW RELEASES SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">new releases</h2>
+                    <a href="/albums/new.html" class="view-all">view all ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="newReleases">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 2. POPULAR ALBUMS SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">popular albums</h2>
+                    <a href="/albums/popular.html" class="view-all">view all ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="popularAlbums">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 3. CLASSIC ALBUMS SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">classic albums</h2>
+                    <a href="/albums/classic.html" class="view-all">view all ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="classicAlbums">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 4. FEATURED ALBUMS SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">featured albums</h2>
+                    <a href="/albums/featured.html" class="view-all">view all ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="featuredAlbums">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 5. UPCOMING ALBUMS SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">upcoming albums</h2>
+                    <a href="/albums/upcoming.html" class="view-all">view all ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="upcomingAlbums">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>© 2024 Zed Aetheric · liquid frequencies</p>
+        <p>powered by cloudflare r2</p>
+    </footer>
+    
+    <!-- LEFT NAVIGATION DRAWER -->
+    <div class="nav-drawer left" id="leftDrawer">
+        <div class="nav-header">
+            <div class="site-logo">ZED•DEEP</div>
+            <div class="close-nav" id="closeLeftDrawer">✕</div>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-item"><i class="fas fa-water"></i> Home</a>
+            <a href="/albums.html" class="nav-item active"><i class="fas fa-compact-disc"></i> Albums</a>
+            <a href="/artists.html" class="nav-item"><i class="fas fa-microphone-alt"></i> Artists</a>
+            <a href="/playlists.html" class="nav-item"><i class="fas fa-list"></i> Playlists</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">ABYSS</div>
+            <a href="/charts.html" class="nav-item"><i class="fas fa-chart-line"></i> Tides</a>
+            <a href="/new-releases.html" class="nav-item"><i class="fas fa-star"></i> New Waves</a>
+            <a href="/genres.html" class="nav-item"><i class="fas fa-tags"></i> Currents</a>
+        </nav>
+    </div>
+    
+    <!-- RIGHT NAVIGATION DRAWER -->
+    <div class="nav-drawer right" id="rightDrawer">
+        <div class="nav-header">
+            <div class="site-logo">VOID</div>
+            <div class="close-nav" id="closeRightDrawer">✕</div>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-section-title">MY CRATER</div>
+            <a href="/profile.html" class="nav-item"><i class="fas fa-user-circle"></i> Profile</a>
+            <a href="/favorites.html" class="nav-item"><i class="fas fa-heart"></i> Favorites</a>
+            <a href="/my-playlists.html" class="nav-item"><i class="fas fa-list"></i> My Playlists</a>
+            <a href="/history.html" class="nav-item"><i class="fas fa-history"></i> Echoes</a>
+            <a href="/downloads.html" class="nav-item"><i class="fas fa-download"></i> Downloads</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">CREATE</div>
+            <a href="/admin.html" class="nav-item"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+            <a href="/playlist/create.html" class="nav-item"><i class="fas fa-plus-circle"></i> New Playlist</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">SETTINGS</div>
+            <a href="/settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/logout.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const leftDrawer = document.getElementById('leftDrawer');
+            const closeLeftDrawer = document.getElementById('closeLeftDrawer');
+            
+            hamburgerMenu.addEventListener('click', () => {
+                leftDrawer.style.display = 'block';
+                setTimeout(() => {
+                    leftDrawer.style.opacity = '1';
+                    leftDrawer.style.transform = 'translateX(0)';
+                }, 10);
+            });
+            
+            closeLeftDrawer.addEventListener('click', () => {
+                leftDrawer.style.opacity = '0';
+                leftDrawer.style.transform = 'translateX(-100%)';
+                setTimeout(() => {
+                    leftDrawer.style.display = 'none';
+                }, 300);
+            });
+            
+            const profileIcon = document.getElementById('profileIcon');
+            const rightDrawer = document.getElementById('rightDrawer');
+            const closeRightDrawer = document.getElementById('closeRightDrawer');
+            
+            profileIcon.addEventListener('click', () => {
+                rightDrawer.style.display = 'block';
+                setTimeout(() => {
+                    rightDrawer.style.opacity = '1';
+                    rightDrawer.style.transform = 'translateX(0)';
+                }, 10);
+            });
+            
+            closeRightDrawer.addEventListener('click', () => {
+                rightDrawer.style.opacity = '0';
+                rightDrawer.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    rightDrawer.style.display = 'none';
+                }, 300);
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!leftDrawer.contains(e.target) && !hamburgerMenu.contains(e.target) && leftDrawer.style.display === 'block') {
+                    closeLeftDrawer.click();
+                }
+                if (!rightDrawer.contains(e.target) && !profileIcon.contains(e.target) && rightDrawer.style.display === 'block') {
+                    closeRightDrawer.click();
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                const albumItem = e.target.closest('.album-item');
+                if (albumItem && !albumItem._handled) {
+                    albumItem._handled = true;
+                    setTimeout(() => {
+                        albumItem._handled = false;
+                    }, 300);
+                    
+                    albumItem.style.transform = 'scale(0.99)';
+                    albumItem.style.backgroundColor = '#1e3347';
+                    
+                    setTimeout(() => {
+                        albumItem.style.transform = '';
+                        setTimeout(() => {
+                            albumItem.style.backgroundColor = '';
+                        }, 200);
+                    }, 200);
+                }
+            });
+            
+            document.addEventListener('mouseenter', function(e) {
+                const thumbnail = e.target.closest('.album-item')?.querySelector('.album-thumbnail');
+                if (thumbnail) {
+                    thumbnail.style.transform = 'scale(1.05)';
+                    thumbnail.style.borderColor = '#70c8ff';
+                    thumbnail.style.boxShadow = '0 8px 18px #0088dd';
+                }
+            }, true);
+            
+            document.addEventListener('mouseleave', function(e) {
+                const thumbnail = e.target.closest('.album-item')?.querySelector('.album-thumbnail');
+                if (thumbnail) {
+                    thumbnail.style.transform = 'scale(1)';
+                    thumbnail.style.borderColor = '#1f4c73';
+                    thumbnail.style.boxShadow = 'none';
+                }
+            }, true);
+            
+            loadAlbumsPageData();
+        });
+
         const API_BASE = '/api';
 
-        // Load albums
-        async function loadAlbums() {
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+
+        window.goToAlbum = (slug) => window.location.href = `/album/${slug}`;
+        window.goToArtist = (name) => {
+            const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '').replace(/--+/g, '-').replace(/^-+|-+$/g, '');
+            window.location.href = `/artist/${slug}`;
+        };
+
+        async function loadAlbumsPageData() {
             try {
-                const response = await fetch(`${API_BASE}/albums`);
-                const albums = await response.json();
+                const albums = await fetch(`${API_BASE}/albums`).then(r => r.json());
                 
-                const content = document.getElementById('content');
+                // Update album count
+                document.getElementById('albumCount').textContent = albums.length;
                 
-                content.innerHTML = `
-                    <aside class="left-sidebar">
-                        <div class="breadcrumbs">
-                            <a href="/">Home</a> / <span>Albums</span>
-                        </div>
-                        
-                        <div class="section-header">
-                            <h2 class="section-title">All Albums</h2>
-                            <a href="#" class="view-all">View All ➔</a>
-                        </div>
-                        
-                        <div class="album-list">
-                            ${albums.map(album => `
-                                <div class="album-item" onclick="window.location.href='/album/${album.slug}'">
-                                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
-                                    <div class="album-info">
-                                        <div class="album-title">${album.title}</div>
-                                        <div class="album-meta">
-                                            <span class="album-artist" onclick="event.stopPropagation(); window.location.href='/artist/${album.artist_slug}'">${album.artist}</span>
-                                            <span class="album-tracks">${album.track_count || 0} tracks</span>
-                                            <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </aside>
-                    
-                    <div class="right-sidebar">
-                        <section class="section-block">
-                            <div class="section-header">
-                                <h2 class="section-title">Featured Albums</h2>
-                                <a href="#" class="view-all">View All ➔</a>
-                            </div>
-                            <div>
-                                ${albums.filter(a => a.is_featured).slice(0, 3).map(album => `
-                                    <div class="sidebar-item" onclick="window.location.href='/album/${album.slug}'">
-                                        <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
-                                        <div class="sidebar-info">
-                                            <div class="sidebar-title">${album.title}</div>
-                                            <div class="sidebar-sub">${album.artist}</div>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </section>
-                    </div>
-                `;
+                // Sort albums by various criteria
+                const newReleases = [...albums].sort((a, b) => 
+                    new Date(b.release_date || b.created_at) - new Date(a.release_date || a.created_at)
+                ).slice(0, 5);
+                
+                const popularAlbums = [...albums].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+                
+                const classicAlbums = [...albums].filter(a => {
+                    const year = new Date(a.release_date).getFullYear();
+                    return year && year < 2010;
+                }).slice(0, 5);
+                
+                const featuredAlbums = albums.filter(a => a.is_featured).slice(0, 5);
+                
+                const upcomingAlbums = albums.filter(a => a.status === 'upcoming').slice(0, 5);
+                
+                // Render all sections using OLD DESIGN renderer functions
+                renderAllAlbums(albums.slice(0, 5));
+                renderNewReleases(newReleases);
+                renderPopularAlbums(popularAlbums);
+                renderClassicAlbums(classicAlbums);
+                renderFeaturedAlbums(featuredAlbums);
+                renderUpcomingAlbums(upcomingAlbums);
                 
             } catch (error) {
-                document.getElementById('content').innerHTML = `<div style="padding: 60px; text-align: center;">Error: ${error.message}</div>`;
+                console.error('Error loading albums data:', error);
             }
         }
 
-        loadAlbums();
+        // OLD DESIGN RENDERER FUNCTIONS - Exactly as they were
+        function renderAllAlbums(albums) {
+            const container = document.getElementById('allAlbumsList');
+            if (!container) return;
+            
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="window.location.href='/album/${album.slug}'">
+                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist" onclick="event.stopPropagation(); window.location.href='/artist/${album.artist_slug}'">${album.artist}</span>
+                            <span class="album-tracks">${album.track_count || 0} tracks</span>
+                            <span class="album-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderNewReleases(albums) {
+            const container = document.getElementById('newReleases');
+            if (!container) return;
+            
+            if (albums.length === 0) {
+                container.innerHTML = `
+                    <div class="album-item" style="justify-content: center; color: #90a9c9;">
+                        <i class="fas fa-calendar" style="margin-right: 10px;"></i> No new releases
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="window.location.href='/album/${album.slug}'">
+                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist" onclick="event.stopPropagation(); window.location.href='/artist/${album.artist_slug}'">${album.artist}</span>
+                            <span class="song-stats"><i class="fas fa-calendar"></i> ${new Date(album.release_date).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPopularAlbums(albums) {
+            const container = document.getElementById('popularAlbums');
+            if (!container) return;
+            
+            if (albums.length === 0) {
+                container.innerHTML = `
+                    <div class="album-item" style="justify-content: center; color: #90a9c9;">
+                        <i class="fas fa-eye" style="margin-right: 10px;"></i> No popular albums
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="window.location.href='/album/${album.slug}'">
+                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist" onclick="event.stopPropagation(); window.location.href='/artist/${album.artist_slug}'">${album.artist}</span>
+                            <span class="song-stats"><i class="fas fa-eye"></i> ${formatNumber(album.views || 0)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderClassicAlbums(albums) {
+            const container = document.getElementById('classicAlbums');
+            if (!container) return;
+            
+            if (albums.length === 0) {
+                container.innerHTML = `
+                    <div class="album-item" style="justify-content: center; color: #90a9c9;">
+                        <i class="fas fa-clock" style="margin-right: 10px;"></i> No classic albums
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="window.location.href='/album/${album.slug}'">
+                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist" onclick="event.stopPropagation(); window.location.href='/artist/${album.artist_slug}'">${album.artist}</span>
+                            <span class="album-genre">${new Date(album.release_date).getFullYear()}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFeaturedAlbums(albums) {
+            const container = document.getElementById('featuredAlbums');
+            if (!container) return;
+            
+            if (albums.length === 0) {
+                container.innerHTML = `
+                    <div class="album-item" style="justify-content: center; color: #90a9c9;">
+                        <i class="fas fa-star" style="margin-right: 10px;"></i> No featured albums
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="window.location.href='/album/${album.slug}'">
+                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist" onclick="event.stopPropagation(); window.location.href='/artist/${album.artist_slug}'">${album.artist}</span>
+                            <span class="artist-stats"><i class="fas fa-star"></i> Featured</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderUpcomingAlbums(albums) {
+            const container = document.getElementById('upcomingAlbums');
+            if (!container) return;
+            
+            if (albums.length === 0) {
+                container.innerHTML = `
+                    <div class="album-item" style="justify-content: center; color: #90a9c9;">
+                        <i class="fas fa-clock" style="margin-right: 10px;"></i> No upcoming albums
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="window.location.href='/album/${album.slug}'">
+                    <div class="album-thumb">${album.cover_emoji || '💿'}</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist" onclick="event.stopPropagation(); window.location.href='/artist/${album.artist_slug}'">${album.artist}</span>
+                            <span class="song-stats"><i class="fas fa-clock"></i> Coming soon</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html>
