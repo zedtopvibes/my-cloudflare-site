@@ -2,606 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zedtopvibes • Playlist Details</title>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navigation */
-        .navbar {
-            background: white;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 12px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .hamburger {
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            color: #333;
-        }
-
-        .site-title {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .site-title a {
-            text-decoration: none;
-        }
-
-        .right-spacer {
-            width: 40px;
-        }
-
-        /* Search Bar */
-        .search-section {
-            max-width: 1400px;
-            margin: 15px auto 5px;
-            padding: 0 20px;
-            width: 100%;
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 30px;
-            padding: 8px 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .search-icon {
-            color: #ff5500;
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .search-container input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 15px;
-            padding: 8px 0;
-            background: transparent;
-        }
-
-        .search-container input::placeholder {
-            color: #aaa;
-        }
-
-        /* MAIN LAYOUT CONTAINER */
-        .main-content-container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 20px;
-            display: flex;
-            gap: 20px;
-            width: 100%;
-        }
-
-        /* LEFT SIDEBAR */
-        .left-sidebar {
-            flex: 3;
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        /* RIGHT SIDEBAR */
-        .right-sidebar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            min-width: 300px;
-        }
-
-        .section-block {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        /* SECTION HEADER */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 18px;
-            background: #fff;
-            border-bottom: 1px solid #f0f0f0;
-            position: relative;
-        }
-
-        .section-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 5%, 
-                #ff5500 20%, 
-                #ff5500 80%, 
-                transparent 95%
-            );
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #222;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title::before {
-            content: "📋";
-            font-size: 1.1rem;
-            color: #ff5500;
-        }
-
-        .view-all {
-            color: #ff5500;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 4px 12px;
-            border: 1px solid #ff5500;
-            border-radius: 20px;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .view-all:hover {
-            background: #ff5500;
-            color: white;
-        }
-
-        /* BREADCRUMBS */
-        .breadcrumbs {
-            padding: 15px 18px;
-            background: #fafafa;
-            border-bottom: 1px solid #e8e8e8;
-            font-size: 0.9rem;
-            color: #888;
-        }
-
-        .breadcrumbs a {
-            color: #ff5500;
-            text-decoration: none;
-        }
-
-        .breadcrumbs a:hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumbs span {
-            color: #333;
-            font-weight: 500;
-        }
-
-        /* PLAYLIST HEADER */
-        .playlist-header {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            padding: 25px;
-            background: linear-gradient(135deg, rgba(255,85,0,0.05) 0%, rgba(255,140,0,0.05) 100%);
-            border-bottom: 1px solid #e8e8e8;
-        }
-
-        .playlist-cover {
-            width: 150px;
-            height: 150px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 64px;
-            color: white;
-            box-shadow: 0 4px 12px rgba(255,85,0,0.2);
-            flex-shrink: 0;
-        }
-
-        .playlist-info {
-            flex: 1;
-        }
-
-        .playlist-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 8px;
-        }
-
-        .playlist-meta {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .playlist-stats {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255,85,0,0.08);
-            padding: 6px 12px;
-            border-radius: 20px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .playlist-stats i {
-            color: #ff5500;
-        }
-
-        .playlist-description {
-            color: #555;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            max-width: 600px;
-        }
-
-        .playlist-created {
-            color: #888;
-            font-size: 0.85rem;
-            margin-top: 10px;
-        }
-
-        /* TRACK LIST */
-        .track-list {
-            padding: 5px 0;
-        }
-
-        .track-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 18px;
-            border-bottom: 1px solid #f5f5f5;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .track-item:hover {
-            background: #fff9f5;
-        }
-
-        .track-number {
-            width: 40px;
-            font-size: 14px;
-            color: #999;
-            font-weight: 500;
-        }
-
-        .track-info {
-            flex: 1;
-        }
-
-        .track-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 4px;
-        }
-
-        .track-artist {
-            font-size: 13px;
-            color: #ff5500;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .track-artist:hover {
-            text-decoration: underline;
-        }
-
-        .track-meta {
-            display: flex;
-            gap: 20px;
-            margin-left: 20px;
-            align-items: center;
-        }
-
-        .track-duration, .track-plays, .track-downloads {
-            color: #888;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .track-duration i, .track-plays i, .track-downloads i {
-            color: #ff5500;
-            font-size: 12px;
-        }
-
-        /* RIGHT SIDEBAR ITEMS */
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            gap: 15px;
-            border-bottom: 1px solid #f5f5f5;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .sidebar-item:hover {
-            background: #fff9f5;
-        }
-
-        .sidebar-item:last-child {
-            border-bottom: none;
-        }
-
-        .sidebar-thumb {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .sidebar-info {
-            flex: 1;
-        }
-
-        .sidebar-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 4px;
-        }
-
-        .sidebar-sub {
-            font-size: 12px;
-            color: #888;
-        }
-
-        /* INFO ROWS */
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 15px;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .info-value {
-            color: #222;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .info-value i {
-            color: #ff5500;
-        }
-
-        /* LOADING SKELETONS */
-        .skeleton {
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        @keyframes skeleton-loading {
-            0% { background-color: #f0f0f0; }
-            100% { background-color: #e0e0e0; }
-        }
-
-        /* Footer */
-        .footer {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 20px 20px 0;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            color: #888;
-            font-size: 13px;
-            width: 100%;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .main-content-container {
-                flex-direction: column;
-            }
-            
-            .right-sidebar {
-                min-width: auto;
-            }
-            
-            .playlist-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .playlist-cover {
-                width: 120px;
-                height: 120px;
-                font-size: 48px;
-            }
-            
-            .playlist-meta {
-                justify-content: center;
-            }
-            
-            .track-meta {
-                margin-left: 0;
-                flex-direction: column;
-                gap: 5px;
-            }
-        }
-    </style>
+    <title>Playlist | Zedtopvibes</title>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="hamburger" onclick="window.location.href='/'">☰</div>
-            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
-            <div class="right-spacer"></div>
-        </div>
-    </nav>
-
-    <!-- Search Bar -->
-    <div class="search-section">
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search in playlist...">
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons will be shown here -->
         <div style="text-align: center; padding: 60px; width: 100%;">Loading playlist...</div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="copyright">
-            © 2024 Zedtopvibes. All rights reserved.
-        </div>
-    </footer>
+    <script type="module">
+        import { API_BASE, formatNumber, formatDuration, getEmojiForGenre } from '/js/shared/helpers.js';
+        import { goToArtist, goToSong, goToPlaylistBySlug } from '/js/shared/navigation.js';
+        import { fetchPlaylist } from '/js/shared/api.js';
+        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
 
-    <script>
-        // API Base URL
-        const API_BASE = '/api';
-        
-        // Get playlist identifier from multiple sources
+        // Get playlist identifier
         const urlParams = new URLSearchParams(window.location.search);
         const playlistId = urlParams.get('id');
-
-        // Check if we're using a clean URL with slug (from data attribute)
         const contentDiv = document.getElementById('content');
-        const playlistSlug = contentDiv ? contentDiv.dataset.playlistSlug : null;
+        const playlistSlug = contentDiv?.dataset.playlistSlug;
 
-        // Determine which identifier to use
-        let playlistIdentifier = null;
-        let useSlug = false;
+        let playlistIdentifier = playlistSlug || playlistId;
+        let useSlug = !!playlistSlug;
 
-        if (playlistSlug) {
-            // Clean URL format: /playlist/zambian-hits-2024
-            playlistIdentifier = playlistSlug;
-            useSlug = true;
-            console.log('Using slug from attribute:', playlistIdentifier);
-        } else if (playlistId) {
-            // Old format: ?id=1
-            playlistIdentifier = playlistId;
-            useSlug = false;
-            console.log('Using ID from query:', playlistIdentifier);
-        }
-
-        // Navigation functions
-        function goHome() {
-            window.location.href = '/';
-        }
-
-        function goToArtist(artistName) {
-            // Generate slug for artist
-            const slug = artistName
-                .toLowerCase()
-                .replace(/\s+/g, '-')
-                .replace(/[^\w-]/g, '')
-                .replace(/--+/g, '-')
-                .replace(/^-+|-+$/g, '');
-            window.location.href = `/artist/${slug}`;
-        }
-
-        function goToTrack(id, slug) {
-            if (slug) {
-                window.location.href = `/song/${slug}`;
-            } else {
-                window.location.href = `/song.html?id=${id}`;
-            }
-        }
-
-        function goToPlaylistBySlug(slug) {
-            window.location.href = `/playlist/${slug}`;
-        }
-
-        // Helper functions
-        function formatNumber(num) {
-            if (!num && num !== 0) return '0';
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'k';
-            }
-            return num;
-        }
-
-        function formatDuration(seconds) {
-            if (!seconds) return '?:??';
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-
+        // Calculate total duration
         function calculateTotalDuration(tracks) {
             if (!tracks || tracks.length === 0) return '0 min';
             const totalSeconds = tracks.reduce((sum, track) => sum + (track.duration || 0), 0);
             const hours = Math.floor(totalSeconds / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
-            
-            if (hours > 0) {
-                return `${hours} hr ${minutes} min`;
-            }
-            return `${minutes} min`;
+            return hours > 0 ? `${hours} hr ${minutes} min` : `${minutes} min`;
         }
 
         // Load playlist data
@@ -612,27 +41,17 @@
             }
 
             try {
-                // Show loading state
-                document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">Loading playlist...</div>';
-                
-                let apiUrl;
-                if (useSlug) {
-                    // New clean URL format
-                    apiUrl = `${API_BASE}/playlist/by-slug/${playlistIdentifier}`;
-                } else {
-                    // Old format with ID
-                    apiUrl = `${API_BASE}/playlists/${playlistIdentifier}`;
-                }
-                
-                console.log('Fetching from API:', apiUrl);
+                const skeleton = await loadTemplate('loading-skeleton');
+                document.getElementById('content').innerHTML = skeleton;
+
+                const apiUrl = useSlug 
+                    ? `${API_BASE}/playlist/by-slug/${playlistIdentifier}`
+                    : `${API_BASE}/playlists/${playlistIdentifier}`;
+
                 const response = await fetch(apiUrl);
-                
-                if (!response.ok) {
-                    throw new Error('Playlist not found');
-                }
+                if (!response.ok) throw new Error('Playlist not found');
                 
                 const data = await response.json();
-                console.log('Playlist data received:', data);
                 
                 // Increment view count
                 fetch(`${API_BASE}/playlists/${data.id}/view`, { 
@@ -640,15 +59,12 @@
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('View count error:', err));
                 
-                // Render the page
                 renderPlaylist(data);
 
             } catch (error) {
-                console.error('Error loading playlist:', error);
                 document.getElementById('content').innerHTML = `
                     <div style="text-align: center; padding: 60px;">
-                        <p style="color: #ff5500; margin-bottom: 20px;">Error loading playlist</p>
-                        <p style="color: #666; font-size: 14px;">${error.message}</p>
+                        <p style="color: #ff5500;">Error: ${error.message}</p>
                         <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
                     </div>
                 `;
@@ -660,15 +76,12 @@
             const tracks = playlist.tracks || [];
             const stats = playlist.stats || {};
             
-            // Calculate totals if not provided
             const totalDuration = stats.total_duration ? 
                 formatDuration(stats.total_duration) : 
                 calculateTotalDuration(tracks);
             
             const totalPlays = stats.total_plays || tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
             const totalDownloads = stats.total_downloads || tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
-            
-            // Format date
             const createdDate = playlist.created_at ? new Date(playlist.created_at).toLocaleDateString() : 'Unknown';
 
             // Get unique artists
@@ -677,16 +90,13 @@
             const content = document.getElementById('content');
             
             content.innerHTML = `
-                <!-- LEFT SIDEBAR -->
                 <aside class="left-sidebar">
-                    <!-- Breadcrumbs -->
                     <div class="breadcrumbs">
                         <a href="/">Home</a> / 
                         <a href="/playlists.html">Playlists</a> / 
                         <span>${playlist.name}</span>
                     </div>
                     
-                    <!-- Playlist Header -->
                     <div class="playlist-header">
                         <div class="playlist-cover">${playlist.cover_emoji || '📋'}</div>
                         <div class="playlist-info">
@@ -703,7 +113,6 @@
                         </div>
                     </div>
                     
-                    <!-- Tracks Section -->
                     <div class="section-header">
                         <h2 class="section-title">Playlist Tracks</h2>
                         <a href="#" class="view-all">View All ➔</a>
@@ -711,7 +120,7 @@
                     
                     <div class="track-list">
                         ${tracks.length > 0 ? tracks.map((track, index) => `
-                            <div class="track-item" onclick="goToTrack(${track.id}, '${track.slug}')">
+                            <div class="track-item" onclick="goToSong(${track.id}, '${track.slug}')">
                                 <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
                                 <div class="track-info">
                                     <div class="track-title">${track.title}</div>
@@ -723,96 +132,64 @@
                                     <span class="track-downloads"><i class="fas fa-download"></i> ${formatNumber(track.downloads)}</span>
                                 </div>
                             </div>
-                        `).join('') : '<div style="padding: 20px; text-align: center; color: #888;">No tracks in this playlist</div>'}
+                        `).join('') : '<div style="padding: 20px; text-align: center;">No tracks in this playlist</div>'}
                     </div>
                 </aside>
                 
-                <!-- RIGHT SIDEBAR -->
                 <div class="right-sidebar">
-                    <!-- Similar Playlists -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">Similar Playlists</h2>
                             <a href="/playlists.html" class="view-all">View All ➔</a>
                         </div>
-                        <div id="similarPlaylists" class="latest-albums-list">
-                            <div class="loading">Loading...</div>
-                        </div>
+                        <div id="similarPlaylists" class="latest-albums-list">Loading...</div>
                     </section>
                     
-                    <!-- Featured Artists -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">Featured Artists</h2>
-                            <a href="#" class="view-all">View All ➔</a>
                         </div>
-                        <div id="featuredArtists" class="latest-albums-list">
+                        <div class="latest-albums-list">
                             ${artists.length > 0 ? artists.map(artist => `
                                 <div class="sidebar-item" onclick="goToArtist('${artist.replace(/'/g, "\\'")}')">
                                     <div class="sidebar-thumb">👤</div>
                                     <div class="sidebar-info">
                                         <div class="sidebar-title">${artist}</div>
-                                        <div class="sidebar-sub">Featured in this playlist</div>
+                                        <div class="sidebar-sub">Featured in playlist</div>
                                     </div>
                                 </div>
-                            `).join('') : '<div style="padding: 15px; text-align: center;">No artists found</div>'}
+                            `).join('') : '<div style="padding: 15px; text-align: center;">No artists</div>'}
                         </div>
                     </section>
                     
-                    <!-- Playlist Info -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">Playlist Info</h2>
                         </div>
                         <div>
-                            <div class="info-row">
-                                <span class="info-label">Created</span>
-                                <span class="info-value">${createdDate}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">By</span>
-                                <span class="info-value">${playlist.created_by || 'Zedtopvibes'}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Tracks</span>
-                                <span class="info-value">${tracks.length}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Duration</span>
-                                <span class="info-value">${totalDuration}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Total Plays</span>
-                                <span class="info-value"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || totalPlays)}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Total Downloads</span>
-                                <span class="info-value"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads || totalDownloads)}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Total Views</span>
-                                <span class="info-value"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span>
-                            </div>
+                            <div class="info-row"><span class="info-label">Created</span><span class="info-value">${createdDate}</span></div>
+                            <div class="info-row"><span class="info-label">By</span><span class="info-value">${playlist.created_by || 'Zedtopvibes'}</span></div>
+                            <div class="info-row"><span class="info-label">Tracks</span><span class="info-value">${tracks.length}</span></div>
+                            <div class="info-row"><span class="info-label">Duration</span><span class="info-value">${totalDuration}</span></div>
+                            <div class="info-row"><span class="info-label">Total Plays</span><span class="info-value"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || totalPlays)}</span></div>
+                            <div class="info-row"><span class="info-label">Total Downloads</span><span class="info-value"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads || totalDownloads)}</span></div>
+                            <div class="info-row"><span class="info-label">Total Views</span><span class="info-value"><i class="fas fa-eye"></i> ${formatNumber(playlist.views || 0)}</span></div>
                         </div>
                     </section>
                 </div>
             `;
 
             // Load similar playlists
-            loadSimilarPlaylists(playlist.id, playlist.slug);
+            loadSimilarPlaylists(playlist.id);
         }
 
         // Load similar playlists
-        async function loadSimilarPlaylists(currentPlaylistId, currentSlug) {
+        async function loadSimilarPlaylists(currentPlaylistId) {
             try {
                 const response = await fetch(`${API_BASE}/playlists`);
-                if (!response.ok) throw new Error('Failed to fetch playlists');
-                
                 const playlists = await response.json();
                 
-                const similar = playlists
-                    .filter(p => p.id != currentPlaylistId)
-                    .slice(0, 3);
+                const similar = playlists.filter(p => p.id != currentPlaylistId).slice(0, 3);
                 
                 const container = document.getElementById('similarPlaylists');
                 if (container) {
@@ -822,10 +199,7 @@
                                 <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
                                 <div class="sidebar-info">
                                     <div class="sidebar-title">${playlist.name}</div>
-                                    <div class="sidebar-sub">
-                                        <span>${playlist.track_count || 0} tracks</span>
-                                        <span><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
-                                    </div>
+                                    <div class="sidebar-sub">${playlist.track_count || 0} tracks</div>
                                 </div>
                             </div>
                         `).join('');
@@ -835,22 +209,23 @@
                 }
             } catch (error) {
                 console.error('Error loading similar playlists:', error);
-                const container = document.getElementById('similarPlaylists');
-                if (container) {
-                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Error loading</div>';
-                }
             }
         }
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                window.location.href = '/?search=' + encodeURIComponent(e.target.value);
-            }
-        });
+        // Initialize page
+        async function initPage() {
+            await injectTemplates();
+            const footerHtml = await loadTemplate('footer');
+            document.body.insertAdjacentHTML('beforeend', footerHtml);
+            await loadPlaylist();
+        }
 
-        // Load playlist
-        loadPlaylist();
+        initPage();
+        
+        // Make navigation functions global
+        window.goToArtist = goToArtist;
+        window.goToSong = goToSong;
+        window.goToPlaylistBySlug = goToPlaylistBySlug;
     </script>
 </body>
 </html>
