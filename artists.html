@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Artists | Zedtopvibes</title>
+</head>
+<body>
+    <div class="main-content-container" id="content">
+        <div style="text-align: center; padding: 60px; width: 100%;">Loading artists...</div>
+    </div>
+
+    <script type="module">
+        import { API_BASE, formatNumber, getRandomColor } from '/js/shared/helpers.js';
+        import { goToArtist } from '/js/shared/navigation.js';
+        import { fetchTracks } from '/js/shared/api.js';
+        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+
+        // Load artists
+        async function loadArtists() {
+            try {
+                const skeleton = await loadTemplate('loading-skeleton');
+                document.getElementById('content').innerHTML = skeleton;
+
+                const tracks = await fetchTracks();
+                
+                // Group tracks by artist
+                const artistMap = new Map();
+                tracks.forEach(track => {
+                    if (!artistMap.has(track.artist)) {
+                        artistMap.set(track.artist, {
+                            name: track.artist,
+                            slug: track.artist_slug,
+                            tracks: [track],
+                            genres: new Set([track.genre]),
+                            totalPlays: track.plays,
+                            totalDownloads: track.downloads,
+                            totalViews: track.views
+                        });
+                    } else {
+                        const artist = artistMap.get(track.artist);
+                        artist.tracks.push(track);
+                        artist.genres.add(track.genre);
+                        artist.totalPlays += track.plays;
+                        artist.totalDownloads += track.downloads;
+                        artist.totalViews += track.views;
+                    }
+                });
+                
+                const artists = Array.from(artistMap.values());
+                
+                // Find most popular track for each artist
+                artists.forEach(artist => {
+                    artist.popularTrack = artist.tracks.reduce((prev, current) => 
+                        (prev.plays > current.plays) ? prev : current
+                    );
+                    artist.genres = Array.from(artist.genres);
+                });
+                
+                renderArtists(artists);
+
+            } catch (error) {
+                console.error('Error loading artists:', error);
+            }
+        }
+
+        function renderArtists(artists) {
+            const content = document.getElementById('content');
+            
+            content.innerHTML = `
+                <aside class="left-sidebar">
+                    <div class="breadcrumbs">
+                        <a href="/">Home</a> / <span>Artists</span>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h2 class="section-title">All Artists</h2>
+                        <a href="#" class="view-all">View All ➔</a>
+                    </div>
+                    
+                    <div class="artist-list">
+                        ${artists.map(artist => `
+                            <div class="artist-item" onclick="goToArtist('${artist.name}')">
+                                <div class="artist-avatar">👤</div>
+                                <div class="artist-info">
+                                    <div class="artist-name">${artist.name}</div>
+                                    <div class="artist-meta">
+                                        <span class="artist-badge">${artist.tracks.length} tracks</span>
+                                        ${artist.genres.slice(0, 2).map(g => 
+                                            `<span class="artist-genre">${g}</span>`
+                                        ).join('')}
+                                    </div>
+                                    <div class="popular-song">
+                                        <i class="fas fa-play"></i> Popular: "${artist.popularTrack.title}"
+                                    </div>
+                                    <div class="artist-stats">
+                                        <span><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
+                                        <span><i class="fas fa-download"></i> ${formatNumber(artist.totalDownloads)}</span>
+                                        <span><i class="fas fa-eye"></i> ${formatNumber(artist.totalViews)}</span>
+                                    </div>
+                                </div>
+                                <div class="artist-action">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </aside>
+                
+                <div class="right-sidebar">
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Top Artists</h2>
+                            <a href="#" class="view-all">View All ➔</a>
+                        </div>
+                        <div>
+                            ${artists.sort((a,b) => b.totalPlays - a.totalPlays).slice(0, 3).map(artist => `
+                                <div class="sidebar-item" onclick="goToArtist('${artist.name}')">
+                                    <div class="sidebar-thumb">👤</div>
+                                    <div class="sidebar-info">
+                                        <div class="sidebar-title">${artist.name}</div>
+                                        <div class="sidebar-sub">${formatNumber(artist.totalPlays)} plays</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        // Initialize page
+        async function initPage() {
+            await injectTemplates();
+            const footerHtml = await loadTemplate('footer');
+            document.body.insertAdjacentHTML('beforeend', footerHtml);
+            await loadArtists();
+        }
+
+        initPage();
+        
+        window.goToArtist = goToArtist;
+    </script>
+</body>
+</html>
