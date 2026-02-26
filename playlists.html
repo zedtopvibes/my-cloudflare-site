@@ -2,551 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zedtopvibes • Playlists</title>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navigation */
-        .navbar {
-            background: white;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 12px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .hamburger {
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            color: #333;
-        }
-
-        .site-title {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .site-title a {
-            text-decoration: none;
-        }
-
-        .right-spacer {
-            width: 40px;
-        }
-
-        /* Search Bar */
-        .search-section {
-            max-width: 1400px;
-            margin: 15px auto 5px;
-            padding: 0 20px;
-            width: 100%;
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 30px;
-            padding: 8px 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .search-icon {
-            color: #ff5500;
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .search-container input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 15px;
-            padding: 8px 0;
-            background: transparent;
-        }
-
-        .search-container input::placeholder {
-            color: #aaa;
-        }
-
-        /* MAIN LAYOUT CONTAINER */
-        .main-content-container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 20px;
-            display: flex;
-            gap: 20px;
-            width: 100%;
-        }
-
-        /* LEFT SIDEBAR - PLAYLISTS LIST */
-        .left-sidebar {
-            flex: 3;
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        /* RIGHT SIDEBAR */
-        .right-sidebar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            min-width: 300px;
-        }
-
-        .section-block {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e8e8e8;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        /* SECTION HEADER */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 18px;
-            background: #fff;
-            border-bottom: 1px solid #f0f0f0;
-            position: relative;
-        }
-
-        .section-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 5%, 
-                #ff5500 20%, 
-                #ff5500 80%, 
-                transparent 95%
-            );
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #222;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title::before {
-            content: "📋";
-            font-size: 1.1rem;
-            color: #ff5500;
-        }
-
-        .view-all {
-            color: #ff5500;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 4px 12px;
-            border: 1px solid #ff5500;
-            border-radius: 20px;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .view-all:hover {
-            background: #ff5500;
-            color: white;
-        }
-
-        /* BREADCRUMBS */
-        .breadcrumbs {
-            padding: 15px 18px;
-            background: #fafafa;
-            border-bottom: 1px solid #e8e8e8;
-            font-size: 0.9rem;
-            color: #888;
-        }
-
-        .breadcrumbs a {
-            color: #ff5500;
-            text-decoration: none;
-        }
-
-        .breadcrumbs a:hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumbs span {
-            color: #333;
-            font-weight: 500;
-        }
-
-        /* PLAYLIST ITEMS */
-        .playlist-list {
-            padding: 5px 0;
-        }
-
-        .playlist-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 16px 18px;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .playlist-item:hover {
-            background: #fff9f5;
-        }
-
-        .playlist-item:last-child {
-            border-bottom: none;
-        }
-
-        .playlist-thumb {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .playlist-info {
-            flex: 1;
-        }
-
-        .playlist-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 8px;
-        }
-
-        .playlist-meta {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
-        }
-
-        .playlist-badge {
-            color: #ff5500;
-            background: rgba(255,85,0,0.08);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .playlist-stats {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255,85,0,0.08);
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .playlist-stats i {
-            color: #ff5500;
-        }
-
-        .playlist-description {
-            color: #666;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        /* RIGHT SIDEBAR ITEMS */
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            gap: 15px;
-            border-bottom: 1px solid #f5f5f5;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .sidebar-item:hover {
-            background: #fff9f5;
-        }
-
-        .sidebar-item:last-child {
-            border-bottom: none;
-        }
-
-        .sidebar-thumb {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ff5500, #ff8c00);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .sidebar-info {
-            flex: 1;
-        }
-
-        .sidebar-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 4px;
-        }
-
-        .sidebar-sub {
-            font-size: 12px;
-            color: #888;
-            display: flex;
-            gap: 8px;
-        }
-
-        /* LOADING SKELETONS */
-        .skeleton {
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        @keyframes skeleton-loading {
-            0% { background-color: #f0f0f0; }
-            100% { background-color: #e0e0e0; }
-        }
-
-        /* Footer */
-        .footer {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 20px 20px 0;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            color: #888;
-            font-size: 13px;
-            width: 100%;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .main-content-container {
-                flex-direction: column;
-            }
-            
-            .right-sidebar {
-                min-width: auto;
-            }
-            
-            .playlist-thumb {
-                width: 80px;
-                height: 80px;
-                font-size: 32px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .playlist-thumb {
-                width: 70px;
-                height: 70px;
-                font-size: 28px;
-            }
-            
-            .playlist-title {
-                font-size: 1rem;
-            }
-            
-            .playlist-meta {
-                gap: 5px;
-            }
-        }
-    </style>
+    <title>Playlists | Zedtopvibes</title>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="hamburger" onclick="window.location.href='/'">☰</div>
-            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
-            <div class="right-spacer"></div>
-        </div>
-    </nav>
-
-    <!-- Search Bar -->
-    <div class="search-section">
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search playlists...">
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons -->
-        <aside class="left-sidebar">
-            <div class="breadcrumbs">
-                <span class="skeleton" style="display: inline-block; width: 200px; height: 20px;"></span>
-            </div>
-            
-            <div class="section-header">
-                <h2 class="section-title">All Playlists</h2>
-                <a href="#" class="view-all">View All ➔</a>
-            </div>
-            
-            <div class="playlist-list" id="playlistsList">
-                <!-- Skeletons will be replaced by JS -->
-            </div>
-        </aside>
-        
-        <div class="right-sidebar">
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Featured Playlists</h2>
-                    <a href="#" class="view-all">View All ➔</a>
-                </div>
-                <div id="featuredPlaylists"></div>
-            </section>
-            
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Create Playlist</h2>
-                </div>
-                <div style="padding: 15px; text-align: center;">
-                    <p style="color: #666; margin-bottom: 10px;">Curate your own music collection</p>
-                    <button onclick="alert('Create playlist coming soon!')" style="background: #ff5500; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">Create New Playlist</button>
-                </div>
-            </section>
-        </div>
+        <div style="text-align: center; padding: 60px; width: 100%;">Loading playlists...</div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="copyright">
-            © 2024 Zedtopvibes. All rights reserved.
-        </div>
-    </footer>
+    <script type="module">
+        import { API_BASE, formatNumber } from '/js/shared/helpers.js';
+        import { goToPlaylistBySlug } from '/js/shared/navigation.js';
+        import { fetchPlaylists } from '/js/shared/api.js';
+        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
 
-    <script>
-        // API Base URL
-        const API_BASE = '/api';
-
-        function goHome() {
-            window.location.href = '/';
-        }
-
-        function goToPlaylist(id) {
-            window.location.href = `/playlist.html?id=${id}`;
-        }
-
-        function formatNumber(num) {
-            if (!num) return '0';
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'k';
-            }
-            return num;
-        }
-
+        // Load playlists
         async function loadPlaylists() {
             try {
-                const response = await fetch(`${API_BASE}/playlists`);
-                const playlists = await response.json();
-                
-                const playlistsList = document.getElementById('playlistsList');
-                playlistsList.innerHTML = playlists.map(playlist => `
-                    <div class="playlist-item" onclick="goToPlaylist(${playlist.id})">
-                        <div class="playlist-thumb">${playlist.cover_emoji || '📋'}</div>
-                        <div class="playlist-info">
-                            <div class="playlist-title">${playlist.name}</div>
-                            <div class="playlist-meta">
-                                <span class="playlist-badge">${playlist.track_count || 0} tracks</span>
-                                <span class="playlist-stats"><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays)}</span>
-                                <span class="playlist-stats"><i class="fas fa-download"></i> ${formatNumber(playlist.downloads)}</span>
-                                <span class="playlist-stats"><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
-                                ${playlist.is_featured ? '<span class="playlist-badge">Featured</span>' : ''}
-                            </div>
-                            <div class="playlist-description">${playlist.description || 'No description'}</div>
-                        </div>
-                    </div>
-                `).join('');
+                const skeleton = await loadTemplate('loading-skeleton');
+                document.getElementById('content').innerHTML = skeleton;
 
-                // Load featured playlists
-                const featured = playlists.filter(p => p.is_featured).slice(0, 3);
-                document.getElementById('featuredPlaylists').innerHTML = featured.map(playlist => `
-                    <div class="sidebar-item" onclick="goToPlaylist(${playlist.id})">
-                        <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
-                        <div class="sidebar-info">
-                            <div class="sidebar-title">${playlist.name}</div>
-                            <div class="sidebar-sub">
-                                <span>${playlist.track_count || 0} tracks</span>
-                                <span><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                const playlists = await fetchPlaylists();
+                renderPlaylists(playlists);
 
             } catch (error) {
                 console.error('Error loading playlists:', error);
             }
         }
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                window.location.href = '/?search=' + encodeURIComponent(e.target.value);
-            }
-        });
+        function renderPlaylists(playlists) {
+            const content = document.getElementById('content');
+            
+            content.innerHTML = `
+                <aside class="left-sidebar">
+                    <div class="breadcrumbs">
+                        <a href="/">Home</a> / <span>Playlists</span>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h2 class="section-title">All Playlists</h2>
+                        <a href="#" class="view-all">View All ➔</a>
+                    </div>
+                    
+                    <div class="playlist-list">
+                        ${playlists.map(playlist => `
+                            <div class="playlist-item" onclick="goToPlaylistBySlug('${playlist.slug}')">
+                                <div class="playlist-thumb">${playlist.cover_emoji || '📋'}</div>
+                                <div class="playlist-info">
+                                    <div class="playlist-title">${playlist.name}</div>
+                                    <div class="playlist-meta">
+                                        <span class="playlist-badge">${playlist.track_count || 0} tracks</span>
+                                        <span class="playlist-stats"><i class="fas fa-eye"></i> ${formatNumber(playlist.views)}</span>
+                                        ${playlist.is_featured ? '<span class="playlist-badge">Featured</span>' : ''}
+                                    </div>
+                                    <div class="playlist-description">${playlist.description || ''}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </aside>
+                
+                <div class="right-sidebar">
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Featured Playlists</h2>
+                            <a href="#" class="view-all">View All ➔</a>
+                        </div>
+                        <div>
+                            ${playlists.filter(p => p.is_featured).slice(0, 3).map(playlist => `
+                                <div class="sidebar-item" onclick="goToPlaylistBySlug('${playlist.slug}')">
+                                    <div class="sidebar-thumb">${playlist.cover_emoji || '📋'}</div>
+                                    <div class="sidebar-info">
+                                        <div class="sidebar-title">${playlist.name}</div>
+                                        <div class="sidebar-sub">${playlist.track_count || 0} tracks</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
 
-        // Load playlists
-        loadPlaylists();
+        // Initialize page
+        async function initPage() {
+            await injectTemplates();
+            const footerHtml = await loadTemplate('footer');
+            document.body.insertAdjacentHTML('beforeend', footerHtml);
+            await loadPlaylists();
+        }
+
+        initPage();
+        
+        window.goToPlaylistBySlug = goToPlaylistBySlug;
     </script>
 </body>
 </html>
