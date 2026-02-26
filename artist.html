@@ -2,55 +2,285 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Artist | Zedtopvibes</title>
-<link rel="stylesheet" href="/css/shared/main.css">
-    <!-- Templates will inject remaining head elements -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zedtopvibes • Artist</title>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="/css/shared/main.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Additional artist-specific styles */
+        .artist-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255,85,0,0.05) 0%, rgba(255,140,0,0.05) 100%);
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .artist-cover-large {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255,85,0,0.3);
+            flex-shrink: 0;
+        }
+
+        .artist-info-large {
+            flex: 1;
+        }
+
+        .artist-title-large {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .artist-genre-large {
+            color: #ff5500;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .artist-meta-large {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .artist-stat-large {
+            background: rgba(255,85,0,0.08);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #555;
+        }
+
+        .artist-stat-large i {
+            color: #ff5500;
+        }
+
+        .artist-stat-large strong {
+            color: #ff5500;
+            font-weight: 700;
+            margin-left: 3px;
+        }
+
+        /* Track items with smaller stats */
+        .track-stats-small {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .track-stats-small i {
+            color: #ff5500;
+            margin-right: 3px;
+        }
+
+        /* Loading skeletons specific to artist page */
+        .skeleton-artist-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .skeleton-cover-large {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @keyframes skeleton-loading {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header will be injected by template-loader.js -->
-    
+    <!-- Simple header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
+            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
+            <div class="right-spacer"></div>
+        </div>
+    </nav>
+
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons will be shown here -->
-        <div style="text-align: center; padding: 60px; width: 100%;">Loading artist...</div>
+        <!-- LEFT SIDEBAR - ARTIST CONTENT -->
+        <aside class="left-sidebar">
+            <!-- Breadcrumbs skeleton (will be replaced) -->
+            <div class="breadcrumbs-left">
+                <div class="breadcrumb-nav">
+                    <div class="breadcrumb-list">
+                        <span class="skeleton" style="width: 60px; height: 20px; display: inline-block;"></span>
+                        <span>›</span>
+                        <span class="skeleton" style="width: 80px; height: 20px; display: inline-block;"></span>
+                        <span>›</span>
+                        <span class="skeleton" style="width: 100px; height: 20px; display: inline-block;"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Artist header skeleton -->
+            <div class="skeleton-artist-header">
+                <div class="skeleton-cover-large"></div>
+                <div class="artist-info-large">
+                    <div class="skeleton" style="width: 60%; height: 40px; margin-bottom: 15px;"></div>
+                    <div class="skeleton" style="width: 40%; height: 24px; margin-bottom: 20px;"></div>
+                    <div class="artist-meta-large">
+                        <div class="skeleton" style="width: 100px; height: 36px; border-radius: 30px;"></div>
+                        <div class="skeleton" style="width: 120px; height: 36px; border-radius: 30px;"></div>
+                        <div class="skeleton" style="width: 110px; height: 36px; border-radius: 30px;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Songs section header -->
+            <div class="section-header">
+                <h2 class="section-title">Songs</h2>
+                <a href="#" class="view-all">View All ➔</a>
+            </div>
+            
+            <!-- Track skeletons -->
+            <div class="track-list" id="tracksList">
+                <div class="skeleton-track">
+                    <div class="skeleton" style="width: 40px; height: 20px;"></div>
+                    <div class="skeleton-track-info" style="flex:1; margin-left:15px;">
+                        <div class="skeleton" style="width: 60%; height: 18px; margin-bottom: 6px;"></div>
+                        <div class="skeleton" style="width: 30%; height: 14px;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-track">
+                    <div class="skeleton" style="width: 40px; height: 20px;"></div>
+                    <div class="skeleton-track-info" style="flex:1; margin-left:15px;">
+                        <div class="skeleton" style="width: 50%; height: 18px; margin-bottom: 6px;"></div>
+                        <div class="skeleton" style="width: 25%; height: 14px;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-track">
+                    <div class="skeleton" style="width: 40px; height: 20px;"></div>
+                    <div class="skeleton-track-info" style="flex:1; margin-left:15px;">
+                        <div class="skeleton" style="width: 55%; height: 18px; margin-bottom: 6px;"></div>
+                        <div class="skeleton" style="width: 35%; height: 14px;"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- RIGHT SIDEBAR -->
+        <div class="right-sidebar">
+            <!-- Albums by Artist -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Albums</h2>
+                    <a href="#" class="view-all">View All ➔</a>
+                </div>
+                <div id="albumsList" class="latest-albums-list">
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                </div>
+            </section>
+            
+            <!-- Similar Artists -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Similar Artists</h2>
+                    <a href="#" class="view-all">View All ➔</a>
+                </div>
+                <div id="similarArtists" class="latest-albums-list">
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                </div>
+            </section>
+            
+            <!-- Artist Info -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Info</h2>
+                </div>
+                <div id="artistInfo" style="padding: 15px;">
+                    <div class="skeleton" style="width: 100%; height: 16px; margin-bottom: 10px;"></div>
+                    <div class="skeleton" style="width: 90%; height: 16px; margin-bottom: 10px;"></div>
+                    <div class="skeleton" style="width: 80%; height: 16px;"></div>
+                </div>
+            </section>
+        </div>
     </div>
 
-    <!-- Footer will be injected by template-loader.js -->
+    <!-- Simple footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/albums.html">Albums</a>
+            <a href="/playlists.html">Playlists</a>
+            <a href="/artists.html">Artists</a>
+        </div>
+        <div class="copyright">© 2024 Zedtopvibes</div>
+    </footer>
 
     <script type="module">
-        // Import shared functions
-        import { API_BASE, formatNumber, formatDuration } from '/js/shared/helpers.js';
-        import { goToArtist, goToSong } from '/js/shared/navigation.js';
-        import { fetchArtist } from '/js/shared/api.js';
-        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+        // Try to import shared helpers, with fallback
+        let formatNumber = (num) => num;
+        let formatDuration = (seconds) => {
+            if (!seconds) return '?:??';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        };
+        
+        try {
+            const helpers = await import('/js/shared/helpers.js');
+            formatNumber = helpers.formatNumber;
+            formatDuration = helpers.formatDuration;
+        } catch (e) {
+            console.log('Using fallback formatters');
+        }
 
-        // Get artist identifier from multiple sources
+        // API Base
+        const API_BASE = '/api';
+        
+        // Get artist identifier from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const queryName = urlParams.get('name');
-        const contentDiv = document.getElementById('content');
-        const slugFromAttribute = contentDiv ? contentDiv.dataset.artistSlug : null;
+        const artistName = urlParams.get('name');
+        
+        // Check for slug in path (for clean URLs)
+        const pathParts = window.location.pathname.split('/');
+        const artistSlug = pathParts[pathParts.length - 1] !== 'artist.html' ? pathParts[pathParts.length - 1] : null;
 
-        // Determine which identifier to use
-        let artistIdentifier = null;
-        let isSlug = false;
+        // Navigation functions
+        window.goHome = () => window.location.href = '/';
+        window.goToArtist = (name) => {
+            const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+            window.location.href = `/artist/${slug}`;
+        };
+        window.goToSong = (id, slug) => {
+            if (slug) window.location.href = `/song/${slug}`;
+            else window.location.href = `/song.html?id=${id}`;
+        };
+        window.goToAlbum = (slug) => window.location.href = `/album/${slug}`;
 
-        if (slugFromAttribute) {
-            artistIdentifier = slugFromAttribute;
-            isSlug = true;
-            console.log('Using slug from attribute:', artistIdentifier);
-        } else if (queryName) {
-            artistIdentifier = queryName;
-            isSlug = false;
-            console.log('Using name from query:', artistIdentifier);
-        }
-
-        // Load loading skeleton template
-        async function showLoadingSkeleton() {
-            const skeleton = await loadTemplate('loading-skeleton');
-            document.getElementById('content').innerHTML = skeleton;
-        }
-
-        // Get emoji for genre (local version since we need it here)
+        // Get emoji for genre (fallback)
         function getEmojiForGenre(genre) {
             const emojis = {
                 'electronic': '🎵',
@@ -70,53 +300,70 @@
 
         // Load artist data
         async function loadArtistData() {
-            if (!artistIdentifier) {
+            const identifier = artistSlug || artistName;
+            
+            if (!identifier) {
                 document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No artist specified</div>';
                 return;
             }
 
             try {
-                await showLoadingSkeleton();
-
-                let apiUrl;
-                if (isSlug) {
-                    apiUrl = `${API_BASE}/artist/${artistIdentifier}`;
+                let artistData;
+                
+                if (artistSlug) {
+                    // Fetch by slug
+                    const response = await fetch(`${API_BASE}/artist/${artistSlug}`);
+                    if (!response.ok) throw new Error('Artist not found');
+                    artistData = await response.json();
                 } else {
-                    const slug = artistIdentifier
-                        .toLowerCase()
-                        .replace(/\s+/g, '-')
-                        .replace(/[^\w-]/g, '')
-                        .replace(/--+/g, '-')
-                        .replace(/^-+|-+$/g, '');
-                    apiUrl = `${API_BASE}/artist/${slug}`;
+                    // Fetch all tracks and filter by name (backward compatibility)
+                    const response = await fetch(`${API_BASE}/tracks`);
+                    const allTracks = await response.json();
+                    
+                    const artistTracks = allTracks.filter(t => 
+                        t.artist.toLowerCase() === decodeURIComponent(artistName).toLowerCase()
+                    );
+                    
+                    if (artistTracks.length === 0) throw new Error('Artist not found');
+                    
+                    // Calculate stats
+                    const totalPlays = artistTracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+                    const totalDownloads = artistTracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
+                    const totalViews = artistTracks.reduce((sum, t) => sum + (t.views || 0), 0);
+                    const genres = [...new Set(artistTracks.map(t => t.genre))];
+                    
+                    artistData = {
+                        name: artistTracks[0].artist,
+                        tracks: artistTracks,
+                        stats: {
+                            track_count: artistTracks.length,
+                            total_plays: totalPlays,
+                            total_downloads: totalDownloads,
+                            total_views: totalViews,
+                            genres: genres
+                        }
+                    };
                 }
-
-                console.log('Fetching from API:', apiUrl);
-                const response = await fetch(apiUrl);
-
-                if (!response.ok) {
-                    throw new Error('Artist not found');
-                }
-
-                const data = await response.json();
-                console.log('Artist data received:', data);
-
-                renderPage(data.name, data.tracks, data.stats);
+                
+                renderArtistPage(artistData);
 
             } catch (error) {
                 console.error('Error loading artist:', error);
                 document.getElementById('content').innerHTML = `
                     <div style="text-align: center; padding: 60px;">
-                        <p style="color: #ff5500; margin-bottom: 20px;">Error loading artist data</p>
-                        <p style="color: #666; font-size: 14px;">${error.message}</p>
+                        <p style="color: #ff5500;">Error: ${error.message}</p>
                         <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
                     </div>
                 `;
             }
         }
 
-        // Render page with real data
-        function renderPage(artistName, tracks, stats) {
+        // Render artist page
+        function renderArtistPage(data) {
+            const artistName = data.name;
+            const tracks = data.tracks || [];
+            const stats = data.stats || {};
+            
             const genres = stats.genres || [...new Set(tracks.map(t => t.genre))];
             const years = tracks.map(t => new Date(t.uploaded_at).getFullYear());
             const earliestYear = Math.min(...years);
@@ -142,16 +389,16 @@
                     
                     <!-- Artist Header -->
                     <div class="artist-header">
-                        <div class="artist-cover">${getArtistInitials(artistName)}</div>
-                        <div class="artist-info">
-                            <h1 class="artist-title">${artistName}</h1>
-                            <div class="artist-genre">${genres.join(' • ')}</div>
-                            <div class="artist-meta">
-                                <span class="artist-stats"><i class="fas fa-music"></i> <strong>${tracks.length}</strong> Songs</span>
-                                <span class="artist-stats"><i class="fas fa-calendar"></i> <strong>${earliestYear} - ${latestYear}</strong></span>
-                                <span class="artist-stats"><i class="fas fa-headphones"></i> <strong>${formatNumber(stats.total_plays)}</strong> Plays</span>
-                                <span class="artist-stats"><i class="fas fa-download"></i> <strong>${formatNumber(stats.total_downloads)}</strong> Downloads</span>
-                                <span class="artist-stats"><i class="fas fa-eye"></i> <strong>${formatNumber(stats.total_views)}</strong> Views</span>
+                        <div class="artist-cover-large">${getArtistInitials(artistName)}</div>
+                        <div class="artist-info-large">
+                            <h1 class="artist-title-large">${artistName}</h1>
+                            <div class="artist-genre-large">${genres.join(' • ')}</div>
+                            <div class="artist-meta-large">
+                                <span class="artist-stat-large"><i class="fas fa-music"></i> <strong>${tracks.length}</strong> Songs</span>
+                                <span class="artist-stat-large"><i class="fas fa-calendar"></i> <strong>${earliestYear} - ${latestYear}</strong></span>
+                                <span class="artist-stat-large"><i class="fas fa-headphones"></i> <strong>${formatNumber(stats.total_plays)}</strong> Plays</span>
+                                <span class="artist-stat-large"><i class="fas fa-download"></i> <strong>${formatNumber(stats.total_downloads)}</strong> Downloads</span>
+                                <span class="artist-stat-large"><i class="fas fa-eye"></i> <strong>${formatNumber(stats.total_views)}</strong> Views</span>
                             </div>
                         </div>
                     </div>
@@ -162,21 +409,35 @@
                         <a href="#" class="view-all">View All ➔</a>
                     </div>
                     
-                    <div class="latest-albums-list" id="tracksList">
-                        ${tracks.slice(0, 10).map(track => `
-                            <div class="album-item" onclick="goToSong(${track.id}, '${track.slug}')">
-                                <div class="album-thumbnail">${getEmojiForGenre(track.genre)}</div>
-                                <div class="album-info">
-                                    <div class="album-title">${track.title}</div>
-                                    <div class="album-meta">
-                                        <span class="album-stats-small"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
-                                        <span class="album-stats-small"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
-                                        <span class="album-stats-small"><i class="fas fa-eye"></i> ${formatNumber(track.views)}</span>
+                    <div class="track-list">
+                        ${tracks.slice(0, 10).map((track, index) => `
+                            <div class="track-item" onclick="goToSong(${track.id}, '${track.slug || ''}')">
+                                <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
+                                <div class="track-info">
+                                    <div class="track-title">${track.title}</div>
+                                    <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${track.artist?.replace(/'/g, "\\'") || ''}')">${track.artist}</div>
+                                    <div class="track-stats-small">
+                                        <span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                                        <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                        <span><i class="fas fa-eye"></i> ${formatNumber(track.views)}</span>
                                     </div>
                                 </div>
                             </div>
                         `).join('')}
                     </div>
+                    
+                    ${tracks.length > 10 ? `
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <a href="#" class="pagination-item pagination-prev">Prev</a>
+                                <a href="#" class="pagination-item active">1</a>
+                                <a href="#" class="pagination-item">2</a>
+                                <a href="#" class="pagination-item">3</a>
+                                <span>...</span>
+                                <a href="#" class="pagination-item pagination-next">Next</a>
+                            </div>
+                        </div>
+                    ` : ''}
                 </aside>
                 
                 <!-- RIGHT SIDEBAR -->
@@ -184,17 +445,11 @@
                     <!-- Albums by Artist -->
                     <section class="section-block">
                         <div class="section-header">
-                            <h2 class="section-title">Albums by Artist</h2>
+                            <h2 class="section-title">Albums</h2>
                             <a href="#" class="view-all">View All ➔</a>
                         </div>
-                        <div class="latest-albums-list">
-                            <div class="album-item" onclick="window.location.href='/albums.html'">
-                                <div class="album-thumbnail">💿</div>
-                                <div class="album-info">
-                                    <div class="album-title">Singles & EPs</div>
-                                    <div class="album-meta">${tracks.length} tracks</div>
-                                </div>
-                            </div>
+                        <div id="albumsList" class="latest-albums-list">
+                            <div class="loading">Loading albums...</div>
                         </div>
                     </section>
                     
@@ -204,35 +459,63 @@
                             <h2 class="section-title">Similar Artists</h2>
                             <a href="#" class="view-all">View All ➔</a>
                         </div>
-                        <div class="latest-albums-list" id="similarArtists">
-                            <div class="loading">Loading similar artists...</div>
+                        <div id="similarArtists" class="latest-albums-list">
+                            <div class="loading">Loading...</div>
                         </div>
                     </section>
                     
                     <!-- Artist Info -->
                     <section class="section-block">
                         <div class="section-header">
-                            <h2 class="section-title">Artist Info</h2>
+                            <h2 class="section-title">Info</h2>
                         </div>
                         <div style="padding: 15px;">
                             <p style="color: #666; line-height: 1.6;">
                                 ${artistName} has ${tracks.length} tracks available on Zedtopvibes.
                                 Their music spans genres including ${genres.join(', ')}.
                             </p>
-                            <p style="color: #888; font-size: 0.9rem; margin-top: 10px;">
-                                <i class="fas fa-calendar"></i> First release: ${new Date(stats.first_release).toLocaleDateString()}<br>
-                                <i class="fas fa-clock"></i> Latest release: ${new Date(stats.latest_release).toLocaleDateString()}
-                            </p>
                         </div>
                     </section>
                 </div>
             `;
 
+            // Load albums by this artist
+            loadAlbumsByArtist(artistName);
+            
             // Load similar artists
             loadSimilarArtists(genres[0], artistName);
         }
 
-        // Load similar artists based on genre
+        // Load albums by artist
+        async function loadAlbumsByArtist(artist) {
+            try {
+                const response = await fetch(`${API_BASE}/albums`);
+                const albums = await response.json();
+                
+                const artistAlbums = albums.filter(a => a.artist === artist).slice(0, 3);
+                
+                const container = document.getElementById('albumsList');
+                if (container) {
+                    if (artistAlbums.length > 0) {
+                        container.innerHTML = artistAlbums.map(album => `
+                            <div class="sidebar-item" onclick="goToAlbum('${album.slug}')">
+                                <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
+                                <div class="sidebar-info">
+                                    <div class="sidebar-title">${album.title}</div>
+                                    <div class="sidebar-sub">${album.track_count || 0} tracks</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No albums found</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading albums:', error);
+            }
+        }
+
+        // Load similar artists
         async function loadSimilarArtists(genre, currentArtist) {
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
@@ -245,20 +528,19 @@
                 )].slice(0, 3);
                 
                 const container = document.getElementById('similarArtists');
-                
                 if (container) {
                     if (similarArtists.length > 0) {
                         container.innerHTML = similarArtists.map(artist => `
-                            <div class="album-item" onclick="goToArtist('${artist}')">
-                                <div class="album-thumbnail">👤</div>
-                                <div class="album-info">
-                                    <div class="album-title">${artist}</div>
-                                    <div class="album-meta">${genre}</div>
+                            <div class="sidebar-item" onclick="goToArtist('${artist.replace(/'/g, "\\'")}')">
+                                <div class="sidebar-thumb">👤</div>
+                                <div class="sidebar-info">
+                                    <div class="sidebar-title">${artist}</div>
+                                    <div class="sidebar-sub">${genre}</div>
                                 </div>
                             </div>
                         `).join('');
                     } else {
-                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No similar artists found</div>';
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No similar artists</div>';
                     }
                 }
             } catch (error) {
@@ -266,25 +548,8 @@
             }
         }
 
-        // Initialize the page
-        async function initPage() {
-            // Inject templates (header, footer, player)
-            await injectTemplates();
-            
-            // Load the footer template and append it
-            const footerHtml = await loadTemplate('footer');
-            document.body.insertAdjacentHTML('beforeend', footerHtml);
-            
-            // Load artist data
-            await loadArtistData();
-        }
-
-        // Start everything
-        initPage();
-
-        // Make navigation functions available globally for onclick handlers
-        window.goToArtist = goToArtist;
-        window.goToSong = goToSong;
+        // Load artist data
+        loadArtistData();
     </script>
 </body>
 </html>
