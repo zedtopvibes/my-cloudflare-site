@@ -3,158 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <title>Zedtopvibes • Home</title>
-<link rel="stylesheet" href="/css/shared/main.css">
+    <link rel="stylesheet" href="/css/shared/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Header will be injected -->
+    
     <div class="main-content-container" id="content">
-        <div style="text-align: center; padding: 60px; width: 100%;">Loading...</div>
+        <!-- Latest Releases Section -->
+        <aside class="left-sidebar">
+            <div class="section-header">
+                <h2 class="section-title">LATEST RELEASES</h2>
+                <a href="#" class="view-all">View All ➔</a>
+            </div>
+            
+            <div class="post-list">
+                <!-- Track items should use track-item class -->
+                <div class="track-item">
+                    <div class="track-number">01</div>
+                    <div class="track-info">
+                        <div class="track-title">Yo Maps ft. Mampi - Boss</div>
+                        <div class="track-artist">Yo Maps</div>
+                        <div class="track-meta">
+                            <span class="track-plays"><i class="fas fa-headphones"></i> 16</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- More track items... -->
+            </div>
+        </aside>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <!-- Popular Genres -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">POPULAR GENRES</h2>
+                    <a href="#" class="view-all">All</a>
+                </div>
+                <div style="padding: 15px 18px;">
+                    <span class="genre-tag">#synthwave</span>
+                    <span class="genre-tag">#hiphop</span>
+                    <span class="genre-tag">#lofi</span>
+                    <span class="genre-tag">#ambient</span>
+                </div>
+            </section>
+
+            <!-- Trending -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">TRENDING 🔥</h2>
+                    <a href="#" class="view-all">More</a>
+                </div>
+                <div>
+                    <div class="trending-item">
+                        <span class="trending-number">01</span>
+                        <div class="trending-info">
+                            <h4>Sunset Drive</h4>
+                            <p>Coastal Vibes</p>
+                        </div>
+                    </div>
+                    <!-- More trending items... -->
+                </div>
+            </section>
+
+            <!-- Featured Artists -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">FEATURED ARTISTS</h2>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                <div>
+                    <div class="artist-item">
+                        <div class="artist-avatar">👤</div>
+                        <div class="artist-info">
+                            <h4 class="artist-name">Yo Maps</h4>
+                            <p class="artist-meta">2 tracks</p>
+                        </div>
+                    </div>
+                    <!-- More artist items... -->
+                </div>
+            </section>
+        </div>
     </div>
 
+    <!-- Footer will be injected -->
+    
     <script type="module">
-        import { API_BASE, formatNumber, formatDate, getEmojiForGenre, getRandomColor } from '/js/shared/helpers.js';
-        import { goToArtist, goToSong } from '/js/shared/navigation.js';
-        import { fetchTracks, fetchTrending } from '/js/shared/api.js';
         import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
-
-        // Load homepage data
-        async function loadHomepage() {
-            try {
-                const skeleton = await loadTemplate('loading-skeleton');
-                document.getElementById('content').innerHTML = skeleton;
-
-                const [tracks, trending] = await Promise.all([
-                    fetchTracks(),
-                    fetchTrending()
-                ]);
-
-                renderHomepage(tracks, trending);
-
-            } catch (error) {
-                console.error('Error loading homepage:', error);
-            }
-        }
-
-        // Render homepage
-        function renderHomepage(tracks, trending) {
-            // Group tracks by artist for featured artists
-            const artistMap = new Map();
-            tracks.forEach(track => {
-                if (!artistMap.has(track.artist)) {
-                    artistMap.set(track.artist, {
-                        name: track.artist,
-                        slug: track.artist_slug,
-                        trackCount: 1
-                    });
-                } else {
-                    const artist = artistMap.get(track.artist);
-                    artist.trackCount++;
-                }
-            });
-            
-            const artists = Array.from(artistMap.values()).slice(0, 3);
-            
-            // Get unique genres
-            const genres = [...new Set(tracks.map(t => t.genre))];
-
-            const content = document.getElementById('content');
-            
-            content.innerHTML = `
-                <aside class="left-sidebar">
-                    <div class="section-header">
-                        <h2 class="section-title">LATEST RELEASES</h2>
-                        <a href="#" class="view-all">View All ➔</a>
-                    </div>
-                    
-                    <div class="post-list">
-                        ${tracks.slice(0, 6).map(track => `
-                            <div class="post-item" onclick="goToSong(${track.id}, '${track.slug}')">
-                                <div class="post-image">${getEmojiForGenre(track.genre)}</div>
-                                <div class="post-content">
-                                    <div class="post-title">${track.title}</div>
-                                    <div class="post-artist" onclick="event.stopPropagation(); goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</div>
-                                    <div class="post-date">
-                                        <span>${formatDate(track.uploaded_at)}</span>
-                                        <span class="post-stats">
-                                            <i class="fas fa-headphones"></i> ${formatNumber(track.plays)}
-                                            <i class="fas fa-eye"></i> ${formatNumber(track.views)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </aside>
-                
-                <div class="right-sidebar">
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">POPULAR GENRES</h2>
-                            <a href="#" class="view-all">All</a>
-                        </div>
-                        <div style="padding: 15px 18px;">
-                            ${genres.map(genre => `
-                                <span class="genre-tag" onclick="filterByGenre('${genre}')">#${genre}</span>
-                            `).join('')}
-                        </div>
-                    </section>
-                    
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">TRENDING 🔥</h2>
-                            <a href="#" class="view-all">More</a>
-                        </div>
-                        <div>
-                            ${trending.slice(0, 3).map((track, index) => `
-                                <div class="trending-item" onclick="goToSong(${track.id}, '${track.slug}')">
-                                    <span class="trending-number">${String(index + 1).padStart(2, '0')}</span>
-                                    <div class="trending-info">
-                                        <h4>${track.title}</h4>
-                                        <p onclick="event.stopPropagation(); goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</p>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </section>
-                    
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">FEATURED ARTISTS</h2>
-                            <a href="#" class="view-all">View All</a>
-                        </div>
-                        <div>
-                            ${artists.map(artist => `
-                                <div class="artist-item" onclick="goToArtist('${artist.name}')">
-                                    <div class="artist-avatar" style="background: ${getRandomColor()}"></div>
-                                    <div>
-                                        <h4 style="font-size: 15px;">${artist.name}</h4>
-                                        <p style="font-size: 12px; color: #999;">${artist.trackCount} tracks</p>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </section>
-                </div>
-            `;
-        }
-
-        function filterByGenre(genre) {
-            alert(`Filtering by genre: ${genre} (coming soon!)`);
-        }
-
-        // Initialize page
+        
         async function initPage() {
             await injectTemplates();
             const footerHtml = await loadTemplate('footer');
             document.body.insertAdjacentHTML('beforeend', footerHtml);
-            await loadHomepage();
         }
-
-        initPage();
         
-        // Make functions global
-        window.goToArtist = goToArtist;
-        window.goToSong = goToSong;
-        window.filterByGenre = filterByGenre;
+        initPage();
     </script>
 </body>
 </html>
