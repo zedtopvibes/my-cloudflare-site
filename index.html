@@ -955,7 +955,7 @@
             background: #ff8c00;
         }
 
-        /* Loading skeleton styles */
+        /* ===== FIXED SKELETON STYLES - NO GLITCH ===== */
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
@@ -967,28 +967,77 @@
             100% { background-position: -200% 0; }
         }
         
+        /* Base skeleton thumbnail styles */
         .skeleton-thumbnail {
-            width: 120px;
-            height: 120px;
             background: #e0e0e0;
             border-radius: 3px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
         }
         
+        @keyframes skeleton-pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        /* Left sidebar thumbnails - desktop */
+        .left-sidebar .skeleton-thumbnail {
+            width: 120px;
+            height: 120px;
+        }
+        
+        /* Right sidebar thumbnails - desktop */
+        .right-sidebar .skeleton-thumbnail {
+            width: 80px;
+            height: 80px;
+        }
+        
+        /* Mobile overrides - applied immediately, no glitch */
+        @media (max-width: 768px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 100px;
+                height: 100px;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
+            }
+        }
+        
+        /* Skeleton lines */
         .skeleton-line {
             height: 16px;
             background: #e0e0e0;
             border-radius: 3px;
             margin-bottom: 8px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
         }
         
         .skeleton-line.short { width: 60%; }
         .skeleton-line.medium { width: 80%; }
         .skeleton-line.long { width: 100%; }
-        
-        .right-sidebar .skeleton-thumbnail {
-            width: 80px;
-            height: 80px;
-        }
     </style>
 </head>
 <body>
@@ -1024,7 +1073,7 @@
     
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <!-- Loading skeletons will be shown first -->
+        <!-- LEFT SIDEBAR - LATEST ALBUMS -->
         <aside class="left-sidebar">
             <div class="section-header">
                 <h2 class="section-title">Latest Albums</h2>
@@ -1032,7 +1081,15 @@
             </div>
             
             <div class="latest-albums-list" id="latestAlbums">
-                <!-- Loading skeletons -->
+                <!-- Loading skeletons with proper responsive sizing -->
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
                 <div class="album-item">
                     <div class="skeleton-thumbnail"></div>
                     <div class="album-info">
@@ -1063,7 +1120,14 @@
                 </div>
                 
                 <div class="latest-albums-list" id="latestSongs">
-                    <!-- Loading skeletons -->
+                    <!-- Loading skeletons with proper responsive sizing -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
                     <div class="album-item">
                         <div class="skeleton-thumbnail"></div>
                         <div class="album-info">
@@ -1090,6 +1154,13 @@
                             <div class="skeleton-line medium"></div>
                         </div>
                     </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
                 </div>
             </section>
             
@@ -1102,6 +1173,13 @@
                 
                 <div class="latest-albums-list" id="topRated">
                     <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
                     <div class="album-item">
                         <div class="skeleton-thumbnail"></div>
                         <div class="album-info">
@@ -1127,6 +1205,13 @@
                             <div class="skeleton-line medium"></div>
                         </div>
                     </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
                 </div> 
             </section>
             
@@ -1139,6 +1224,13 @@
                 
                 <div class="latest-albums-list" id="trendingAlbums">
                     <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
                     <div class="album-item">
                         <div class="skeleton-thumbnail"></div>
                         <div class="album-info">
@@ -1253,6 +1345,57 @@
                     closeRightDrawer.click();
                 }
             });
+            
+            // Album/Artist/Playlist item click effects
+            document.addEventListener('click', function(e) {
+                const albumItem = e.target.closest('.album-item');
+                if (albumItem && !albumItem._handled) {
+                    albumItem._handled = true;
+                    setTimeout(() => {
+                        albumItem._handled = false;
+                    }, 300);
+                    
+                    albumItem.style.transform = 'scale(0.99)';
+                    albumItem.style.backgroundColor = '#fff5e6';
+                    
+                    setTimeout(() => {
+                        albumItem.style.transform = '';
+                        setTimeout(() => {
+                            albumItem.style.backgroundColor = '';
+                        }, 200);
+                    }, 200);
+                }
+            });
+            
+            // Hover effects for dynamically added thumbnails
+            document.addEventListener('mouseenter', function(e) {
+                const thumbnail = e.target.closest('.album-item')?.querySelector('.album-thumbnail');
+                if (thumbnail) {
+                    thumbnail.style.transform = 'scale(1.05)';
+                    thumbnail.style.borderColor = '#ff5500';
+                    thumbnail.style.boxShadow = '0 4px 8px rgba(255, 85, 0, 0.2)';
+                    
+                    if (thumbnail.classList.contains('artist-thumbnail')) {
+                        thumbnail.style.borderColor = '#9b59b6';
+                        thumbnail.style.boxShadow = '0 4px 8px rgba(155, 89, 182, 0.2)';
+                    } else if (thumbnail.classList.contains('playlist-thumbnail')) {
+                        thumbnail.style.borderColor = '#4a90e2';
+                        thumbnail.style.boxShadow = '0 4px 8px rgba(74, 144, 226, 0.2)';
+                    } else if (thumbnail.classList.contains('song-thumbnail')) {
+                        thumbnail.style.borderColor = '#2ecc71';
+                        thumbnail.style.boxShadow = '0 4px 8px rgba(46, 204, 113, 0.2)';
+                    }
+                }
+            }, true);
+            
+            document.addEventListener('mouseleave', function(e) {
+                const thumbnail = e.target.closest('.album-item')?.querySelector('.album-thumbnail');
+                if (thumbnail) {
+                    thumbnail.style.transform = 'scale(1)';
+                    thumbnail.style.borderColor = '#e0e0e0';
+                    thumbnail.style.boxShadow = 'none';
+                }
+            }, true);
             
             // Load all data
             loadHomepageData();
