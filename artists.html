@@ -102,6 +102,51 @@
         .filter-select:hover {
             border-color: #ff5500;
         }
+
+        /* Page header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 18px;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
+            color: #222;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 30px;
+            padding: 5px 15px;
+        }
+
+        .search-box i {
+            color: #ff5500;
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 200px;
+        }
+
+        /* Loading skeletons */
+        .skeleton-pulse {
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes skeleton-pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body>
@@ -124,11 +169,11 @@
             </div>
             
             <!-- Page Header -->
-            <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 18px;">
-                <h1 style="font-size: 1.8rem; color: #222;">Artists</h1>
-                <div class="search-box" style="display: flex; align-items: center; background: white; border: 1px solid #e0e0e0; border-radius: 30px; padding: 5px 15px;">
-                    <i class="fas fa-search" style="color: #ff5500; margin-right: 10px;"></i>
-                    <input type="text" id="searchInput" placeholder="Search artists..." style="border: none; outline: none; background: transparent;">
+            <div class="page-header">
+                <h1>Artists</h1>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search artists...">
                 </div>
             </div>
             
@@ -273,10 +318,21 @@
         // API Base
         const API_BASE = '/api';
 
-        // Navigation functions
+        // Navigation functions - FIXED VERSION with trailing hyphen removal
         window.goHome = () => window.location.href = '/';
-        window.goToArtist = (name) => {
-            const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+        
+        // FIXED: This function now properly removes trailing hyphens
+        window.goToArtist = (artistName) => {
+            if (!artistName) return;
+            
+            const slug = artistName
+                .toLowerCase()
+                .replace(/\s+/g, '-')           // spaces to hyphens
+                .replace(/[^\w-]/g, '')          // remove special characters
+                .replace(/--+/g, '-')            // multiple hyphens to single
+                .replace(/^-+|-+$/g, '');        // ← CRITICAL: removes leading/trailing hyphens
+            
+            console.log(`Navigating to artist: ${artistName} → slug: ${slug}`);
             window.location.href = `/artist/${slug}`;
         };
 
@@ -292,7 +348,7 @@
                 let genreSet = new Set();
                 
                 tracks.forEach(track => {
-                    genreSet.add(track.genre);
+                    if (track.genre) genreSet.add(track.genre);
                     totalPlays += track.plays || 0;
                     
                     if (!artistMap.has(track.artist)) {
@@ -309,7 +365,7 @@
                     } else {
                         const artist = artistMap.get(track.artist);
                         artist.tracks.push(track);
-                        artist.genres.add(track.genre);
+                        if (track.genre) artist.genres.add(track.genre);
                         artist.totalPlays += track.plays || 0;
                         artist.totalDownloads += track.downloads || 0;
                         artist.totalViews += track.views || 0;
@@ -327,12 +383,12 @@
                 });
                 
                 // Populate genre filter
-                populateGenreFilter(Array.from(genreSet));
+                populateGenreFilter(Array.from(genreSet).filter(g => g));
                 
                 // Render all sections
                 renderArtistsList(artists);
                 renderTopArtists(artists);
-                renderGenres(Array.from(genreSet));
+                renderGenres(Array.from(genreSet).filter(g => g));
                 renderStats(artists.length, tracks.length, totalPlays);
 
             } catch (error) {
