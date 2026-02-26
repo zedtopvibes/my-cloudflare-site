@@ -2,48 +2,317 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Artists | Zedtopvibes</title>
-<link rel="stylesheet" href="/css/shared/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zedtopvibes • Artists</title>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="/css/shared/main.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Additional artist-specific styles */
+        .artist-stats-small {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+        
+        .artist-stats-small i {
+            color: #ff5500;
+            margin-right: 3px;
+        }
+        
+        .popular-song {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #888;
+            font-size: 0.9rem;
+            margin: 6px 0;
+        }
+        
+        .popular-song i {
+            color: #ff5500;
+            font-size: 12px;
+        }
+        
+        .artist-action {
+            color: #ff5500;
+            font-size: 1.2rem;
+            margin-left: 20px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .artist-item:hover .artist-action {
+            opacity: 1;
+        }
+        
+        /* Alphabet navigation */
+        .alphabet-nav {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .alphabet-nav a {
+            display: inline-block;
+            padding: 5px 10px;
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+        
+        .alphabet-nav a:hover {
+            background: #ff5500;
+            color: white;
+        }
+        
+        .alphabet-nav a.active {
+            background: #ff5500;
+            color: white;
+        }
+        
+        /* Filters bar */
+        .filters-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .filter-select:hover {
+            border-color: #ff5500;
+        }
+    </style>
 </head>
 <body>
+    <!-- Simple header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="hamburger" onclick="window.location.href='/'">☰</div>
+            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
+            <div class="right-spacer"></div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
-        <div style="text-align: center; padding: 60px; width: 100%;">Loading artists...</div>
+        <!-- LEFT SIDEBAR - ARTISTS LIST -->
+        <aside class="left-sidebar">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs">
+                <a href="/">Home</a> / <span>Artists</span>
+            </div>
+            
+            <!-- Page Header -->
+            <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 18px;">
+                <h1 style="font-size: 1.8rem; color: #222;">Artists</h1>
+                <div class="search-box" style="display: flex; align-items: center; background: white; border: 1px solid #e0e0e0; border-radius: 30px; padding: 5px 15px;">
+                    <i class="fas fa-search" style="color: #ff5500; margin-right: 10px;"></i>
+                    <input type="text" id="searchInput" placeholder="Search artists..." style="border: none; outline: none; background: transparent;">
+                </div>
+            </div>
+            
+            <!-- A-Z Navigation (static for now) -->
+            <div class="alphabet-nav">
+                <a href="#" class="active">#</a>
+                <a href="#">A</a>
+                <a href="#">B</a>
+                <a href="#">C</a>
+                <a href="#">D</a>
+                <a href="#">E</a>
+                <a href="#">F</a>
+                <a href="#">G</a>
+                <a href="#">H</a>
+                <a href="#">I</a>
+                <a href="#">J</a>
+                <a href="#">K</a>
+                <a href="#">L</a>
+                <a href="#">M</a>
+                <a href="#">N</a>
+                <a href="#">O</a>
+                <a href="#">P</a>
+                <a href="#">Q</a>
+                <a href="#">R</a>
+                <a href="#">S</a>
+                <a href="#">T</a>
+                <a href="#">U</a>
+                <a href="#">V</a>
+                <a href="#">W</a>
+                <a href="#">X</a>
+                <a href="#">Y</a>
+                <a href="#">Z</a>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters-bar">
+                <select class="filter-select" id="genreFilter">
+                    <option value="">All Genres</option>
+                </select>
+                <select class="filter-select" id="sortFilter">
+                    <option value="name">Sort: Name A-Z</option>
+                    <option value="name-desc">Sort: Name Z-A</option>
+                    <option value="tracks">Sort: Most Tracks</option>
+                    <option value="plays">Sort: Most Plays</option>
+                </select>
+            </div>
+            
+            <!-- Artists List with Skeletons -->
+            <div class="artist-list" id="artistsList">
+                <!-- Loading skeletons -->
+                <div class="skeleton-track">
+                    <div class="skeleton-image" style="width: 70px; height: 70px; border-radius: 50%;"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="skeleton-track">
+                    <div class="skeleton-image" style="width: 70px; height: 70px; border-radius: 50%;"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="skeleton-track">
+                    <div class="skeleton-image" style="width: 70px; height: 70px; border-radius: 50%;"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- RIGHT SIDEBAR -->
+        <div class="right-sidebar">
+            <!-- Top Artists Section -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Top Artists</h2>
+                    <a href="#" class="view-all">View All ➔</a>
+                </div>
+                <div id="topArtists" class="latest-albums-list">
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                </div>
+            </section>
+            
+            <!-- Genres Section -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Genres</h2>
+                    <a href="#" class="view-all">Browse All</a>
+                </div>
+                <div id="genresList" style="padding: 15px;">
+                    <span class="skeleton" style="display: inline-block; width: 70px; height: 30px; border-radius: 20px; margin: 3px;"></span>
+                    <span class="skeleton" style="display: inline-block; width: 80px; height: 30px; border-radius: 20px; margin: 3px;"></span>
+                    <span class="skeleton" style="display: inline-block; width: 60px; height: 30px; border-radius: 20px; margin: 3px;"></span>
+                </div>
+            </section>
+            
+            <!-- Artist Stats -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Artist Stats</h2>
+                </div>
+                <div id="artistStats" style="padding: 15px;">
+                    <div class="skeleton-line short"></div>
+                    <div class="skeleton-line medium"></div>
+                    <div class="skeleton-line long"></div>
+                </div>
+            </section>
+        </div>
     </div>
 
-    <script type="module">
-        import { API_BASE, formatNumber, getRandomColor } from '/js/shared/helpers.js';
-        import { goToArtist } from '/js/shared/navigation.js';
-        import { fetchTracks } from '/js/shared/api.js';
-        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+    <!-- Simple footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/albums.html">Albums</a>
+            <a href="/playlists.html">Playlists</a>
+            <a href="/artists.html">Artists</a>
+        </div>
+        <div class="copyright">© 2024 Zedtopvibes</div>
+    </footer>
 
-        // Load artists
+    <script type="module">
+        // Try to import shared helpers, with fallback
+        let formatNumber = (num) => num;
+        
+        try {
+            const helpers = await import('/js/shared/helpers.js');
+            formatNumber = helpers.formatNumber;
+        } catch (e) {
+            console.log('Using fallback formatters');
+        }
+
+        // API Base
+        const API_BASE = '/api';
+
+        // Navigation functions
+        window.goHome = () => window.location.href = '/';
+        window.goToArtist = (name) => {
+            const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+            window.location.href = `/artist/${slug}`;
+        };
+
+        // Load artists data
         async function loadArtists() {
             try {
-                const skeleton = await loadTemplate('loading-skeleton');
-                document.getElementById('content').innerHTML = skeleton;
-
-                const tracks = await fetchTracks();
+                const response = await fetch(`${API_BASE}/tracks`);
+                const tracks = await response.json();
                 
                 // Group tracks by artist
                 const artistMap = new Map();
+                let totalPlays = 0;
+                let genreSet = new Set();
+                
                 tracks.forEach(track => {
+                    genreSet.add(track.genre);
+                    totalPlays += track.plays || 0;
+                    
                     if (!artistMap.has(track.artist)) {
                         artistMap.set(track.artist, {
                             name: track.artist,
                             slug: track.artist_slug,
                             tracks: [track],
                             genres: new Set([track.genre]),
-                            totalPlays: track.plays,
-                            totalDownloads: track.downloads,
-                            totalViews: track.views
+                            totalPlays: track.plays || 0,
+                            totalDownloads: track.downloads || 0,
+                            totalViews: track.views || 0,
+                            latestTrack: new Date(track.uploaded_at)
                         });
                     } else {
                         const artist = artistMap.get(track.artist);
                         artist.tracks.push(track);
                         artist.genres.add(track.genre);
-                        artist.totalPlays += track.plays;
-                        artist.totalDownloads += track.downloads;
-                        artist.totalViews += track.views;
+                        artist.totalPlays += track.plays || 0;
+                        artist.totalDownloads += track.downloads || 0;
+                        artist.totalViews += track.views || 0;
                     }
                 });
                 
@@ -57,89 +326,133 @@
                     artist.genres = Array.from(artist.genres);
                 });
                 
-                renderArtists(artists);
+                // Populate genre filter
+                populateGenreFilter(Array.from(genreSet));
+                
+                // Render all sections
+                renderArtistsList(artists);
+                renderTopArtists(artists);
+                renderGenres(Array.from(genreSet));
+                renderStats(artists.length, tracks.length, totalPlays);
 
             } catch (error) {
                 console.error('Error loading artists:', error);
+                document.getElementById('artistsList').innerHTML = '<div style="padding: 20px; text-align: center; color: #ff5500;">Error loading artists</div>';
             }
         }
 
-        function renderArtists(artists) {
-            const content = document.getElementById('content');
+        // Populate genre filter dropdown
+        function populateGenreFilter(genres) {
+            const filter = document.getElementById('genreFilter');
+            genres.sort().forEach(genre => {
+                const option = document.createElement('option');
+                option.value = genre;
+                option.textContent = genre;
+                filter.appendChild(option);
+            });
             
-            content.innerHTML = `
-                <aside class="left-sidebar">
-                    <div class="breadcrumbs">
-                        <a href="/">Home</a> / <span>Artists</span>
-                    </div>
-                    
-                    <div class="section-header">
-                        <h2 class="section-title">All Artists</h2>
-                        <a href="#" class="view-all">View All ➔</a>
-                    </div>
-                    
-                    <div class="artist-list">
-                        ${artists.map(artist => `
-                            <div class="artist-item" onclick="goToArtist('${artist.name}')">
-                                <div class="artist-avatar">👤</div>
-                                <div class="artist-info">
-                                    <div class="artist-name">${artist.name}</div>
-                                    <div class="artist-meta">
-                                        <span class="artist-badge">${artist.tracks.length} tracks</span>
-                                        ${artist.genres.slice(0, 2).map(g => 
-                                            `<span class="artist-genre">${g}</span>`
-                                        ).join('')}
-                                    </div>
-                                    <div class="popular-song">
-                                        <i class="fas fa-play"></i> Popular: "${artist.popularTrack.title}"
-                                    </div>
-                                    <div class="artist-stats">
-                                        <span><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
-                                        <span><i class="fas fa-download"></i> ${formatNumber(artist.totalDownloads)}</span>
-                                        <span><i class="fas fa-eye"></i> ${formatNumber(artist.totalViews)}</span>
-                                    </div>
-                                </div>
-                                <div class="artist-action">
-                                    <i class="fas fa-chevron-right"></i>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </aside>
-                
-                <div class="right-sidebar">
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Top Artists</h2>
-                            <a href="#" class="view-all">View All ➔</a>
+            filter.addEventListener('change', (e) => {
+                filterByGenre(e.target.value);
+            });
+        }
+
+        // Filter function
+        function filterByGenre(genre) {
+            console.log('Filtering by genre:', genre);
+            // TODO: Implement actual filtering
+        }
+
+        // Render artists list
+        function renderArtistsList(artists) {
+            const container = document.getElementById('artistsList');
+            
+            container.innerHTML = artists.map(artist => `
+                <div class="artist-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
+                    <div class="artist-avatar">👤</div>
+                    <div class="artist-info">
+                        <div class="artist-name">${artist.name}</div>
+                        <div class="artist-meta">
+                            <span class="artist-badge">${artist.tracks.length} tracks</span>
+                            ${artist.genres.slice(0, 2).map(g => 
+                                `<span class="artist-genre">${g}</span>`
+                            ).join('')}
                         </div>
-                        <div>
-                            ${artists.sort((a,b) => b.totalPlays - a.totalPlays).slice(0, 3).map(artist => `
-                                <div class="sidebar-item" onclick="goToArtist('${artist.name}')">
-                                    <div class="sidebar-thumb">👤</div>
-                                    <div class="sidebar-info">
-                                        <div class="sidebar-title">${artist.name}</div>
-                                        <div class="sidebar-sub">${formatNumber(artist.totalPlays)} plays</div>
-                                    </div>
-                                </div>
-                            `).join('')}
+                        <div class="popular-song">
+                            <i class="fas fa-play"></i> Popular: "${artist.popularTrack?.title || 'Unknown'}"
                         </div>
-                    </section>
+                        <div class="artist-stats-small">
+                            <span><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
+                            <span><i class="fas fa-download"></i> ${formatNumber(artist.totalDownloads)}</span>
+                            <span><i class="fas fa-eye"></i> ${formatNumber(artist.totalViews)}</span>
+                        </div>
+                    </div>
+                    <div class="artist-action">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render top artists
+        function renderTopArtists(artists) {
+            const container = document.getElementById('topArtists');
+            const topArtists = [...artists].sort((a, b) => b.totalPlays - a.totalPlays).slice(0, 3);
+            
+            container.innerHTML = topArtists.map(artist => `
+                <div class="sidebar-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
+                    <div class="sidebar-thumb">👤</div>
+                    <div class="sidebar-info">
+                        <div class="sidebar-title">${artist.name}</div>
+                        <div class="sidebar-sub">${formatNumber(artist.totalPlays)} plays</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render genres
+        function renderGenres(genres) {
+            const container = document.getElementById('genresList');
+            container.innerHTML = genres.sort().map(genre => `
+                <span class="genre-tag" onclick="filterByGenre('${genre}')">#${genre}</span>
+            `).join('');
+        }
+
+        // Render stats
+        function renderStats(artistCount, trackCount, totalPlays) {
+            const container = document.getElementById('artistStats');
+            container.innerHTML = `
+                <div class="stat-row" style="display: flex; justify-content: space-between; padding: 5px 0;">
+                    <span class="stat-label">Total Artists</span>
+                    <span class="stat-value">${artistCount}</span>
+                </div>
+                <div class="stat-row" style="display: flex; justify-content: space-between; padding: 5px 0;">
+                    <span class="stat-label">Total Tracks</span>
+                    <span class="stat-value">${trackCount}</span>
+                </div>
+                <div class="stat-row" style="display: flex; justify-content: space-between; padding: 5px 0;">
+                    <span class="stat-label">Total Plays</span>
+                    <span class="stat-value">${formatNumber(totalPlays)}</span>
                 </div>
             `;
         }
 
-        // Initialize page
-        async function initPage() {
-            await injectTemplates();
-            const footerHtml = await loadTemplate('footer');
-            document.body.insertAdjacentHTML('beforeend', footerHtml);
-            await loadArtists();
-        }
+        // Search functionality
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            // TODO: Implement search
+        });
 
-        initPage();
-        
-        window.goToArtist = goToArtist;
+        // Sort functionality
+        document.getElementById('sortFilter')?.addEventListener('change', (e) => {
+            console.log('Sort by:', e.target.value);
+            // TODO: Implement sorting
+        });
+
+        // Make filter function global
+        window.filterByGenre = filterByGenre;
+
+        // Load artists
+        loadArtists();
     </script>
 </body>
 </html>
