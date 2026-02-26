@@ -2,32 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Song | Zedtopvibes</title>
-<link rel="stylesheet" href="/css/shared/main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zedtopvibes • Song</title>
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="/css/shared/main.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Header will be injected by template-loader.js -->
+
+    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content-container" id="content">
+        <!-- Loading state will be replaced by JS -->
         <div style="text-align: center; padding: 60px; width: 100%;">Loading song...</div>
     </div>
 
+    <!-- Now Playing Bar (hidden initially) -->
     <div id="nowPlayingBar" class="now-playing-bar" style="display: none;">
         <div class="now-playing-info">
             <div id="nowPlayingTitle" class="now-playing-title">Not playing</div>
             <div id="nowPlayingArtist" class="now-playing-artist"></div>
         </div>
         <div class="now-playing-controls">
-            <button class="now-playing-btn" onclick="togglePlay()" id="playPauseBtn">▶️</button>
-            <button class="now-playing-btn" onclick="closePlayer()">✕</button>
+            <button class="now-playing-btn" onclick="window.togglePlay()" id="playPauseBtn">▶️</button>
+            <button class="now-playing-btn" onclick="window.closePlayer()">✕</button>
         </div>
     </div>
 
-    <script type="module">
-        import { API_BASE, formatNumber, formatDuration, getEmojiForGenre } from '/js/shared/helpers.js';
-        import { goToArtist, goToSong } from '/js/shared/navigation.js';
-        import { fetchSong, incrementPlays } from '/js/shared/api.js';
-        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+    <!-- Footer will be injected by template-loader.js -->
 
-        // Get song identifier
+    <script type="module">
+        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
+        import { API_BASE, formatNumber, formatDuration, getEmojiForGenre } from '/js/shared/helpers.js';
+        import { goHome, goToArtist, goToSong } from '/js/shared/navigation.js';
+
+        // Get song identifier from URL
         const urlParams = new URLSearchParams(window.location.search);
         const songId = urlParams.get('id');
         const contentDiv = document.getElementById('content');
@@ -36,7 +46,7 @@
         let songIdentifier = songSlug || songId;
         let useSlug = !!songSlug;
         
-        // Audio player
+        // Audio player variables
         let audioPlayer = null;
         let currentTrack = null;
         let isPlaying = false;
@@ -49,9 +59,11 @@
             }
 
             try {
+                // Show loading skeleton
                 const skeleton = await loadTemplate('loading-skeleton');
                 document.getElementById('content').innerHTML = skeleton;
 
+                // Fetch song data
                 const apiUrl = useSlug 
                     ? `${API_BASE}/song/by-slug/${songIdentifier}`
                     : `${API_BASE}/tracks/${songIdentifier}`;
@@ -71,9 +83,11 @@
                 renderSong(track);
 
             } catch (error) {
+                console.error('Error loading song:', error);
                 document.getElementById('content').innerHTML = `
                     <div style="text-align: center; padding: 60px;">
-                        <p style="color: #ff5500;">Error: ${error.message}</p>
+                        <p style="color: #ff5500; margin-bottom: 20px;">Error loading track</p>
+                        <p style="color: #666; font-size: 14px;">${error.message}</p>
                         <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #ff5500; color: white; border: none; border-radius: 20px; cursor: pointer;">Try Again</button>
                     </div>
                 `;
@@ -85,13 +99,16 @@
             const content = document.getElementById('content');
             
             content.innerHTML = `
+                <!-- LEFT SIDEBAR - MAIN CONTENT -->
                 <aside class="left-sidebar">
+                    <!-- Breadcrumbs -->
                     <div class="breadcrumbs">
                         <a href="/">Home</a> / 
                         <a href="#" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')">${track.artist}</a> / 
                         <span>${track.title}</span>
                     </div>
                     
+                    <!-- Song Header -->
                     <div class="song-header">
                         <div class="song-cover">${getEmojiForGenre(track.genre)}</div>
                         <div class="song-info">
@@ -108,6 +125,7 @@
                         </div>
                     </div>
                     
+                    <!-- Player Controls -->
                     <div class="compact-actions">
                         <div class="player-controls">
                             <button class="control-btn" onclick="playPrevious()">⏮</button>
@@ -118,23 +136,56 @@
                             <button class="action-btn" onclick="likeTrack(${track.id})">❤️ Like</button>
                             <button class="action-btn" onclick="addToPlaylist(${track.id})">➕ Playlist</button>
                             <button class="action-btn download-btn" onclick="downloadTrack('${track.r2_key}')">⬇️ Download</button>
+                            <button class="action-btn" onclick="shareTrack()">↗️ Share</button>
                         </div>
                     </div>
                 </aside>
                 
+                <!-- RIGHT SIDEBAR -->
                 <div class="right-sidebar">
+                    <!-- More by Artist -->
                     <section class="section-block">
                         <div class="section-header">
                             <h2 class="section-title">More by ${track.artist}</h2>
                             <a href="#" onclick="goToArtist('${track.artist.replace(/'/g, "\\'")}')" class="view-all">View All ➔</a>
                         </div>
-                        <div id="moreByArtist" class="latest-albums-list">Loading...</div>
+                        <div id="moreByArtist" class="latest-albums-list">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </section>
+                    
+                    <!-- Appears On (Albums) -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Appears On</h2>
+                            <a href="/albums.html" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="appearsOn" class="latest-albums-list">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </section>
+                    
+                    <!-- In Playlists -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">In Playlists</h2>
+                            <a href="/playlists.html" class="view-all">View All ➔</a>
+                        </div>
+                        <div id="inPlaylists" class="latest-albums-list">
+                            <div class="loading">Loading...</div>
+                        </div>
                     </section>
                 </div>
             `;
 
             // Load more by artist
             loadMoreByArtist(track.artist, track.id);
+            
+            // Load albums containing this track
+            loadAlbumsWithTrack(track.id);
+            
+            // Load playlists containing this track
+            loadPlaylistsWithTrack(track.id);
         }
 
         // Load more tracks by same artist
@@ -155,12 +206,14 @@
                                 <div class="sidebar-thumb">${getEmojiForGenre(track.genre)}</div>
                                 <div class="sidebar-info">
                                     <div class="sidebar-title">${track.title}</div>
-                                    <div class="sidebar-sub"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</div>
+                                    <div class="sidebar-sub">
+                                        <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                    </div>
                                 </div>
                             </div>
                         `).join('');
                     } else {
-                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No other tracks</div>';
+                        container.innerHTML = '<div style="padding: 15px; text-align: center;">No other tracks by this artist</div>';
                     }
                 }
             } catch (error) {
@@ -168,7 +221,35 @@
             }
         }
 
-        // Audio functions
+        // Load albums containing this track
+        async function loadAlbumsWithTrack(trackId) {
+            try {
+                // This would need an API endpoint to get albums by track
+                // For now, show placeholder
+                const container = document.getElementById('appearsOn');
+                if (container) {
+                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Coming soon</div>';
+                }
+            } catch (error) {
+                console.error('Error loading albums:', error);
+            }
+        }
+
+        // Load playlists containing this track
+        async function loadPlaylistsWithTrack(trackId) {
+            try {
+                // This would need an API endpoint to get playlists by track
+                // For now, show placeholder
+                const container = document.getElementById('inPlaylists');
+                if (container) {
+                    container.innerHTML = '<div style="padding: 15px; text-align: center;">Coming soon</div>';
+                }
+            } catch (error) {
+                console.error('Error loading playlists:', error);
+            }
+        }
+
+        // Audio playback functions
         function playCurrentTrack() {
             if (!currentTrack) return;
             playTrack(currentTrack);
@@ -176,13 +257,27 @@
 
         async function playTrack(track) {
             try {
-                await incrementPlays('track', track.id);
-                
+                // Increment play count
+                fetch(`${API_BASE}/tracks/${track.id}/play`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(err => console.error('Play count error:', err));
+
+                // Create audio URL
                 const audioUrl = `${API_BASE}/stream/${encodeURIComponent(track.r2_key)}`;
                 
-                if (audioPlayer) audioPlayer.pause();
+                if (audioPlayer) {
+                    audioPlayer.pause();
+                    audioPlayer = null;
+                }
                 
                 audioPlayer = new Audio(audioUrl);
+                
+                audioPlayer.onerror = (e) => {
+                    console.error('Audio error:', e);
+                    alert('Error playing audio');
+                };
+
                 await audioPlayer.play();
                 isPlaying = true;
                 
@@ -196,6 +291,7 @@
                     isPlaying = false;
                     document.getElementById('playPauseBtn').textContent = '▶️';
                 };
+                
             } catch (error) {
                 console.error('Playback error:', error);
             }
@@ -203,6 +299,7 @@
 
         function togglePlay() {
             if (!audioPlayer) return;
+            
             if (isPlaying) {
                 audioPlayer.pause();
                 document.getElementById('playPauseBtn').textContent = '▶️';
@@ -222,37 +319,73 @@
             isPlaying = false;
         }
 
-        function downloadTrack(r2Key) {
-            const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
-            window.open(audioUrl, '_blank');
+        async function downloadTrack(r2Key) {
+            try {
+                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(r2Key)}`;
+                window.open(audioUrl, '_blank');
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('Download failed');
+            }
         }
 
-        function playPrevious() { alert('Previous track'); }
-        function playNext() { alert('Next track'); }
-        function likeTrack(id) { alert('Like feature coming soon!'); }
-        function addToPlaylist(id) { alert('Playlists coming soon!'); }
+        function playPrevious() {
+            alert('Previous track');
+        }
+
+        function playNext() {
+            alert('Next track');
+        }
+
+        function likeTrack(id) {
+            alert('Like feature coming soon!');
+        }
+
+        function addToPlaylist(id) {
+            alert('Playlists coming soon!');
+        }
+
+        function shareTrack() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url);
+            alert('Link copied!');
+        }
 
         // Initialize page
         async function initPage() {
+            // Inject header and footer templates
             await injectTemplates();
             const footerHtml = await loadTemplate('footer');
             document.body.insertAdjacentHTML('beforeend', footerHtml);
+            
+            // Make goHome available globally for hamburger menu
+            window.goHome = goHome;
+            
+            // Update hamburger menu to use goHome
+            const hamburger = document.querySelector('.hamburger');
+            if (hamburger) {
+                hamburger.onclick = goHome;
+            }
+            
+            // Load song data
             await loadSong();
         }
 
-        initPage();
-        
-        // Make functions global
+        // Make functions globally available for onclick handlers
         window.goToArtist = goToArtist;
         window.goToSong = goToSong;
+        window.playCurrentTrack = playCurrentTrack;
         window.togglePlay = togglePlay;
         window.closePlayer = closePlayer;
-        window.playCurrentTrack = playCurrentTrack;
         window.playPrevious = playPrevious;
         window.playNext = playNext;
         window.likeTrack = likeTrack;
         window.addToPlaylist = addToPlaylist;
         window.downloadTrack = downloadTrack;
+        window.shareTrack = shareTrack;
+
+        // Start everything
+        initPage();
     </script>
 </body>
 </html>
