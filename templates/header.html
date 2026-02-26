@@ -1,0 +1,26 @@
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="hamburger" onclick="window.location.href='/'">☰</div>
+        <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
+        <div class="right-spacer"></div>
+    </div>
+</nav>
+
+<!-- Search Bar -->
+<div class="search-section">
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="globalSearchInput" placeholder="Search tracks, artists, albums...">
+    </div>
+</div>
+
+<script type="module">
+    import { goToSearch } from '/js/shared/navigation.js';
+    
+    document.getElementById('globalSearchInput')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            goToSearch(e.target.value);
+        }
+    });
+</script>
