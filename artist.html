@@ -453,14 +453,14 @@
             border-bottom: 1px solid #e8e8e8;
         }
         .artist-cover-large {
-            width: 200px;
-            height: 200px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ff5500, #ff8c00);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 64px;
+            font-size: 2.5rem;
             color: white;
             box-shadow: 0 4px 15px rgba(255,85,0,0.3);
             flex-shrink: 0;
@@ -508,8 +508,8 @@
         }
         .track-item:hover { background: #f9f9f9; }
         .track-thumbnail {
-            width: 50px;
-            height: 50px;
+            width: 120px;
+            height: 120px;
             flex-shrink: 0;
             border-radius: 3px;
             overflow: hidden;
@@ -518,7 +518,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
+            font-size: 2rem;
             border: 2px solid #1f4c73;
         }
         .track-thumbnail::before {
@@ -603,8 +603,8 @@
             padding: 30px;
         }
         .skeleton-cover-large {
-            width: 200px;
-            height: 200px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: #e0e0e0;
             animation: skeleton-pulse 1s linear infinite alternate;
@@ -622,17 +622,53 @@
             .artist-header { flex-direction: column; text-align: center; }
             .artist-meta-large { justify-content: center; }
             .skeleton-artist-header { flex-direction: column; }
-            .track-thumbnail { width: 40px; height: 40px; font-size: 1.2rem; }
+            .track-thumbnail {
+                width: 100px;
+                height: 100px;
+                font-size: 1.8rem;
+            }
+            .artist-cover-large {
+                width: 100px;
+                height: 100px;
+                font-size: 2rem;
+            }
+            .skeleton-cover-large {
+                width: 100px;
+                height: 100px;
+            }
         }
         @media (max-width: 480px) {
             .artist-title-large { font-size: 1.8rem; }
-            .artist-cover-large { width: 150px; height: 150px; font-size: 48px; }
-            .skeleton-cover-large { width: 150px; height: 150px; }
-            .track-thumbnail { width: 35px; height: 35px; font-size: 1rem; }
+            .track-thumbnail {
+                width: 70px;
+                height: 70px;
+                font-size: 1.5rem;
+            }
+            .artist-cover-large {
+                width: 70px;
+                height: 70px;
+                font-size: 1.5rem;
+            }
+            .skeleton-cover-large {
+                width: 70px;
+                height: 70px;
+            }
+        }
+        @media (max-width: 360px) {
+            .track-thumbnail {
+                width: 60px;
+                height: 60px;
+                font-size: 1.3rem;
+            }
+            .artist-cover-large {
+                width: 60px;
+                height: 60px;
+                font-size: 1.3rem;
+            }
         }
     </style>
 
-    <!-- ========== AETHERIC THEME OVERRIDES (MATCHING HOMEPAGE EXACTLY) ========== -->
+    <!-- ========== AETHERIC THEME OVERRIDES ========== -->
     <style>
         body {
             background: #0b0f1c;
@@ -641,10 +677,9 @@
         .site-header { background: #121624; box-shadow: 0 10px 30px -10px rgba(0,20,40,0.8); }
         .branding-bar { background: #121624; box-shadow: 0 2px 15px rgba(0,0,0,0.7); }
         .site-logo {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 900;
-            font-size: 26px;
-            letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 22px;
             background: linear-gradient(145deg, #b0e0ff, #ffffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -658,7 +693,6 @@
         .hamburger-menu span { background-color: #70c8ff; box-shadow: 0 0 8px #2f8ed0; }
         .profile-icon { background: linear-gradient(135deg, #2a6f9c, #4aa3e2); box-shadow: 0 2px 15px rgba(0,160,255,0.8); }
         .profile-icon i { color: white; }
-        /* HEADER - MATCHING HOMEPAGE EXACTLY */
         .search-section { 
             background: radial-gradient(circle at 30% 30%, #1a3650, #0b1a2a); 
             box-shadow: 0 8px 20px rgba(0,100,200,0.4); 
@@ -679,7 +713,7 @@
             padding: 0 28px;
         }
         .search-button:hover { background: #253040; border-left-color: #9ad0ff; }
-        .search-button i { font-size: 1.2rem; }
+        .search-button i { font-size: 18px; }
         
         .left-sidebar, .section-block {
             background: rgba(22, 28, 40, 0.85);
@@ -797,7 +831,6 @@
     </style>
 </head>
 <body>
-    <!-- HEADER - EXACTLY MATCHING HOMEPAGE -->
     <header class="site-header">
         <div class="branding-bar">
             <div class="hamburger-menu" id="hamburgerMenu">
@@ -820,79 +853,8 @@
         </section>
     </header>
 
-    <!-- MAIN CONTENT CONTAINER (will be replaced by JS) -->
     <div class="main-content-container" id="content">
-        <!-- LEFT SIDEBAR (skeleton) -->
-        <aside class="left-sidebar">
-            <div class="breadcrumbs-left">
-                <div class="breadcrumb-nav">
-                    <div class="breadcrumb-list">
-                        <span class="skeleton" style="width: 60px; height: 20px; display: inline-block;"></span>
-                        <span>›</span>
-                        <span class="skeleton" style="width: 80px; height: 20px; display: inline-block;"></span>
-                        <span>›</span>
-                        <span class="skeleton" style="width: 100px; height: 20px; display: inline-block;"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="skeleton-artist-header">
-                <div class="skeleton-cover-large"></div>
-                <div class="artist-info-large">
-                    <div class="skeleton" style="width: 60%; height: 40px; margin-bottom: 15px;"></div>
-                    <div class="skeleton" style="width: 40%; height: 24px; margin-bottom: 20px;"></div>
-                    <div class="artist-meta-large">
-                        <div class="skeleton" style="width: 100px; height: 36px; border-radius: 30px;"></div>
-                        <div class="skeleton" style="width: 120px; height: 36px; border-radius: 30px;"></div>
-                        <div class="skeleton" style="width: 110px; height: 36px; border-radius: 30px;"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="section-header">
-                <h2 class="section-title">Songs</h2>
-                <a href="#" class="view-all">View All ➔</a>
-            </div>
-            <div class="track-list" id="tracksList">
-                <div class="skeleton-track">
-                    <div class="skeleton" style="width: 50px; height: 50px; border-radius: 3px;"></div>
-                    <div class="skeleton-track-info" style="flex:1; margin-left:15px;">
-                        <div class="skeleton" style="width: 60%; height: 18px; margin-bottom: 6px;"></div>
-                        <div class="skeleton" style="width: 30%; height: 14px;"></div>
-                    </div>
-                </div>
-                <div class="skeleton-track">
-                    <div class="skeleton" style="width: 50px; height: 50px; border-radius: 3px;"></div>
-                    <div class="skeleton-track-info" style="flex:1; margin-left:15px;">
-                        <div class="skeleton" style="width: 50%; height: 18px; margin-bottom: 6px;"></div>
-                        <div class="skeleton" style="width: 25%; height: 14px;"></div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        <!-- RIGHT SIDEBAR (skeleton) - WITH HOMEPAGE SIZING -->
-        <div class="right-sidebar">
-            <section class="section-block">
-                <div class="section-header"><h2 class="section-title">Albums</h2><a href="#" class="view-all">View All ➔</a></div>
-                <div id="albumsList" class="latest-albums-list">
-                    <div class="skeleton" style="height: 80px; margin: 10px;"></div>
-                    <div class="skeleton" style="height: 80px; margin: 10px;"></div>
-                </div>
-            </section>
-            <section class="section-block">
-                <div class="section-header"><h2 class="section-title">Similar Artists</h2><a href="#" class="view-all">View All ➔</a></div>
-                <div id="similarArtists" class="latest-albums-list">
-                    <div class="skeleton" style="height: 80px; margin: 10px;"></div>
-                    <div class="skeleton" style="height: 80px; margin: 10px;"></div>
-                </div>
-            </section>
-            <section class="section-block">
-                <div class="section-header"><h2 class="section-title">Info</h2></div>
-                <div id="artistInfo" style="padding: 15px;">
-                    <div class="skeleton" style="width: 100%; height: 16px; margin-bottom: 10px;"></div>
-                    <div class="skeleton" style="width: 90%; height: 16px; margin-bottom: 10px;"></div>
-                    <div class="skeleton" style="width: 80%; height: 16px;"></div>
-                </div>
-            </section>
-        </div>
+        <!-- Content will be populated by JavaScript -->
     </div>
 
     <footer class="site-footer">
@@ -900,7 +862,7 @@
         <p>powered by cloud & tide</p>
     </footer>
 
-    <!-- DRAWERS (unchanged) -->
+    <!-- DRAWERS -->
     <div class="nav-drawer left" id="leftDrawer">
         <div class="nav-header"><div class="site-logo">ZED•DEEP</div><div class="close-nav" id="closeLeftDrawer">✕</div></div>
         <nav class="nav-menu">
@@ -950,16 +912,13 @@
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         };
         
-        // API Base
         const API_BASE = '/api';
         
-        // Get artist identifier from URL
         const urlParams = new URLSearchParams(window.location.search);
         const artistName = urlParams.get('name');
         const pathParts = window.location.pathname.split('/');
         const artistSlug = pathParts[pathParts.length-1] !== 'artist.html' ? pathParts[pathParts.length-1] : null;
 
-        // Navigation
         window.goToArtist = (name) => {
             const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
             window.location.href = `/artist/${slug}`;
@@ -970,10 +929,8 @@
         };
         window.goToAlbum = (slug) => window.location.href = `/album/${slug}`;
 
-        // Helper
         function getArtistInitials(name) { return name ? name.charAt(0).toUpperCase() : '🎵'; }
 
-        // ----- LOAD ARTIST DATA -----
         async function loadArtistData() {
             const identifier = artistSlug || artistName;
             if (!identifier) {
@@ -1021,7 +978,6 @@
             }
         }
 
-        // ----- RENDER ARTIST PAGE (WITH HOMEPAGE IMAGE SIZING) -----
         function renderArtistPage(data) {
             const artistName = data.name;
             const tracks = data.tracks || [];
@@ -1134,12 +1090,10 @@
                 </div>
             `;
 
-            // Load albums & similar artists
             loadAlbumsByArtist(artistName);
             if (genres.length) loadSimilarArtists(genres[0], artistName);
         }
 
-        // Load albums by artist - WITH HOMEPAGE RIGHT SIDEBAR SIZING (80x80)
         async function loadAlbumsByArtist(artist) {
             try {
                 const response = await fetch(`${API_BASE}/albums`);
@@ -1168,7 +1122,6 @@
             }
         }
 
-        // Load similar artists - WITH HOMEPAGE RIGHT SIDEBAR SIZING (80x80)
         async function loadSimilarArtists(genre, currentArtist) {
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
@@ -1201,7 +1154,6 @@
             }
         }
 
-        // Initialize drawers and hover effects
         document.addEventListener('DOMContentLoaded', function() {
             const hamburgerMenu = document.getElementById('hamburgerMenu');
             const leftDrawer = document.getElementById('leftDrawer');
@@ -1230,7 +1182,6 @@
                 if (!rightDrawer.contains(e.target) && !profileIcon.contains(e.target) && rightDrawer.style.display === 'block') closeRightDrawer.click();
             });
             
-            // Load artist data
             loadArtistData();
         });
     </script>
