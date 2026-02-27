@@ -2,44 +2,513 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>ZEDALBUMS · AETHERIC EDITION · ARTISTS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zedtopvibes • Artists</title>
-    <!-- Shared CSS -->
-    <link rel="stylesheet" href="/css/shared/main.css">
+    
+    <!-- Montserrat Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Additional artist-specific styles */
-        .artist-stats-small {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: #888;
-            font-size: 0.85rem;
-            margin-top: 8px;
+        /* YOUR EXACT CSS FRAMEWORK – KEPT 100% INTACT */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        .artist-stats-small i {
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8f9fa;
+            color: #333333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px 10px;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .left-sidebar {
+            flex: 3;
+            background: #ffffff;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8e8e8;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .right-sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 300px;
+        }
+        
+        .pagination-container {
+            width: 100%;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            background: #ffffff;
+            display: none;
+        }
+        
+        .pagination-container.show {
+            display: block;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .pagination-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 3px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .pagination-item:hover {
+            background: #f5f5f5;
+            border-color: #ff5500;
             color: #ff5500;
-            margin-right: 3px;
+            transform: translateY(-1px);
+        }
+        
+        .pagination-item.active {
+            background: #ff5500;
+            border-color: #ff5500;
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 85, 0, 0.2);
+        }
+        
+        .pagination-item.active:hover {
+            background: #ff6a1a;
+            transform: translateY(-1px);
+        }
+        
+        .pagination-ellipsis {
+            color: #999;
+            font-weight: 600;
+            padding: 0 5px;
+        }
+        
+        .pagination-prev,
+        .pagination-next {
+            width: auto;
+            padding: 0 15px;
+            gap: 6px;
+        }
+        
+        .pagination-prev i,
+        .pagination-next i {
+            font-size: 0.9rem;
+        }
+        
+        .pagination-prev.disabled,
+        .pagination-next.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .site-header {
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .branding-bar {
+            background-color: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+        
+        .site-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 22px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff, #fff5e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2);
+            position: relative;
+            margin: 0;
+        }
+        
+        .site-logo::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.1) 25%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.1) 75%, 
+                transparent 100%);
+            pointer-events: none;
+        }
+        
+        .hamburger-menu {
+            width: 24px;
+            height: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .hamburger-menu span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: #ff5500;
+            border-radius: 1.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-menu:hover span {
+            background-color: #ff8c00;
+        }
+        
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(255, 85, 0, 0.3);
+        }
+        
+        .profile-icon:hover {
+            background: linear-gradient(135deg, #ff6a1a, #ff9f1a);
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(255, 85, 0, 0.4);
+        }
+        
+        .search-section {
+            background: linear-gradient(135deg, #ff5500 0%, #ff8c00 100%);
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(255, 85, 0, 0.2);
+        }
+        
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+        
+        .search-bar {
+            display: flex;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 18px 25px;
+            border: none;
+            font-size: 16px;
+            color: #333;
+            background-color: #ffffff;
+            outline: none;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .search-input::placeholder {
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .search-button {
+            background: white;
+            color: #ff5500;
+            border: none;
+            border-left: 2px solid #ff5500;
+            padding: 0 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .search-button:hover {
+            background: #fff5e6;
+            border-left-color: #ff8c00;
+        }
+        
+        .search-button i {
+            font-size: 18px;
+        }
+        
+        .hero-section {
+            display: none;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: #fff;
+            border-bottom: 2px solid #f0f0f0;
+            transition: all 0.2s ease;
+            height: 56px;
+            position: relative;
+        }
+        
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                #ff5500 20%, 
+                #ff5500 80%, 
+                transparent 95%
+            );
+        }
+        
+        .section-header:hover {
+            background: #fafafa;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .section-title::before {
+            content: "♪";
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .view-all {
+            color: #ff5500;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border: 1px solid #ff5500;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+            background: #f8f9fa;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .view-all:hover {
+            background: #ff5500;
+            color: white;
+            transform: translateX(2px);
+        }
+        
+        .section-block {
+            background: #ffffff;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8e8e8;
+        }
+        
+        .latest-albums-list {
+            padding: 5px 0;
+        }
+        
+        .artist-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 18px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .artist-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 18px;
+            right: 18px;
+            height: 1px;
+            background: #f0f0f0;
+        }
+        
+        .artist-item:hover::after {
+            background: #ffddcc;
+        }
+        
+        .artist-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .artist-item:last-child {
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+        
+        /* Old design thumb classes with PROPER SIZING */
+        .artist-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6b4f9f, #a07dd0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            border: 3px solid #8a6fc9;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .right-sidebar .artist-avatar {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            border-width: 2px;
+        }
+        
+        .artist-info {
+            flex-grow: 1;
+            min-width: 0;
+            padding-right: 10px;
+        }
+        
+        .artist-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ecf5ff;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .artist-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .artist-badge {
+            background: rgba(130, 90, 200, 0.3);
+            color: #dbbaff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+        
+        .artist-genre {
+            background: #1c3f55;
+            color: #b0d4ff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 10px;
         }
         
         .popular-song {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #888;
+            color: #90a9c9;
             font-size: 0.9rem;
             margin: 6px 0;
         }
         
         .popular-song i {
-            color: #ff5500;
-            font-size: 12px;
+            color: #70c8ff;
+        }
+        
+        .artist-stats-small {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #90a9c9;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+        
+        .artist-stats-small i {
+            color: #70c8ff;
+            margin-right: 3px;
         }
         
         .artist-action {
-            color: #ff5500;
+            color: #70c8ff;
             font-size: 1.2rem;
             margin-left: 20px;
             opacity: 0;
@@ -52,32 +521,35 @@
         
         /* Alphabet navigation */
         .alphabet-nav {
-            background: white;
+            background: rgba(22, 28, 40, 0.85);
+            backdrop-filter: blur(8px);
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 3px;
             margin-bottom: 20px;
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
-            border: 1px solid #e8e8e8;
+            border: 1px solid #2a3b4e;
         }
         
         .alphabet-nav a {
             display: inline-block;
             padding: 5px 10px;
-            color: #666;
+            color: #bbdbff;
             text-decoration: none;
             font-weight: 500;
-            border-radius: 4px;
+            border-radius: 3px;
+            transition: all 0.2s ease;
         }
         
         .alphabet-nav a:hover {
-            background: #ff5500;
+            background: #2f6f9f;
             color: white;
+            transform: translateY(-1px);
         }
         
         .alphabet-nav a.active {
-            background: #ff5500;
+            background: #2f6f9f;
             color: white;
         }
         
@@ -91,16 +563,22 @@
         
         .filter-select {
             padding: 8px 15px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #2a3b4e;
             border-radius: 20px;
-            background: white;
-            color: #333;
+            background: rgba(30, 38, 56, 0.8);
+            color: #bbdbff;
             font-size: 14px;
             cursor: pointer;
+            backdrop-filter: blur(4px);
         }
         
         .filter-select:hover {
-            border-color: #ff5500;
+            border-color: #70c8ff;
+        }
+        
+        .filter-select option {
+            background: #1e2638;
+            color: #bbdbff;
         }
 
         /* Page header */
@@ -109,24 +587,26 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 18px;
+            background: rgba(16, 22, 34, 0.9);
+            border-bottom: 1px solid #1f3f5c;
         }
 
         .page-header h1 {
             font-size: 1.8rem;
-            color: #222;
+            color: #deecff;
         }
 
         .search-box {
             display: flex;
             align-items: center;
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: #1e2638;
+            border: 1px solid #2a3b4e;
             border-radius: 30px;
             padding: 5px 15px;
         }
 
         .search-box i {
-            color: #ff5500;
+            color: #70c8ff;
             margin-right: 10px;
         }
 
@@ -135,31 +615,260 @@
             outline: none;
             background: transparent;
             width: 200px;
+            color: #f0f4ff;
+        }
+        
+        .search-box input::placeholder {
+            color: #90a9c9;
         }
 
-        /* Loading skeletons */
-        .skeleton-pulse {
+        .breadcrumbs {
+            padding: 15px 18px;
+            background: rgba(16, 22, 34, 0.9);
+            border-bottom: 1px solid #1f3f5c;
+            color: #90a9c9;
+        }
+        
+        .breadcrumbs a {
+            color: #70c8ff;
+            text-decoration: none;
+        }
+        
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumbs span {
+            color: #bbdbff;
+        }
+        
+        /* Genre tags */
+        .genre-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 3px;
+            background: rgba(30, 38, 56, 0.8);
+            border: 1px solid #2f6f9f;
+            border-radius: 20px;
+            color: #bbdbff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .genre-tag:hover {
+            background: #2f6f9f;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        /* Stat rows */
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #1f405b;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #90a9c9;
+        }
+        
+        .stat-value {
+            color: #70c8ff;
+            font-weight: 600;
+        }
+
+        /* Skeleton styles */
+        .skeleton-track {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 18px;
+        }
+        
+        .skeleton-image {
+            background: #1f2e40;
+            border-radius: 50%;
             animation: skeleton-pulse 1.5s ease-in-out infinite;
         }
-
+        
+        .skeleton-content {
+            flex: 1;
+        }
+        
+        .skeleton-line {
+            height: 16px;
+            background: #1f2e40;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+        
+        .skeleton-line.short { width: 60%; }
+        .skeleton-line.medium { width: 80%; }
+        .skeleton-line.long { width: 100%; }
+        
         @keyframes skeleton-pulse {
             0% { opacity: 0.6; }
             50% { opacity: 1; }
             100% { opacity: 0.6; }
         }
+
+        /* ---------- UNIQUE VARIATION: LIQUID GLASS / AETHERIC EDITION ---------- */
+        body {
+            background: #0b0f1c;
+            color: #e0e6f0;
+        }
+        .site-header { background: #121624; box-shadow: 0 10px 30px -10px rgba(0,20,40,0.8); }
+        .branding-bar { background: #121624; box-shadow: 0 2px 15px rgba(0,0,0,0.7); }
+        .site-logo { background: linear-gradient(135deg, #c0e0ff, #ffffff); -webkit-background-clip: text; text-shadow: 2px 2px 0 #0066cc, 4px 4px 0 rgba(0,150,255,0.3); }
+        .hamburger-menu span { background-color: #70c8ff; }
+        .profile-icon { background: linear-gradient(135deg, #2a6f9c, #4aa3e2); box-shadow: 0 2px 10px rgba(0,160,255,0.6); }
+        .profile-icon:hover { background: #3d8fd9; }
+        .search-section { background: radial-gradient(circle at 30% 30%, #1a3650, #0b1a2a); box-shadow: 0 8px 20px rgba(0,100,200,0.3); }
+        .search-bar { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); }
+        .search-input { background: #1e2638; color: #f0f4ff; }
+        .search-input::placeholder { color: #90a9c9; font-weight: 400; letter-spacing: 1px; }
+        .search-button { background: #1e2638; color: #70c8ff; border-left: 2px solid #2f6f9f; }
+        .search-button:hover { background: #253040; border-left-color: #9ad0ff; }
+        .left-sidebar, .section-block { background: rgba(22, 28, 40, 0.85); backdrop-filter: blur(8px); border: 1px solid #2a3b4e; box-shadow: 0 20px 40px -12px #00000080; }
+        .section-header { background: rgba(16, 22, 34, 0.9); border-bottom: 1px solid #1f3f5c; }
+        .section-header::after { background: linear-gradient(90deg, transparent 5%, #2f8ed0 20%, #70c8ff 80%, transparent 95%); }
+        .section-title { color: #deecff; }
+        .section-title::before { content: "🌊"; font-size: 1.2rem; opacity: 1; }
+        .view-all { border-color: #2f8ed0; color: #bbdbff; background: #1d3142; }
+        .view-all:hover { background: #2f6f9f; color: #fff; }
+        
+        .artist-item:not(:last-child)::after {
+            background: #1f405b;
+        }
+        
+        .artist-item:hover {
+            background: rgba(40, 60, 90, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .artist-item:hover::after {
+            background: #2f8ed0;
+        }
+        
+        .site-footer { background: #121b28; border-top: 3px solid #1f6f9f; box-shadow: 0 -10px 30px #00000050; }
+        .site-footer p { color: #ffffff; }
+        .site-footer p:last-child { color: #8fcbff; }
+        .nav-drawer { background: #101c2c; box-shadow: 0 0 30px #000000cc; }
+        .nav-header { background: linear-gradient(135deg, #1f4460, #0f2f4f); }
+        .nav-item { color: #d5eaff; }
+        .nav-item i { color: #6ab0ff; }
+        .nav-item:hover { background-color: #122d44; color: #ffffff; border-left-color: #6ab0ff; }
+        .nav-item.active { background-color: #112b40; color: white; border-left-color: #8fcbff; }
+        .nav-divider { background: #264a66; }
+        .nav-section-title { color: #90b9e5; }
+        
+        /* ===== THEMED PAGINATION STYLES ===== */
+        .pagination-container {
+            background: rgba(22, 28, 40, 0.85);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid #1f3f5c;
+        }
+        
+        .pagination-item {
+            background: rgba(30, 38, 56, 0.8);
+            border: 1px solid #2f6f9f;
+            color: #bbdbff;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pagination-item:hover {
+            background: #2f6f9f;
+            border-color: #70c8ff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(47, 111, 159, 0.4);
+        }
+        
+        .pagination-item.active {
+            background: #2f6f9f;
+            border-color: #70c8ff;
+            color: white;
+            box-shadow: 0 2px 12px rgba(47, 111, 159, 0.6);
+        }
+        
+        .pagination-ellipsis {
+            color: #90a9c9;
+        }
+        
+        .site-logo:hover { animation: glitch-aether 0.3s ease; }
+        @keyframes glitch-aether {
+            0% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
+            50% { text-shadow: -2px 2px 0 #0088dd, -4px 4px 0 #0066aa; }
+            100% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
+        }
+        
+        /* Responsive sizes */
+        @media (max-width: 768px) {
+            .artist-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+            .right-sidebar .artist-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .artist-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+            .right-sidebar .artist-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Simple header -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="hamburger" onclick="window.location.href='/'">☰</div>
-            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
-            <div class="right-spacer"></div>
+    <header class="site-header">
+        <div class="branding-bar">
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <div class="site-logo">ZED•AETHERIC</div>
+            
+            <div class="profile-icon" id="profileIcon">
+                <i class="fas fa-user-astronaut"></i>
+            </div>
         </div>
-    </nav>
-
-    <!-- MAIN CONTENT CONTAINER -->
+        
+        <section class="search-section">
+            <div class="search-container">
+                <form action="/search" method="GET" style="display: flex; width: 100%;" onsubmit="event.preventDefault(); window.location.href='/search?q=' + encodeURIComponent(document.getElementById('searchInput').value)">
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" name="q" class="search-input" placeholder="DIVE INTO SONIC WAVES..." value="">
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </header>
+    
+    <!-- MAIN CONTENT CONTAINER - ARTISTS PAGE -->
     <div class="main-content-container" id="content">
         <!-- LEFT SIDEBAR - ARTISTS LIST -->
         <aside class="left-sidebar">
@@ -173,39 +882,39 @@
                 <h1>Artists</h1>
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search artists...">
+                    <input type="text" id="artistSearchInput" placeholder="Search artists...">
                 </div>
             </div>
             
-            <!-- A-Z Navigation (static for now) -->
-            <div class="alphabet-nav">
-                <a href="#" class="active">#</a>
-                <a href="#">A</a>
-                <a href="#">B</a>
-                <a href="#">C</a>
-                <a href="#">D</a>
-                <a href="#">E</a>
-                <a href="#">F</a>
-                <a href="#">G</a>
-                <a href="#">H</a>
-                <a href="#">I</a>
-                <a href="#">J</a>
-                <a href="#">K</a>
-                <a href="#">L</a>
-                <a href="#">M</a>
-                <a href="#">N</a>
-                <a href="#">O</a>
-                <a href="#">P</a>
-                <a href="#">Q</a>
-                <a href="#">R</a>
-                <a href="#">S</a>
-                <a href="#">T</a>
-                <a href="#">U</a>
-                <a href="#">V</a>
-                <a href="#">W</a>
-                <a href="#">X</a>
-                <a href="#">Y</a>
-                <a href="#">Z</a>
+            <!-- A-Z Navigation -->
+            <div class="alphabet-nav" id="alphabetNav">
+                <a href="#" class="active" data-letter="">#</a>
+                <a href="#" data-letter="A">A</a>
+                <a href="#" data-letter="B">B</a>
+                <a href="#" data-letter="C">C</a>
+                <a href="#" data-letter="D">D</a>
+                <a href="#" data-letter="E">E</a>
+                <a href="#" data-letter="F">F</a>
+                <a href="#" data-letter="G">G</a>
+                <a href="#" data-letter="H">H</a>
+                <a href="#" data-letter="I">I</a>
+                <a href="#" data-letter="J">J</a>
+                <a href="#" data-letter="K">K</a>
+                <a href="#" data-letter="L">L</a>
+                <a href="#" data-letter="M">M</a>
+                <a href="#" data-letter="N">N</a>
+                <a href="#" data-letter="O">O</a>
+                <a href="#" data-letter="P">P</a>
+                <a href="#" data-letter="Q">Q</a>
+                <a href="#" data-letter="R">R</a>
+                <a href="#" data-letter="S">S</a>
+                <a href="#" data-letter="T">T</a>
+                <a href="#" data-letter="U">U</a>
+                <a href="#" data-letter="V">V</a>
+                <a href="#" data-letter="W">W</a>
+                <a href="#" data-letter="X">X</a>
+                <a href="#" data-letter="Y">Y</a>
+                <a href="#" data-letter="Z">Z</a>
             </div>
             
             <!-- Filters -->
@@ -222,31 +931,48 @@
             </div>
             
             <!-- Artists List with Skeletons -->
-            <div class="artist-list" id="artistsList">
+            <div class="latest-albums-list" id="artistsList">
                 <!-- Loading skeletons -->
-                <div class="skeleton-track">
-                    <div class="skeleton-image" style="width: 70px; height: 70px; border-radius: 50%;"></div>
-                    <div class="skeleton-content">
+                <div class="artist-item">
+                    <div class="skeleton-image" style="width: 120px; height: 120px; border-radius: 50%;"></div>
+                    <div class="artist-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
                         <div class="skeleton-line long"></div>
+                        <div class="skeleton-line" style="width: 50%;"></div>
                     </div>
                 </div>
-                <div class="skeleton-track">
-                    <div class="skeleton-image" style="width: 70px; height: 70px; border-radius: 50%;"></div>
-                    <div class="skeleton-content">
+                <div class="artist-item">
+                    <div class="skeleton-image" style="width: 120px; height: 120px; border-radius: 50%;"></div>
+                    <div class="artist-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
                         <div class="skeleton-line long"></div>
+                        <div class="skeleton-line" style="width: 50%;"></div>
                     </div>
                 </div>
-                <div class="skeleton-track">
-                    <div class="skeleton-image" style="width: 70px; height: 70px; border-radius: 50%;"></div>
-                    <div class="skeleton-content">
+                <div class="artist-item">
+                    <div class="skeleton-image" style="width: 120px; height: 120px; border-radius: 50%;"></div>
+                    <div class="artist-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
                         <div class="skeleton-line long"></div>
+                        <div class="skeleton-line" style="width: 50%;"></div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-container show" id="artistsPagination">
+                <div class="pagination">
+                    <span class="pagination-item pagination-prev disabled"><i class="fas fa-chevron-left"></i> Prev</span>
+                    <span class="pagination-item active">1</span>
+                    <span class="pagination-item">2</span>
+                    <span class="pagination-item">3</span>
+                    <span class="pagination-item">4</span>
+                    <span class="pagination-ellipsis">...</span>
+                    <span class="pagination-item">10</span>
+                    <span class="pagination-item pagination-next">Next <i class="fas fa-chevron-right"></i></span>
                 </div>
             </div>
         </aside>
@@ -260,9 +986,27 @@
                     <a href="#" class="view-all">View All ➔</a>
                 </div>
                 <div id="topArtists" class="latest-albums-list">
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                    <div class="skeleton-track">
+                        <div class="skeleton-image" style="width: 50px; height: 50px; border-radius: 50%;"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-track">
+                        <div class="skeleton-image" style="width: 50px; height: 50px; border-radius: 50%;"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-track">
+                        <div class="skeleton-image" style="width: 50px; height: 50px; border-radius: 50%;"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
                 </div>
             </section>
             
@@ -273,9 +1017,9 @@
                     <a href="#" class="view-all">Browse All</a>
                 </div>
                 <div id="genresList" style="padding: 15px;">
-                    <span class="skeleton" style="display: inline-block; width: 70px; height: 30px; border-radius: 20px; margin: 3px;"></span>
-                    <span class="skeleton" style="display: inline-block; width: 80px; height: 30px; border-radius: 20px; margin: 3px;"></span>
-                    <span class="skeleton" style="display: inline-block; width: 60px; height: 30px; border-radius: 20px; margin: 3px;"></span>
+                    <span class="skeleton" style="display: inline-block; width: 70px; height: 30px; border-radius: 20px; margin: 3px; background: #1f2e40;"></span>
+                    <span class="skeleton" style="display: inline-block; width: 80px; height: 30px; border-radius: 20px; margin: 3px; background: #1f2e40;"></span>
+                    <span class="skeleton" style="display: inline-block; width: 60px; height: 30px; border-radius: 20px; margin: 3px; background: #1f2e40;"></span>
                 </div>
             </section>
             
@@ -292,52 +1036,131 @@
             </section>
         </div>
     </div>
-
-    <!-- Simple footer -->
-    <footer class="footer">
-        <div class="footer-links">
-            <a href="/">Home</a>
-            <a href="/albums.html">Albums</a>
-            <a href="/playlists.html">Playlists</a>
-            <a href="/artists.html">Artists</a>
-        </div>
-        <div class="copyright">© 2024 Zedtopvibes</div>
+    
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <p>© 2024 Zed Aetheric · liquid frequencies</p>
+        <p>powered by cloudflare r2</p>
     </footer>
+    
+    <!-- LEFT NAVIGATION DRAWER -->
+    <div class="nav-drawer left" id="leftDrawer">
+        <div class="nav-header">
+            <div class="site-logo">ZED•DEEP</div>
+            <div class="close-nav" id="closeLeftDrawer">✕</div>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-item"><i class="fas fa-water"></i> Home</a>
+            <a href="/albums.html" class="nav-item"><i class="fas fa-compact-disc"></i> Albums</a>
+            <a href="/artists.html" class="nav-item active"><i class="fas fa-microphone-alt"></i> Artists</a>
+            <a href="/playlists.html" class="nav-item"><i class="fas fa-list"></i> Playlists</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">ABYSS</div>
+            <a href="/charts.html" class="nav-item"><i class="fas fa-chart-line"></i> Tides</a>
+            <a href="/new-releases.html" class="nav-item"><i class="fas fa-star"></i> New Waves</a>
+            <a href="/genres.html" class="nav-item"><i class="fas fa-tags"></i> Currents</a>
+        </nav>
+    </div>
+    
+    <!-- RIGHT NAVIGATION DRAWER -->
+    <div class="nav-drawer right" id="rightDrawer">
+        <div class="nav-header">
+            <div class="site-logo">VOID</div>
+            <div class="close-nav" id="closeRightDrawer">✕</div>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-section-title">MY CRATER</div>
+            <a href="/profile.html" class="nav-item"><i class="fas fa-user-circle"></i> Profile</a>
+            <a href="/favorites.html" class="nav-item"><i class="fas fa-heart"></i> Favorites</a>
+            <a href="/my-playlists.html" class="nav-item"><i class="fas fa-list"></i> My Playlists</a>
+            <a href="/history.html" class="nav-item"><i class="fas fa-history"></i> Echoes</a>
+            <a href="/downloads.html" class="nav-item"><i class="fas fa-download"></i> Downloads</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">CREATE</div>
+            <a href="/admin.html" class="nav-item"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+            <a href="/playlist/create.html" class="nav-item"><i class="fas fa-plus-circle"></i> New Playlist</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">SETTINGS</div>
+            <a href="/settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/logout.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
 
-    <script type="module">
-        // Try to import shared helpers, with fallback
-        let formatNumber = (num) => num;
-        
-        try {
-            const helpers = await import('/js/shared/helpers.js');
-            formatNumber = helpers.formatNumber;
-        } catch (e) {
-            console.log('Using fallback formatters');
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const leftDrawer = document.getElementById('leftDrawer');
+            const closeLeftDrawer = document.getElementById('closeLeftDrawer');
+            
+            hamburgerMenu.addEventListener('click', () => {
+                leftDrawer.style.display = 'block';
+                setTimeout(() => {
+                    leftDrawer.style.opacity = '1';
+                    leftDrawer.style.transform = 'translateX(0)';
+                }, 10);
+            });
+            
+            closeLeftDrawer.addEventListener('click', () => {
+                leftDrawer.style.opacity = '0';
+                leftDrawer.style.transform = 'translateX(-100%)';
+                setTimeout(() => {
+                    leftDrawer.style.display = 'none';
+                }, 300);
+            });
+            
+            const profileIcon = document.getElementById('profileIcon');
+            const rightDrawer = document.getElementById('rightDrawer');
+            const closeRightDrawer = document.getElementById('closeRightDrawer');
+            
+            profileIcon.addEventListener('click', () => {
+                rightDrawer.style.display = 'block';
+                setTimeout(() => {
+                    rightDrawer.style.opacity = '1';
+                    rightDrawer.style.transform = 'translateX(0)';
+                }, 10);
+            });
+            
+            closeRightDrawer.addEventListener('click', () => {
+                rightDrawer.style.opacity = '0';
+                rightDrawer.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    rightDrawer.style.display = 'none';
+                }, 300);
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!leftDrawer.contains(e.target) && !hamburgerMenu.contains(e.target) && leftDrawer.style.display === 'block') {
+                    closeLeftDrawer.click();
+                }
+                if (!rightDrawer.contains(e.target) && !profileIcon.contains(e.target) && rightDrawer.style.display === 'block') {
+                    closeRightDrawer.click();
+                }
+            });
+            
+            loadArtistsData();
+        });
 
-        // API Base
         const API_BASE = '/api';
 
-        // Navigation functions - FIXED VERSION with trailing hyphen removal
-        window.goHome = () => window.location.href = '/';
-        
-        // FIXED: This function now properly removes trailing hyphens
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+
         window.goToArtist = (artistName) => {
             if (!artistName) return;
-            
-            const slug = artistName
-                .toLowerCase()
-                .replace(/\s+/g, '-')           // spaces to hyphens
-                .replace(/[^\w-]/g, '')          // remove special characters
-                .replace(/--+/g, '-')            // multiple hyphens to single
-                .replace(/^-+|-+$/g, '');        // ← CRITICAL: removes leading/trailing hyphens
-            
-            console.log(`Navigating to artist: ${artistName} → slug: ${slug}`);
+            const slug = artistName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '').replace(/--+/g, '-').replace(/^-+|-+$/g, '');
             window.location.href = `/artist/${slug}`;
         };
 
-        // Load artists data
-        async function loadArtists() {
+        window.filterByGenre = (genre) => {
+            console.log('Filtering by genre:', genre);
+            // Will implement filtering
+        };
+
+        async function loadArtistsData() {
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
                 const tracks = await response.json();
@@ -354,13 +1177,11 @@
                     if (!artistMap.has(track.artist)) {
                         artistMap.set(track.artist, {
                             name: track.artist,
-                            slug: track.artist_slug,
                             tracks: [track],
                             genres: new Set([track.genre]),
                             totalPlays: track.plays || 0,
                             totalDownloads: track.downloads || 0,
                             totalViews: track.views || 0,
-                            latestTrack: new Date(track.uploaded_at)
                         });
                     } else {
                         const artist = artistMap.get(track.artist);
@@ -377,7 +1198,7 @@
                 // Find most popular track for each artist
                 artists.forEach(artist => {
                     artist.popularTrack = artist.tracks.reduce((prev, current) => 
-                        (prev.plays > current.plays) ? prev : current
+                        (prev.plays || 0) > (current.plays || 0) ? prev : current
                     );
                     artist.genres = Array.from(artist.genres);
                 });
@@ -385,7 +1206,7 @@
                 // Populate genre filter
                 populateGenreFilter(Array.from(genreSet).filter(g => g));
                 
-                // Render all sections
+                // Render all sections using OLD DESIGN renderer pattern
                 renderArtistsList(artists);
                 renderTopArtists(artists);
                 renderGenres(Array.from(genreSet).filter(g => g));
@@ -412,15 +1233,10 @@
             });
         }
 
-        // Filter function
-        function filterByGenre(genre) {
-            console.log('Filtering by genre:', genre);
-            // TODO: Implement actual filtering
-        }
-
-        // Render artists list
+        // OLD DESIGN RENDERER FUNCTIONS
         function renderArtistsList(artists) {
             const container = document.getElementById('artistsList');
+            if (!container) return;
             
             container.innerHTML = artists.map(artist => `
                 <div class="artist-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
@@ -449,9 +1265,10 @@
             `).join('');
         }
 
-        // Render top artists
         function renderTopArtists(artists) {
             const container = document.getElementById('topArtists');
+            if (!container) return;
+            
             const topArtists = [...artists].sort((a, b) => b.totalPlays - a.totalPlays).slice(0, 3);
             
             container.innerHTML = topArtists.map(artist => `
@@ -465,50 +1282,59 @@
             `).join('');
         }
 
-        // Render genres
         function renderGenres(genres) {
             const container = document.getElementById('genresList');
+            if (!container) return;
+            
             container.innerHTML = genres.sort().map(genre => `
                 <span class="genre-tag" onclick="filterByGenre('${genre}')">#${genre}</span>
             `).join('');
         }
 
-        // Render stats
         function renderStats(artistCount, trackCount, totalPlays) {
             const container = document.getElementById('artistStats');
+            if (!container) return;
+            
             container.innerHTML = `
-                <div class="stat-row" style="display: flex; justify-content: space-between; padding: 5px 0;">
+                <div class="stat-row">
                     <span class="stat-label">Total Artists</span>
                     <span class="stat-value">${artistCount}</span>
                 </div>
-                <div class="stat-row" style="display: flex; justify-content: space-between; padding: 5px 0;">
+                <div class="stat-row">
                     <span class="stat-label">Total Tracks</span>
                     <span class="stat-value">${trackCount}</span>
                 </div>
-                <div class="stat-row" style="display: flex; justify-content: space-between; padding: 5px 0;">
+                <div class="stat-row">
                     <span class="stat-label">Total Plays</span>
                     <span class="stat-value">${formatNumber(totalPlays)}</span>
                 </div>
             `;
         }
 
+        // Alphabet navigation
+        document.querySelectorAll('.alphabet-nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.alphabet-nav a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                const letter = link.dataset.letter;
+                console.log('Filter by letter:', letter);
+                // Will implement filtering
+            });
+        });
+
         // Search functionality
-        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+        document.getElementById('artistSearchInput')?.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            // TODO: Implement search
+            console.log('Search:', searchTerm);
+            // Will implement search
         });
 
         // Sort functionality
         document.getElementById('sortFilter')?.addEventListener('change', (e) => {
             console.log('Sort by:', e.target.value);
-            // TODO: Implement sorting
+            // Will implement sorting
         });
-
-        // Make filter function global
-        window.filterByGenre = filterByGenre;
-
-        // Load artists
-        loadArtists();
     </script>
 </body>
 </html>
