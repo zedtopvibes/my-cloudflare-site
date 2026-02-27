@@ -14,7 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* YOUR EXACT CSS FRAMEWORK – KEPT 100% INTACT */
+        /* YOUR EXACT CSS FRAMEWORK – KEPT 100% INTACT (layout, sizing, flex, drawer, etc.) 
+           Only colour / background / decorative variables are overridden later */
         * {
             margin: 0;
             padding: 0;
@@ -384,7 +385,7 @@
             padding: 5px 0;
         }
         
-        .artist-item {
+        .album-item {
             display: flex;
             align-items: center;
             gap: 20px;
@@ -394,7 +395,7 @@
             position: relative;
         }
         
-        .artist-item:not(:last-child)::after {
+        .album-item:not(:last-child)::after {
             content: '';
             position: absolute;
             bottom: 0;
@@ -404,57 +405,137 @@
             background: #f0f0f0;
         }
         
-        .artist-item:hover::after {
+        .album-item:hover::after {
             background: #ffddcc;
         }
         
-        .artist-item:hover {
+        .album-item:hover {
             background: #f9f9f9;
         }
         
-        .artist-item:last-child {
+        .album-item:last-child {
             border-bottom-left-radius: 3px;
             border-bottom-right-radius: 3px;
         }
         
-        /* Old design thumb classes with PROPER SIZING */
-        .artist-avatar {
+        .album-thumbnail {
             width: 120px;
             height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6b4f9f, #a07dd0);
+            flex-shrink: 0;
+            border-radius: 3px;
+            overflow: hidden;
+            background: #f0f0f0;
+            border: 2px solid #e0e0e0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .album-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .album-thumbnail.placeholder {
+            background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .album-thumbnail.placeholder::before {
+            content: "ALBUM";
+            letter-spacing: 1px;
+        }
+        
+        .album-thumbnail.song-thumbnail {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
             color: white;
-            border: 3px solid #8a6fc9;
-            flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
         }
         
-        .right-sidebar .artist-avatar {
-            width: 50px;
-            height: 50px;
-            font-size: 1.5rem;
-            border-width: 2px;
+        .album-thumbnail.song-thumbnail::before {
+            content: "\f001";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
         }
         
-        .artist-info {
+        .album-thumbnail.artist-thumbnail {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail.artist-thumbnail::before {
+            content: "\f007";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .album-thumbnail.playlist-thumbnail {
+            background: linear-gradient(135deg, #4a90e2, #9013fe);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail.playlist-thumbnail::before {
+            content: "\f001";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .album-info {
             flex-grow: 1;
             min-width: 0;
             padding-right: 10px;
         }
         
-        .artist-name {
+        .album-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #ecf5ff;
+            color: #222;
             margin-bottom: 8px;
             display: block;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0.2px;
+            line-height: 1.4;
+            max-height: 3.6em;
         }
         
-        .artist-meta {
+        .album-date {
+            color: #666;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.1px;
+        }
+        
+        .album-date::before {
+            content: "📅";
+            font-size: 0.75rem;
+            color: #999;
+        }
+        
+        .album-meta {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -462,245 +543,478 @@
             flex-wrap: wrap;
         }
         
-        .artist-badge {
-            background: rgba(130, 90, 200, 0.3);
-            color: #dbbaff;
+        .album-artist,
+        .album-genre,
+        .album-tracks,
+        .track-duration,
+        .artist-stats,
+        .playlist-songs,
+        .song-stats {
             font-size: 0.75rem;
             font-weight: 600;
             padding: 3px 8px;
             border-radius: 10px;
+            display: inline-block;
+            line-height: 1.2;
         }
         
-        .artist-genre {
-            background: #1c3f55;
-            color: #b0d4ff;
+        .album-artist {
+            color: #ff5500;
+            background: rgba(255, 85, 0, 0.08);
+        }
+        
+        .album-genre {
+            color: #666;
+            background: #f5f5f5;
+        }
+        
+        .artist-stats {
+            color: #9b59b6;
+            background: rgba(155, 89, 182, 0.08);
+        }
+        
+        .playlist-songs {
+            color: #4a90e2;
+            background: rgba(74, 144, 226, 0.08);
+        }
+        
+        .song-stats {
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.08);
+        }
+        
+        .right-sidebar .album-item {
+            padding: 12px 15px;
+            gap: 15px;
+        }
+        
+        .right-sidebar .album-thumbnail {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .right-sidebar .album-title {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            max-height: 2.8em;
+        }
+        
+        .right-sidebar .album-meta {
+            gap: 6px;
+            margin-top: 4px;
+        }
+        
+        .right-sidebar .album-date {
             font-size: 0.75rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 10px;
         }
         
-        .popular-song {
-            display: flex;
-            align-items: center;
+        .left-sidebar .album-artist,
+        .left-sidebar .album-genre {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+        }
+        
+        .left-sidebar .album-date {
+            font-size: 0.75rem;
+        }
+        
+        .left-sidebar .album-meta {
             gap: 8px;
-            color: #90a9c9;
-            font-size: 0.9rem;
-            margin: 6px 0;
+            margin-top: 6px;
         }
         
-        .popular-song i {
-            color: #70c8ff;
+        .site-footer {
+            text-align: center;
+            margin-top: 45px;
+            padding: 25px 20px;
+            border-top: 3px solid #ff5500;
+            background: #ffffff;
+            border-radius: 8px 8px 0 0;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
         }
         
-        .artist-stats-small {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: #90a9c9;
-            font-size: 0.85rem;
-            margin-top: 8px;
-        }
-        
-        .artist-stats-small i {
-            color: #70c8ff;
-            margin-right: 3px;
-        }
-        
-        .artist-action {
-            color: #70c8ff;
-            font-size: 1.2rem;
-            margin-left: 20px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .artist-item:hover .artist-action {
-            opacity: 1;
-        }
-        
-        /* Alphabet navigation */
-        .alphabet-nav {
-            background: rgba(22, 28, 40, 0.85);
-            backdrop-filter: blur(8px);
-            padding: 15px;
-            border-radius: 3px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            border: 1px solid #2a3b4e;
-        }
-        
-        .alphabet-nav a {
-            display: inline-block;
-            padding: 5px 10px;
-            color: #bbdbff;
-            text-decoration: none;
+        .site-footer p {
+            margin: 10px 0;
+            color: #555;
             font-weight: 500;
-            border-radius: 3px;
-            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
         }
         
-        .alphabet-nav a:hover {
-            background: #2f6f9f;
-            color: white;
-            transform: translateY(-1px);
+        .site-footer p:first-child {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
         }
         
-        .alphabet-nav a.active {
-            background: #2f6f9f;
-            color: white;
-        }
-        
-        /* Filters bar */
-        .filters-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-        
-        .filter-select {
-            padding: 8px 15px;
-            border: 1px solid #2a3b4e;
-            border-radius: 20px;
-            background: rgba(30, 38, 56, 0.8);
-            color: #bbdbff;
-            font-size: 14px;
-            cursor: pointer;
-            backdrop-filter: blur(4px);
-        }
-        
-        .filter-select:hover {
-            border-color: #70c8ff;
-        }
-        
-        .filter-select option {
-            background: #1e2638;
-            color: #bbdbff;
-        }
-
-        /* Page header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 18px;
-            background: rgba(16, 22, 34, 0.9);
-            border-bottom: 1px solid #1f3f5c;
-        }
-
-        .page-header h1 {
-            font-size: 1.8rem;
-            color: #deecff;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: #1e2638;
-            border: 1px solid #2a3b4e;
-            border-radius: 30px;
-            padding: 5px 15px;
-        }
-
-        .search-box i {
-            color: #70c8ff;
-            margin-right: 10px;
-        }
-
-        .search-box input {
-            border: none;
-            outline: none;
-            background: transparent;
-            width: 200px;
-            color: #f0f4ff;
-        }
-        
-        .search-box input::placeholder {
-            color: #90a9c9;
-        }
-
-        .breadcrumbs {
-            padding: 15px 18px;
-            background: rgba(16, 22, 34, 0.9);
-            border-bottom: 1px solid #1f3f5c;
-            color: #90a9c9;
-        }
-        
-        .breadcrumbs a {
-            color: #70c8ff;
-            text-decoration: none;
-        }
-        
-        .breadcrumbs a:hover {
-            text-decoration: underline;
-        }
-        
-        .breadcrumbs span {
-            color: #bbdbff;
-        }
-        
-        /* Genre tags */
-        .genre-tag {
-            display: inline-block;
-            padding: 6px 12px;
-            margin: 3px;
-            background: rgba(30, 38, 56, 0.8);
-            border: 1px solid #2f6f9f;
-            border-radius: 20px;
-            color: #bbdbff;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .genre-tag:hover {
-            background: #2f6f9f;
-            color: white;
-            transform: translateY(-1px);
-        }
-        
-        /* Stat rows */
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #1f405b;
-        }
-        
-        .stat-row:last-child {
-            border-bottom: none;
-        }
-        
-        .stat-label {
-            color: #90a9c9;
-        }
-        
-        .stat-value {
-            color: #70c8ff;
+        .site-footer p:last-child {
+            font-size: 0.95rem;
+            color: #ff5500;
             font-weight: 600;
         }
-
-        /* Skeleton styles */
-        .skeleton-track {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 16px 18px;
+        
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            width: 85%;
+            max-width: 350px;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            display: none;
         }
         
-        .skeleton-image {
+        .nav-drawer.left {
+            left: 0;
+            transform: translateX(-100%);
+        }
+        
+        .nav-drawer.right {
+            right: 0;
+            transform: translateX(100%);
+        }
+        
+        .nav-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            background: linear-gradient(135deg, #ff5500 0%, #ff8c00 100%);
+        }
+        
+        .nav-header .site-logo {
+            color: white;
+            text-shadow: none;
+            font-size: 18px;
+            background: none;
+            -webkit-text-fill-color: white;
+            text-shadow: none;
+        }
+        
+        .close-nav {
+            font-size: 32px;
+            cursor: pointer;
+            color: white;
+            line-height: 1;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-item i {
+            width: 24px;
+            margin-right: 10px;
+            color: #ff5500;
+        }
+        
+        .nav-item:hover {
+            background-color: #f8f8f8;
+            color: #ff5500;
+            border-left-color: #ff5500;
+        }
+        
+        .nav-item.active {
+            background-color: #f8f8f8;
+            color: #ff5500;
+            border-left-color: #ff5500;
+            font-weight: 600;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: #e8e8e8;
+            margin: 10px 0;
+        }
+        
+        .nav-section-title {
+            padding: 15px 25px 5px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            font-weight: 600;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2); }
+            50% { text-shadow: -2px 2px 0 #ff5500, -4px 4px 0 rgba(255, 85, 0, 0.2); }
+            100% { text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2); }
+        }
+        
+        .site-logo:hover {
+            animation: glitch 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
+            .branding-bar {
+                padding: 16px 20px;
+            }
+            
+            .site-logo {
+                font-size: 22px;
+            }
+            
+            .search-section {
+                padding: 25px 20px;
+            }
+            
+            .search-input {
+                padding: 18px 25px;
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .left-sidebar,
+            .right-sidebar {
+                min-width: auto;
+            }
+            
+            .branding-bar {
+                padding: 16px 20px;
+            }
+            
+            .site-logo {
+                font-size: 22px;
+            }
+            
+            .search-section {
+                padding: 20px 15px;
+            }
+            
+            .search-container {
+                max-width: 500px;
+            }
+            
+            .search-input {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+            
+            .search-button {
+                padding: 0 20px;
+            }
+            
+            .section-header {
+                padding: 12px 14px;
+                height: 52px;
+            }
+            
+            .album-item {
+                gap: 15px;
+                padding: 14px 16px;
+            }
+            
+            .album-thumbnail {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .right-sidebar .album-thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content-container {
+                padding: 10px;
+            }
+            
+            .site-logo {
+                font-size: 20px;
+            }
+            
+            .search-section {
+                padding: 15px 10px;
+            }
+            
+            .search-container {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .search-input {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+            
+            .search-button {
+                padding: 0 16px;
+            }
+            
+            .section-header {
+                height: auto;
+                min-height: 50px;
+                padding: 10px 12px;
+            }
+            
+            .left-sidebar .album-item {
+                padding: 12px 15px;
+                gap: 15px;
+            }
+            
+            .left-sidebar .album-thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .right-sidebar .album-thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .left-sidebar .album-title {
+                font-size: 0.95rem;
+            }
+            
+            .pagination-item {
+                width: 36px;
+                height: 36px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .pagination-item {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+            
+            .pagination-prev,
+            .pagination-next {
+                padding: 0 10px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .left-sidebar,
+        .section-block,
+        .site-footer,
+        .pagination-container,
+        .search-section {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
             background: #1f2e40;
-            border-radius: 50%;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #2f6f9f;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a9fd0;
+        }
+
+        /* ===== FIXED SKELETON STYLES - NO GLITCH ===== */
+        .skeleton {
+            background: linear-gradient(90deg, #1f2e40 25%, #2a3b4e 50%, #1f2e40 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Base skeleton thumbnail styles */
+        .skeleton-thumbnail {
+            background: #1f2e40;
+            border-radius: 3px;
             animation: skeleton-pulse 1.5s ease-in-out infinite;
         }
         
-        .skeleton-content {
-            flex: 1;
+        @keyframes skeleton-pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
         
+        /* Left sidebar thumbnails - desktop */
+        .left-sidebar .skeleton-thumbnail {
+            width: 120px;
+            height: 120px;
+        }
+        
+        /* Right sidebar thumbnails - desktop */
+        .right-sidebar .skeleton-thumbnail {
+            width: 80px;
+            height: 80px;
+        }
+        
+        /* Mobile overrides - applied immediately, no glitch */
+        @media (max-width: 768px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 100px;
+                height: 100px;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            .right-sidebar .skeleton-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
+            }
+        }
+        
+        /* Skeleton lines */
         .skeleton-line {
             height: 16px;
             background: #1f2e40;
@@ -712,16 +1026,11 @@
         .skeleton-line.short { width: 60%; }
         .skeleton-line.medium { width: 80%; }
         .skeleton-line.long { width: 100%; }
-        
-        @keyframes skeleton-pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
 
         /* ---------- UNIQUE VARIATION: LIQUID GLASS / AETHERIC EDITION ---------- */
+        /* All structural CSS unchanged — only colours, shadows, backgrounds reimagined */
         body {
-            background: #0b0f1c;
+            background: #0b0f1c;  /* deep cosmic base */
             color: #e0e6f0;
         }
         .site-header { background: #121624; box-shadow: 0 10px 30px -10px rgba(0,20,40,0.8); }
@@ -743,20 +1052,21 @@
         .section-title::before { content: "🌊"; font-size: 1.2rem; opacity: 1; }
         .view-all { border-color: #2f8ed0; color: #bbdbff; background: #1d3142; }
         .view-all:hover { background: #2f6f9f; color: #fff; }
-        
-        .artist-item:not(:last-child)::after {
-            background: #1f405b;
-        }
-        
-        .artist-item:hover {
-            background: rgba(40, 60, 90, 0.5);
-            backdrop-filter: blur(4px);
-        }
-        
-        .artist-item:hover::after {
-            background: #2f8ed0;
-        }
-        
+        .album-item:not(:last-child)::after { background: #1f405b; }
+        .album-item:hover { background: rgba(40, 60, 90, 0.5); backdrop-filter: blur(4px); }
+        .album-thumbnail { border: 2px solid #1f4c73; box-shadow: 0 4px 15px #00000080; }
+        .album-thumbnail.placeholder { background: linear-gradient(135deg, #1f405b, #0f2a3f); color: #9cc9ff; }
+        .album-thumbnail.song-thumbnail { background: linear-gradient(135deg, #1f6f5a, #1d9f8f); }
+        .album-thumbnail.artist-thumbnail { background: linear-gradient(135deg, #6b4f9f, #a07dd0); }
+        .album-thumbnail.playlist-thumbnail { background: linear-gradient(135deg, #2f6f9f, #5fa8e8); }
+        .album-title { color: #ecf5ff; text-shadow: 0 2px 4px #00000060; }
+        .album-date { color: #afc9f0; }
+        .album-date::before { color: #78aeff; }
+        .album-artist { background: rgba(60, 140, 210, 0.2); color: #aad0ff; }
+        .album-genre { background: #1c3f55; color: #b0d4ff; }
+        .artist-stats { background: rgba(130, 90, 200, 0.3); color: #dbbaff; }
+        .playlist-songs { background: rgba(70, 140, 230, 0.25); color: #c0e1ff; }
+        .song-stats { background: rgba(40, 180, 140, 0.25); color: #b3ffe6; }
         .site-footer { background: #121b28; border-top: 3px solid #1f6f9f; box-shadow: 0 -10px 30px #00000050; }
         .site-footer p { color: #ffffff; }
         .site-footer p:last-child { color: #8fcbff; }
@@ -799,43 +1109,41 @@
             box-shadow: 0 2px 12px rgba(47, 111, 159, 0.6);
         }
         
+        .pagination-item.active:hover {
+            background: #3d8fd9;
+            border-color: #9ad0ff;
+        }
+        
         .pagination-ellipsis {
             color: #90a9c9;
         }
         
+        .pagination-prev,
+        .pagination-next {
+            background: rgba(30, 38, 56, 0.9);
+        }
+        
+        .pagination-prev.disabled,
+        .pagination-next.disabled {
+            opacity: 0.3;
+            border-color: #1f3f5c;
+            color: #90a9c9;
+            pointer-events: none;
+        }
+        
+        /* custom glitch for new vibe */
         .site-logo:hover { animation: glitch-aether 0.3s ease; }
         @keyframes glitch-aether {
             0% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
             50% { text-shadow: -2px 2px 0 #0088dd, -4px 4px 0 #0066aa; }
             100% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
         }
-        
-        /* Responsive sizes */
-        @media (max-width: 768px) {
-            .artist-avatar {
-                width: 100px;
-                height: 100px;
-                font-size: 2.5rem;
-            }
-            .right-sidebar .artist-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .artist-avatar {
-                width: 70px;
-                height: 70px;
-                font-size: 1.8rem;
-            }
-            .right-sidebar .artist-avatar {
-                width: 35px;
-                height: 35px;
-                font-size: 1rem;
-            }
-        }
+        /* scrollbar matches theme */
+        ::-webkit-scrollbar-thumb { background: #1f6f9f; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a9fd0; }
+        /* force skeleton bg to match new dark scheme but keep original pulse */
+        .skeleton-thumbnail { background: #1f2e40; }
+        .skeleton-line { background: #1f2e40; }
     </style>
 </head>
 <body>
@@ -854,6 +1162,7 @@
             </div>
         </div>
         
+        <!-- SEARCH SECTION -->
         <section class="search-section">
             <div class="search-container">
                 <form action="/search" method="GET" style="display: flex; width: 100%;" onsubmit="event.preventDefault(); window.location.href='/search?q=' + encodeURIComponent(document.getElementById('searchInput').value)">
@@ -870,94 +1179,37 @@
     
     <!-- MAIN CONTENT CONTAINER - ARTISTS PAGE -->
     <div class="main-content-container" id="content">
-        <!-- LEFT SIDEBAR - ARTISTS LIST -->
+        <!-- LEFT SIDEBAR - ALL ARTISTS -->
         <aside class="left-sidebar">
-            <!-- Breadcrumbs -->
-            <div class="breadcrumbs">
-                <a href="/">Home</a> / <span>Artists</span>
+            <div class="section-header">
+                <h2 class="section-title">all artists</h2>
+                <span class="view-all" style="cursor: default;">total: <span id="artistCount">0</span></span>
             </div>
             
-            <!-- Page Header -->
-            <div class="page-header">
-                <h1>Artists</h1>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="artistSearchInput" placeholder="Search artists...">
-                </div>
-            </div>
-            
-            <!-- A-Z Navigation -->
-            <div class="alphabet-nav" id="alphabetNav">
-                <a href="#" class="active" data-letter="">#</a>
-                <a href="#" data-letter="A">A</a>
-                <a href="#" data-letter="B">B</a>
-                <a href="#" data-letter="C">C</a>
-                <a href="#" data-letter="D">D</a>
-                <a href="#" data-letter="E">E</a>
-                <a href="#" data-letter="F">F</a>
-                <a href="#" data-letter="G">G</a>
-                <a href="#" data-letter="H">H</a>
-                <a href="#" data-letter="I">I</a>
-                <a href="#" data-letter="J">J</a>
-                <a href="#" data-letter="K">K</a>
-                <a href="#" data-letter="L">L</a>
-                <a href="#" data-letter="M">M</a>
-                <a href="#" data-letter="N">N</a>
-                <a href="#" data-letter="O">O</a>
-                <a href="#" data-letter="P">P</a>
-                <a href="#" data-letter="Q">Q</a>
-                <a href="#" data-letter="R">R</a>
-                <a href="#" data-letter="S">S</a>
-                <a href="#" data-letter="T">T</a>
-                <a href="#" data-letter="U">U</a>
-                <a href="#" data-letter="V">V</a>
-                <a href="#" data-letter="W">W</a>
-                <a href="#" data-letter="X">X</a>
-                <a href="#" data-letter="Y">Y</a>
-                <a href="#" data-letter="Z">Z</a>
-            </div>
-            
-            <!-- Filters -->
-            <div class="filters-bar">
-                <select class="filter-select" id="genreFilter">
-                    <option value="">All Genres</option>
-                </select>
-                <select class="filter-select" id="sortFilter">
-                    <option value="name">Sort: Name A-Z</option>
-                    <option value="name-desc">Sort: Name Z-A</option>
-                    <option value="tracks">Sort: Most Tracks</option>
-                    <option value="plays">Sort: Most Plays</option>
-                </select>
-            </div>
-            
-            <!-- Artists List with Skeletons -->
             <div class="latest-albums-list" id="artistsList">
-                <!-- Loading skeletons -->
-                <div class="artist-item">
-                    <div class="skeleton-image" style="width: 120px; height: 120px; border-radius: 50%;"></div>
-                    <div class="artist-info">
+                <!-- Loading skeletons with proper responsive sizing -->
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
                         <div class="skeleton-line long"></div>
-                        <div class="skeleton-line" style="width: 50%;"></div>
                     </div>
                 </div>
-                <div class="artist-item">
-                    <div class="skeleton-image" style="width: 120px; height: 120px; border-radius: 50%;"></div>
-                    <div class="artist-info">
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
                         <div class="skeleton-line long"></div>
-                        <div class="skeleton-line" style="width: 50%;"></div>
                     </div>
                 </div>
-                <div class="artist-item">
-                    <div class="skeleton-image" style="width: 120px; height: 120px; border-radius: 50%;"></div>
-                    <div class="artist-info">
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
                         <div class="skeleton-line short"></div>
                         <div class="skeleton-line medium"></div>
                         <div class="skeleton-line long"></div>
-                        <div class="skeleton-line" style="width: 50%;"></div>
                     </div>
                 </div>
             </div>
@@ -979,30 +1231,26 @@
         
         <!-- RIGHT SIDEBAR -->
         <div class="right-sidebar">
-            <!-- Top Artists Section -->
+            
+            <!-- 1. TOP ARTISTS SECTION -->
             <section class="section-block">
                 <div class="section-header">
-                    <h2 class="section-title">Top Artists</h2>
-                    <a href="#" class="view-all">View All ➔</a>
+                    <h2 class="section-title">top artists</h2>
+                    <a href="/artists/top.html" class="view-all">view all ➔</a>
                 </div>
-                <div id="topArtists" class="latest-albums-list">
-                    <div class="skeleton-track">
-                        <div class="skeleton-image" style="width: 50px; height: 50px; border-radius: 50%;"></div>
-                        <div class="skeleton-content">
+                
+                <div class="latest-albums-list" id="topArtists">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
                         </div>
                     </div>
-                    <div class="skeleton-track">
-                        <div class="skeleton-image" style="width: 50px; height: 50px; border-radius: 50%;"></div>
-                        <div class="skeleton-content">
-                            <div class="skeleton-line short"></div>
-                            <div class="skeleton-line medium"></div>
-                        </div>
-                    </div>
-                    <div class="skeleton-track">
-                        <div class="skeleton-image" style="width: 50px; height: 50px; border-radius: 50%;"></div>
-                        <div class="skeleton-content">
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
                             <div class="skeleton-line short"></div>
                             <div class="skeleton-line medium"></div>
                         </div>
@@ -1010,28 +1258,55 @@
                 </div>
             </section>
             
-            <!-- Genres Section -->
+            <!-- 2. POPULAR GENRES SECTION -->
             <section class="section-block">
                 <div class="section-header">
-                    <h2 class="section-title">Genres</h2>
-                    <a href="#" class="view-all">Browse All</a>
+                    <h2 class="section-title">popular genres</h2>
+                    <a href="/genres.html" class="view-all">view all ➔</a>
                 </div>
-                <div id="genresList" style="padding: 15px;">
-                    <span class="skeleton" style="display: inline-block; width: 70px; height: 30px; border-radius: 20px; margin: 3px; background: #1f2e40;"></span>
-                    <span class="skeleton" style="display: inline-block; width: 80px; height: 30px; border-radius: 20px; margin: 3px; background: #1f2e40;"></span>
-                    <span class="skeleton" style="display: inline-block; width: 60px; height: 30px; border-radius: 20px; margin: 3px; background: #1f2e40;"></span>
+                
+                <div class="latest-albums-list" id="popularGenres">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
                 </div>
             </section>
             
-            <!-- Artist Stats -->
+            <!-- 3. RISING ARTISTS SECTION -->
             <section class="section-block">
                 <div class="section-header">
-                    <h2 class="section-title">Artist Stats</h2>
+                    <h2 class="section-title">rising artists</h2>
+                    <a href="/artists/rising.html" class="view-all">view all ➔</a>
                 </div>
-                <div id="artistStats" style="padding: 15px;">
-                    <div class="skeleton-line short"></div>
-                    <div class="skeleton-line medium"></div>
-                    <div class="skeleton-line long"></div>
+                
+                <div class="latest-albums-list" id="risingArtists">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -1137,7 +1412,7 @@
                 }
             });
             
-            loadArtistsData();
+            loadArtistsPageData();
         });
 
         const API_BASE = '/api';
@@ -1149,117 +1424,91 @@
             return num;
         }
 
-        window.goToArtist = (artistName) => {
-            if (!artistName) return;
-            const slug = artistName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '').replace(/--+/g, '-').replace(/^-+|-+$/g, '');
+        window.goToArtist = (name) => {
+            const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '').replace(/--+/g, '-').replace(/^-+|-+$/g, '');
             window.location.href = `/artist/${slug}`;
         };
 
-        window.filterByGenre = (genre) => {
-            console.log('Filtering by genre:', genre);
-            // Will implement filtering
-        };
-
-        async function loadArtistsData() {
+        async function loadArtistsPageData() {
             try {
-                const response = await fetch(`${API_BASE}/tracks`);
-                const tracks = await response.json();
+                const tracks = await fetch(`${API_BASE}/tracks`).then(r => r.json());
                 
                 // Group tracks by artist
                 const artistMap = new Map();
-                let totalPlays = 0;
-                let genreSet = new Set();
+                const genreMap = new Map();
                 
                 tracks.forEach(track => {
-                    if (track.genre) genreSet.add(track.genre);
-                    totalPlays += track.plays || 0;
+                    // Track genres
+                    if (track.genre) {
+                        genreMap.set(track.genre, (genreMap.get(track.genre) || 0) + 1);
+                    }
                     
+                    // Group by artist
                     if (!artistMap.has(track.artist)) {
                         artistMap.set(track.artist, {
                             name: track.artist,
                             tracks: [track],
-                            genres: new Set([track.genre]),
                             totalPlays: track.plays || 0,
-                            totalDownloads: track.downloads || 0,
-                            totalViews: track.views || 0,
+                            genres: new Set([track.genre])
                         });
                     } else {
                         const artist = artistMap.get(track.artist);
                         artist.tracks.push(track);
-                        if (track.genre) artist.genres.add(track.genre);
                         artist.totalPlays += track.plays || 0;
-                        artist.totalDownloads += track.downloads || 0;
-                        artist.totalViews += track.views || 0;
+                        if (track.genre) artist.genres.add(track.genre);
                     }
                 });
                 
                 const artists = Array.from(artistMap.values());
                 
-                // Find most popular track for each artist
+                // Convert genre sets to arrays and find popular track
                 artists.forEach(artist => {
+                    artist.genres = Array.from(artist.genres);
                     artist.popularTrack = artist.tracks.reduce((prev, current) => 
                         (prev.plays || 0) > (current.plays || 0) ? prev : current
                     );
-                    artist.genres = Array.from(artist.genres);
                 });
                 
-                // Populate genre filter
-                populateGenreFilter(Array.from(genreSet).filter(g => g));
+                // Sort artists for different categories
+                const topArtists = [...artists].sort((a, b) => b.totalPlays - a.totalPlays).slice(0, 5);
+                const risingArtists = [...artists].sort((a, b) => b.tracks.length - a.tracks.length).slice(0, 5);
+                const popularGenres = Array.from(genreMap.entries())
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(([genre, count]) => ({ genre, count }));
                 
-                // Render all sections using OLD DESIGN renderer pattern
-                renderArtistsList(artists);
-                renderTopArtists(artists);
-                renderGenres(Array.from(genreSet).filter(g => g));
-                renderStats(artists.length, tracks.length, totalPlays);
-
+                // Update artist count
+                document.getElementById('artistCount').textContent = artists.length;
+                
+                // Render all sections
+                renderAllArtists(artists.slice(0, 5));
+                renderTopArtists(topArtists);
+                renderPopularGenres(popularGenres);
+                renderRisingArtists(risingArtists);
+                
             } catch (error) {
-                console.error('Error loading artists:', error);
-                document.getElementById('artistsList').innerHTML = '<div style="padding: 20px; text-align: center; color: #ff5500;">Error loading artists</div>';
+                console.error('Error loading artists data:', error);
             }
         }
 
-        // Populate genre filter dropdown
-        function populateGenreFilter(genres) {
-            const filter = document.getElementById('genreFilter');
-            genres.sort().forEach(genre => {
-                const option = document.createElement('option');
-                option.value = genre;
-                option.textContent = genre;
-                filter.appendChild(option);
-            });
-            
-            filter.addEventListener('change', (e) => {
-                filterByGenre(e.target.value);
-            });
-        }
-
         // OLD DESIGN RENDERER FUNCTIONS
-        function renderArtistsList(artists) {
+        function renderAllArtists(artists) {
             const container = document.getElementById('artistsList');
             if (!container) return;
             
             container.innerHTML = artists.map(artist => `
-                <div class="artist-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
-                    <div class="artist-avatar">👤</div>
-                    <div class="artist-info">
-                        <div class="artist-name">${artist.name}</div>
-                        <div class="artist-meta">
-                            <span class="artist-badge">${artist.tracks.length} tracks</span>
+                <div class="album-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
+                    <div class="album-thumbnail artist-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="album-title">${artist.name}</div>
+                        <div class="album-meta">
+                            <span class="artist-stats">${artist.tracks.length} tracks</span>
+                            <span class="artist-stats"><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
                             ${artist.genres.slice(0, 2).map(g => 
-                                `<span class="artist-genre">${g}</span>`
+                                `<span class="album-genre">${g}</span>`
                             ).join('')}
                         </div>
-                        <div class="popular-song">
-                            <i class="fas fa-play"></i> Popular: "${artist.popularTrack?.title || 'Unknown'}"
-                        </div>
-                        <div class="artist-stats-small">
-                            <span><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
-                            <span><i class="fas fa-download"></i> ${formatNumber(artist.totalDownloads)}</span>
-                            <span><i class="fas fa-eye"></i> ${formatNumber(artist.totalViews)}</span>
-                        </div>
-                    </div>
-                    <div class="artist-action">
-                        <i class="fas fa-chevron-right"></i>
+                        <div class="album-date">Popular: ${artist.popularTrack?.title || 'Unknown'}</div>
                     </div>
                 </div>
             `).join('');
@@ -1269,72 +1518,81 @@
             const container = document.getElementById('topArtists');
             if (!container) return;
             
-            const topArtists = [...artists].sort((a, b) => b.totalPlays - a.totalPlays).slice(0, 3);
+            if (artists.length === 0) {
+                container.innerHTML = `
+                    <div class="album-item" style="justify-content: center; color: #90a9c9;">
+                        <i class="fas fa-microphone-alt" style="margin-right: 10px;"></i> No top artists
+                    </div>
+                `;
+                return;
+            }
             
-            container.innerHTML = topArtists.map(artist => `
-                <div class="sidebar-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
-                    <div class="sidebar-thumb">👤</div>
-                    <div class="sidebar-info">
-                        <div class="sidebar-title">${artist.name}</div>
-                        <div class="sidebar-sub">${formatNumber(artist.totalPlays)} plays</div>
+            container.innerHTML = artists.map(artist => `
+                <div class="album-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
+                    <div class="album-thumbnail artist-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="album-title">${artist.name}</div>
+                        <div class="album-meta">
+                            <span class="artist-stats">${artist.tracks.length} tracks</span>
+                            <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderGenres(genres) {
-            const container = document.getElementById('genresList');
+        function renderPopularGenres(genres) {
+            const container = document.getElementById('popularGenres');
             if (!container) return;
             
-            container.innerHTML = genres.sort().map(genre => `
-                <span class="genre-tag" onclick="filterByGenre('${genre}')">#${genre}</span>
+            if (genres.length === 0) {
+                container.innerHTML = `
+                    <div class="album-item" style="justify-content: center; color: #90a9c9;">
+                        <i class="fas fa-tags" style="margin-right: 10px;"></i> No genres
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = genres.map(item => `
+                <div class="album-item" onclick="window.location.href='/genre/${item.genre}'">
+                    <div class="album-thumbnail placeholder">🎵</div>
+                    <div class="album-info">
+                        <div class="album-title">${item.genre}</div>
+                        <div class="album-meta">
+                            <span class="album-genre">${item.count} tracks</span>
+                        </div>
+                    </div>
+                </div>
             `).join('');
         }
 
-        function renderStats(artistCount, trackCount, totalPlays) {
-            const container = document.getElementById('artistStats');
+        function renderRisingArtists(artists) {
+            const container = document.getElementById('risingArtists');
             if (!container) return;
             
-            container.innerHTML = `
-                <div class="stat-row">
-                    <span class="stat-label">Total Artists</span>
-                    <span class="stat-value">${artistCount}</span>
+            if (artists.length === 0) {
+                container.innerHTML = `
+                    <div class="album-item" style="justify-content: center; color: #90a9c9;">
+                        <i class="fas fa-chart-line" style="margin-right: 10px;"></i> No rising artists
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = artists.map(artist => `
+                <div class="album-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
+                    <div class="album-thumbnail artist-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="album-title">${artist.name}</div>
+                        <div class="album-meta">
+                            <span class="artist-stats">${artist.tracks.length} tracks</span>
+                            <span class="song-stats"><i class="fas fa-chart-line"></i> Rising</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-row">
-                    <span class="stat-label">Total Tracks</span>
-                    <span class="stat-value">${trackCount}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Total Plays</span>
-                    <span class="stat-value">${formatNumber(totalPlays)}</span>
-                </div>
-            `;
+            `).join('');
         }
-
-        // Alphabet navigation
-        document.querySelectorAll('.alphabet-nav a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.alphabet-nav a').forEach(a => a.classList.remove('active'));
-                link.classList.add('active');
-                const letter = link.dataset.letter;
-                console.log('Filter by letter:', letter);
-                // Will implement filtering
-            });
-        });
-
-        // Search functionality
-        document.getElementById('artistSearchInput')?.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            console.log('Search:', searchTerm);
-            // Will implement search
-        });
-
-        // Sort functionality
-        document.getElementById('sortFilter')?.addEventListener('change', (e) => {
-            console.log('Sort by:', e.target.value);
-            // Will implement sorting
-        });
     </script>
 </body>
 </html>
