@@ -476,16 +476,16 @@
         }
         .artist-stat-large {
             background: rgba(255,85,0,0.08);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.95rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: #555;
         }
-        .artist-stat-large i { color: #ff5500; }
-        .artist-stat-large strong { color: #ff5500; font-weight: 700; margin-left: 3px; }
+        .artist-stat-large i { color: #ff5500; font-size: 0.9rem; }
+        .artist-stat-large strong { color: #ff5500; font-weight: 700; margin-left: 2px; }
         /* Track items */
         .track-list { padding: 5px 0; }
         .track-item {
@@ -507,11 +507,25 @@
             background: #f0f0f0;
         }
         .track-item:hover { background: #f9f9f9; }
-        .track-number {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #ccc;
-            min-width: 40px;
+        .track-thumbnail {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            border-radius: 3px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            border: 2px solid #1f4c73;
+        }
+        .track-thumbnail::before {
+            content: "\f001";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            opacity: 0.9;
         }
         .track-info { flex: 1; }
         .track-title { font-size: 1.1rem; font-weight: 600; color: #222; margin-bottom: 5px; }
@@ -608,11 +622,13 @@
             .artist-header { flex-direction: column; text-align: center; }
             .artist-meta-large { justify-content: center; }
             .skeleton-artist-header { flex-direction: column; }
+            .track-thumbnail { width: 40px; height: 40px; font-size: 1.2rem; }
         }
         @media (max-width: 480px) {
             .artist-title-large { font-size: 1.8rem; }
             .artist-cover-large { width: 150px; height: 150px; font-size: 48px; }
             .skeleton-cover-large { width: 150px; height: 150px; }
+            .track-thumbnail { width: 35px; height: 35px; font-size: 1rem; }
         }
     </style>
 
@@ -697,7 +713,11 @@
         .artist-stat-large strong { color: #aad0ff; }
         .track-item:not(:last-child)::after { background: #1f405b; }
         .track-item:hover { background: rgba(40, 60, 90, 0.5); }
-        .track-number { color: #3a5f7a; }
+        .track-thumbnail {
+            background: linear-gradient(135deg, #1f6f5a, #1d9f8f);
+            border: 2px solid #2f8ed0;
+        }
+        .track-thumbnail::before { color: white; }
         .track-title { color: #ecf5ff; }
         .track-artist { color: #70c8ff; }
         .track-stats-small { color: #90a9c9; }
@@ -760,7 +780,7 @@
     </style>
 </head>
 <body>
-    <!-- AETHERIC HEADER (with search) -->
+    <!-- AETHERIC HEADER (with search) - FIXED: Matches homepage sizing -->
     <header class="site-header">
         <div class="branding-bar">
             <div class="hamburger-menu" id="hamburgerMenu">
@@ -816,14 +836,14 @@
             </div>
             <div class="track-list" id="tracksList">
                 <div class="skeleton-track">
-                    <div class="skeleton" style="width: 40px; height: 20px;"></div>
+                    <div class="skeleton" style="width: 50px; height: 50px; border-radius: 3px;"></div>
                     <div class="skeleton-track-info" style="flex:1; margin-left:15px;">
                         <div class="skeleton" style="width: 60%; height: 18px; margin-bottom: 6px;"></div>
                         <div class="skeleton" style="width: 30%; height: 14px;"></div>
                     </div>
                 </div>
                 <div class="skeleton-track">
-                    <div class="skeleton" style="width: 40px; height: 20px;"></div>
+                    <div class="skeleton" style="width: 50px; height: 50px; border-radius: 3px;"></div>
                     <div class="skeleton-track-info" style="flex:1; margin-left:15px;">
                         <div class="skeleton" style="width: 50%; height: 18px; margin-bottom: 6px;"></div>
                         <div class="skeleton" style="width: 25%; height: 14px;"></div>
@@ -831,20 +851,20 @@
                 </div>
             </div>
         </aside>
-        <!-- RIGHT SIDEBAR (skeleton) -->
+        <!-- RIGHT SIDEBAR (skeleton) - FIXED: Proper image sizing -->
         <div class="right-sidebar">
             <section class="section-block">
                 <div class="section-header"><h2 class="section-title">Albums</h2><a href="#" class="view-all">View All ➔</a></div>
                 <div id="albumsList" class="latest-albums-list">
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                    <div class="skeleton" style="height: 80px; margin: 10px;"></div>
+                    <div class="skeleton" style="height: 80px; margin: 10px;"></div>
                 </div>
             </section>
             <section class="section-block">
                 <div class="section-header"><h2 class="section-title">Similar Artists</h2><a href="#" class="view-all">View All ➔</a></div>
                 <div id="similarArtists" class="latest-albums-list">
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
-                    <div class="skeleton" style="height: 70px; margin: 10px;"></div>
+                    <div class="skeleton" style="height: 80px; margin: 10px;"></div>
+                    <div class="skeleton" style="height: 80px; margin: 10px;"></div>
                 </div>
             </section>
             <section class="section-block">
@@ -936,7 +956,7 @@
         // Helper
         function getArtistInitials(name) { return name ? name.charAt(0).toUpperCase() : '🎵'; }
 
-        // ----- LOAD ARTIST DATA (your exact functions) -----
+        // ----- LOAD ARTIST DATA -----
         async function loadArtistData() {
             const identifier = artistSlug || artistName;
             if (!identifier) {
@@ -984,7 +1004,7 @@
             }
         }
 
-        // ----- RENDER ARTIST PAGE (your exact function, adapted with aetheric classes) -----
+        // ----- RENDER ARTIST PAGE (FIXED: Images and sizes) -----
         function renderArtistPage(data) {
             const artistName = data.name;
             const tracks = data.tracks || [];
@@ -1033,7 +1053,7 @@
                     <div class="track-list">
                         ${tracks.slice(0, 10).map((track, index) => `
                             <div class="track-item" onclick="goToSong(${track.id}, '${track.slug || ''}')">
-                                <div class="track-number">${String(index + 1).padStart(2, '0')}</div>
+                                <div class="track-thumbnail"></div>
                                 <div class="track-info">
                                     <div class="track-title">${track.title}</div>
                                     <div class="track-artist" onclick="event.stopPropagation(); goToArtist('${track.artist?.replace(/'/g, "\\'") || ''}')">${track.artist}</div>
@@ -1102,7 +1122,7 @@
             if (genres.length) loadSimilarArtists(genres[0], artistName);
         }
 
-        // Load albums by artist
+        // Load albums by artist - FIXED: Using album-thumbnail for proper sizing
         async function loadAlbumsByArtist(artist) {
             try {
                 const response = await fetch(`${API_BASE}/albums`);
@@ -1112,11 +1132,13 @@
                 if (container) {
                     if (artistAlbums.length > 0) {
                         container.innerHTML = artistAlbums.map(album => `
-                            <div class="sidebar-item" onclick="goToAlbum('${album.slug}')">
-                                <div class="sidebar-thumb">${album.cover_emoji || '💿'}</div>
-                                <div class="sidebar-info">
-                                    <div class="sidebar-title">${album.title}</div>
-                                    <div class="sidebar-sub">${album.track_count || 0} tracks</div>
+                            <div class="album-item" onclick="goToAlbum('${album.slug}')" style="padding: 12px 15px;">
+                                <div class="album-thumbnail playlist-thumbnail" style="width: 50px; height: 50px;"></div>
+                                <div class="album-info">
+                                    <div class="album-title" style="font-size: 0.95rem;">${album.title}</div>
+                                    <div class="album-meta">
+                                        <span class="playlist-songs">${album.track_count || 0} tracks</span>
+                                    </div>
                                 </div>
                             </div>
                         `).join('');
@@ -1129,7 +1151,7 @@
             }
         }
 
-        // Load similar artists
+        // Load similar artists - FIXED: Using artist-thumbnail for proper sizing
         async function loadSimilarArtists(genre, currentArtist) {
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
@@ -1143,11 +1165,13 @@
                 if (container) {
                     if (similarArtists.length > 0) {
                         container.innerHTML = similarArtists.map(artist => `
-                            <div class="sidebar-item" onclick="goToArtist('${artist.replace(/'/g, "\\'")}')">
-                                <div class="sidebar-thumb">👤</div>
-                                <div class="sidebar-info">
-                                    <div class="sidebar-title">${artist}</div>
-                                    <div class="sidebar-sub">${genre}</div>
+                            <div class="album-item" onclick="goToArtist('${artist.replace(/'/g, "\\'")}')" style="padding: 12px 15px;">
+                                <div class="album-thumbnail artist-thumbnail" style="width: 50px; height: 50px;"></div>
+                                <div class="album-info">
+                                    <div class="album-title" style="font-size: 0.95rem;">${artist}</div>
+                                    <div class="album-meta">
+                                        <span class="artist-stats">${genre}</span>
+                                    </div>
                                 </div>
                             </div>
                         `).join('');
