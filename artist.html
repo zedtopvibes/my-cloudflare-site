@@ -7,7 +7,7 @@
     <!-- Fonts: Montserrat (base) + Poppins (logo) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -400,7 +400,7 @@
             box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
         }
         .site-footer p { margin: 10px 0; color: #555; font-weight: 500; letter-spacing: 0.3px; }
-        .site-footer p:first-child { font-weight: 600; color: #333; font-size: 1.1rem; margin-bottom: 8px; }
+        .site-footer p:first-child { font-weight: 600; color: #ffffff; font-size: 1.1rem; margin-bottom: 8px; }
         .site-footer p:last-child { font-size: 0.95rem; color: #ff5500; font-weight: 600; }
         .nav-drawer {
             position: fixed;
@@ -666,10 +666,8 @@
                 font-size: 1.3rem;
             }
         }
-    </style>
 
-    <!-- ========== AETHERIC THEME OVERRIDES ========== -->
-    <style>
+        /* ========== AETHERIC THEME OVERRIDES - MATCHING HOMEPAGE EXACTLY ========== */
         body {
             background: #0b0f1c;
             color: #e0e6f0;
@@ -677,43 +675,56 @@
         .site-header { background: #121624; box-shadow: 0 10px 30px -10px rgba(0,20,40,0.8); }
         .branding-bar { background: #121624; box-shadow: 0 2px 15px rgba(0,0,0,0.7); }
         .site-logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-            font-size: 22px;
-            background: linear-gradient(145deg, #b0e0ff, #ffffff);
+            background: linear-gradient(135deg, #c0e0ff, #ffffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 12px #0066cc, 2px 4px 0 #004488, 4px 6px 0 #002244;
-            animation: logoFloat 4s infinite alternate ease-in-out;
+            text-shadow: 2px 2px 0 #0066cc, 4px 4px 0 rgba(0,150,255,0.3);
         }
-        @keyframes logoFloat {
-            0% { filter: drop-shadow(0 0 5px #2f8ed0); }
-            100% { filter: drop-shadow(0 0 20px #70c8ff); }
+        .site-logo:hover {
+            animation: glitch-aether 0.3s ease;
         }
-        .hamburger-menu span { background-color: #70c8ff; box-shadow: 0 0 8px #2f8ed0; }
-        .profile-icon { background: linear-gradient(135deg, #2a6f9c, #4aa3e2); box-shadow: 0 2px 15px rgba(0,160,255,0.8); }
-        .profile-icon i { color: white; }
+        @keyframes glitch-aether {
+            0% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
+            50% { text-shadow: -2px 2px 0 #0088dd, -4px 4px 0 #0066aa; }
+            100% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
+        }
+        .hamburger-menu span { background-color: #70c8ff; }
+        .profile-icon { background: linear-gradient(135deg, #2a6f9c, #4aa3e2); box-shadow: 0 2px 10px rgba(0,160,255,0.6); }
+        .profile-icon:hover { background: #3d8fd9; }
+        
+        /* FIXED: Search section matching homepage exactly */
         .search-section { 
             background: radial-gradient(circle at 30% 30%, #1a3650, #0b1a2a); 
-            box-shadow: 0 8px 20px rgba(0,100,200,0.4); 
+            box-shadow: 0 8px 20px rgba(0,100,200,0.3); 
             padding: 25px 20px;
+        }
+        .search-bar { 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); 
         }
         .search-input { 
             background: #1e2638; 
             color: #f0f4ff; 
-            border: 1px solid #1f4c73; 
+            border: none;
             padding: 18px 25px;
-            font-size: 16px;
         }
-        .search-input::placeholder { color: #90a9c9; font-weight: 400; letter-spacing: 0.5px; }
+        .search-input::placeholder { 
+            color: #90a9c9; 
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
         .search-button { 
             background: #1e2638; 
             color: #70c8ff; 
             border-left: 2px solid #2f6f9f; 
             padding: 0 28px;
         }
-        .search-button:hover { background: #253040; border-left-color: #9ad0ff; }
-        .search-button i { font-size: 18px; }
+        .search-button:hover { 
+            background: #253040; 
+            border-left-color: #9ad0ff; 
+        }
+        .search-button i { 
+            font-size: 18px; 
+        }
         
         .left-sidebar, .section-block {
             background: rgba(22, 28, 40, 0.85);
@@ -729,37 +740,90 @@
             background: linear-gradient(90deg, transparent 5%, #2f8ed0 20%, #70c8ff 80%, transparent 95%);
         }
         .section-title { color: #deecff; }
-        .section-title::before { content: "🌊"; font-size: 1.2rem; opacity: 1; }
-        .view-all { border-color: #2f8ed0; color: #bbdbff; background: #1d3142; }
-        .view-all:hover { background: #2f6f9f; color: #fff; }
+        .section-title::before { 
+            content: "🌊"; 
+            font-size: 1.2rem; 
+            opacity: 1; 
+        }
+        .view-all { 
+            border-color: #2f8ed0; 
+            color: #bbdbff; 
+            background: #1d3142; 
+        }
+        .view-all:hover { 
+            background: #2f6f9f; 
+            color: #fff; 
+        }
         .album-item:not(:last-child)::after { background: #1f405b; }
-        .album-item:hover { background: rgba(40, 60, 90, 0.5); backdrop-filter: blur(4px); }
+        .album-item:hover { 
+            background: rgba(40, 60, 90, 0.5); 
+            backdrop-filter: blur(4px); 
+        }
         .album-item:hover::after { background: #2f8ed0; }
-        .album-thumbnail { border: 2px solid #1f4c73; box-shadow: 0 4px 15px #00000080; }
-        .album-thumbnail.placeholder { background: linear-gradient(135deg, #1f405b, #0f2a3f); color: #9cc9ff; }
-        .album-thumbnail.song-thumbnail { background: linear-gradient(135deg, #1f6f5a, #1d9f8f); }
-        .album-thumbnail.artist-thumbnail { background: linear-gradient(135deg, #6b4f9f, #a07dd0); }
-        .album-thumbnail.playlist-thumbnail { background: linear-gradient(135deg, #2f6f9f, #5fa8e8); }
-        .album-title { color: #ecf5ff; text-shadow: 0 2px 4px #00000060; }
+        .album-thumbnail { 
+            border: 2px solid #1f4c73; 
+            box-shadow: 0 4px 15px #00000080; 
+        }
+        .album-thumbnail.placeholder { 
+            background: linear-gradient(135deg, #1f405b, #0f2a3f); 
+            color: #9cc9ff; 
+        }
+        .album-thumbnail.song-thumbnail { 
+            background: linear-gradient(135deg, #1f6f5a, #1d9f8f); 
+        }
+        .album-thumbnail.artist-thumbnail { 
+            background: linear-gradient(135deg, #6b4f9f, #a07dd0); 
+        }
+        .album-thumbnail.playlist-thumbnail { 
+            background: linear-gradient(135deg, #2f6f9f, #5fa8e8); 
+        }
+        .album-title { 
+            color: #ecf5ff; 
+            text-shadow: 0 2px 4px #00000060; 
+        }
         .album-date { color: #afc9f0; }
         .album-date::before { color: #78aeff; }
-        .album-artist { background: rgba(60, 140, 210, 0.2); color: #aad0ff; }
-        .album-genre { background: #1c3f55; color: #b0d4ff; }
-        .artist-stats { background: rgba(60, 140, 210, 0.2) !important; color: #aad0ff !important; }
-        .artist-stats i { color: #70c8ff !important; }
-        .playlist-songs { background: rgba(70, 140, 230, 0.25); color: #c0e1ff; }
-        .song-stats { background: rgba(40, 180, 140, 0.25); color: #b3ffe6; }
+        .album-artist { 
+            background: rgba(60, 140, 210, 0.2); 
+            color: #aad0ff; 
+        }
+        .album-genre { 
+            background: #1c3f55; 
+            color: #b0d4ff; 
+        }
+        .artist-stats { 
+            background: rgba(130, 90, 200, 0.3) !important; 
+            color: #dbbaff !important; 
+        }
+        .playlist-songs { 
+            background: rgba(70, 140, 230, 0.25); 
+            color: #c0e1ff; 
+        }
+        .song-stats { 
+            background: rgba(40, 180, 140, 0.25); 
+            color: #b3ffe6; 
+        }
         /* Artist header aetheric */
-        .artist-header { background: rgba(16, 30, 50, 0.7); border-bottom: 2px solid #1f4c73; }
+        .artist-header { 
+            background: rgba(16, 30, 50, 0.7); 
+            border-bottom: 2px solid #1f4c73; 
+        }
         .artist-cover-large {
             background: linear-gradient(135deg, #1f4c73, #4a7db0);
             border: 4px solid #2f8ed0;
             box-shadow: 0 0 30px #1f6f9f;
             color: #e0f0ff;
         }
-        .artist-title-large { color: #ecf5ff; text-shadow: 0 2px 8px #000; }
+        .artist-title-large { 
+            color: #ecf5ff; 
+            text-shadow: 0 2px 8px #000; 
+        }
         .artist-genre-large { color: #70c8ff; }
-        .artist-stat-large { background: rgba(47, 111, 159, 0.3); color: #b0d0ff; border: 1px solid #2f6f9f; }
+        .artist-stat-large { 
+            background: rgba(47, 111, 159, 0.3); 
+            color: #b0d0ff; 
+            border: 1px solid #2f6f9f; 
+        }
         .artist-stat-large i { color: #70c8ff; }
         .artist-stat-large strong { color: #aad0ff; }
         .track-item:not(:last-child)::after { background: #1f405b; }
@@ -775,23 +839,41 @@
         .track-stats-small i { color: #70c8ff; }
         .sidebar-item { border-bottom: 1px solid #1f405b; }
         .sidebar-item:hover { background: rgba(40, 60, 90, 0.5); }
-        .sidebar-thumb { background: linear-gradient(135deg, #1f4c73, #2f6f9f); border: 2px solid #2f8ed0; }
+        .sidebar-thumb { 
+            background: linear-gradient(135deg, #1f4c73, #2f6f9f); 
+            border: 2px solid #2f8ed0; 
+        }
         .sidebar-title { color: #ecf5ff; }
         .sidebar-sub { color: #90a9c9; }
-        .breadcrumb-nav { background: #1a2538; border: 1px solid #2f4c6e; box-shadow: 0 2px 8px #00000060; }
+        .breadcrumb-nav { 
+            background: #1a2538; 
+            border: 1px solid #2f4c6e; 
+            box-shadow: 0 2px 8px #00000060; 
+        }
         .breadcrumb-link { color: #9bbce0; }
         .breadcrumb-link:hover { color: #70c8ff; }
         .breadcrumb-current { color: #aad0ff; }
-        .site-footer { background: #0f172a; border-top: 3px solid #2f8ed0; box-shadow: 0 -10px 30px #00000080; }
-        .site-footer p { color: #c0dcff; }
-        .site-footer p:first-child { color: #ffffff; }
-        .site-footer p:last-child { color: #70c8ff; }
+        .site-footer { 
+            background: #121b28; 
+            border-top: 3px solid #1f6f9f; 
+            box-shadow: 0 -10px 30px #00000050; 
+        }
+        .site-footer p { color: #ffffff; }
+        .site-footer p:last-child { color: #8fcbff; }
         .nav-drawer { background: #101c2c; box-shadow: 0 0 30px #000000cc; }
         .nav-header { background: linear-gradient(135deg, #1f4460, #0f2f4f); }
         .nav-item { color: #d5eaff; }
         .nav-item i { color: #6ab0ff; }
-        .nav-item:hover { background-color: #122d44; border-left-color: #6ab0ff; color: white; }
-        .nav-item.active { background-color: #112b40; border-left-color: #8fcbff; color: white; }
+        .nav-item:hover { 
+            background-color: #122d44; 
+            color: #ffffff; 
+            border-left-color: #6ab0ff; 
+        }
+        .nav-item.active { 
+            background-color: #112b40; 
+            color: white; 
+            border-left-color: #8fcbff; 
+        }
         .nav-divider { background: #264a66; }
         .nav-section-title { color: #90b9e5; }
         ::-webkit-scrollbar-thumb { background: #1f6f9f; }
@@ -822,12 +904,9 @@
             color: white;
             box-shadow: 0 2px 12px rgba(47, 111, 159, 0.6);
         }
-        .pagination-item.active:hover { background: #3d8fd9; border-color: #9ad0ff; }
         .pagination-ellipsis { color: #90a9c9; }
-        .pagination-prev, .pagination-next { background: rgba(30, 38, 56, 0.9); }
-        .pagination-prev.disabled, .pagination-next.disabled { opacity: 0.3; border-color: #1f3f5c; color: #90a9c9; pointer-events: none; }
-        .skeleton { background: linear-gradient(90deg, #1f2e40 25%, #2a3b4e 50%, #1f2e40 75%); background-size: 200% 100%; }
-        .skeleton-cover-large, .skeleton-thumb { background: #1f2e40; }
+        .skeleton-thumbnail { background: #1f2e40; }
+        .skeleton-line { background: #1f2e40; }
     </style>
 </head>
 <body>
