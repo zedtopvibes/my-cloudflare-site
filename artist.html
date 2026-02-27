@@ -632,7 +632,7 @@
         }
     </style>
 
-    <!-- ========== AETHERIC THEME OVERRIDES ========== -->
+    <!-- ========== AETHERIC THEME OVERRIDES (MATCHING HOMEPAGE EXACTLY) ========== -->
     <style>
         body {
             background: #0b0f1c;
@@ -658,12 +658,29 @@
         .hamburger-menu span { background-color: #70c8ff; box-shadow: 0 0 8px #2f8ed0; }
         .profile-icon { background: linear-gradient(135deg, #2a6f9c, #4aa3e2); box-shadow: 0 2px 15px rgba(0,160,255,0.8); }
         .profile-icon i { color: white; }
-        .search-section { background: radial-gradient(circle at 30% 30%, #1a3650, #0b1a2a); box-shadow: 0 8px 20px rgba(0,100,200,0.4); }
-        .search-input { background: #1e2638; color: #f0f4ff; border: 1px solid #1f4c73; }
+        /* HEADER - MATCHING HOMEPAGE EXACTLY */
+        .search-section { 
+            background: radial-gradient(circle at 30% 30%, #1a3650, #0b1a2a); 
+            box-shadow: 0 8px 20px rgba(0,100,200,0.4); 
+            padding: 25px 20px;
+        }
+        .search-input { 
+            background: #1e2638; 
+            color: #f0f4ff; 
+            border: 1px solid #1f4c73; 
+            padding: 18px 25px;
+            font-size: 16px;
+        }
         .search-input::placeholder { color: #90a9c9; font-weight: 400; letter-spacing: 0.5px; }
-        .search-button { background: #1e2638; color: #70c8ff; border-left: 2px solid #2f6f9f; }
+        .search-button { 
+            background: #1e2638; 
+            color: #70c8ff; 
+            border-left: 2px solid #2f6f9f; 
+            padding: 0 28px;
+        }
         .search-button:hover { background: #253040; border-left-color: #9ad0ff; }
         .search-button i { font-size: 1.2rem; }
+        
         .left-sidebar, .section-block {
             background: rgba(22, 28, 40, 0.85);
             backdrop-filter: blur(8px);
@@ -780,7 +797,7 @@
     </style>
 </head>
 <body>
-    <!-- AETHERIC HEADER (with search) - FIXED: Matches homepage sizing -->
+    <!-- HEADER - EXACTLY MATCHING HOMEPAGE -->
     <header class="site-header">
         <div class="branding-bar">
             <div class="hamburger-menu" id="hamburgerMenu">
@@ -851,7 +868,7 @@
                 </div>
             </div>
         </aside>
-        <!-- RIGHT SIDEBAR (skeleton) - FIXED: Proper image sizing -->
+        <!-- RIGHT SIDEBAR (skeleton) - WITH HOMEPAGE SIZING -->
         <div class="right-sidebar">
             <section class="section-block">
                 <div class="section-header"><h2 class="section-title">Albums</h2><a href="#" class="view-all">View All ➔</a></div>
@@ -1004,7 +1021,7 @@
             }
         }
 
-        // ----- RENDER ARTIST PAGE (FIXED: Images and sizes) -----
+        // ----- RENDER ARTIST PAGE (WITH HOMEPAGE IMAGE SIZING) -----
         function renderArtistPage(data) {
             const artistName = data.name;
             const tracks = data.tracks || [];
@@ -1122,7 +1139,7 @@
             if (genres.length) loadSimilarArtists(genres[0], artistName);
         }
 
-        // Load albums by artist - FIXED: Using album-thumbnail for proper sizing
+        // Load albums by artist - WITH HOMEPAGE RIGHT SIDEBAR SIZING (80x80)
         async function loadAlbumsByArtist(artist) {
             try {
                 const response = await fetch(`${API_BASE}/albums`);
@@ -1133,7 +1150,7 @@
                     if (artistAlbums.length > 0) {
                         container.innerHTML = artistAlbums.map(album => `
                             <div class="album-item" onclick="goToAlbum('${album.slug}')" style="padding: 12px 15px;">
-                                <div class="album-thumbnail playlist-thumbnail" style="width: 50px; height: 50px;"></div>
+                                <div class="album-thumbnail playlist-thumbnail" style="width: 80px; height: 80px;"></div>
                                 <div class="album-info">
                                     <div class="album-title" style="font-size: 0.95rem;">${album.title}</div>
                                     <div class="album-meta">
@@ -1151,7 +1168,7 @@
             }
         }
 
-        // Load similar artists - FIXED: Using artist-thumbnail for proper sizing
+        // Load similar artists - WITH HOMEPAGE RIGHT SIDEBAR SIZING (80x80)
         async function loadSimilarArtists(genre, currentArtist) {
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
@@ -1166,7 +1183,7 @@
                     if (similarArtists.length > 0) {
                         container.innerHTML = similarArtists.map(artist => `
                             <div class="album-item" onclick="goToArtist('${artist.replace(/'/g, "\\'")}')" style="padding: 12px 15px;">
-                                <div class="album-thumbnail artist-thumbnail" style="width: 50px; height: 50px;"></div>
+                                <div class="album-thumbnail artist-thumbnail" style="width: 80px; height: 80px;"></div>
                                 <div class="album-info">
                                     <div class="album-title" style="font-size: 0.95rem;">${artist}</div>
                                     <div class="album-meta">
