@@ -826,6 +826,7 @@
         display: inline-block;
         text-decoration: none;
         transition: all 0.2s ease;
+        cursor: pointer;
     }
     
     .album-artist-link:hover {
@@ -901,6 +902,7 @@
         align-items: center;
         gap: 4px;
         font-size: 0.8rem;
+        cursor: pointer;
     }
     
     .breadcrumb-link:hover {
@@ -1199,7 +1201,7 @@
                 <nav class="breadcrumb-nav">
                     <ul class="breadcrumb-list">
                         <li class="breadcrumb-item">
-                            <a href="/" class="breadcrumb-link"><i class="fas fa-home"></i> Home</a>
+                            <a href="/" class="breadcrumb-link" onclick="goHome(); return false;"><i class="fas fa-home"></i> Home</a>
                             <span class="breadcrumb-separator">›</span>
                         </li>
                         <li class="breadcrumb-item">
@@ -1207,7 +1209,7 @@
                             <span class="breadcrumb-separator">›</span>
                         </li>
                         <li class="breadcrumb-item">
-                            <span class="breadcrumb-current"><i class="fas fa-album"></i> <!-- ALBUM_TITLE --></span>
+                            <span class="breadcrumb-current"><i class="fas fa-album"></i> Loading...</span>
                         </li>
                     </ul>
                 </nav>
@@ -1216,37 +1218,19 @@
             <!-- ALBUM HEADER -->
             <div class="album-header">
                 <div class="album-cover">
-                    <!-- ALBUM_COVER -->
                     <i class="fas fa-compact-disc"></i>
                 </div>
                 <div class="album-info-header">
-                    <h1 class="album-title-header"><!-- ALBUM_TITLE --></h1>
-                    <a href="/artist" class="album-artist-link"><!-- ARTIST_NAME --></a>
+                    <h1 class="album-title-header">Loading...</h1>
+                    <a class="album-artist-link">Loading...</a>
                     <div class="album-meta-header">
-                        <div class="album-stats">
-                            <i class="fas fa-calendar-alt"></i>
-                            <!-- RELEASE_YEAR -->
-                        </div>
-                        <div class="album-stats">
-                            <i class="fas fa-music"></i>
-                            <!-- TOTAL_TRACKS --> songs
-                        </div>
-                        <div class="album-stats">
-                            <i class="fas fa-headphones"></i>
-                            <!-- PLAYS --> plays
-                        </div>
-                        <div class="album-stats">
-                            <i class="fas fa-download"></i>
-                            <!-- DOWNLOADS --> downloads
-                        </div>
-                        <div class="album-stats">
-                            <i class="fas fa-clock"></i>
-                            <!-- TOTAL_DURATION -->
-                        </div>
+                        <div class="album-stats"><i class="fas fa-calendar-alt"></i> ---</div>
+                        <div class="album-stats"><i class="fas fa-music"></i> --- songs</div>
+                        <div class="album-stats"><i class="fas fa-headphones"></i> ---</div>
+                        <div class="album-stats"><i class="fas fa-download"></i> ---</div>
+                        <div class="album-stats"><i class="fas fa-clock"></i> ---</div>
                     </div>
-                    <p class="album-description">
-                        <!-- ALBUM_DESCRIPTION -->
-                    </p>
+                    <p class="album-description">Loading album description...</p>
                 </div>
             </div>
             
@@ -1257,38 +1241,7 @@
             </div>
             
             <div class="latest-albums-list">
-                <!-- TRACKLIST -->
-                <div class="album-item">
-                    <div class="album-thumbnail song-thumbnail"></div>
-                    <div class="album-info">
-                        <div class="album-title">Sample Song Title</div>
-                        <div class="album-meta">
-                            <span class="track-number">01</span>
-                            <span class="track-duration">3:45</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="album-item">
-                    <div class="album-thumbnail song-thumbnail"></div>
-                    <div class="album-info">
-                        <div class="album-title">Another Track</div>
-                        <div class="album-meta">
-                            <span class="track-number">02</span>
-                            <span class="track-duration">4:20</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="album-item">
-                    <div class="album-thumbnail song-thumbnail"></div>
-                    <div class="album-info">
-                        <div class="album-title">Third Song Feature</div>
-                        <div class="album-meta">
-                            <span class="track-number">03</span>
-                            <span class="track-duration">5:12</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- repeated for demo -->
+                <div class="loading" style="padding: 30px; text-align: center; color: #b0caf0;">Loading tracks...</div>
             </div>
             
             <!-- PAGINATION -->
@@ -1377,32 +1330,12 @@
             <!-- OTHER ALBUMS BY ARTIST SECTION -->
             <section class="section-block">
                 <div class="section-header">
-                    <h2 class="section-title">Other Albums by <!-- ARTIST_NAME --></h2>
+                    <h2 class="section-title">Other Albums by <span class="artist-name-placeholder">Artist</span></h2>
                     <a href="#" class="view-all">see all ➔</a>
                 </div>
                 
                 <div class="latest-albums-list">
-                    <!-- DISCOGRAPHY -->
-                    <div class="album-item">
-                        <div class="album-thumbnail placeholder"></div>
-                        <div class="album-info">
-                            <div class="album-title">Previous Album</div>
-                            <div class="album-meta">
-                                <span class="album-tracks">12 tracks</span>
-                                <span class="album-date">2022</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="album-item">
-                        <div class="album-thumbnail placeholder"></div>
-                        <div class="album-info">
-                            <div class="album-title">Debut Album</div>
-                            <div class="album-meta">
-                                <span class="album-tracks">10 tracks</span>
-                                <span class="album-date">2020</span>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="loading" style="padding: 15px; text-align: center; color: #b0caf0;">Loading...</div>
                 </div>
             </section>
             
@@ -1539,6 +1472,103 @@
         const urlParams = new URLSearchParams(window.location.search);
         const albumId = urlParams.get('id');
 
+        // Render album page
+        function renderAlbum(album) {
+            const tracks = album.tracks || [];
+            const totalDuration = calculateTotalDuration(tracks);
+            const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+            const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
+            const releaseYear = album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown';
+
+            // Update breadcrumb
+            document.querySelector('.breadcrumb-current').innerHTML = `<i class="fas fa-album"></i> ${album.title}`;
+            
+            // Update album header
+            document.querySelector('.album-title-header').textContent = album.title;
+            document.querySelector('.album-artist-link').textContent = album.artist || 'Unknown Artist';
+            document.querySelector('.album-artist-link').setAttribute('onclick', `goToArtist('${album.artist?.replace(/'/g, "\\'") || ''}')`);
+            
+            // Update album stats
+            const stats = document.querySelectorAll('.album-stats');
+            stats[0].innerHTML = `<i class="fas fa-calendar-alt"></i> ${releaseYear}`;
+            stats[1].innerHTML = `<i class="fas fa-music"></i> ${tracks.length} songs`;
+            stats[2].innerHTML = `<i class="fas fa-headphones"></i> ${formatNumber(album.plays || totalPlays)}`;
+            stats[3].innerHTML = `<i class="fas fa-download"></i> ${formatNumber(album.downloads || totalDownloads)}`;
+            stats[4].innerHTML = `<i class="fas fa-clock"></i> ${totalDuration}`;
+            
+            // Update description
+            document.querySelector('.album-description').textContent = album.description || 'No description available.';
+            
+            // Update artist name in "Other Albums" section
+            const artistPlaceholder = document.querySelector('.artist-name-placeholder');
+            if (artistPlaceholder) {
+                artistPlaceholder.textContent = album.artist || 'Artist';
+            }
+            
+            // Update tracklist
+            const tracklistContainer = document.querySelector('.left-sidebar .latest-albums-list');
+            if (tracks.length > 0) {
+                tracklistContainer.innerHTML = tracks.map((track, index) => `
+                    <div class="album-item" onclick="goToSong(${track.id}, '${track.slug || ''}')">
+                        <div class="album-thumbnail song-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">${track.title}</div>
+                            <div class="album-meta">
+                                <span class="track-number">${String(index + 1).padStart(2, '0')}</span>
+                                <span class="track-duration">${formatDuration(track.duration)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                tracklistContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #b0caf0;">No tracks in this album</div>';
+            }
+            
+            // Load more by artist
+            if (album.artist) {
+                loadMoreByArtist(album.artist, album.id);
+            }
+        }
+
+        // Load more albums by same artist
+        async function loadMoreByArtist(artist, currentAlbumId) {
+            try {
+                const response = await fetch(`${API_BASE}/albums`);
+                const albums = await response.json();
+                
+                const moreAlbums = albums
+                    .filter(a => a.artist === artist && a.id != currentAlbumId)
+                    .slice(0, 3);
+                
+                // Update the "Other Albums" section (3rd section in right sidebar)
+                const otherAlbumsSection = document.querySelectorAll('.section-block')[2].querySelector('.latest-albums-list');
+                if (otherAlbumsSection) {
+                    if (moreAlbums.length > 0) {
+                        otherAlbumsSection.innerHTML = moreAlbums.map(album => `
+                            <div class="album-item" onclick="goToAlbum('${album.slug}')">
+                                <div class="album-thumbnail placeholder">💿</div>
+                                <div class="album-info">
+                                    <div class="album-title">${album.title}</div>
+                                    <div class="album-meta">
+                                        <span class="album-tracks">${album.tracks?.length || 0} tracks</span>
+                                        <span class="album-date">${album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        otherAlbumsSection.innerHTML = '<div style="padding: 15px; text-align: center; color: #b0caf0;">No other albums</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading more by artist:', error);
+                const otherAlbumsSection = document.querySelectorAll('.section-block')[2]?.querySelector('.latest-albums-list');
+                if (otherAlbumsSection) {
+                    otherAlbumsSection.innerHTML = '<div style="padding: 15px; text-align: center; color: #b0caf0;">Failed to load</div>';
+                }
+            }
+        }
+
         // Load album data
         async function loadAlbum() {
             try {
@@ -1549,7 +1579,7 @@
                 } else if (albumId) {
                     apiUrl = `${API_BASE}/albums/${albumId}`;
                 } else {
-                    console.log('No album specified');
+                    document.querySelector('.album-title-header').textContent = 'No album specified';
                     return;
                 }
 
@@ -1565,29 +1595,8 @@
 
             } catch (error) {
                 console.error('Error loading album:', error);
-            }
-        }
-
-        // Render album page
-        function renderAlbum(album) {
-            console.log('Album data:', album);
-            // This function would populate the HTML with album data
-            // You can implement this based on your needs
-        }
-
-        // Load more albums by same artist
-        async function loadMoreByArtist(artist, currentAlbumId) {
-            try {
-                const response = await fetch(`${API_BASE}/albums`);
-                const albums = await response.json();
-                
-                const moreAlbums = albums
-                    .filter(a => a.artist === artist && a.id != currentAlbumId)
-                    .slice(0, 3);
-                
-                console.log('More albums by artist:', moreAlbums);
-            } catch (error) {
-                console.error('Error loading more by artist:', error);
+                document.querySelector('.album-title-header').textContent = 'Error loading album';
+                document.querySelector('.album-description').textContent = error.message;
             }
         }
 
