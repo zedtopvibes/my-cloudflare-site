@@ -1188,8 +1188,196 @@
     </header>
     
     <!-- MAIN CONTENT CONTAINER -->
-    <div class="main-content-container" id="content">
-        <!-- Content will be populated by JavaScript -->
+    <div class="main-content-container">
+        <!-- LEFT SIDEBAR - PLAYLIST TRACKS (LARGER) -->
+        <aside class="left-sidebar">
+            <!-- BREADCRUMBS -->
+            <div class="breadcrumbs-left">
+                <nav class="breadcrumb-nav">
+                    <ul class="breadcrumb-list">
+                        <li class="breadcrumb-item">
+                            <a href="/" class="breadcrumb-link" onclick="goHome(); return false;"><i class="fas fa-home"></i> Home</a>
+                            <span class="breadcrumb-separator">›</span>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="/playlists" class="breadcrumb-link"><i class="fas fa-list"></i> Playlists</a>
+                            <span class="breadcrumb-separator">›</span>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <span class="breadcrumb-current" id="breadcrumb-playlist"><i class="fas fa-list-ul"></i> Loading...</span>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- PLAYLIST HEADER -->
+            <div class="playlist-header">
+                <div class="playlist-cover" id="playlist-cover">
+                    <i class="fas fa-list-ul"></i>
+                </div>
+                <div class="playlist-info-header">
+                    <h1 class="playlist-title-header" id="playlist-title">Loading...</h1>
+                    <a class="playlist-creator-link" id="playlist-creator">Loading...</a>
+                    <div class="playlist-meta-header" id="playlist-meta">
+                        <div class="playlist-stats" id="playlist-tracks">
+                            <i class="fas fa-music"></i>
+                            <span>0 songs</span>
+                        </div>
+                        <div class="playlist-stats" id="playlist-plays">
+                            <i class="fas fa-headphones"></i>
+                            <span>0</span>
+                        </div>
+                        <div class="playlist-stats" id="playlist-duration">
+                            <i class="fas fa-clock"></i>
+                            <span>0 min</span>
+                        </div>
+                        <div class="playlist-stats" id="playlist-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Unknown</span>
+                        </div>
+                    </div>
+                    <p class="playlist-description" id="playlist-description">
+                        Loading description...
+                    </p>
+                </div>
+            </div>
+            
+            <!-- TRACKLIST SECTION -->
+            <div class="section-header">
+                <h2 class="section-title">Playlist Tracks</h2>
+                <a href="#" class="view-all">play all ➔</a>
+            </div>
+            
+            <div class="latest-albums-list" id="tracklist-container">
+                <div class="loading" style="padding: 30px; text-align: center; color: #b0caf0;">Loading tracks...</div>
+            </div>
+            
+            <!-- PAGINATION -->
+            <div class="pagination-container" id="paginationContainer">
+                <div class="pagination">
+                    <a href="#" class="pagination-item pagination-prev disabled">
+                        <i class="fas fa-chevron-left"></i> Prev
+                    </a>
+                    <a href="#" class="pagination-item active">1</a>
+                    <a href="#" class="pagination-item">2</a>
+                    <a href="#" class="pagination-item">3</a>
+                    <span class="pagination-ellipsis">...</span>
+                    <a href="#" class="pagination-item">5</a>
+                    <a href="#" class="pagination-item pagination-next">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- RIGHT SIDEBAR - EVERYTHING ELSE (SMALLER) -->
+        <div class="right-sidebar">
+            
+            <!-- MORE FROM THIS PLAYLIST SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">More From This Playlist</h2>
+                    <a href="#" class="view-all">explore ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="more-from-playlist">
+                    <!-- EXTENDED/RELATED TRACKS -->
+                    <div class="album-item">
+                        <div class="album-thumbnail song-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">Extended Mix</div>
+                            <div class="album-meta">
+                                <span class="album-artist">Artist Name</span>
+                                <span class="track-duration">6:30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="album-thumbnail song-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">Curator's Pick</div>
+                            <div class="album-meta">
+                                <span class="album-artist">Artist Name</span>
+                                <span class="track-duration">4:15</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- MORE PLAYLISTS LIKE THIS SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">More Playlists Like This</h2>
+                    <a href="#" class="view-all">discover ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="similar-playlists-container">
+                    <!-- SIMILAR VIBE PLAYLISTS -->
+                    <div class="album-item">
+                        <div class="album-thumbnail playlist-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">Chill Vibes</div>
+                            <div class="album-meta">
+                                <span class="playlist-songs">24 tracks</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="album-thumbnail playlist-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">Morning Mix</div>
+                            <div class="album-meta">
+                                <span class="playlist-songs">18 tracks</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- SIMILAR PLAYLISTS SECTION (ALGORITHM) -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Similar Playlists</h2>
+                    <a href="#" class="view-all">recommend ➔</a>
+                </div>
+                
+                <div class="latest-albums-list">
+                    <!-- ALGORITHM RECOMMENDATIONS -->
+                    <div class="album-item">
+                        <div class="album-thumbnail playlist-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">Based on Your Taste</div>
+                            <div class="album-meta">
+                                <span class="playlist-songs">32 tracks</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="album-thumbnail playlist-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">Listeners Also Like</div>
+                            <div class="album-meta">
+                                <span class="playlist-songs">21 tracks</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- PLAYLIST INFO SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">Playlist Info</h2>
+                </div>
+                <div id="playlist-info" style="padding: 15px; font-size: 0.9rem; color: #b0caf0;">
+                    <p><i class="fas fa-user-circle" style="color:#70c8ff;"></i> Created by: <span id="info-creator">Loading...</span></p>
+                    <p><i class="fas fa-calendar-alt" style="color:#70c8ff;"></i> Created: <span id="info-date">Loading...</span></p>
+                    <p><i class="fas fa-tags" style="color:#70c8ff;"></i> <span id="info-tags">Various</span></p>
+                    <p><i class="fas fa-clock" style="color:#70c8ff;"></i> Last updated: <span id="info-updated">Loading...</span></p>
+                </div>
+            </section>
+        </div>
     </div>
     
     <!-- FOOTER -->
@@ -1251,7 +1439,7 @@
         }
 
         function formatDuration(seconds) {
-            if (!seconds) return '?:??';
+            if (!seconds) return '0:00';
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -1289,209 +1477,86 @@
         const urlParams = new URLSearchParams(window.location.search);
         const playlistId = urlParams.get('id');
 
-        // Render playlist page
-        function renderPlaylist(playlist) {
+        // Populate playlist data (only values, not sections)
+        function populatePlaylistData(playlist) {
             const tracks = playlist.tracks || [];
             const totalDuration = calculateTotalDuration(tracks);
             const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
-            const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
             const createdDate = playlist.created_at ? new Date(playlist.created_at).toLocaleDateString() : 'Unknown';
+            const updatedDate = playlist.updated_at ? new Date(playlist.updated_at).toLocaleDateString() : createdDate;
 
-            // Get unique artists for featured section
-            const artists = [...new Set(tracks.map(t => t.artist).filter(a => a))].slice(0, 3);
-
-            const content = document.getElementById('content');
+            // Update breadcrumb
+            document.getElementById('breadcrumb-playlist').innerHTML = `<i class="fas fa-list-ul"></i> ${playlist.name}`;
             
-            content.innerHTML = `
-                <aside class="left-sidebar">
-                    <!-- BREADCRUMBS -->
-                    <div class="breadcrumbs-left">
-                        <nav class="breadcrumb-nav">
-                            <ul class="breadcrumb-list">
-                                <li class="breadcrumb-item">
-                                    <a href="/" class="breadcrumb-link" onclick="goHome(); return false;"><i class="fas fa-home"></i> Home</a>
-                                    <span class="breadcrumb-separator">›</span>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a href="/playlists" class="breadcrumb-link"><i class="fas fa-list"></i> Playlists</a>
-                                    <span class="breadcrumb-separator">›</span>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <span class="breadcrumb-current"><i class="fas fa-list-ul"></i> ${playlist.name}</span>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                    
-                    <!-- PLAYLIST HEADER -->
-                    <div class="playlist-header">
-                        <div class="playlist-cover">
-                            ${playlist.cover_emoji || '<i class="fas fa-list-ul"></i>'}
-                        </div>
-                        <div class="playlist-info-header">
-                            <h1 class="playlist-title-header">${playlist.name}</h1>
-                            <a class="playlist-creator-link" onclick="goToArtist('${playlist.created_by?.replace(/'/g, "\\'") || ''}')">${playlist.created_by || 'ZED•AETHERIC'}</a>
-                            <div class="playlist-meta-header">
-                                <div class="playlist-stats">
-                                    <i class="fas fa-music"></i>
-                                    ${tracks.length} songs
-                                </div>
-                                <div class="playlist-stats">
-                                    <i class="fas fa-headphones"></i>
-                                    ${formatNumber(playlist.plays || totalPlays)}
-                                </div>
-                                <div class="playlist-stats">
-                                    <i class="fas fa-clock"></i>
-                                    ${totalDuration}
-                                </div>
-                                <div class="playlist-stats">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    ${createdDate}
-                                </div>
-                            </div>
-                            <p class="playlist-description">
-                                ${playlist.description || 'No description available.'}
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- TRACKLIST SECTION -->
-                    <div class="section-header">
-                        <h2 class="section-title">Playlist Tracks</h2>
-                        <a href="#" class="view-all">play all ➔</a>
-                    </div>
-                    
-                    <div class="latest-albums-list">
-                        ${tracks.length > 0 ? tracks.map((track, index) => `
-                            <div class="album-item" onclick="goToSong(${track.id}, '${track.slug || ''}')">
-                                <div class="album-thumbnail song-thumbnail"></div>
-                                <div class="album-info">
-                                    <div class="album-title">${track.title}</div>
-                                    <div class="album-meta">
-                                        <span class="album-artist" onclick="event.stopPropagation(); goToArtist('${track.artist?.replace(/'/g, "\\'") || ''}')">${track.artist}</span>
-                                        <span class="track-duration">${formatDuration(track.duration)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('') : '<div style="padding: 20px; text-align: center; color: #b0caf0;">No tracks in this playlist</div>'}
-                    </div>
-                    
-                    <!-- PAGINATION -->
-                    <div class="pagination-container" id="paginationContainer">
-                        <div class="pagination">
-                            <a href="#" class="pagination-item pagination-prev disabled">
-                                <i class="fas fa-chevron-left"></i> Prev
-                            </a>
-                            <a href="#" class="pagination-item active">1</a>
-                            <a href="#" class="pagination-item">2</a>
-                            <a href="#" class="pagination-item">3</a>
-                            <span class="pagination-ellipsis">...</span>
-                            <a href="#" class="pagination-item">5</a>
-                            <a href="#" class="pagination-item pagination-next">
-                                Next <i class="fas fa-chevron-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </aside>
-                
-                <!-- RIGHT SIDEBAR - EVERYTHING ELSE (SMALLER) -->
-                <div class="right-sidebar">
-                    
-                    <!-- MORE FROM THIS PLAYLIST SECTION -->
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">More From This Playlist</h2>
-                            <a href="#" class="view-all">explore ➔</a>
-                        </div>
-                        
-                        <div class="latest-albums-list">
-                            <!-- EXTENDED/RELATED TRACKS -->
-                            <div class="album-item">
-                                <div class="album-thumbnail song-thumbnail"></div>
-                                <div class="album-info">
-                                    <div class="album-title">Extended Mix</div>
-                                    <div class="album-meta">
-                                        <span class="album-artist">Artist Name</span>
-                                        <span class="track-duration">6:30</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="album-item">
-                                <div class="album-thumbnail song-thumbnail"></div>
-                                <div class="album-info">
-                                    <div class="album-title">Curator's Pick</div>
-                                    <div class="album-meta">
-                                        <span class="album-artist">Artist Name</span>
-                                        <span class="track-duration">4:15</span>
-                                    </div>
-                                </div>
+            // Update playlist header
+            document.getElementById('playlist-title').textContent = playlist.name;
+            document.getElementById('playlist-creator').textContent = playlist.created_by || 'ZED•AETHERIC';
+            document.getElementById('playlist-creator').setAttribute('onclick', `goToArtist('${playlist.created_by?.replace(/'/g, "\\'") || ''}')`);
+            
+            // Update stats
+            document.querySelector('#playlist-tracks span').textContent = `${tracks.length} songs`;
+            document.querySelector('#playlist-plays span').textContent = formatNumber(playlist.plays || totalPlays);
+            document.querySelector('#playlist-duration span').textContent = totalDuration;
+            document.querySelector('#playlist-date span').textContent = createdDate;
+            
+            // Update description
+            document.getElementById('playlist-description').textContent = playlist.description || 'No description available.';
+            
+            // Update cover if emoji provided
+            if (playlist.cover_emoji) {
+                document.getElementById('playlist-cover').innerHTML = playlist.cover_emoji;
+            }
+            
+            // Update tracklist
+            const tracklistContainer = document.getElementById('tracklist-container');
+            if (tracks.length > 0) {
+                tracklistContainer.innerHTML = tracks.map((track, index) => `
+                    <div class="album-item" onclick="goToSong(${track.id}, '${track.slug || ''}')">
+                        <div class="album-thumbnail song-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">${track.title}</div>
+                            <div class="album-meta">
+                                <span class="album-artist" onclick="event.stopPropagation(); goToArtist('${track.artist?.replace(/'/g, "\\'") || ''}')">${track.artist}</span>
+                                <span class="track-duration">${formatDuration(track.duration)}</span>
                             </div>
                         </div>
-                    </section>
-                    
-                    <!-- MORE PLAYLISTS LIKE THIS SECTION -->
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">More Playlists Like This</h2>
-                            <a href="#" class="view-all">discover ➔</a>
-                        </div>
-                        
-                        <div class="latest-albums-list" id="similarPlaylists">
-                            <div class="loading" style="padding: 15px; text-align: center; color: #b0caf0;">Loading...</div>
-                        </div>
-                    </section>
-                    
-                    <!-- PLAYLIST INFO SECTION -->
-                    <section class="section-block">
-                        <div class="section-header">
-                            <h2 class="section-title">Playlist Info</h2>
-                        </div>
-                        <div style="padding: 15px; font-size: 0.9rem; color: #b0caf0;">
-                            <p><i class="fas fa-user-circle" style="color:#70c8ff;"></i> Created by: ${playlist.created_by || 'ZED•AETHERIC'}</p>
-                            <p><i class="fas fa-calendar-alt" style="color:#70c8ff;"></i> Created: ${createdDate}</p>
-                            <p><i class="fas fa-tags" style="color:#70c8ff;"></i> ${playlist.tags || 'Various'}</p>
-                            <p><i class="fas fa-clock" style="color:#70c8ff;"></i> Last updated: ${playlist.updated_at ? new Date(playlist.updated_at).toLocaleDateString() : createdDate}</p>
-                        </div>
-                    </section>
-                </div>
-            `;
-
-            // Load similar playlists
-            loadSimilarPlaylists(playlist.id);
+                    </div>
+                `).join('');
+            } else {
+                tracklistContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #b0caf0;">No tracks in this playlist</div>';
+            }
+            
+            // Update playlist info section
+            document.getElementById('info-creator').textContent = playlist.created_by || 'ZED•AETHERIC';
+            document.getElementById('info-date').textContent = createdDate;
+            document.getElementById('info-tags').textContent = playlist.tags || 'Various';
+            document.getElementById('info-updated').textContent = updatedDate;
         }
 
-        // Load similar playlists
+        // Load similar playlists (populates the "More Playlists Like This" section)
         async function loadSimilarPlaylists(currentPlaylistId) {
             try {
                 const response = await fetch(`${API_BASE}/playlists`);
                 const playlists = await response.json();
                 
-                const similar = playlists.filter(p => p.id != currentPlaylistId).slice(0, 3);
+                const similar = playlists.filter(p => p.id != currentPlaylistId).slice(0, 2);
                 
-                const container = document.getElementById('similarPlaylists');
-                if (container) {
-                    if (similar.length > 0) {
-                        container.innerHTML = similar.map(playlist => `
-                            <div class="album-item" onclick="goToPlaylist('${playlist.slug}')">
-                                <div class="album-thumbnail playlist-thumbnail">${playlist.cover_emoji || ''}</div>
-                                <div class="album-info">
-                                    <div class="album-title">${playlist.name}</div>
-                                    <div class="album-meta">
-                                        <span class="playlist-songs">${playlist.track_count || 0} tracks</span>
-                                    </div>
+                const container = document.getElementById('similar-playlists-container');
+                if (container && similar.length > 0) {
+                    container.innerHTML = similar.map(playlist => `
+                        <div class="album-item" onclick="goToPlaylist('${playlist.slug}')">
+                            <div class="album-thumbnail playlist-thumbnail">${playlist.cover_emoji || ''}</div>
+                            <div class="album-info">
+                                <div class="album-title">${playlist.name}</div>
+                                <div class="album-meta">
+                                    <span class="playlist-songs">${playlist.track_count || 0} tracks</span>
                                 </div>
                             </div>
-                        `).join('');
-                    } else {
-                        container.innerHTML = '<div style="padding: 15px; text-align: center; color: #b0caf0;">No similar playlists</div>';
-                    }
+                        </div>
+                    `).join('');
                 }
             } catch (error) {
                 console.error('Error loading similar playlists:', error);
-                const container = document.getElementById('similarPlaylists');
-                if (container) {
-                    container.innerHTML = '<div style="padding: 15px; text-align: center; color: #b0caf0;">Failed to load</div>';
-                }
             }
         }
 
@@ -1505,7 +1570,7 @@
                 } else if (playlistId) {
                     apiUrl = `${API_BASE}/playlists/${playlistId}`;
                 } else {
-                    document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 60px;">No playlist specified</div>';
+                    document.getElementById('playlist-title').textContent = 'No playlist specified';
                     return;
                 }
 
@@ -1517,15 +1582,16 @@
                 // Increment view count
                 fetch(`${API_BASE}/playlists/${playlist.id}/view`, { method: 'POST' }).catch(() => {});
                 
-                renderPlaylist(playlist);
+                // Populate all data
+                populatePlaylistData(playlist);
+                
+                // Load similar playlists
+                loadSimilarPlaylists(playlist.id);
 
             } catch (error) {
-                document.getElementById('content').innerHTML = `
-                    <div style="text-align: center; padding: 60px;">
-                        <p style="color: #ff5500;">Error: ${error.message}</p>
-                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #2f8ed0; color: white; border: none; border-radius: 3px; cursor: pointer;">Try Again</button>
-                    </div>
-                `;
+                console.error('Error loading playlist:', error);
+                document.getElementById('playlist-title').textContent = 'Error loading playlist';
+                document.getElementById('playlist-description').textContent = error.message;
             }
         }
 
@@ -1644,7 +1710,7 @@
                 }
             });
             
-            console.log('ZED•AETHERIC - playlist page with renderer functions');
+            console.log('ZED•AETHERIC - playlist page with dynamic content only');
         });
     </script>
 </body>
