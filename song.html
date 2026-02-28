@@ -342,24 +342,22 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            font-size: 2rem;
         }
         
         .album-thumbnail.song-thumbnail {
             background: linear-gradient(135deg, #1f6f5a, #1d9f8f);
             color: white;
-            font-size: 2rem;
         }
         
         .album-thumbnail.artist-thumbnail {
             background: linear-gradient(135deg, #6b4f9f, #a07dd0);
             color: white;
-            font-size: 2rem;
         }
         
         .album-thumbnail.playlist-thumbnail {
             background: linear-gradient(135deg, #2f6f9f, #5fa8e8);
             color: white;
-            font-size: 2rem;
         }
         
         .album-info {
@@ -461,6 +459,104 @@
         .site-footer p:last-child {
             font-size: 1rem;
             color: #70c8ff;
+            font-weight: 600;
+        }
+        
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            width: 85%;
+            max-width: 350px;
+            height: 100%;
+            background-color: #101c2c;
+            z-index: 1000;
+            box-shadow: 0 0 30px #000000cc;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            display: none;
+        }
+        
+        .nav-drawer.left {
+            left: 0;
+            transform: translateX(-100%);
+        }
+        
+        .nav-drawer.right {
+            right: 0;
+            transform: translateX(100%);
+        }
+        
+        .nav-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #264a66;
+            background: linear-gradient(135deg, #1f4460, #0f2f4f);
+        }
+        
+        .nav-header .site-logo {
+            color: white;
+            text-shadow: none;
+            font-size: 18px;
+            background: none;
+            -webkit-text-fill-color: white;
+            animation: none;
+        }
+        
+        .close-nav {
+            font-size: 32px;
+            cursor: pointer;
+            color: white;
+            line-height: 1;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 25px;
+            color: #d5eaff;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-item i {
+            width: 24px;
+            margin-right: 10px;
+            color: #6ab0ff;
+        }
+        
+        .nav-item:hover {
+            background-color: #122d44;
+            color: white;
+            border-left-color: #6ab0ff;
+        }
+        
+        .nav-item.active {
+            background-color: #112b40;
+            color: white;
+            border-left-color: #8fcbff;
+            font-weight: 600;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background: #264a66;
+            margin: 10px 0;
+        }
+        
+        .nav-section-title {
+            padding: 15px 25px 5px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #90b9e5;
             font-weight: 600;
         }
         
@@ -922,6 +1018,9 @@
         window.goToSong = (id, slug) => {
             if (slug) window.location.href = `/song/${slug}`;
             else window.location.href = `/song.html?id=${id}`;
+        };
+        window.goToPlaylist = (slug) => {
+            window.location.href = `/playlist/${slug}`;
         };
 
         // API Base
