@@ -26,6 +26,7 @@ export async function onRequest(context) {
     const { results } = await env.DB.prepare(`
       SELECT 
         a.*,
+        a.cover_url,  -- ← ADDED THIS LINE!
         COUNT(at.track_id) as track_count,
         SUM(t.plays) as total_plays,
         SUM(t.downloads) as total_downloads,
