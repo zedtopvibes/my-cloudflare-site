@@ -2,158 +2,270 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Zedtopvibes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Dashboard - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --orange: #ff5500;
+            --orange-light: #ff6a1a;
+            --orange-dark: #e64c00;
+            --dark: #1a1a1a;
+            --gray: #666;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            line-height: 1.5;
+            color: #333;
         }
         
-        .navbar {
-            background: #1a1a2e;
-            color: white;
-            padding: 16px 20px;
+        /* Container */
+        .admin-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        /* Header */
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
+        .header-top h1 {
+            color: var(--orange);
+            font-size: 1.3rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .logo span {
-            color: #6c5ce7;
+        .header-top h1 span {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .user-info i {
+            color: var(--orange);
+        }
+        
+        .user-info span {
+            font-weight: 600;
         }
         
         .logout-btn {
-            background: #e94560;
-            color: white;
+            color: #666;
+            transition: color 0.3s;
+            padding: 8px;
+            text-decoration: none;
+            background: none;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background 0.2s;
         }
         
         .logout-btn:hover {
-            background: #d63e57;
+            color: var(--orange);
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        /* Navigation Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
         
-        .welcome-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 4px solid #6c5ce7;
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
         }
         
-        .welcome-card h2 {
-            color: #1a1a2e;
-            margin-bottom: 8px;
-            font-size: 24px;
-        }
-        
-        .welcome-card p {
+        .tab-btn {
+            padding: 10px 15px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
             color: #666;
-            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
         }
         
+        .tab-btn i {
+            font-size: 1rem;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--orange);
+        }
+        
+        .tab-btn.active {
+            background: var(--orange);
+            color: white;
+        }
+        
+        /* Content Area */
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+        
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
         
         .stat-card {
-            background: white;
-            border-radius: 16px;
+            background: var(--light-gray);
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            text-align: center;
+            border-radius: 10px;
+            border: 1px solid #e8e8e8;
         }
         
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #1a1a2e;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
+        .stat-card h3 {
+            font-size: 0.9rem;
             color: #666;
-            font-size: 14px;
+            margin-bottom: 10px;
         }
         
-        .section-title {
-            font-size: 20px;
-            color: #1a1a2e;
-            margin: 32px 0 16px;
-            font-weight: 600;
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--orange);
+            line-height: 1.2;
         }
         
-        .feature-grid {
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
         
-        .feature-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            cursor: pointer;
-            border: 2px solid transparent;
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 1px solid #e8e8e8;
+            min-height: 100px;
         }
         
-        .feature-card:hover {
+        .quick-action-btn:hover {
             transform: translateY(-2px);
-            border-color: #6c5ce7;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: var(--orange);
         }
         
-        .feature-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
+        .quick-action-btn i {
+            font-size: 2rem;
+            color: var(--orange);
+            margin-bottom: 10px;
         }
         
-        .feature-title {
+        .quick-action-btn span {
+            font-size: 0.9rem;
             font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 4px;
         }
         
-        .feature-desc {
-            color: #666;
-            font-size: 13px;
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
         }
         
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--orange-light);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Status Badge */
         .status-badge {
             display: inline-block;
             background: #4caf50;
@@ -164,135 +276,272 @@
             margin-bottom: 16px;
         }
         
-        .info-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 24px;
-            border-left: 4px solid #6c5ce7;
+        /* Mobile Cards */
+        .mobile-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
         }
         
-        .info-box h4 {
-            color: #1a1a2e;
-            margin-bottom: 8px;
+        .mobile-card {
+            background: var(--light-gray);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #e8e8e8;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         
-        .info-box ul {
-            list-style: none;
+        .mobile-card:hover {
+            border-color: var(--orange);
+            transform: translateX(5px);
         }
         
-        .info-box li {
-            padding: 8px 0;
+        .mobile-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mobile-card-label {
             color: #666;
-            border-bottom: 1px solid #eee;
+            font-weight: 500;
         }
         
-        .info-box li:last-child {
-            border-bottom: none;
+        .mobile-card-label i {
+            color: var(--orange);
+            margin-right: 8px;
         }
         
-        @media (max-width: 600px) {
+        .mobile-card-value {
+            color: var(--orange);
+        }
+        
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .admin-container {
+                padding: 20px;
+            }
+            
+            .admin-header {
+                padding: 20px 25px;
+            }
+            
+            .header-top h1 {
+                font-size: 1.5rem;
+            }
+            
             .stats-grid {
-                grid-template-columns: 1fr 1fr;
+                gap: 20px;
             }
             
-            .feature-grid {
-                grid-template-columns: 1fr;
+            .stat-card {
+                padding: 25px;
             }
             
-            .container {
-                padding: 16px;
+            .stat-card .number {
+                font-size: 2.2rem;
+            }
+        }
+        
+        /* Mobile Optimization */
+        @media (max-width: 480px) {
+            .admin-header {
+                padding: 12px;
+            }
+            
+            .header-top h1 {
+                font-size: 1.1rem;
+            }
+            
+            .user-info {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .tab-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-card .number {
+                font-size: 1.8rem;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .quick-action-btn {
+                padding: 15px 5px;
+                min-height: 80px;
+            }
+            
+            .quick-action-btn i {
+                font-size: 1.5rem;
+            }
+            
+            .quick-action-btn span {
+                font-size: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <div class="logo">
-            🎵 ZEDTOPVIBES<span>.admin</span>
-        </div>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-    
-    <div class="container">
-        <div class="welcome-card">
-            <div class="status-badge">✓ ACTIVE SESSION</div>
-            <h2>Welcome back, Admin</h2>
-            <p>Your Cloudflare authentication is working. You're logged in securely.</p>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">-</div>
-                <div class="stat-label">Total Tracks</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">-</div>
-                <div class="stat-label">Albums</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">-</div>
-                <div class="stat-label">Artists</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">-</div>
-                <div class="stat-label">Playlists</div>
-            </div>
-        </div>
-        
-        <h3 class="section-title">📋 Management Tools</h3>
-        
-        <div class="feature-grid">
-            <div class="feature-card" onclick="alert('Coming soon: Track Management')">
-                <div class="feature-icon">🎵</div>
-                <div class="feature-title">Tracks</div>
-                <div class="feature-desc">Upload, edit, delete music</div>
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="header-top">
+                <h1>
+                    <i class="fas fa-cog"></i> 
+                    Dashboard <span>| ZEDTOPVIBES</span>
+                </h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                    <button class="logout-btn" title="Logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
             </div>
             
-            <div class="feature-card" onclick="alert('Coming soon: Album Management')">
-                <div class="feature-icon">💿</div>
-                <div class="feature-title">Albums</div>
-                <div class="feature-desc">Create and manage albums</div>
-            </div>
-            
-            <div class="feature-card" onclick="alert('Coming soon: Artist Management')">
-                <div class="feature-icon">👤</div>
-                <div class="feature-title">Artists</div>
-                <div class="feature-desc">Artist profiles and bios</div>
-            </div>
-            
-            <div class="feature-card" onclick="alert('Coming soon: Playlist Management')">
-                <div class="feature-icon">📋</div>
-                <div class="feature-title">Playlists</div>
-                <div class="feature-desc">Curate and organize</div>
-            </div>
-            
-            <div class="feature-card" onclick="alert('Coming soon: Media Library')">
-                <div class="feature-icon">🖼️</div>
-                <div class="feature-title">Media</div>
-                <div class="feature-desc">Images and artwork</div>
-            </div>
-            
-            <div class="feature-card" onclick="alert('Coming soon: Analytics')">
-                <div class="feature-icon">📊</div>
-                <div class="feature-title">Analytics</div>
-                <div class="feature-desc">Stats and insights</div>
+            <!-- Navigation Tabs -->
+            <div class="admin-tabs">
+                <a href="index.html" class="tab-btn active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="upload.html" class="tab-btn">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                </a>
+                <a href="songs.html" class="tab-btn">
+                    <i class="fas fa-music"></i> Songs
+                </a>
+                <a href="albums.html" class="tab-btn">
+                    <i class="fas fa-compact-disc"></i> Albums
+                </a>
+                <a href="artists.html" class="tab-btn">
+                    <i class="fas fa-microphone"></i> Artists
+                </a>
+                <a href="playlists.html" class="tab-btn">
+                    <i class="fas fa-list"></i> Playlists
+                </a>
             </div>
         </div>
         
-        <div class="info-box">
-            <h4>🔐 Security Status</h4>
-            <ul>
-                <li>✓ Authentication: Cloudflare Secrets (Encrypted)</li>
-                <li>✓ Session: Active (expires in 24h)</li>
-                <li>✓ Environment: Production ready</li>
-                <li>✓ Login at: <code>/</code> (root)</li>
-            </ul>
+        <!-- Main Content -->
+        <div class="admin-content">
+            <!-- Welcome Header with Status Badge -->
+            <div style="margin-bottom: 25px;">
+                <div class="status-badge">✓ ACTIVE SESSION</div>
+                <h2 style="font-size: 1.5rem; margin-bottom: 5px;">Welcome back, Admin</h2>
+                <p style="color: #666;" id="currentDate"></p>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                    <h3 style="color: rgba(255,255,255,0.9);">Total Songs</h3>
+                    <div class="number" style="color: white;" id="totalSongs">0</div>
+                    <div class="label" style="color: rgba(255,255,255,0.8);">songs uploaded</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ff5500, #ff8c00); color: white; border: none;">
+                    <h3 style="color: rgba(255,255,255,0.9);">Total Albums</h3>
+                    <div class="number" style="color: white;" id="totalAlbums">0</div>
+                    <div class="label" style="color: rgba(255,255,255,0.8);">albums created</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none;">
+                    <h3 style="color: rgba(255,255,255,0.9);">Total Artists</h3>
+                    <div class="number" style="color: white;" id="totalArtists">0</div>
+                    <div class="label" style="color: rgba(255,255,255,0.8);">artists registered</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4a90e2, #9013fe); color: white; border: none;">
+                    <h3 style="color: rgba(255,255,255,0.9);">Total Playlists</h3>
+                    <div class="number" style="color: white;" id="totalPlaylists">0</div>
+                    <div class="label" style="color: rgba(255,255,255,0.8);">playlists curated</div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div style="background: white; border-radius: 12px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e8e8e8;">
+                <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-bolt" style="color: #ff5500;"></i> 
+                    Quick Actions
+                </h3>
+                <div class="quick-actions-grid">
+                    <a href="upload.html" class="quick-action-btn">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Upload Song</span>
+                    </a>
+                    <a href="#" class="quick-action-btn" onclick="alert('Create album feature coming soon!')">
+                        <i class="fas fa-compact-disc"></i>
+                        <span>New Album</span>
+                    </a>
+                    <a href="#" class="quick-action-btn" onclick="alert('Create artist feature coming soon!')">
+                        <i class="fas fa-microphone"></i>
+                        <span>New Artist</span>
+                    </a>
+                    <a href="#" class="quick-action-btn" onclick="alert('Create playlist feature coming soon!')">
+                        <i class="fas fa-list"></i>
+                        <span>New Playlist</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Security Info Box -->
+            <div style="background: #f8f9fa; border-radius: 12px; padding: 16px; margin: 20px 0; border-left: 4px solid #ff5500;">
+                <h4 style="color: #1a1a2e; margin-bottom: 8px;">🔐 Security Status</h4>
+                <ul style="list-style: none;">
+                    <li style="padding: 8px 0; color: #666; border-bottom: 1px solid #eee;">✓ Authentication: Cloudflare Secrets (Encrypted)</li>
+                    <li style="padding: 8px 0; color: #666; border-bottom: 1px solid #eee;">✓ Session: Active (expires in 24h)</li>
+                    <li style="padding: 8px 0; color: #666; border-bottom: 1px solid #eee;">✓ Environment: Production ready</li>
+                    <li style="padding: 8px 0; color: #666;">✓ Login at: <code>/</code> (root)</li>
+                </ul>
+            </div>
+            
+            <!-- Mobile Cards -->
+            <div class="mobile-cards">
+                <div class="mobile-card" onclick="window.location='upload.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-cloud-upload-alt"></i> Upload Song</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='songs.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-music"></i> Manage Songs</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='albums.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-compact-disc"></i> Manage Albums</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='artists.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-microphone"></i> Manage Artists</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='playlists.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-list"></i> Manage Playlists</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Check authentication
+        // ===== AUTHENTICATION FUNCTIONS (FROM OLD DASHBOARD) =====
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
@@ -312,27 +561,63 @@
             
             return true;
         }
-        
+
+        // ===== LOGOUT FUNCTION =====
         function logout() {
-            localStorage.clear();
-            window.location.href = '/';
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = '/';
+            }
         }
-        
-        // Run auth check
-        checkAuth();
-        
-        // Optional: Load stats from your API
+
+        // ===== STATS LOADING FUNCTION =====
         async function loadStats() {
             try {
                 const response = await fetch('/api/stats');
                 const data = await response.json();
-                // Update stats when API is ready
+                
+                // Update stats with real data when API is ready
+                if (data) {
+                    document.getElementById('totalSongs').textContent = data.songs || 0;
+                    document.getElementById('totalAlbums').textContent = data.albums || 0;
+                    document.getElementById('totalArtists').textContent = data.artists || 0;
+                    document.getElementById('totalPlaylists').textContent = data.playlists || 0;
+                }
             } catch (error) {
-                console.log('Stats API coming soon');
+                console.log('Stats API coming soon - using placeholder data');
+                // Optional: Set placeholder data for demo
+                document.getElementById('totalSongs').textContent = '24';
+                document.getElementById('totalAlbums').textContent = '8';
+                document.getElementById('totalArtists').textContent = '12';
+                document.getElementById('totalPlaylists').textContent = '5';
             }
         }
-        
-        // loadStats(); // Enable when stats API is ready
+
+        // ===== INITIALIZE DASHBOARD =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication first
+            if (!checkAuth()) return;
+            
+            // Set current date
+            const dateElement = document.getElementById('currentDate');
+            if (dateElement) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateElement.textContent = new Date().toLocaleDateString('en-GB', options);
+            }
+            
+            // Load stats
+            loadStats();
+        });
+
+        // ===== PROTECT OTHER PAGES =====
+        // This will run on every page load
+        window.addEventListener('load', function() {
+            // Don't redirect if we're on the login page
+            if (!window.location.pathname.includes('login.html') && 
+                window.location.pathname !== '/') {
+                checkAuth();
+            }
+        });
     </script>
 </body>
 </html>
