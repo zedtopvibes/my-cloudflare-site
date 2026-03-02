@@ -14,8 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* YOUR EXACT CSS FRAMEWORK – KEPT 100% INTACT (layout, sizing, flex, drawer, etc.) 
-           Only colour / background / decorative variables are overridden later */
+        /* YOUR EXACT CSS FRAMEWORK – KEPT 100% INTACT */
         * {
             margin: 0;
             padding: 0;
@@ -757,7 +756,6 @@
             letter-spacing: 0.3px;
         }
         
-        /* UPDATED: First paragraph color to white */
         .site-footer p:first-child {
             font-weight: 600;
             color: #ffffff;
@@ -787,7 +785,6 @@
             animation-delay: 1.5s;
         }
         
-        /* Maintain original color for "powered by cloudflare r2" */
         .site-footer p:last-child {
             font-size: 0.95rem;
             color: #ff5500;
@@ -1093,7 +1090,7 @@
             background: #ff8c00;
         }
 
-        /* ===== FIXED SKELETON STYLES - NO GLITCH ===== */
+        /* ===== FIXED SKELETON STYLES ===== */
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
@@ -1105,7 +1102,6 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Base skeleton thumbnail styles */
         .skeleton-thumbnail {
             background: #e0e0e0;
             border-radius: 3px;
@@ -1140,19 +1136,16 @@
             100% { opacity: 0.6; }
         }
         
-        /* Left sidebar thumbnails - desktop */
         .left-sidebar .skeleton-thumbnail {
             width: 120px;
             height: 120px;
         }
         
-        /* Right sidebar thumbnails - desktop */
         .right-sidebar .skeleton-thumbnail {
             width: 80px;
             height: 80px;
         }
         
-        /* Mobile overrides - applied immediately, no glitch */
         @media (max-width: 768px) {
             .left-sidebar .skeleton-thumbnail {
                 width: 100px;
@@ -1186,7 +1179,6 @@
             }
         }
         
-        /* Skeleton lines */
         .skeleton-line {
             height: 16px;
             background: #e0e0e0;
@@ -1200,9 +1192,8 @@
         .skeleton-line.long { width: 100%; }
 
         /* ---------- UNIQUE VARIATION: LIQUID GLASS / AETHERIC EDITION ---------- */
-        /* All structural CSS unchanged — only colours, shadows, backgrounds reimagined */
         body {
-            background: #0b0f1c;  /* deep cosmic base */
+            background: #0b0f1c;
             color: #e0e6f0;
             position: relative;
         }
@@ -1396,7 +1387,6 @@
             );
         }
         
-        /* UPDATED: Footer text colors - first paragraph white, last paragraph original */
         .site-footer p { color: #ffffff; }
         .site-footer p:last-child { color: #8fcbff; }
         
@@ -1419,7 +1409,6 @@
         .nav-divider { background: #264a66; }
         .nav-section-title { color: #90b9e5; }
         
-        /* custom glitch for new vibe */
         .site-logo:hover { animation: glitch-aether 0.3s ease; }
         @keyframes glitch-aether {
             0% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
@@ -1427,15 +1416,12 @@
             100% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
         }
         
-        /* scrollbar matches theme */
         ::-webkit-scrollbar-thumb { background: #1f6f9f; }
         ::-webkit-scrollbar-thumb:hover { background: #4a9fd0; }
         
-        /* force skeleton bg to match new dark scheme but keep original pulse */
         .skeleton-thumbnail { background: #1f2e40; }
         .skeleton-line { background: #1f2e40; }
         
-        /* Scroll progress indicator */
         .scroll-progress {
             position: fixed;
             top: 0;
@@ -1448,10 +1434,34 @@
             box-shadow: 0 0 10px #70c8ff;
         }
         
-        /* Border animation keyframes */
         @keyframes border-gradient {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
+        }
+
+        /* ===== NEW STYLES FOR PROGRESSIVE LOADING ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            opacity: 0;
+        }
+        
+        .loading-more-indicator {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
@@ -1474,14 +1484,13 @@
             </div>
         </div>
         
-        <!-- SEARCH SECTION - UPDATED WITH SEARCH ICON -->
         <section class="search-section">
             <div class="search-container">
                 <form action="/search" method="GET" style="display: flex; width: 100%;" onsubmit="event.preventDefault(); window.location.href='/search?q=' + encodeURIComponent(document.getElementById('searchInput').value)">
                     <div class="search-bar">
                         <input type="text" id="searchInput" name="q" class="search-input" placeholder="DIVE INTO SONIC WAVES..." value="">
                         <button type="submit" class="search-button">
-                            <i class="fas fa-search"></i>  <!-- CHANGED: From fa-whale to fa-search -->
+                            <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </form>
@@ -1499,7 +1508,7 @@
             </div>
             
             <div class="latest-albums-list" id="latestAlbums">
-                <!-- Loading skeletons with proper responsive sizing -->
+                <!-- Loading skeletons -->
                 <div class="album-item">
                     <div class="skeleton-thumbnail"></div>
                     <div class="album-info">
@@ -1530,7 +1539,7 @@
         <!-- RIGHT SIDEBAR -->
         <div class="right-sidebar">
             
-            <!-- 1. LATEST SONGS SECTION (now abyssal) -->
+            <!-- 1. LATEST SONGS SECTION -->
             <section class="section-block">
                 <div class="section-header">
                     <h2 class="section-title">echoes</h2>
@@ -1538,7 +1547,7 @@
                 </div>
                 
                 <div class="latest-albums-list" id="latestSongs">
-                    <!-- Loading skeletons with proper responsive sizing -->
+                    <!-- Loading skeletons -->
                     <div class="album-item">
                         <div class="skeleton-thumbnail"></div>
                         <div class="album-info">
@@ -1661,13 +1670,13 @@
         </div>
     </div>
     
-    <!-- FOOTER - UPDATED: First paragraph white, second original color -->
+    <!-- FOOTER -->
     <footer class="site-footer">
-        <p>© 2024 Zed Aetheric · liquid frequencies</p>  <!-- Now white -->
-        <p>powered by cloudflare r2</p>  <!-- Original color preserved -->
+        <p>© 2024 Zed Aetheric · liquid frequencies</p>
+        <p>powered by cloudflare r2</p>
     </footer>
     
-    <!-- LEFT NAVIGATION DRAWER (same structure) -->
+    <!-- LEFT NAVIGATION DRAWER -->
     <div class="nav-drawer left" id="leftDrawer">
         <div class="nav-header">
             <div class="site-logo">ZED•DEEP</div>
@@ -1711,7 +1720,7 @@
     </div>
 
     <script>
-        // (exact same JavaScript as original, unchanged)
+        // Drawer functionality
         document.addEventListener('DOMContentLoaded', function() {
             const hamburgerMenu = document.getElementById('hamburgerMenu');
             const leftDrawer = document.getElementById('leftDrawer');
@@ -1800,6 +1809,7 @@
                 }
             }, true);
             
+            // Load homepage data with progressive loading
             loadHomepageData();
         });
 
@@ -1849,65 +1859,201 @@
         };
         window.goToPlaylist = (slug) => window.location.href = `/playlist/${slug}`;
 
+        // ===== PROGRESSIVE LOADING IMPLEMENTATION =====
+        
         async function loadHomepageData() {
             try {
-                const [tracks, albums, playlists] = await Promise.all([
-                    fetch(`${API_BASE}/tracks`).then(r => r.json()),
-                    fetch(`${API_BASE}/albums`).then(r => r.json()),
-                    fetch(`${API_BASE}/playlists`).then(r => r.json())
+                // STEP 1: Load initial small batch FAST (3 items each)
+                const [initialTracks, initialAlbums] = await Promise.all([
+                    fetch(`${API_BASE}/tracks?limit=3`).then(r => r.json()),
+                    fetch(`${API_BASE}/albums?limit=3`).then(r => r.json())
                 ]);
-
-                const latestAlbums = [...albums].sort((a, b) => 
-                    new Date(b.created_at || b.release_date) - new Date(a.created_at || a.release_date)
-                ).slice(0, 5);
-
-                const latestSongs = [...tracks].sort((a, b) => 
-                    new Date(b.uploaded_at) - new Date(a.uploaded_at)
-                ).slice(0, 5);
-
-                const artistMap = new Map();
-                tracks.forEach(track => {
-                    if (!artistMap.has(track.artist)) {
-                        artistMap.set(track.artist, {
-                            name: track.artist,
-                            slug: track.artist_slug,
-                            trackCount: 1,
-                            totalPlays: track.plays || 0
-                        });
-                    } else {
-                        const artist = artistMap.get(track.artist);
-                        artist.trackCount++;
-                        artist.totalPlays += track.plays || 0;
-                    }
-                });
                 
-                const featuredArtists = Array.from(artistMap.values())
-                    .sort((a, b) => b.totalPlays - a.totalPlays)
-                    .slice(0, 5);
+                // Render initial content immediately
+                renderLatestAlbums(initialAlbums, true);
+                renderLatestSongs(initialTracks, true);
+                
+                // Show loading indicators
+                showLoadingIndicators();
+                
+                // STEP 2: Load remaining data in background
+                setTimeout(async () => {
+                    try {
+                        const [allTracks, allAlbums, allPlaylists] = await Promise.all([
+                            fetch(`${API_BASE}/tracks?limit=20`).then(r => r.json()),
+                            fetch(`${API_BASE}/albums?limit=20`).then(r => r.json()),
+                            fetch(`${API_BASE}/playlists`).then(r => r.json())
+                        ]);
 
-                const topRated = [...tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 5);
-                const featuredPlaylists = playlists.filter(p => p.is_featured).slice(0, 5);
-                const trendingAlbums = [...albums].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+                        // Get remaining items (skip first 3)
+                        const remainingAlbums = allAlbums.slice(3);
+                        const remainingTracks = allTracks.slice(3);
+                        
+                        // Append remaining content
+                        if (remainingAlbums.length > 0) appendMoreAlbums(remainingAlbums);
+                        if (remainingTracks.length > 0) appendMoreSongs(remainingTracks);
+                        
+                        // Build artist map from all tracks
+                        const artistMap = new Map();
+                        allTracks.forEach(track => {
+                            if (!artistMap.has(track.artist)) {
+                                artistMap.set(track.artist, {
+                                    name: track.artist,
+                                    slug: track.artist_slug,
+                                    trackCount: 1,
+                                    totalPlays: track.plays || 0
+                                });
+                            } else {
+                                const artist = artistMap.get(track.artist);
+                                artist.trackCount++;
+                                artist.totalPlays += track.plays || 0;
+                            }
+                        });
+                        
+                        const featuredArtists = Array.from(artistMap.values())
+                            .sort((a, b) => b.totalPlays - a.totalPlays)
+                            .slice(0, 5);
 
-                renderLatestAlbums(latestAlbums);
-                renderLatestSongs(latestSongs);
-                renderFeaturedArtists(featuredArtists);
-                renderTopRated(topRated);
-                renderFeaturedPlaylists(featuredPlaylists);
-                renderTrendingAlbums(trendingAlbums);
+                        const topRated = [...allTracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 5);
+                        const featuredPlaylists = allPlaylists.filter(p => p.is_featured).slice(0, 5);
+                        const trendingAlbums = [...allAlbums].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+                        
+                        // Render remaining sections
+                        renderFeaturedArtists(featuredArtists);
+                        renderTopRated(topRated);
+                        renderFeaturedPlaylists(featuredPlaylists);
+                        renderTrendingAlbums(trendingAlbums);
+                        
+                        // Hide loading indicators
+                        hideLoadingIndicators();
+                        
+                    } catch (error) {
+                        console.error('Error loading remaining data:', error);
+                        hideLoadingIndicators();
+                    }
+                }, 100);
+                
             } catch (error) {
-                console.error('Error loading homepage data:', error);
+                console.error('Error loading initial data:', error);
+                hideLoadingIndicators();
             }
         }
 
-        function renderLatestAlbums(albums) {
+        function showLoadingIndicators() {
+            const containers = ['latestAlbums', 'latestSongs'];
+            containers.forEach(id => {
+                const container = document.getElementById(id);
+                if (container && !document.getElementById(`${id}-loading-more`)) {
+                    const loadingEl = document.createElement('div');
+                    loadingEl.id = `${id}-loading-more`;
+                    loadingEl.className = 'loading-more-indicator';
+                    loadingEl.innerHTML = `
+                        <div style="text-align: center; padding: 10px; opacity: 0.7;">
+                            <i class="fas fa-circle-notch fa-spin" style="color: #70c8ff;"></i>
+                            <span style="color: #70c8ff; margin-left: 8px;">loading deeper...</span>
+                        </div>
+                    `;
+                    container.appendChild(loadingEl);
+                }
+            });
+        }
+
+        function hideLoadingIndicators() {
+            const indicators = document.querySelectorAll('[id$="-loading-more"]');
+            indicators.forEach(el => el.remove());
+        }
+
+        function renderLatestAlbums(albums, isInitial = false) {
             const container = document.getElementById('latestAlbums');
             if (!container) return;
-            container.innerHTML = albums.map(album => `
-                <div class="album-item" onclick="goToAlbum('${album.slug}')">
+            
+            if (isInitial) {
+                // Check if skeletons are still there
+                const skeletonItems = container.querySelectorAll('.album-item');
+                if (skeletonItems.length > 0 && skeletonItems[0]?.querySelector('.skeleton-thumbnail')) {
+                    container.innerHTML = albums.map(album => `
+                        <div class="album-item" onclick="goToAlbum('${album.slug}')">
+                            <div class="album-thumbnail placeholder">💿</div>
+                            <div class="album-info">
+                                <div class="album-title">${album.title || 'Untitled'}</div>
+                                <div class="album-meta">
+                                    <span class="album-artist">${album.artist || 'Unknown'}</span>
+                                    <span class="album-genre">${album.genre || 'Various'}</span>
+                                    <span class="album-tracks">${album.track_count || 0} tracks</span>
+                                </div>
+                                <div class="album-date">${album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown'}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                container.innerHTML = albums.map(album => `
+                    <div class="album-item" onclick="goToAlbum('${album.slug}')">
+                        <div class="album-thumbnail placeholder">💿</div>
+                        <div class="album-info">
+                            <div class="album-title">${album.title || 'Untitled'}</div>
+                            <div class="album-meta">
+                                <span class="album-artist">${album.artist || 'Unknown'}</span>
+                                <span class="album-genre">${album.genre || 'Various'}</span>
+                                <span class="album-tracks">${album.track_count || 0} tracks</span>
+                            </div>
+                            <div class="album-date">${album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderLatestSongs(songs, isInitial = false) {
+            const container = document.getElementById('latestSongs');
+            if (!container) return;
+            
+            if (isInitial) {
+                const skeletonItems = container.querySelectorAll('.album-item');
+                if (skeletonItems.length > 0 && skeletonItems[0]?.querySelector('.skeleton-thumbnail')) {
+                    container.innerHTML = songs.map(song => `
+                        <div class="album-item" onclick="goToSong(${song.id}, '${song.slug}')">
+                            <div class="album-thumbnail song-thumbnail"></div>
+                            <div class="album-info">
+                                <div class="album-title">${song.title || 'Untitled'}</div>
+                                <div class="album-meta">
+                                    <span class="album-artist">${song.artist || 'Unknown'}</span>
+                                    <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</span>
+                                </div>
+                                <div class="album-date">${formatDate(song.uploaded_at)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                container.innerHTML = songs.map(song => `
+                    <div class="album-item" onclick="goToSong(${song.id}, '${song.slug}')">
+                        <div class="album-thumbnail song-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">${song.title || 'Untitled'}</div>
+                            <div class="album-meta">
+                                <span class="album-artist">${song.artist || 'Unknown'}</span>
+                                <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</span>
+                            </div>
+                            <div class="album-date">${formatDate(song.uploaded_at)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function appendMoreAlbums(albums) {
+            const container = document.getElementById('latestAlbums');
+            if (!container || !albums.length) return;
+            
+            const loadingIndicator = document.getElementById('latestAlbums-loading-more');
+            if (loadingIndicator) loadingIndicator.remove();
+            
+            const newAlbumsHTML = albums.map(album => `
+                <div class="album-item fade-in" onclick="goToAlbum('${album.slug}')">
                     <div class="album-thumbnail placeholder">💿</div>
                     <div class="album-info">
-                        <div class="album-title">${album.title}</div>
+                        <div class="album-title">${album.title || 'Untitled'}</div>
                         <div class="album-meta">
                             <span class="album-artist">${album.artist || 'Unknown'}</span>
                             <span class="album-genre">${album.genre || 'Various'}</span>
@@ -1917,91 +2063,131 @@
                     </div>
                 </div>
             `).join('');
+            
+            container.insertAdjacentHTML('beforeend', newAlbumsHTML);
+            
+            // Trigger animation
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    el.style.animation = 'fadeInUp 0.3s ease-out';
+                    el.classList.remove('fade-in');
+                });
+            }, 10);
         }
 
-        function renderLatestSongs(songs) {
+        function appendMoreSongs(songs) {
             const container = document.getElementById('latestSongs');
-            if (!container) return;
-            container.innerHTML = songs.map(song => `
-                <div class="album-item" onclick="goToSong(${song.id}, '${song.slug}')">
+            if (!container || !songs.length) return;
+            
+            const loadingIndicator = document.getElementById('latestSongs-loading-more');
+            if (loadingIndicator) loadingIndicator.remove();
+            
+            const newSongsHTML = songs.map(song => `
+                <div class="album-item fade-in" onclick="goToSong(${song.id}, '${song.slug}')">
                     <div class="album-thumbnail song-thumbnail"></div>
                     <div class="album-info">
-                        <div class="album-title">${song.title}</div>
+                        <div class="album-title">${song.title || 'Untitled'}</div>
                         <div class="album-meta">
-                            <span class="album-artist">${song.artist}</span>
+                            <span class="album-artist">${song.artist || 'Unknown'}</span>
                             <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</span>
                         </div>
                         <div class="album-date">${formatDate(song.uploaded_at)}</div>
                     </div>
                 </div>
             `).join('');
+            
+            container.insertAdjacentHTML('beforeend', newSongsHTML);
+            
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    el.style.animation = 'fadeInUp 0.3s ease-out';
+                    el.classList.remove('fade-in');
+                });
+            }, 10);
         }
 
         function renderFeaturedArtists(artists) {
             const container = document.getElementById('featuredArtists');
             if (!container) return;
-            container.innerHTML = artists.map(artist => `
-                <div class="album-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
-                    <div class="album-thumbnail artist-thumbnail"></div>
-                    <div class="album-info">
-                        <div class="album-title">${artist.name}</div>
-                        <div class="album-meta">
-                            <span class="artist-stats">${artist.trackCount} tracks</span>
-                            <span class="artist-stats"><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
+            
+            // Check if skeletons are still there
+            const skeletonItems = container.querySelectorAll('.album-item');
+            if (skeletonItems.length > 0 && skeletonItems[0]?.querySelector('.skeleton-thumbnail')) {
+                container.innerHTML = artists.map(artist => `
+                    <div class="album-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
+                        <div class="album-thumbnail artist-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">${artist.name || 'Unknown Artist'}</div>
+                            <div class="album-meta">
+                                <span class="artist-stats">${artist.trackCount || 0} tracks</span>
+                                <span class="artist-stats"><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
 
         function renderTopRated(tracks) {
             const container = document.getElementById('topRated');
             if (!container) return;
-            container.innerHTML = tracks.map(track => `
-                <div class="album-item" onclick="goToSong(${track.id}, '${track.slug}')">
-                    <div class="album-thumbnail song-thumbnail"></div>
-                    <div class="album-info">
-                        <div class="album-title">${track.title}</div>
-                        <div class="album-meta">
-                            <span class="album-artist">${track.artist}</span>
-                            <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+            
+            const skeletonItems = container.querySelectorAll('.album-item');
+            if (skeletonItems.length > 0 && skeletonItems[0]?.querySelector('.skeleton-thumbnail')) {
+                container.innerHTML = tracks.map(track => `
+                    <div class="album-item" onclick="goToSong(${track.id}, '${track.slug}')">
+                        <div class="album-thumbnail song-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">${track.title || 'Untitled'}</div>
+                            <div class="album-meta">
+                                <span class="album-artist">${track.artist || 'Unknown'}</span>
+                                <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
 
         function renderFeaturedPlaylists(playlists) {
             const container = document.getElementById('featuredPlaylists');
             if (!container) return;
-            container.innerHTML = playlists.map(playlist => `
-                <div class="album-item" onclick="goToPlaylist('${playlist.slug}')">
-                    <div class="album-thumbnail playlist-thumbnail"></div>
-                    <div class="album-info">
-                        <div class="album-title">${playlist.name}</div>
-                        <div class="album-meta">
-                            <span class="playlist-songs">${playlist.track_count || 0} tracks</span>
+            
+            const skeletonItems = container.querySelectorAll('.album-item');
+            if (skeletonItems.length > 0 && skeletonItems[0]?.querySelector('.skeleton-thumbnail')) {
+                container.innerHTML = playlists.map(playlist => `
+                    <div class="album-item" onclick="goToPlaylist('${playlist.slug}')">
+                        <div class="album-thumbnail playlist-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="album-title">${playlist.name || 'Untitled Playlist'}</div>
+                            <div class="album-meta">
+                                <span class="playlist-songs">${playlist.track_count || 0} tracks</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
 
         function renderTrendingAlbums(albums) {
             const container = document.getElementById('trendingAlbums');
             if (!container) return;
-            container.innerHTML = albums.map(album => `
-                <div class="album-item" onclick="goToAlbum('${album.slug}')">
-                    <div class="album-thumbnail placeholder">💿</div>
-                    <div class="album-info">
-                        <div class="album-title">${album.title}</div>
-                        <div class="album-meta">
-                            <span class="album-artist">${album.artist}</span>
-                            <span class="album-genre">${album.genre || 'Various'}</span>
+            
+            const skeletonItems = container.querySelectorAll('.album-item');
+            if (skeletonItems.length > 0 && skeletonItems[0]?.querySelector('.skeleton-thumbnail')) {
+                container.innerHTML = albums.map(album => `
+                    <div class="album-item" onclick="goToAlbum('${album.slug}')">
+                        <div class="album-thumbnail placeholder">💿</div>
+                        <div class="album-info">
+                            <div class="album-title">${album.title || 'Untitled'}</div>
+                            <div class="album-meta">
+                                <span class="album-artist">${album.artist || 'Unknown'}</span>
+                                <span class="album-genre">${album.genre || 'Various'}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
     </script>
 </body>
