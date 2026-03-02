@@ -79,6 +79,7 @@
             padding: 8px 15px;
             border-radius: 30px;
             font-size: 0.9rem;
+            margin-left: auto; /* This pushes it to the right */
         }
         
         .user-info i {
@@ -157,45 +158,52 @@
             box-shadow: var(--shadow);
         }
         
-        /* Stats Grid */
+        /* Stats Grid - 2x2 on mobile, 4 on desktop */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+            gap: 10px;
             margin-bottom: 20px;
         }
         
         .stat-card {
             background: var(--light-gray);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             border: 1px solid #e8e8e8;
+            text-align: center;
         }
         
         .stat-card h3 {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .stat-card .number {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--orange);
             line-height: 1.2;
         }
         
         .stat-card .label {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #999;
-            margin-top: 5px;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         /* Quick Actions */
         .quick-actions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+            gap: 8px;
             margin-top: 15px;
         }
         
@@ -204,14 +212,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px 10px;
+            padding: 15px 8px;
             background: #f8f9fa;
             border-radius: 8px;
             text-decoration: none;
             color: #333;
             transition: all 0.3s;
             border: 1px solid #e8e8e8;
-            min-height: 100px;
+            min-height: 80px;
         }
         
         .quick-action-btn:hover {
@@ -221,14 +229,15 @@
         }
         
         .quick-action-btn i {
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: var(--orange);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         
         .quick-action-btn span {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
+            text-align: center;
         }
         
         /* Buttons */
@@ -237,10 +246,10 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -270,24 +279,24 @@
             display: inline-block;
             background: #4caf50;
             color: white;
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 12px;
-            margin-bottom: 16px;
+            font-size: 11px;
+            margin-bottom: 12px;
         }
         
         /* Mobile Cards */
         .mobile-cards {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 15px;
         }
         
         .mobile-card {
             background: var(--light-gray);
-            border-radius: 10px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 12px;
             border: 1px solid #e8e8e8;
             cursor: pointer;
             transition: all 0.3s;
@@ -307,11 +316,13 @@
         .mobile-card-label {
             color: #666;
             font-weight: 500;
+            font-size: 0.9rem;
         }
         
         .mobile-card-label i {
             color: var(--orange);
             margin-right: 8px;
+            width: 20px;
         }
         
         .mobile-card-value {
@@ -332,62 +343,72 @@
                 font-size: 1.5rem;
             }
             
+            /* Switch to 4 columns on desktop */
             .stats-grid {
-                gap: 20px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
             }
             
             .stat-card {
-                padding: 25px;
+                padding: 20px;
+            }
+            
+            .stat-card h3 {
+                font-size: 0.9rem;
             }
             
             .stat-card .number {
-                font-size: 2.2rem;
+                font-size: 2rem;
+            }
+            
+            .stat-card .label {
+                font-size: 0.75rem;
+            }
+            
+            /* Quick actions 4 columns on desktop */
+            .quick-actions-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            
+            .quick-action-btn {
+                padding: 20px 10px;
+                min-height: 100px;
+            }
+            
+            .quick-action-btn i {
+                font-size: 2rem;
+            }
+            
+            .quick-action-btn span {
+                font-size: 0.9rem;
             }
         }
         
-        /* Mobile Optimization */
-        @media (max-width: 480px) {
-            .admin-header {
-                padding: 12px;
+        /* Small phones - ensure text fits */
+        @media (max-width: 380px) {
+            .stat-card h3 {
+                font-size: 0.7rem;
+            }
+            
+            .stat-card .number {
+                font-size: 1.5rem;
+            }
+            
+            .stat-card .label {
+                font-size: 0.6rem;
+            }
+            
+            .quick-action-btn span {
+                font-size: 0.7rem;
             }
             
             .header-top h1 {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .user-info {
                 padding: 5px 10px;
-                font-size: 0.8rem;
-            }
-            
-            .tab-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .stat-card {
-                padding: 15px;
-            }
-            
-            .stat-card .number {
-                font-size: 1.8rem;
-            }
-            
-            .quick-actions-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            
-            .quick-action-btn {
-                padding: 15px 5px;
-                min-height: 80px;
-            }
-            
-            .quick-action-btn i {
-                font-size: 1.5rem;
-            }
-            
-            .quick-action-btn span {
                 font-size: 0.8rem;
             }
         }
@@ -400,7 +421,7 @@
             <div class="header-top">
                 <h1>
                     <i class="fas fa-cog"></i> 
-                    Dashboard <span>| ZEDTOPVIBES</span>
+                    Dashboard
                 </h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
@@ -437,39 +458,39 @@
         <!-- Main Content -->
         <div class="admin-content">
             <!-- Welcome Header with Status Badge -->
-            <div style="margin-bottom: 25px;">
+            <div style="margin-bottom: 20px;">
                 <div class="status-badge">✓ ACTIVE SESSION</div>
-                <h2 style="font-size: 1.5rem; margin-bottom: 5px;">Welcome back, Admin</h2>
-                <p style="color: #666;" id="currentDate"></p>
+                <h2 style="font-size: 1.3rem; margin-bottom: 5px;">Welcome back, Admin</h2>
+                <p style="color: #666; font-size: 0.9rem;" id="currentDate"></p>
             </div>
             
-            <!-- Stats Grid - All zeros, ready for your data -->
+            <!-- Stats Grid - 2x2 on mobile, 4 on desktop -->
             <div class="stats-grid">
                 <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
                     <h3 style="color: rgba(255,255,255,0.9);">Total Songs</h3>
                     <div class="number" style="color: white;" id="totalSongs">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">songs uploaded</div>
+                    <div class="label" style="color: rgba(255,255,255,0.8);">songs</div>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #ff5500, #ff8c00); color: white; border: none;">
                     <h3 style="color: rgba(255,255,255,0.9);">Total Albums</h3>
                     <div class="number" style="color: white;" id="totalAlbums">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">albums created</div>
+                    <div class="label" style="color: rgba(255,255,255,0.8);">albums</div>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none;">
                     <h3 style="color: rgba(255,255,255,0.9);">Total Artists</h3>
                     <div class="number" style="color: white;" id="totalArtists">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">artists registered</div>
+                    <div class="label" style="color: rgba(255,255,255,0.8);">artists</div>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #4a90e2, #9013fe); color: white; border: none;">
                     <h3 style="color: rgba(255,255,255,0.9);">Total Playlists</h3>
                     <div class="number" style="color: white;" id="totalPlaylists">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">playlists curated</div>
+                    <div class="label" style="color: rgba(255,255,255,0.8);">playlists</div>
                 </div>
             </div>
             
             <!-- Quick Actions -->
-            <div style="background: white; border-radius: 12px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e8e8e8;">
-                <h3 style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+            <div style="background: white; border-radius: 12px; padding: 15px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e8e8e8;">
+                <h3 style="margin-bottom: 12px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
                     <i class="fas fa-bolt" style="color: #ff5500;"></i> 
                     Quick Actions
                 </h3>
@@ -494,13 +515,12 @@
             </div>
             
             <!-- Security Info Box -->
-            <div style="background: #f8f9fa; border-radius: 12px; padding: 16px; margin: 20px 0; border-left: 4px solid #ff5500;">
-                <h4 style="color: #1a1a2e; margin-bottom: 8px;">🔐 Security Status</h4>
+            <div style="background: #f8f9fa; border-radius: 12px; padding: 15px; margin: 15px 0; border-left: 4px solid #ff5500;">
+                <h4 style="color: #1a1a2e; margin-bottom: 8px; font-size: 1rem;">🔐 Security Status</h4>
                 <ul style="list-style: none;">
-                    <li style="padding: 8px 0; color: #666; border-bottom: 1px solid #eee;">✓ Authentication: Cloudflare Secrets (Encrypted)</li>
-                    <li style="padding: 8px 0; color: #666; border-bottom: 1px solid #eee;">✓ Session: Active (expires in 24h)</li>
-                    <li style="padding: 8px 0; color: #666; border-bottom: 1px solid #eee;">✓ Environment: Production ready</li>
-                    <li style="padding: 8px 0; color: #666;">✓ Login at: <code>/</code> (root)</li>
+                    <li style="padding: 6px 0; color: #666; border-bottom: 1px solid #eee; font-size: 0.85rem;">✓ Authentication: Cloudflare Secrets</li>
+                    <li style="padding: 6px 0; color: #666; border-bottom: 1px solid #eee; font-size: 0.85rem;">✓ Session: Active (24h expiry)</li>
+                    <li style="padding: 6px 0; color: #666; font-size: 0.85rem;">✓ Environment: Production ready</li>
                 </ul>
             </div>
             
@@ -541,7 +561,7 @@
     </div>
 
     <script>
-        // ===== AUTHENTICATION FUNCTIONS (FROM OLD DASHBOARD) =====
+        // ===== AUTHENTICATION FUNCTIONS =====
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
@@ -570,13 +590,12 @@
             }
         }
 
-        // ===== STATS LOADING FUNCTION (READY FOR YOUR API) =====
+        // ===== STATS LOADING FUNCTION =====
         async function loadStats() {
             try {
                 const response = await fetch('/api/stats');
                 const data = await response.json();
                 
-                // Update stats with your real data
                 if (data) {
                     document.getElementById('totalSongs').textContent = data.songs || 0;
                     document.getElementById('totalAlbums').textContent = data.albums || 0;
@@ -584,24 +603,20 @@
                     document.getElementById('totalPlaylists').textContent = data.playlists || 0;
                 }
             } catch (error) {
-                console.log('Stats API not ready yet - keeping zeros');
-                // All stats stay at 0 - no demo content
+                console.log('Stats API not ready - keeping zeros');
             }
         }
 
         // ===== INITIALIZE DASHBOARD =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication first
             if (!checkAuth()) return;
             
-            // Set current date
             const dateElement = document.getElementById('currentDate');
             if (dateElement) {
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 dateElement.textContent = new Date().toLocaleDateString('en-GB', options);
             }
             
-            // Load stats (will stay at 0 until your API is ready)
             loadStats();
         });
 
