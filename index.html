@@ -2,394 +2,318 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Dashboard - Admin | ZEDTOPVIBES</title>
+    <title>ZEDALBUMS · AETHERIC EDITION</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Montserrat Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            /* Blue/ocean theme from frontend */
-            --primary-blue: #1f6f9f;
-            --primary-light: #2f8ed0;
-            --primary-lighter: #70c8ff;
-            --primary-dark: #1f4c73;
-            --deep-bg: #0b0f1c;
-            --dark: #1a1a1a;
-            --gray: #666;
-            --light-gray: #f0f2f5;
-            --white: #ffffff;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --card-bg: rgba(22, 28, 40, 0.03); /* Very subtle blue tint */
+        /* YOUR EXACT CSS FRAMEWORK – KEPT 100% INTACT (layout, sizing, flex, drawer, etc.) 
+           Only colour / background / decorative variables are overridden later */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
             font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--light-gray);
+            background-color: #f8f9fa;
+            color: #333333;
+            line-height: 1.6;
             min-height: 100vh;
-            line-height: 1.5;
-            color: #333;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
         }
         
-        /* Container */
-        .admin-container {
-            width: 100%;
+        .main-content-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 10px;
-        }
-        
-        /* Header */
-        .admin-header {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .header-top {
+            padding: 20px 10px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 10px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
         }
         
-        .header-top h1 {
-            color: var(--primary-blue);
-            font-size: 1.3rem;
-            font-weight: 700;
+        .left-sidebar {
+            flex: 3;
+            background: #ffffff;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8e8e8;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .right-sidebar {
+            flex: 1;
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 300px;
         }
         
-        .header-top h1 span {
-            color: #666;
-            font-size: 0.9rem;
-            font-weight: 400;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--light-gray);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            margin-left: auto;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .user-info i {
-            color: var(--primary-blue);
-        }
-        
-        .user-info span {
-            font-weight: 600;
-        }
-        
-        .logout-btn {
-            color: #666;
-            transition: color 0.3s;
-            padding: 8px;
-            text-decoration: none;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        
-        .logout-btn:hover {
-            color: var(--primary-blue);
-        }
-        
-        /* Navigation Tabs */
-        .admin-tabs {
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            padding: 5px 0;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        
-        .admin-tabs::-webkit-scrollbar {
+        .pagination-container {
+            width: 100%;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            background: #ffffff;
             display: none;
         }
         
-        .tab-btn {
-            padding: 10px 15px;
-            background: transparent;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-            display: inline-flex;
+        .pagination-container.show {
+            display: block;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
             align-items: center;
             gap: 6px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .pagination-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 3px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
             text-decoration: none;
         }
         
-        .tab-btn i {
-            font-size: 1rem;
+        .pagination-item:hover {
+            background: #f5f5f5;
+            border-color: #ff5500;
+            color: #ff5500;
+            transform: translateY(-1px);
         }
         
-        .tab-btn:hover {
-            background: #f0f0f0;
-            color: var(--primary-blue);
-        }
-        
-        .tab-btn.active {
-            background: var(--primary-blue);
+        .pagination-item.active {
+            background: #ff5500;
+            border-color: #ff5500;
             color: white;
+            box-shadow: 0 2px 8px rgba(255, 85, 0, 0.2);
         }
         
-        /* Content Area */
-        .admin-content {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
+        .pagination-item.active:hover {
+            background: #ff6a1a;
+            transform: translateY(-1px);
         }
         
-        /* Stats Grid - 2x2 on mobile, 4 on desktop */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: var(--light-gray);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(
-                circle at 30% 30%,
-                rgba(31, 111, 159, 0.03) 0%,
-                transparent 70%
-            );
-            pointer-events: none;
-            animation: rotate-light 20s linear infinite;
-        }
-        
-        .stat-card:hover {
-            border-color: var(--primary-blue);
-            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
-        }
-        
-        @keyframes rotate-light {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .stat-card h3 {
-            font-size: 0.8rem;
-            color: var(--primary-dark);
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .pagination-ellipsis {
+            color: #999;
             font-weight: 600;
+            padding: 0 5px;
         }
         
-        .stat-card .number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            line-height: 1.2;
+        .pagination-prev,
+        .pagination-next {
+            width: auto;
+            padding: 0 15px;
+            gap: 6px;
+        }
+        
+        .pagination-prev i,
+        .pagination-next i {
+            font-size: 0.9rem;
+        }
+        
+        .pagination-prev.disabled,
+        .pagination-next.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .site-header {
+            width: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .branding-bar {
+            background-color: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: relative;
-            z-index: 1;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            width: 100%;
         }
         
-        .stat-card .label {
-            font-size: 0.7rem;
-            color: #666;
-            margin-top: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .site-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 22px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff, #fff5e6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2);
+            position: relative;
+            margin: 0;
         }
         
-        /* Colored stat cards (gradient versions) */
-        .stat-card.blue-gradient {
-            background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
-            border: none;
+        .site-logo::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.1) 25%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.1) 75%, 
+                transparent 100%);
+            pointer-events: none;
         }
         
-        .stat-card.blue-gradient h3,
-        .stat-card.blue-gradient .number,
-        .stat-card.blue-gradient .label {
-            color: white;
-        }
-        
-        .stat-card.purple-gradient {
-            background: linear-gradient(135deg, #6b4f9f 0%, #a07dd0 100%);
-            border: none;
-        }
-        
-        .stat-card.purple-gradient h3,
-        .stat-card.purple-gradient .number,
-        .stat-card.purple-gradient .label {
-            color: white;
-        }
-        
-        .stat-card.teal-gradient {
-            background: linear-gradient(135deg, #1f6f5a 0%, #1d9f8f 100%);
-            border: none;
-        }
-        
-        .stat-card.teal-gradient h3,
-        .stat-card.teal-gradient .number,
-        .stat-card.teal-gradient .label {
-            color: white;
-        }
-        
-        /* Quick Actions */
-        .quick-actions-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
-            gap: 8px;
-            margin-top: 15px;
-        }
-        
-        .quick-action-btn {
+        .hamburger-menu {
+            width: 24px;
+            height: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 15px 8px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #333;
-            transition: all 0.3s;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-            min-height: 80px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .quick-action-btn::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(
-                circle at 30% 30%,
-                rgba(31, 111, 159, 0.05) 0%,
-                transparent 70%
-            );
-            pointer-events: none;
-            animation: rotate-light 20s linear infinite;
-        }
-        
-        .quick-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(31, 111, 159, 0.2);
-            border-color: var(--primary-blue);
-        }
-        
-        .quick-action-btn i {
-            font-size: 1.5rem;
-            color: var(--primary-blue);
-            margin-bottom: 5px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .quick-action-btn span {
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            justify-content: space-between;
             cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
         }
         
-        .btn-primary {
-            background: var(--primary-blue);
+        .hamburger-menu span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: #ff5500;
+            border-radius: 1.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-menu:hover span {
+            background-color: #ff8c00;
+        }
+        
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
             color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(255, 85, 0, 0.3);
         }
         
-        .btn-primary:hover {
-            background: var(--primary-light);
+        .profile-icon:hover {
+            background: linear-gradient(135deg, #ff6a1a, #ff9f1a);
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(255, 85, 0, 0.4);
         }
         
-        .btn-secondary {
-            background: #f0f0f0;
+        .search-section {
+            background: linear-gradient(135deg, #ff5500 0%, #ff8c00 100%);
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(255, 85, 0, 0.2);
+        }
+        
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+        }
+        
+        .search-bar {
+            display: flex;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 18px 25px;
+            border: none;
+            font-size: 16px;
             color: #333;
-            border: 1px solid rgba(31, 111, 159, 0.15);
+            background-color: #ffffff;
+            outline: none;
+            font-family: 'Montserrat', sans-serif;
         }
         
-        .btn-secondary:hover {
-            background: #e0e0e0;
+        .search-input::placeholder {
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
         
-        /* Status Badge */
-        .status-badge {
-            display: inline-block;
-            background: #4caf50;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            margin-bottom: 12px;
+        .search-button {
+            background: white;
+            color: #ff5500;
+            border: none;
+            border-left: 2px solid #ff5500;
+            padding: 0 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
         }
         
-        /* Section headers with ocean theme */
+        .search-button:hover {
+            background: #fff5e6;
+            border-left-color: #ff8c00;
+        }
+        
+        .search-button i {
+            font-size: 18px;
+        }
+        
+        .hero-section {
+            display: none;
+        }
+        
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 0;
-            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
-            margin-bottom: 15px;
+            padding: 14px 18px;
+            background: #fff;
+            border-bottom: 2px solid #f0f0f0;
+            transition: all 0.2s ease;
+            height: 56px;
             position: relative;
+            animation: float-header 4s ease-in-out infinite;
         }
         
         .section-header::after {
@@ -401,62 +325,167 @@
             height: 1px;
             background: linear-gradient(90deg, 
                 transparent 5%, 
-                var(--primary-blue) 20%, 
-                var(--primary-lighter) 50%,
-                var(--primary-blue) 80%, 
+                #ff5500 20%, 
+                #ff5500 80%, 
                 transparent 95%
             );
         }
         
-        .section-header h3 {
-            font-size: 1.1rem;
+        .section-header:hover {
+            background: #fafafa;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--primary-dark);
+            color: #222;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
         }
         
-        .section-header h3 i {
-            color: var(--primary-blue);
+        .section-title::before {
+            content: "♪";
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
         
-        .view-all-link {
-            color: var(--primary-blue);
+        .view-all {
+            color: #ff5500;
             text-decoration: none;
             font-size: 0.8rem;
             font-weight: 600;
             padding: 5px 12px;
-            border: 1px solid var(--primary-blue);
+            border: 1px solid #ff5500;
             border-radius: 3px;
             transition: all 0.2s ease;
-        }
-        
-        .view-all-link:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        /* Mobile Cards */
-        .mobile-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 15px;
-        }
-        
-        .mobile-card {
-            background: var(--light-gray);
-            border-radius: 8px;
-            padding: 12px;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-            cursor: pointer;
-            transition: all 0.3s;
+            background: #f8f9fa;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
             position: relative;
             overflow: hidden;
         }
         
-        .mobile-card::before {
+        .view-all:hover {
+            background: #ff5500;
+            color: white;
+            transform: translateX(2px);
+        }
+        
+        .view-all::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .view-all:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .section-block {
+            background: #ffffff;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8e8e8;
+            position: relative;
+        }
+        
+        .section-block::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(
+                45deg,
+                #ff5500,
+                #ff8c00,
+                #ff5500,
+                #ff8c00
+            );
+            background-size: 400% 400%;
+            border-radius: 5px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            animation: border-gradient 4s ease infinite;
+        }
+        
+        .section-block:hover::after {
+            opacity: 0.3;
+        }
+        
+        .latest-albums-list {
+            padding: 5px 0;
+        }
+        
+        .album-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 18px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .album-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 18px;
+            right: 18px;
+            height: 1px;
+            background: #f0f0f0;
+        }
+        
+        .album-item:hover::after {
+            background: #ffddcc;
+        }
+        
+        .album-item:hover {
+            background: #f9f9f9;
+            transform: translateX(4px);
+        }
+        
+        .album-item:last-child {
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+        
+        .album-thumbnail {
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+            border-radius: 3px;
+            overflow: hidden;
+            background: #f0f0f0;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .album-thumbnail::after {
             content: '';
             position: absolute;
             top: -50%;
@@ -465,97 +494,588 @@
             height: 200%;
             background: radial-gradient(
                 circle at 30% 30%,
-                rgba(31, 111, 159, 0.03) 0%,
+                rgba(255, 85, 0, 0.2),
                 transparent 70%
             );
+            opacity: 0;
+            transition: opacity 0.3s ease;
             pointer-events: none;
         }
         
-        .mobile-card:hover {
-            border-color: var(--primary-blue);
-            transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(31, 111, 159, 0.1);
+        .album-item:hover .album-thumbnail {
+            box-shadow: 0 0 20px rgba(255, 85, 0, 0.5);
+            border-color: #ff5500;
+            transform: scale(1.05);
         }
         
-        .mobile-card-row {
+        .album-item:hover .album-thumbnail::after {
+            opacity: 1;
+        }
+        
+        .album-item:hover .album-title {
+            text-shadow: 0 0 8px rgba(255, 85, 0, 0.3);
+        }
+        
+        .album-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .album-thumbnail.placeholder {
+            background: linear-gradient(
+                135deg, 
+                #ff5500 0%,
+                #ff8c00 25%,
+                #ff5500 50%,
+                #ff8c00 75%,
+                #ff5500 100%
+            );
+            background-size: 400% 400%;
+            animation: shimmer-gradient 8s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .album-thumbnail.placeholder::before {
+            content: "ALBUM";
+            letter-spacing: 1px;
+        }
+        
+        .album-thumbnail.song-thumbnail {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail.song-thumbnail::before {
+            content: "\f001";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .album-thumbnail.artist-thumbnail {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail.artist-thumbnail::before {
+            content: "\f007";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .album-thumbnail.playlist-thumbnail {
+            background: linear-gradient(135deg, #4a90e2, #9013fe);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail.playlist-thumbnail::before {
+            content: "\f001";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        
+        .album-info {
+            flex-grow: 1;
+            min-width: 0;
+            padding-right: 10px;
+        }
+        
+        .album-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 8px;
+            display: block;
+            white-space: normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 0.2px;
+            line-height: 1.4;
+            max-height: 3.6em;
+            transition: text-shadow 0.3s ease;
+        }
+        
+        .album-date {
+            color: #666;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.1px;
+        }
+        
+        .album-date::before {
+            content: "📅";
+            font-size: 0.75rem;
+            color: #999;
+        }
+        
+        .album-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .album-artist,
+        .album-genre,
+        .album-tracks,
+        .track-duration,
+        .artist-stats,
+        .playlist-songs,
+        .song-stats {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            line-height: 1.2;
+        }
+        
+        .album-artist {
+            color: #ff5500;
+            background: rgba(255, 85, 0, 0.08);
+        }
+        
+        .album-genre {
+            color: #666;
+            background: #f5f5f5;
+        }
+        
+        .artist-stats {
+            color: #9b59b6;
+            background: rgba(155, 89, 182, 0.08);
+        }
+        
+        .playlist-songs {
+            color: #4a90e2;
+            background: rgba(74, 144, 226, 0.08);
+        }
+        
+        .song-stats {
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.08);
+        }
+        
+        .right-sidebar .album-item {
+            padding: 12px 15px;
+            gap: 15px;
+        }
+        
+        .right-sidebar .album-thumbnail {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .right-sidebar .album-title {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            max-height: 2.8em;
+        }
+        
+        .right-sidebar .album-meta {
+            gap: 6px;
+            margin-top: 4px;
+        }
+        
+        .right-sidebar .album-date {
+            font-size: 0.75rem;
+        }
+        
+        .left-sidebar .album-artist,
+        .left-sidebar .album-genre {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+        }
+        
+        .left-sidebar .album-date {
+            font-size: 0.75rem;
+        }
+        
+        .left-sidebar .album-meta {
+            gap: 8px;
+            margin-top: 6px;
+        }
+        
+        .site-footer {
+            text-align: center;
+            margin-top: 45px;
+            padding: 25px 20px;
+            border-top: 3px solid #ff5500;
+            background: #ffffff;
+            border-radius: 8px 8px 0 0;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, 
+                transparent,
+                #ff5500,
+                #ff8c00,
+                #ff5500,
+                transparent
+            );
+            filter: blur(4px);
+        }
+        
+        .site-footer p {
+            margin: 10px 0;
+            color: #555;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        
+        /* UPDATED: First paragraph color to white */
+        .site-footer p:first-child {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            position: relative;
+            display: inline-block;
+            padding: 0 20px;
+        }
+        
+        .site-footer p:first-child::before,
+        .site-footer p:first-child::after {
+            content: '♪';
+            position: absolute;
+            opacity: 0.3;
+            animation: float-wave 3s ease-in-out infinite;
+        }
+        
+        .site-footer p:first-child::before {
+            left: -10px;
+            transform: rotate(-15deg);
+        }
+        
+        .site-footer p:first-child::after {
+            right: -10px;
+            transform: rotate(15deg);
+            animation-delay: 1.5s;
+        }
+        
+        /* Maintain original color for "powered by cloudflare r2" */
+        .site-footer p:last-child {
+            font-size: 0.95rem;
+            color: #ff5500;
+            font-weight: 600;
+        }
+        
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            width: 85%;
+            max-width: 350px;
+            height: 100%;
+            background-color: white;
+            z-index: 1000;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            display: none;
+        }
+        
+        .nav-drawer.left {
+            left: 0;
+            transform: translateX(-100%);
+        }
+        
+        .nav-drawer.right {
+            right: 0;
+            transform: translateX(100%);
+        }
+        
+        .nav-header {
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #eee;
+            background: linear-gradient(135deg, #ff5500 0%, #ff8c00 100%);
         }
         
-        .mobile-card-label {
-            color: #666;
+        .nav-header .site-logo {
+            color: white;
+            text-shadow: none;
+            font-size: 18px;
+            background: none;
+            -webkit-text-fill-color: white;
+            text-shadow: none;
+        }
+        
+        .close-nav {
+            font-size: 32px;
+            cursor: pointer;
+            color: white;
+            line-height: 1;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 17px;
             font-weight: 500;
-            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
         }
         
-        .mobile-card-label i {
-            color: var(--primary-blue);
-            margin-right: 8px;
-            width: 20px;
+        .nav-item i {
+            width: 24px;
+            margin-right: 10px;
+            color: #ff5500;
         }
         
-        .mobile-card-value {
-            color: var(--primary-blue);
+        .nav-item:hover {
+            background-color: #f8f8f8;
+            color: #ff5500;
+            border-left-color: #ff5500;
         }
         
-        /* Security Info Box */
-        .security-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            margin: 15px 0;
-            border-left: 4px solid var(--primary-blue);
-            border: 1px solid rgba(31, 111, 159, 0.15);
-            position: relative;
-            overflow: hidden;
+        .nav-item.active {
+            background-color: #f8f8f8;
+            color: #ff5500;
+            border-left-color: #ff5500;
+            font-weight: 600;
         }
         
-        .security-box::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(
-                circle at 30% 30%,
-                rgba(31, 111, 159, 0.03) 0%,
-                transparent 70%
-            );
-            pointer-events: none;
+        .nav-divider {
+            height: 1px;
+            background: #e8e8e8;
+            margin: 10px 0;
         }
         
-        .security-box h4 {
-            color: var(--primary-dark);
-            margin-bottom: 8px;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .nav-section-title {
+            padding: 15px 25px 5px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            font-weight: 600;
         }
         
-        .security-box ul {
-            list-style: none;
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2); }
+            50% { text-shadow: -2px 2px 0 #ff5500, -4px 4px 0 rgba(255, 85, 0, 0.2); }
+            100% { text-shadow: 2px 2px 0 #ff5500, 4px 4px 0 rgba(255, 85, 0, 0.2); }
         }
         
-        .security-box li {
-            padding: 6px 0;
-            color: #666;
-            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
-            font-size: 0.85rem;
+        .site-logo:hover {
+            animation: glitch 0.3s ease;
         }
         
-        .security-box li:last-child {
-            border-bottom: none;
+        @media (min-width: 768px) {
+            .branding-bar {
+                padding: 16px 20px;
+            }
+            
+            .site-logo {
+                font-size: 22px;
+            }
+            
+            .search-section {
+                padding: 25px 20px;
+            }
+            
+            .search-input {
+                padding: 18px 25px;
+                font-size: 16px;
+            }
         }
         
-        .security-box li i {
-            color: var(--primary-blue);
-            width: 20px;
+        @media (max-width: 768px) {
+            .main-content-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .left-sidebar,
+            .right-sidebar {
+                min-width: auto;
+            }
+            
+            .branding-bar {
+                padding: 16px 20px;
+            }
+            
+            .site-logo {
+                font-size: 22px;
+            }
+            
+            .search-section {
+                padding: 20px 15px;
+            }
+            
+            .search-container {
+                max-width: 500px;
+            }
+            
+            .search-input {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+            
+            .search-button {
+                padding: 0 20px;
+            }
+            
+            .section-header {
+                padding: 12px 14px;
+                height: 52px;
+            }
+            
+            .album-item {
+                gap: 15px;
+                padding: 14px 16px;
+            }
+            
+            .album-thumbnail {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .right-sidebar .album-thumbnail {
+                width: 80px;
+                height: 80px;
+            }
         }
         
-        /* Scrollbar */
+        @media (max-width: 480px) {
+            .main-content-container {
+                padding: 10px;
+            }
+            
+            .site-logo {
+                font-size: 20px;
+            }
+            
+            .search-section {
+                padding: 15px 10px;
+            }
+            
+            .search-container {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .search-input {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+            
+            .search-button {
+                padding: 0 16px;
+            }
+            
+            .section-header {
+                height: auto;
+                min-height: 50px;
+                padding: 10px 12px;
+            }
+            
+            .left-sidebar .album-item {
+                padding: 12px 15px;
+                gap: 15px;
+            }
+            
+            .left-sidebar .album-thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .right-sidebar .album-thumbnail {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .left-sidebar .album-title {
+                font-size: 0.95rem;
+            }
+            
+            .pagination-item {
+                width: 36px;
+                height: 36px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .search-section {
+                padding: 12px 8px;
+            }
+            
+            .search-input {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+            
+            .left-sidebar .album-thumbnail {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .right-sidebar .album-thumbnail {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .pagination-item {
+                width: 32px;
+                height: 32px;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .left-sidebar,
+        .section-block,
+        .site-footer,
+        .pagination-container,
+        .search-section {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -565,315 +1085,924 @@
         }
         
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-blue);
-            border-radius: 3px;
+            background: #ff5500;
+            border-radius: 1.5px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-light);
+            background: #ff8c00;
+        }
+
+        /* ===== FIXED SKELETON STYLES - NO GLITCH ===== */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
         }
         
-        /* Desktop Styles */
-        @media (min-width: 768px) {
-            .admin-container {
-                padding: 20px;
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Base skeleton thumbnail styles */
+        .skeleton-thumbnail {
+            background: #e0e0e0;
+            border-radius: 3px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skeleton-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 85, 0, 0.1),
+                transparent
+            );
+            animation: skeleton-shine 2s infinite;
+        }
+        
+        @keyframes skeleton-shine {
+            100% { left: 100%; }
+        }
+        
+        @keyframes skeleton-pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        /* Left sidebar thumbnails - desktop */
+        .left-sidebar .skeleton-thumbnail {
+            width: 120px;
+            height: 120px;
+        }
+        
+        /* Right sidebar thumbnails - desktop */
+        .right-sidebar .skeleton-thumbnail {
+            width: 80px;
+            height: 80px;
+        }
+        
+        /* Mobile overrides - applied immediately, no glitch */
+        @media (max-width: 768px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 100px;
+                height: 100px;
             }
-            
-            .admin-header {
-                padding: 20px 25px;
-            }
-            
-            .header-top h1 {
-                font-size: 1.5rem;
-            }
-            
-            /* Switch to 4 columns on desktop */
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
-            }
-            
-            .stat-card {
-                padding: 20px;
-            }
-            
-            .stat-card h3 {
-                font-size: 0.9rem;
-            }
-            
-            .stat-card .number {
-                font-size: 2rem;
-            }
-            
-            .stat-card .label {
-                font-size: 0.75rem;
-            }
-            
-            /* Quick actions 4 columns on desktop */
-            .quick-actions-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 10px;
-            }
-            
-            .quick-action-btn {
-                padding: 20px 10px;
-                min-height: 100px;
-            }
-            
-            .quick-action-btn i {
-                font-size: 2rem;
-            }
-            
-            .quick-action-btn span {
-                font-size: 0.9rem;
+            .right-sidebar .skeleton-thumbnail {
+                width: 80px;
+                height: 80px;
             }
         }
         
-        /* Small phones - ensure text fits */
-        @media (max-width: 380px) {
-            .stat-card h3 {
-                font-size: 0.7rem;
+        @media (max-width: 480px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
             }
-            
-            .stat-card .number {
-                font-size: 1.5rem;
+            .right-sidebar .skeleton-thumbnail {
+                width: 70px !important;
+                height: 70px !important;
             }
-            
-            .stat-card .label {
-                font-size: 0.6rem;
+        }
+        
+        @media (max-width: 360px) {
+            .left-sidebar .skeleton-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
             }
-            
-            .quick-action-btn span {
-                font-size: 0.7rem;
+            .right-sidebar .skeleton-thumbnail {
+                width: 60px !important;
+                height: 60px !important;
             }
-            
-            .header-top h1 {
-                font-size: 1rem;
-            }
-            
-            .user-info {
-                padding: 5px 10px;
-                font-size: 0.8rem;
-            }
+        }
+        
+        /* Skeleton lines */
+        .skeleton-line {
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+        
+        .skeleton-line.short { width: 60%; }
+        .skeleton-line.medium { width: 80%; }
+        .skeleton-line.long { width: 100%; }
+
+        /* ---------- UNIQUE VARIATION: LIQUID GLASS / AETHERIC EDITION ---------- */
+        /* All structural CSS unchanged — only colours, shadows, backgrounds reimagined */
+        body {
+            background: #0b0f1c;  /* deep cosmic base */
+            color: #e0e6f0;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(47, 142, 208, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(112, 200, 255, 0.1) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .site-header { background: #121624; box-shadow: 0 10px 30px -10px rgba(0,20,40,0.8); }
+        .branding-bar { background: #121624; box-shadow: 0 2px 15px rgba(0,0,0,0.7); }
+        .site-logo { background: linear-gradient(135deg, #c0e0ff, #ffffff); -webkit-background-clip: text; text-shadow: 2px 2px 0 #0066cc, 4px 4px 0 rgba(0,150,255,0.3); }
+        .hamburger-menu span { background-color: #70c8ff; }
+        .profile-icon { background: linear-gradient(135deg, #2a6f9c, #4aa3e2); box-shadow: 0 2px 10px rgba(0,160,255,0.6); }
+        .profile-icon:hover { background: #3d8fd9; }
+        .search-section { background: radial-gradient(circle at 30% 30%, #1a3650, #0b1a2a); box-shadow: 0 8px 20px rgba(0,100,200,0.3); }
+        .search-bar { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); }
+        .search-input { background: #1e2638; color: #f0f4ff; }
+        .search-input::placeholder { color: #90a9c9; font-weight: 400; letter-spacing: 1px; }
+        
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(47, 142, 208, 0.3);
+        }
+        
+        .search-button { background: #1e2638; color: #70c8ff; border-left: 2px solid #2f6f9f; }
+        .search-button:hover { background: #253040; border-left-color: #9ad0ff; }
+        
+        .left-sidebar, .section-block { 
+            background: rgba(22, 28, 40, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(47, 142, 208, 0.2);
+            box-shadow: 
+                0 20px 40px -12px #00000080,
+                inset 0 0 30px rgba(112, 200, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .left-sidebar::before,
+        .section-block::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(112, 200, 255, 0.03) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+            animation: rotate-light 20s linear infinite;
+        }
+        
+        @keyframes rotate-light {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .section-header { 
+            background: rgba(16, 22, 34, 0.9); 
+            border-bottom: 1px solid #1f3f5c; 
+        }
+        .section-header::after { 
+            background: linear-gradient(90deg, transparent 5%, #2f8ed0 20%, #70c8ff 80%, transparent 95%); 
+        }
+        
+        .section-title { 
+            background: linear-gradient(135deg, #fff, #aad0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            position: relative;
+        }
+        
+        .section-title::before { 
+            content: "🌊"; 
+            font-size: 1.2rem; 
+            opacity: 1; 
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 28px;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, #70c8ff, transparent);
+            animation: pulse-width 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-width {
+            0%, 100% { width: 30px; opacity: 0.5; }
+            50% { width: 60px; opacity: 1; }
+        }
+        
+        @keyframes float-header {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1px); }
+        }
+        
+        .view-all { border-color: #2f8ed0; color: #bbdbff; background: #1d3142; }
+        .view-all:hover { background: #2f6f9f; color: #fff; }
+        
+        .section-block::after {
+            background: linear-gradient(
+                45deg,
+                #1f6f9f,
+                #70c8ff,
+                #1f6f9f,
+                #70c8ff
+            );
+        }
+        
+        .album-item:not(:last-child)::after { background: #1f405b; }
+        .album-item:hover { background: rgba(40, 60, 90, 0.5); backdrop-filter: blur(4px); }
+        
+        .album-thumbnail { 
+            border: 2px solid #1f4c73; 
+            box-shadow: 0 4px 15px #00000080; 
+        }
+        
+        .album-item:hover .album-thumbnail {
+            box-shadow: 0 0 20px rgba(112, 200, 255, 0.5);
+            border-color: #70c8ff;
+        }
+        
+        .album-thumbnail.placeholder { 
+            background: linear-gradient(
+                135deg, 
+                #1f405b 0%,
+                #2f6f9f 25%,
+                #1f405b 50%,
+                #2f6f9f 75%,
+                #1f405b 100%
+            );
+            background-size: 400% 400%;
+            color: #9cc9ff; 
+        }
+        
+        @keyframes shimmer-gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .album-thumbnail.song-thumbnail { background: linear-gradient(135deg, #1f6f5a, #1d9f8f); }
+        .album-thumbnail.artist-thumbnail { background: linear-gradient(135deg, #6b4f9f, #a07dd0); }
+        .album-thumbnail.playlist-thumbnail { background: linear-gradient(135deg, #2f6f9f, #5fa8e8); }
+        
+        .album-title { 
+            color: #ecf5ff; 
+            text-shadow: 0 2px 4px #00000060; 
+        }
+        .album-item:hover .album-title {
+            text-shadow: 0 0 8px rgba(112, 200, 255, 0.3);
+        }
+        
+        .album-date { color: #afc9f0; }
+        .album-date::before { color: #78aeff; }
+        .album-artist { background: rgba(60, 140, 210, 0.2); color: #aad0ff; }
+        .album-genre { background: #1c3f55; color: #b0d4ff; }
+        .artist-stats { background: rgba(130, 90, 200, 0.3); color: #dbbaff; }
+        .playlist-songs { background: rgba(70, 140, 230, 0.25); color: #c0e1ff; }
+        .song-stats { background: rgba(40, 180, 140, 0.25); color: #b3ffe6; }
+        
+        .site-footer { 
+            background: #121b28; 
+            border-top: 3px solid #1f6f9f; 
+            box-shadow: 0 -10px 30px #00000050; 
+        }
+        
+        .site-footer::before {
+            background: linear-gradient(90deg, 
+                transparent,
+                #1f6f9f,
+                #70c8ff,
+                #1f6f9f,
+                transparent
+            );
+        }
+        
+        /* UPDATED: Footer text colors - first paragraph white, last paragraph original */
+        .site-footer p { color: #ffffff; }
+        .site-footer p:last-child { color: #8fcbff; }
+        
+        .site-footer p:first-child::before,
+        .site-footer p:first-child::after {
+            content: '🌊';
+        }
+        
+        @keyframes float-wave {
+            0%, 100% { transform: rotate(-15deg) translateY(0); }
+            50% { transform: rotate(-15deg) translateY(-5px); }
+        }
+        
+        .nav-drawer { background: #101c2c; box-shadow: 0 0 30px #000000cc; }
+        .nav-header { background: linear-gradient(135deg, #1f4460, #0f2f4f); }
+        .nav-item { color: #d5eaff; }
+        .nav-item i { color: #6ab0ff; }
+        .nav-item:hover { background-color: #122d44; color: #ffffff; border-left-color: #6ab0ff; }
+        .nav-item.active { background-color: #112b40; color: white; border-left-color: #8fcbff; }
+        .nav-divider { background: #264a66; }
+        .nav-section-title { color: #90b9e5; }
+        
+        /* custom glitch for new vibe */
+        .site-logo:hover { animation: glitch-aether 0.3s ease; }
+        @keyframes glitch-aether {
+            0% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
+            50% { text-shadow: -2px 2px 0 #0088dd, -4px 4px 0 #0066aa; }
+            100% { text-shadow: 2px 2px 0 #0066aa, 4px 4px 0 #004488; }
+        }
+        
+        /* scrollbar matches theme */
+        ::-webkit-scrollbar-thumb { background: #1f6f9f; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a9fd0; }
+        
+        /* force skeleton bg to match new dark scheme but keep original pulse */
+        .skeleton-thumbnail { background: #1f2e40; }
+        .skeleton-line { background: #1f2e40; }
+        
+        /* Scroll progress indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #1f6f9f, #70c8ff, #aad0ff);
+            z-index: 9999;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px #70c8ff;
+        }
+        
+        /* Border animation keyframes */
+        @keyframes border-gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Header -->
-        <div class="admin-header">
-            <div class="header-top">
-                <h1>
-                    <i class="fas fa-cog"></i> 
-                    Dashboard
-                </h1>
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Admin</span>
-                    <button class="logout-btn" title="Logout" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
+    <!-- Scroll progress indicator -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    
+    <header class="site-header">
+        <div class="branding-bar">
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
             
-            <!-- Navigation Tabs -->
-            <div class="admin-tabs">
-                <a href="index.html" class="tab-btn active">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-                <a href="upload.html" class="tab-btn">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload
-                </a>
-                <a href="songs.html" class="tab-btn">
-                    <i class="fas fa-music"></i> Songs
-                </a>
-                <a href="albums.html" class="tab-btn">
-                    <i class="fas fa-compact-disc"></i> Albums
-                </a>
-                <a href="artists.html" class="tab-btn">
-                    <i class="fas fa-microphone"></i> Artists
-                </a>
-                <a href="playlists.html" class="tab-btn">
-                    <i class="fas fa-list"></i> Playlists
-                </a>
+            <div class="site-logo">ZED•AETHERIC</div>
+            
+            <div class="profile-icon" id="profileIcon">
+                <i class="fas fa-user-astronaut"></i>
             </div>
         </div>
         
-        <!-- Main Content -->
-        <div class="admin-content">
-            <!-- Welcome Header with Status Badge -->
-            <div style="margin-bottom: 20px;">
-                <div class="status-badge">✓ ACTIVE SESSION</div>
-                <h2 style="font-size: 1.3rem; margin-bottom: 5px; color: var(--primary-dark);">Welcome back, Admin</h2>
-                <p style="color: #666; font-size: 0.9rem;" id="currentDate"></p>
+        <!-- SEARCH SECTION - UPDATED WITH SEARCH ICON -->
+        <section class="search-section">
+            <div class="search-container">
+                <form action="/search" method="GET" style="display: flex; width: 100%;" onsubmit="event.preventDefault(); window.location.href='/search?q=' + encodeURIComponent(document.getElementById('searchInput').value)">
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" name="q" class="search-input" placeholder="DIVE INTO SONIC WAVES..." value="">
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i>  <!-- CHANGED: From fa-whale to fa-search -->
+                        </button>
+                    </div>
+                </form>
             </div>
-            
-            <!-- Stats Grid - 2x2 on mobile, 4 on desktop -->
-            <div class="stats-grid">
-                <div class="stat-card blue-gradient">
-                    <h3 style="color: rgba(255,255,255,0.9);">Total Songs</h3>
-                    <div class="number" style="color: white;" id="totalSongs">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">songs</div>
-                </div>
-                <div class="stat-card purple-gradient">
-                    <h3 style="color: rgba(255,255,255,0.9);">Total Albums</h3>
-                    <div class="number" style="color: white;" id="totalAlbums">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">albums</div>
-                </div>
-                <div class="stat-card teal-gradient">
-                    <h3 style="color: rgba(255,255,255,0.9);">Total Artists</h3>
-                    <div class="number" style="color: white;" id="totalArtists">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">artists</div>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #2f8ed0, #70c8ff); border: none;">
-                    <h3 style="color: rgba(255,255,255,0.9);">Total Playlists</h3>
-                    <div class="number" style="color: white;" id="totalPlaylists">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">playlists</div>
-                </div>
-            </div>
-            
-            <!-- Quick Actions -->
+        </section>
+    </header>
+    
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="main-content-container" id="content">
+        <!-- LEFT SIDEBAR - LATEST ALBUMS -->
+        <aside class="left-sidebar">
             <div class="section-header">
-                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
-                <span class="view-all-link" onclick="alert('All actions coming soon!')">view all</span>
+                <h2 class="section-title">deep albums</h2>
+                <a href="/albums.html" class="view-all">dive ➔</a>
             </div>
             
-            <div class="quick-actions-grid">
-                <a href="upload.html" class="quick-action-btn">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>Upload Song</span>
-                </a>
-                <a href="#" class="quick-action-btn" onclick="alert('Create album feature coming soon!')">
-                    <i class="fas fa-compact-disc"></i>
-                    <span>New Album</span>
-                </a>
-                <a href="#" class="quick-action-btn" onclick="alert('Create artist feature coming soon!')">
-                    <i class="fas fa-microphone"></i>
-                    <span>New Artist</span>
-                </a>
-                <a href="#" class="quick-action-btn" onclick="alert('Create playlist feature coming soon!')">
-                    <i class="fas fa-list"></i>
-                    <span>New Playlist</span>
-                </a>
+            <div class="latest-albums-list" id="latestAlbums">
+                <!-- Loading skeletons with proper responsive sizing -->
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+                <div class="album-item">
+                    <div class="skeleton-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
             </div>
+        </aside>
+        
+        <!-- RIGHT SIDEBAR -->
+        <div class="right-sidebar">
             
-            <!-- Security Info Box -->
-            <div class="security-box">
-                <h4><i class="fas fa-shield-alt"></i> Security Status</h4>
-                <ul>
-                    <li><i class="fas fa-check-circle"></i> Authentication: Cloudflare Secrets</li>
-                    <li><i class="fas fa-clock"></i> Session: Active (24h expiry)</li>
-                    <li><i class="fas fa-server"></i> Environment: Production ready</li>
-                </ul>
-            </div>
+            <!-- 1. LATEST SONGS SECTION (now abyssal) -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">echoes</h2>
+                    <a href="/songs.html" class="view-all">surface ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="latestSongs">
+                    <!-- Loading skeletons with proper responsive sizing -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
             
-            <!-- Mobile Cards -->
-            <div class="section-header" style="margin-top: 10px;">
-                <h3><i class="fas fa-bars"></i> Quick Navigation</h3>
-            </div>
+            <!-- 2. FEATURED ARTISTS SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">visionaries</h2>
+                    <a href="/artists.html" class="view-all">all ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="featuredArtists">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
             
-            <div class="mobile-cards">
-                <div class="mobile-card" onclick="window.location='upload.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-cloud-upload-alt"></i> Upload Song</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+            <!-- 3. TOP RATED SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">tidal peaks</h2>
+                    <a href="/top-rated.html" class="view-all">crest ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="topRated">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="mobile-card" onclick="window.location='songs.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-music"></i> Manage Songs</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+            </section>
+            
+             <!-- 4. PLAYLISTS SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">liquid playlists</h2>
+                    <a href="/playlists.html" class="view-all">flow ➔</a>
+                </div>
+                <div class="latest-albums-list" id="featuredPlaylists">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                </div> 
+            </section>
+            
+            <!-- 5. TRENDING ALBUMS SECTION -->
+            <section class="section-block">
+                <div class="section-header">
+                    <h2 class="section-title">deep current</h2>
+                    <a href="/albums.html" class="view-all">surge ➔</a>
+                </div>
+                
+                <div class="latest-albums-list" id="trendingAlbums">
+                    <!-- Loading skeletons -->
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
+                    </div>
+                    <div class="album-item">
+                        <div class="skeleton-thumbnail"></div>
+                        <div class="album-info">
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line medium"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="mobile-card" onclick="window.location='albums.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-compact-disc"></i> Manage Albums</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='artists.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-microphone"></i> Manage Artists</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='playlists.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-list"></i> Manage Playlists</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-            </div>
+            </section>
         </div>
+    </div>
+    
+    <!-- FOOTER - UPDATED: First paragraph white, second original color -->
+    <footer class="site-footer">
+        <p>© 2024 Zed Aetheric · liquid frequencies</p>  <!-- Now white -->
+        <p>powered by cloudflare r2</p>  <!-- Original color preserved -->
+    </footer>
+    
+    <!-- LEFT NAVIGATION DRAWER (same structure) -->
+    <div class="nav-drawer left" id="leftDrawer">
+        <div class="nav-header">
+            <div class="site-logo">ZED•DEEP</div>
+            <div class="close-nav" id="closeLeftDrawer">✕</div>
+        </div>
+        <nav class="nav-menu">
+            <a href="/" class="nav-item active"><i class="fas fa-water"></i> Home</a>
+            <a href="/albums.html" class="nav-item"><i class="fas fa-compact-disc"></i> Albums</a>
+            <a href="/artists.html" class="nav-item"><i class="fas fa-microphone-alt"></i> Artists</a>
+            <a href="/playlists.html" class="nav-item"><i class="fas fa-list"></i> Playlists</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">ABYSS</div>
+            <a href="/charts.html" class="nav-item"><i class="fas fa-chart-line"></i> Tides</a>
+            <a href="/new-releases.html" class="nav-item"><i class="fas fa-star"></i> New Waves</a>
+            <a href="/genres.html" class="nav-item"><i class="fas fa-tags"></i> Currents</a>
+        </nav>
+    </div>
+    
+    <!-- RIGHT NAVIGATION DRAWER -->
+    <div class="nav-drawer right" id="rightDrawer">
+        <div class="nav-header">
+            <div class="site-logo">VOID</div>
+            <div class="close-nav" id="closeRightDrawer">✕</div>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-section-title">MY CRATER</div>
+            <a href="/profile.html" class="nav-item"><i class="fas fa-user-circle"></i> Profile</a>
+            <a href="/favorites.html" class="nav-item"><i class="fas fa-heart"></i> Favorites</a>
+            <a href="/my-playlists.html" class="nav-item"><i class="fas fa-list"></i> My Playlists</a>
+            <a href="/history.html" class="nav-item"><i class="fas fa-history"></i> Echoes</a>
+            <a href="/downloads.html" class="nav-item"><i class="fas fa-download"></i> Downloads</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">CREATE</div>
+            <a href="/admin.html" class="nav-item"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+            <a href="/playlist/create.html" class="nav-item"><i class="fas fa-plus-circle"></i> New Playlist</a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-title">SETTINGS</div>
+            <a href="/settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/logout.html" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
     </div>
 
     <script>
-        // ===== AUTHENTICATION FUNCTIONS =====
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/';
-                return false;
-            }
-            
-            // Check 24-hour expiry
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/';
-                return false;
-            }
-            
-            return true;
-        }
-
-        // ===== LOGOUT FUNCTION =====
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
-                window.location.href = '/';
-            }
-        }
-
-        // ===== STATS LOADING FUNCTION =====
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/stats');
-                const data = await response.json();
-                
-                if (data) {
-                    document.getElementById('totalSongs').textContent = data.songs || 0;
-                    document.getElementById('totalAlbums').textContent = data.albums || 0;
-                    document.getElementById('totalArtists').textContent = data.artists || 0;
-                    document.getElementById('totalPlaylists').textContent = data.playlists || 0;
-                }
-            } catch (error) {
-                console.log('Stats API not ready - keeping zeros');
-            }
-        }
-
-        // ===== INITIALIZE DASHBOARD =====
+        // (exact same JavaScript as original, unchanged)
         document.addEventListener('DOMContentLoaded', function() {
-            if (!checkAuth()) return;
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const leftDrawer = document.getElementById('leftDrawer');
+            const closeLeftDrawer = document.getElementById('closeLeftDrawer');
             
-            const dateElement = document.getElementById('currentDate');
-            if (dateElement) {
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                dateElement.textContent = new Date().toLocaleDateString('en-GB', options);
-            }
+            hamburgerMenu.addEventListener('click', () => {
+                leftDrawer.style.display = 'block';
+                setTimeout(() => {
+                    leftDrawer.style.opacity = '1';
+                    leftDrawer.style.transform = 'translateX(0)';
+                }, 10);
+            });
             
-            loadStats();
+            closeLeftDrawer.addEventListener('click', () => {
+                leftDrawer.style.opacity = '0';
+                leftDrawer.style.transform = 'translateX(-100%)';
+                setTimeout(() => {
+                    leftDrawer.style.display = 'none';
+                }, 300);
+            });
+            
+            const profileIcon = document.getElementById('profileIcon');
+            const rightDrawer = document.getElementById('rightDrawer');
+            const closeRightDrawer = document.getElementById('closeRightDrawer');
+            
+            profileIcon.addEventListener('click', () => {
+                rightDrawer.style.display = 'block';
+                setTimeout(() => {
+                    rightDrawer.style.opacity = '1';
+                    rightDrawer.style.transform = 'translateX(0)';
+                }, 10);
+            });
+            
+            closeRightDrawer.addEventListener('click', () => {
+                rightDrawer.style.opacity = '0';
+                rightDrawer.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    rightDrawer.style.display = 'none';
+                }, 300);
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!leftDrawer.contains(e.target) && !hamburgerMenu.contains(e.target) && leftDrawer.style.display === 'block') {
+                    closeLeftDrawer.click();
+                }
+                if (!rightDrawer.contains(e.target) && !profileIcon.contains(e.target) && rightDrawer.style.display === 'block') {
+                    closeRightDrawer.click();
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                const albumItem = e.target.closest('.album-item');
+                if (albumItem && !albumItem._handled) {
+                    albumItem._handled = true;
+                    setTimeout(() => {
+                        albumItem._handled = false;
+                    }, 300);
+                    
+                    albumItem.style.transform = 'scale(0.99)';
+                    albumItem.style.backgroundColor = '#1e3347';
+                    
+                    setTimeout(() => {
+                        albumItem.style.transform = '';
+                        setTimeout(() => {
+                            albumItem.style.backgroundColor = '';
+                        }, 200);
+                    }, 200);
+                }
+            });
+            
+            document.addEventListener('mouseenter', function(e) {
+                const thumbnail = e.target.closest('.album-item')?.querySelector('.album-thumbnail');
+                if (thumbnail) {
+                    thumbnail.style.transform = 'scale(1.05)';
+                    thumbnail.style.borderColor = '#70c8ff';
+                    thumbnail.style.boxShadow = '0 8px 18px #0088dd';
+                }
+            }, true);
+            
+            document.addEventListener('mouseleave', function(e) {
+                const thumbnail = e.target.closest('.album-item')?.querySelector('.album-thumbnail');
+                if (thumbnail) {
+                    thumbnail.style.transform = 'scale(1)';
+                    thumbnail.style.borderColor = '#1f4c73';
+                    thumbnail.style.boxShadow = 'none';
+                }
+            }, true);
+            
+            loadHomepageData();
         });
 
-        // ===== PROTECT OTHER PAGES =====
-        window.addEventListener('load', function() {
-            if (!window.location.pathname.includes('login.html') && 
-                window.location.pathname !== '/') {
-                checkAuth();
-            }
+        // Scroll progress indicator
+        window.addEventListener('scroll', function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scrollProgress').style.width = scrolled + '%';
         });
+
+        const API_BASE = '/api';
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            if (diff < 24 * 60 * 60 * 1000) return 'Today';
+            if (diff < 48 * 60 * 60 * 1000) return 'Yesterday';
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function getThumbnailClass(type) {
+            switch(type) {
+                case 'song': return 'song-thumbnail';
+                case 'artist': return 'artist-thumbnail';
+                case 'playlist': return 'playlist-thumbnail';
+                default: return 'placeholder';
+            }
+        }
+
+        window.goToAlbum = (slug) => window.location.href = `/album/${slug}`;
+        window.goToArtist = (name) => {
+            const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '').replace(/--+/g, '-').replace(/^-+|-+$/g, '');
+            window.location.href = `/artist/${slug}`;
+        };
+        window.goToSong = (id, slug) => {
+            if (slug) window.location.href = `/song/${slug}`;
+            else window.location.href = `/song.html?id=${id}`;
+        };
+        window.goToPlaylist = (slug) => window.location.href = `/playlist/${slug}`;
+
+        async function loadHomepageData() {
+            try {
+                const [tracks, albums, playlists] = await Promise.all([
+                    fetch(`${API_BASE}/tracks`).then(r => r.json()),
+                    fetch(`${API_BASE}/albums`).then(r => r.json()),
+                    fetch(`${API_BASE}/playlists`).then(r => r.json())
+                ]);
+
+                const latestAlbums = [...albums].sort((a, b) => 
+                    new Date(b.created_at || b.release_date) - new Date(a.created_at || a.release_date)
+                ).slice(0, 5);
+
+                const latestSongs = [...tracks].sort((a, b) => 
+                    new Date(b.uploaded_at) - new Date(a.uploaded_at)
+                ).slice(0, 5);
+
+                const artistMap = new Map();
+                tracks.forEach(track => {
+                    if (!artistMap.has(track.artist)) {
+                        artistMap.set(track.artist, {
+                            name: track.artist,
+                            slug: track.artist_slug,
+                            trackCount: 1,
+                            totalPlays: track.plays || 0
+                        });
+                    } else {
+                        const artist = artistMap.get(track.artist);
+                        artist.trackCount++;
+                        artist.totalPlays += track.plays || 0;
+                    }
+                });
+                
+                const featuredArtists = Array.from(artistMap.values())
+                    .sort((a, b) => b.totalPlays - a.totalPlays)
+                    .slice(0, 5);
+
+                const topRated = [...tracks].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 5);
+                const featuredPlaylists = playlists.filter(p => p.is_featured).slice(0, 5);
+                const trendingAlbums = [...albums].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+
+                renderLatestAlbums(latestAlbums);
+                renderLatestSongs(latestSongs);
+                renderFeaturedArtists(featuredArtists);
+                renderTopRated(topRated);
+                renderFeaturedPlaylists(featuredPlaylists);
+                renderTrendingAlbums(trendingAlbums);
+            } catch (error) {
+                console.error('Error loading homepage data:', error);
+            }
+        }
+
+        function renderLatestAlbums(albums) {
+            const container = document.getElementById('latestAlbums');
+            if (!container) return;
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="goToAlbum('${album.slug}')">
+                    <div class="album-thumbnail placeholder">💿</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist">${album.artist || 'Unknown'}</span>
+                            <span class="album-genre">${album.genre || 'Various'}</span>
+                            <span class="album-tracks">${album.track_count || 0} tracks</span>
+                        </div>
+                        <div class="album-date">${album.release_date ? new Date(album.release_date).getFullYear() : 'Unknown'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLatestSongs(songs) {
+            const container = document.getElementById('latestSongs');
+            if (!container) return;
+            container.innerHTML = songs.map(song => `
+                <div class="album-item" onclick="goToSong(${song.id}, '${song.slug}')">
+                    <div class="album-thumbnail song-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="album-title">${song.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist">${song.artist}</span>
+                            <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</span>
+                        </div>
+                        <div class="album-date">${formatDate(song.uploaded_at)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFeaturedArtists(artists) {
+            const container = document.getElementById('featuredArtists');
+            if (!container) return;
+            container.innerHTML = artists.map(artist => `
+                <div class="album-item" onclick="goToArtist('${artist.name.replace(/'/g, "\\'")}')">
+                    <div class="album-thumbnail artist-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="album-title">${artist.name}</div>
+                        <div class="album-meta">
+                            <span class="artist-stats">${artist.trackCount} tracks</span>
+                            <span class="artist-stats"><i class="fas fa-headphones"></i> ${formatNumber(artist.totalPlays)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTopRated(tracks) {
+            const container = document.getElementById('topRated');
+            if (!container) return;
+            container.innerHTML = tracks.map(track => `
+                <div class="album-item" onclick="goToSong(${track.id}, '${track.slug}')">
+                    <div class="album-thumbnail song-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="album-title">${track.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist">${track.artist}</span>
+                            <span class="song-stats"><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFeaturedPlaylists(playlists) {
+            const container = document.getElementById('featuredPlaylists');
+            if (!container) return;
+            container.innerHTML = playlists.map(playlist => `
+                <div class="album-item" onclick="goToPlaylist('${playlist.slug}')">
+                    <div class="album-thumbnail playlist-thumbnail"></div>
+                    <div class="album-info">
+                        <div class="album-title">${playlist.name}</div>
+                        <div class="album-meta">
+                            <span class="playlist-songs">${playlist.track_count || 0} tracks</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTrendingAlbums(albums) {
+            const container = document.getElementById('trendingAlbums');
+            if (!container) return;
+            container.innerHTML = albums.map(album => `
+                <div class="album-item" onclick="goToAlbum('${album.slug}')">
+                    <div class="album-thumbnail placeholder">💿</div>
+                    <div class="album-info">
+                        <div class="album-title">${album.title}</div>
+                        <div class="album-meta">
+                            <span class="album-artist">${album.artist}</span>
+                            <span class="album-genre">${album.genre || 'Various'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html>
