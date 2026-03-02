@@ -24,9 +24,21 @@ export async function onRequest(context) {
   try {
     const slug = params.slug;
     
-    // Get playlist by slug
+    // Get playlist details - WITH cover_url
     const playlist = await env.DB.prepare(`
-      SELECT * FROM playlists WHERE slug = ?
+      SELECT 
+        id,
+        name,
+        description,
+        cover_url,
+        created_by,
+        created_at,
+        plays,
+        downloads,
+        views,
+        slug,
+        is_featured
+      FROM playlists WHERE slug = ?
     `).bind(slug).first();
     
     if (!playlist) {
