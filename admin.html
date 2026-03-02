@@ -3,725 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Zedtopvibes • Admin Upload</title>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Zedtopvibes Admin Login</title>
     <style>
-        /* Admin-specific styles */
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(145deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            margin: 0;
         }
-
-        /* Admin Container */
-        .admin-container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 0 15px;
-            flex: 1;
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             width: 100%;
+            max-width: 380px;
+            border-radius: 24px;
+            padding: 32px 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
-
-        /* Header */
-        .admin-header {
-            margin-bottom: 25px;
-        }
-
-        .admin-header h1 {
+        
+        h1 {
             font-size: 28px;
             font-weight: 700;
-            color: #222;
-            margin-bottom: 5px;
-        }
-
-        .admin-header p {
-            color: #888;
-            font-size: 15px;
-        }
-
-        /* Upload Card */
-        .upload-card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            border: 1px solid #e8e8e8;
-        }
-
-        .upload-area {
-            border: 2px dashed #ddd;
-            border-radius: 16px;
-            padding: 30px 20px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 20px;
-            background: #fafafa;
-        }
-
-        .upload-area:hover, .upload-area.dragover {
-            border-color: #ff5500;
-            background: #fff5f0;
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            color: #ff5500;
-            margin-bottom: 10px;
-        }
-
-        .upload-text {
-            font-size: 16px;
-            color: #666;
+            color: #1a1a2e;
             margin-bottom: 8px;
         }
-
-        .upload-hint {
-            font-size: 13px;
-            color: #999;
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 32px;
         }
-
-        .file-info {
-            background: #f5f5f5;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .file-icon {
-            font-size: 32px;
-        }
-
-        .file-details {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .file-name {
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .file-size {
-            font-size: 13px;
-            color: #888;
-        }
-
-        .remove-file {
-            color: #ff4444;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0 10px;
-        }
-
-        /* Form Styles */
+        
         .form-group {
             margin-bottom: 20px;
         }
-
-        .form-group label {
+        
+        label {
             display: block;
             font-size: 14px;
-            font-weight: 600;
-            color: #444;
-            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 6px;
         }
-
-        .form-group input, .form-group textarea, .form-group select {
+        
+        input {
             width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
+            padding: 16px 14px;
             font-size: 16px;
-            transition: all 0.2s;
-            background: #fafafa;
-        }
-
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            outline: none;
-            border-color: #ff5500;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             background: white;
-            box-shadow: 0 0 0 3px rgba(255,85,0,0.1);
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
         }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
+        
+        input:focus {
+            outline: none;
+            border-color: #6c5ce7;
         }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        /* Submit Button */
-        .submit-btn {
+        
+        button {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #ff5500, #ff7000);
+            background: #6c5ce7;
             color: white;
             border: none;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(255,85,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,85,0,0.4);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Tracks List */
-        .tracks-list {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid #e8e8e8;
-        }
-
-        .tracks-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .tracks-header h2 {
-            font-size: 18px;
-            color: #222;
-        }
-
-        .track-count {
-            background: #f0f0f0;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .track-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-            gap: 12px;
-        }
-
-        .track-item:last-child {
-            border-bottom: none;
-        }
-
-        .track-art {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #ffd6b3, #ffb38c);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #ff5500;
-        }
-
-        .track-info {
-            flex: 1;
-        }
-
-        .track-info h4 {
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
-            color: #222;
-            margin-bottom: 4px;
-        }
-
-        .track-info p {
-            font-size: 13px;
-            color: #888;
-        }
-
-        .delete-btn {
-            color: #ff4444;
-            background: none;
-            border: none;
-            font-size: 20px;
+            margin-top: 12px;
             cursor: pointer;
-            padding: 8px;
+            transition: background 0.2s;
+            -webkit-appearance: none;
         }
-
-        /* Status Messages */
-        .status-message {
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        
+        button:hover {
+            background: #5b4bc4;
+        }
+        
+        button:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 14px;
+            margin-top: 16px;
             display: none;
         }
-
-        .status-success {
+        
+        .success-message {
             background: #e8f5e9;
             color: #2e7d32;
-            border: 1px solid #a5d6a7;
-            display: block;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
         }
-
-        .status-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef9a9a;
-            display: block;
-        }
-
-        .status-info {
-            background: #e3f2fd;
-            color: #1565c0;
-            border: 1px solid #90caf9;
-            display: block;
-        }
-
-        /* Loading */
+        
         .loading {
+            display: none;
             text-align: center;
-            padding: 20px;
-            color: #999;
+            margin-top: 16px;
         }
-
-        /* Password Modal */
-        .password-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #6c5ce7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-
-        .password-card {
-            background: white;
-            border-radius: 24px;
-            padding: 30px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-
-        .password-card h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #222;
-        }
-
-        .password-card p {
+        
+        .demo-hint {
+            margin-top: 24px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 13px;
             color: #666;
-            margin-bottom: 20px;
+            text-align: center;
         }
-
-        .password-input {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #eee;
-            border-radius: 16px;
-            font-size: 16px;
-            margin-bottom: 20px;
+        
+        .music-note {
+            text-align: center;
+            margin-bottom: 16px;
         }
-
-        .password-input:focus {
-            outline: none;
-            border-color: #ff5500;
-        }
-
-        .password-btn {
-            width: 100%;
-            padding: 16px;
-            background: #ff5500;
-            color: white;
-            border: none;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+        
+        .music-note svg {
+            width: 48px;
+            height: 48px;
+            fill: #6c5ce7;
         }
     </style>
 </head>
 <body>
-    <!-- Header will be injected by template-loader.js -->
-
-    <!-- Password Modal -->
-    <div id="passwordModal" class="password-modal">
-        <div class="password-card">
-            <h2>🔐 Admin Access</h2>
-            <p>Enter password to upload music</p>
-            <input type="password" id="passwordInput" class="password-input" placeholder="Enter password">
-            <button onclick="checkPassword()" class="password-btn">Access Admin</button>
+    <div class="login-card">
+        <div class="music-note">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+        </div>
+        
+        <h1>ZEDTOPVIBES</h1>
+        <div class="subtitle">Admin Access</div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter username" autocomplete="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" required>
+            </div>
+            
+            <button type="submit" id="loginBtn">Access Dashboard</button>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <div style="margin-top: 8px;">Verifying...</div>
+            </div>
+        </form>
+        
+        <div class="demo-hint">
+            🔐 Credentials set in Cloudflare Dashboard
         </div>
     </div>
 
-    <!-- Main Admin Content (hidden initially) -->
-    <div id="adminContent" style="display: none;">
-        <div class="admin-container">
-            <!-- Status Messages -->
-            <div id="statusMessage" class="status-message"></div>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const loading = document.getElementById('loading');
 
-            <!-- Admin Header -->
-            <div class="admin-header">
-                <h1>Upload Music</h1>
-                <p>Share your sounds with the world</p>
-            </div>
-
-            <!-- Upload Card -->
-            <div class="upload-card">
-                <!-- File Upload Area -->
-                <div id="uploadArea" class="upload-area">
-                    <div class="upload-icon">🎵</div>
-                    <div class="upload-text">Tap to select MP3 file</div>
-                    <div class="upload-hint">or drag and drop</div>
-                </div>
-                <input type="file" id="fileInput" accept="audio/mp3,audio/mpeg" style="display: none;">
-
-                <!-- Selected File Info (hidden initially) -->
-                <div id="fileInfo" class="file-info" style="display: none;">
-                    <span class="file-icon">🎵</span>
-                    <div class="file-details">
-                        <div id="fileName" class="file-name"></div>
-                        <div id="fileSize" class="file-size"></div>
-                    </div>
-                    <span class="remove-file" onclick="clearSelectedFile()">✕</span>
-                </div>
-
-                <!-- Form -->
-                <form id="uploadForm">
-                    <div class="form-group">
-                        <label>Track Title</label>
-                        <input type="text" id="title" placeholder="e.g. Midnight Waves" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Artist Name</label>
-                        <input type="text" id="artist" placeholder="e.g. Luna Eclipse" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="description" placeholder="Tell us about this track..."></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Genre</label>
-                            <input type="text" id="genre" placeholder="e.g. electronic" list="genres">
-                            <datalist id="genres">
-                                <option value="electronic">
-                                <option value="synthwave">
-                                <option value="hiphop">
-                                <option value="lofi">
-                                <option value="ambient">
-                                <option value="rock">
-                                <option value="jazz">
-                            </datalist>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Duration (seconds)</label>
-                            <input type="number" id="duration" placeholder="e.g. 210">
-                        </div>
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="submit-btn" disabled>
-                        <span>⬆️</span> Upload Track
-                    </button>
-                </form>
-            </div>
-
-            <!-- Existing Tracks -->
-            <div class="tracks-list">
-                <div class="tracks-header">
-                    <h2>Your Tracks</h2>
-                    <span class="track-count" id="trackCount">0 tracks</span>
-                </div>
-                <div id="tracksContainer">
-                    <div class="loading">Loading tracks...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer will be injected by template-loader.js -->
-
-    <script type="module">
-        import { injectTemplates, loadTemplate } from '/js/shared/template-loader.js';
-        import { API_BASE, formatNumber, getEmojiForGenre } from '/js/shared/helpers.js';
-        import { goHome } from '/js/shared/navigation.js';
-
-        // Simple password protection (you can change this)
-        const ADMIN_PASSWORD = "zedtop123"; // CHANGE THIS!
-
-        // Check password
-        window.checkPassword = function() {
-            const password = document.getElementById('passwordInput').value;
-            if (password === ADMIN_PASSWORD) {
-                document.getElementById('passwordModal').style.display = 'none';
-                document.getElementById('adminContent').style.display = 'block';
-                loadTracks();
-                showStatus('success', 'Access granted! Welcome to admin panel.');
-            } else {
-                alert('Incorrect password');
+        // Check if already logged in
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+            const loginTime = localStorage.getItem('admin_login_time');
+            if (loginTime) {
+                const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+                if (hoursSince < 24) {
+                    window.location.href = '/admin/';
+                }
             }
-        };
-
-        // File upload handling
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const submitBtn = document.getElementById('submitBtn');
-        let selectedFile = null;
-
-        // Click upload area
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type === 'audio/mpeg') {
-                handleFileSelect(file);
-            } else {
-                showStatus('error', 'Please select an MP3 file');
-            }
-        });
-
-        // File input change
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                handleFileSelect(file);
-            }
-        });
-
-        function handleFileSelect(file) {
-            selectedFile = file;
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            fileInfo.style.display = 'flex';
-            uploadArea.style.display = 'none';
-            submitBtn.disabled = false;
         }
 
-        window.clearSelectedFile = function() {
-            selectedFile = null;
-            fileInput.value = '';
-            fileInfo.style.display = 'none';
-            uploadArea.style.display = 'block';
-            submitBtn.disabled = true;
-        };
-
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-        }
-
-        // Form submission
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            if (!selectedFile) {
-                showStatus('error', 'Please select an MP3 file');
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!username || !password) {
+                showError('Please enter both username and password');
                 return;
             }
-
-            const title = document.getElementById('title').value;
-            const artist = document.getElementById('artist').value;
-
-            if (!title || !artist) {
-                showStatus('error', 'Title and artist are required');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            showStatus('info', 'Uploading track...');
-
+            
+            // Show loading
+            loginBtn.disabled = true;
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
             try {
-                // Create form data
-                const formData = new FormData();
-                formData.append('file', selectedFile);
-                formData.append('title', title);
-                formData.append('artist', artist);
-                formData.append('description', document.getElementById('description').value);
-                formData.append('genre', document.getElementById('genre').value);
-                formData.append('duration', document.getElementById('duration').value);
-
-                // Send to API
-                const response = await fetch(`${API_BASE}/upload`, {
+                const response = await fetch('/api/login', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
                 });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error || 'Upload failed');
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    successMessage.textContent = 'Login successful! Redirecting...';
+                    successMessage.style.display = 'block';
+                    loading.style.display = 'none';
+                    
+                    localStorage.setItem('admin_logged_in', 'true');
+                    localStorage.setItem('admin_login_time', Date.now().toString());
+                    
+                    setTimeout(() => {
+                        window.location.href = '/admin/';
+                    }, 1000);
+                } else {
+                    showError(data.error || 'Invalid credentials');
                 }
-                
-                showStatus('success', 'Track uploaded successfully!');
-                clearSelectedFile();
-                document.getElementById('title').value = '';
-                document.getElementById('artist').value = '';
-                document.getElementById('description').value = '';
-                document.getElementById('genre').value = '';
-                document.getElementById('duration').value = '';
-                
-                // Reload tracks list
-                loadTracks();
             } catch (error) {
-                showStatus('error', 'Upload failed: ' + error.message);
-            } finally {
-                submitBtn.disabled = false;
+                showError('Connection error. Please try again.');
+                console.error('Login error:', error);
             }
         });
-
-        // Load existing tracks
-        async function loadTracks() {
-            try {
-                const response = await fetch(`${API_BASE}/tracks`);
-                const tracks = await response.json();
-                
-                document.getElementById('trackCount').textContent = tracks.length + ' tracks';
-                
-                const container = document.getElementById('tracksContainer');
-                
-                if (tracks.length === 0) {
-                    container.innerHTML = '<div class="loading">No tracks yet. Upload your first track!</div>';
-                    return;
-                }
-                
-                container.innerHTML = tracks.map(track => `
-                    <div class="track-item">
-                        <div class="track-art">${getEmojiForGenre(track.genre)}</div>
-                        <div class="track-info">
-                            <h4>${track.title}</h4>
-                            <p>${track.artist} • ${formatNumber(track.plays)} plays</p>
-                        </div>
-                        <button class="delete-btn" onclick="deleteTrack(${track.id})">🗑️</button>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Error loading tracks:', error);
-            }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            loginBtn.disabled = false;
+            loading.style.display = 'none';
         }
-
-        // Delete track
-        window.deleteTrack = async function(id) {
-            if (confirm('Are you sure you want to delete this track?')) {
-                showStatus('info', 'Deleting track...');
-                try {
-                    const response = await fetch(`${API_BASE}/delete/${id}`, {
-                        method: 'DELETE'
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error('Delete failed');
-                    }
-                    
-                    showStatus('success', 'Track deleted');
-                    loadTracks();
-                } catch (error) {
-                    showStatus('error', 'Delete failed: ' + error.message);
-                }
-            }
-        };
-
-        function showStatus(type, message) {
-            const statusEl = document.getElementById('statusMessage');
-            statusEl.className = 'status-message status-' + type;
-            statusEl.textContent = message;
-            statusEl.style.display = 'block';
-            
-            setTimeout(() => {
-                statusEl.style.display = 'none';
-            }, 5000);
-        }
-
-        // Allow Enter key in password field
-        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
-
-        // Initialize page with templates
-        async function initPage() {
-            // Inject header and footer templates
-            await injectTemplates();
-            const footerHtml = await loadTemplate('footer');
-            document.body.insertAdjacentHTML('beforeend', footerHtml);
-            
-            // Make goHome available globally for hamburger menu
-            window.goHome = goHome;
-            
-            // Update hamburger menu to use goHome
-            const hamburger = document.querySelector('.hamburger');
-            if (hamburger) {
-                hamburger.onclick = goHome;
-            }
-        }
-
-        // Start everything
-        initPage();
     </script>
 </body>
 </html>
