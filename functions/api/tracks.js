@@ -8,9 +8,26 @@ export async function onRequest(context) {
   };
 
   try {
-    const { results } = await env.DB.prepare(
-      'SELECT * FROM tracks ORDER BY uploaded_at DESC'
-    ).all();
+    const { results } = await env.DB.prepare(`
+      SELECT 
+        id,
+        title,
+        artist,
+        description,
+        artwork_url,
+        r2_key,
+        filename,
+        duration,
+        genre,
+        plays,
+        downloads,
+        views,
+        slug,
+        artist_slug,
+        uploaded_at
+      FROM tracks 
+      ORDER BY uploaded_at DESC
+    `).all();
     
     return new Response(JSON.stringify(results), { headers });
   } catch (error) {
