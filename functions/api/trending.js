@@ -7,9 +7,19 @@ export async function onRequest(context) {
   };
 
   try {
-    const { results } = await env.DB.prepare(
-      'SELECT id, title, artist, plays FROM tracks ORDER BY plays DESC LIMIT 5'
-    ).all();
+    const { results } = await env.DB.prepare(`
+      SELECT 
+        id,
+        title,
+        artist,
+        artwork_url,
+        plays,
+        views,
+        slug
+      FROM tracks 
+      ORDER BY plays DESC 
+      LIMIT 10
+    `).all();
     
     return new Response(JSON.stringify(results), { headers });
   } catch (error) {
