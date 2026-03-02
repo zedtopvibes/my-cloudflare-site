@@ -24,9 +24,23 @@ export async function onRequest(context) {
   try {
     const slug = params.slug;
     
-    // Get album by slug
+    // Get album by slug - WITH cover_url
     const album = await env.DB.prepare(`
-      SELECT * FROM albums WHERE slug = ?
+      SELECT 
+        id,
+        title,
+        artist,
+        description,
+        cover_url,
+        release_date,
+        genre,
+        label,
+        plays,
+        downloads,
+        views,
+        slug,
+        is_featured
+      FROM albums WHERE slug = ?
     `).bind(slug).first();
     
     if (!album) {
