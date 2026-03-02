@@ -443,7 +443,7 @@
                 <p style="color: #666;" id="currentDate"></p>
             </div>
             
-            <!-- Stats Grid -->
+            <!-- Stats Grid - All zeros, ready for your data -->
             <div class="stats-grid">
                 <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
                     <h3 style="color: rgba(255,255,255,0.9);">Total Songs</h3>
@@ -570,13 +570,13 @@
             }
         }
 
-        // ===== STATS LOADING FUNCTION =====
+        // ===== STATS LOADING FUNCTION (READY FOR YOUR API) =====
         async function loadStats() {
             try {
                 const response = await fetch('/api/stats');
                 const data = await response.json();
                 
-                // Update stats with real data when API is ready
+                // Update stats with your real data
                 if (data) {
                     document.getElementById('totalSongs').textContent = data.songs || 0;
                     document.getElementById('totalAlbums').textContent = data.albums || 0;
@@ -584,12 +584,8 @@
                     document.getElementById('totalPlaylists').textContent = data.playlists || 0;
                 }
             } catch (error) {
-                console.log('Stats API coming soon - using placeholder data');
-                // Optional: Set placeholder data for demo
-                document.getElementById('totalSongs').textContent = '24';
-                document.getElementById('totalAlbums').textContent = '8';
-                document.getElementById('totalArtists').textContent = '12';
-                document.getElementById('totalPlaylists').textContent = '5';
+                console.log('Stats API not ready yet - keeping zeros');
+                // All stats stay at 0 - no demo content
             }
         }
 
@@ -605,14 +601,12 @@
                 dateElement.textContent = new Date().toLocaleDateString('en-GB', options);
             }
             
-            // Load stats
+            // Load stats (will stay at 0 until your API is ready)
             loadStats();
         });
 
         // ===== PROTECT OTHER PAGES =====
-        // This will run on every page load
         window.addEventListener('load', function() {
-            // Don't redirect if we're on the login page
             if (!window.location.pathname.includes('login.html') && 
                 window.location.pathname !== '/') {
                 checkAuth();
