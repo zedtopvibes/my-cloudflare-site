@@ -8,7 +8,7 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS request (CORS preflight)
+  // Handle OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
@@ -26,7 +26,8 @@ export async function onRequest(context) {
     const { results } = await env.DB.prepare(`
       SELECT 
         p.*,
-        COUNT(pt.track_id) as actual_track_count
+        p.cover_url,  -- ← ADDED!
+        COUNT(pt.track_id) as track_count
       FROM playlists p
       LEFT JOIN playlist_tracks pt ON p.id = pt.playlist_id
       GROUP BY p.id
