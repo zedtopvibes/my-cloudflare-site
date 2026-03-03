@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -123,7 +123,7 @@
             pointer-events: none; z-index: 25;
         }
 
-        /* Hide body until auth check completes - prevents flash */
+        /* Hide body initially to prevent flash - will be shown after DOM loads */
         body {
             visibility: hidden;
         }
@@ -421,22 +421,10 @@
     </main>
 
     <script>
-        // Immediate auth check - runs before page renders
-        (function() {
-            // Check for existing session cookie (will be handled server-side)
-            // This just prevents flash - real protection is on the server
-            const hasSession = document.cookie.includes('admin_session=');
-            
-            if (hasSession) {
-                window.location.href = '/admin/';
-                return;
-            }
-            
-            // Show page after check
-            document.addEventListener('DOMContentLoaded', function() {
-                document.body.style.visibility = 'visible';
-            });
-        })();
+        // Show page immediately - NO REDIRECT CHECK on login page!
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.visibility = 'visible';
+        });
 
         // Login form handling
         const loginForm = document.getElementById('loginForm');
@@ -471,7 +459,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ username, password }),
-                    credentials: 'include'  // 🔥 FIXED: Changed from 'same-origin' to 'include'
+                    credentials: 'include'  // Important for cookies
                 });
                 
                 const data = await response.json();
