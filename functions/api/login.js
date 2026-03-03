@@ -30,10 +30,20 @@ export async function onRequest(context) {
         
         // Check credentials
         if (username === validUsername && password === validPassword) {
-            // Generate a simple session token (in production, use a proper JWT)
+            // Generate a secure session token
             const sessionToken = crypto.randomUUID 
                 ? crypto.randomUUID() 
-                : `${Date.now()}-${Math.random().toString(36).substring(2)}`;
+                : `${Date.now()}-${Math.random().toString(36).substring(2)}-${Math.random().toString(36).substring(2)}`;
+            
+            // Store in LOGIN_SESSIONS KV with 24 hour expiration
+            await env.LOGIN_SESSIONS.put(sessionToken, JSON.stringify({
+                username,
+                loginTime: Date.now(),
+                userAgent: request.headers.get("User-Agent") || "unknown",
+                ip: request.headers.get("CF-Connecting-IP") || "unknown"
+            }), {
+                expirationTtl: 86400 // 24 hours in seconds
+            });
             
             // Set secure HTTP-only cookie
             return new Response(JSON.stringify({ 
@@ -44,7 +54,7 @@ export async function onRequest(context) {
                 headers: {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "*",
-                    "Set-Cookie": `admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`, // 24 hours
+                    "Set-Cookie": `admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`,
                 },
             });
         } else {
