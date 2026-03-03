@@ -22,7 +22,7 @@ export async function onRequest(context) {
                 // Valid session - redirect to the actual admin HTML file
                 return new Response(null, {
                     status: 302,
-                    headers: { "Location": "/admin/dashboard.html" },
+                    headers: { "Location": "/admin/index.html" },
                 });
             }
         } catch (error) {
