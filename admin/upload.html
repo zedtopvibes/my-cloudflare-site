@@ -102,12 +102,15 @@
             border: none;
             font-size: 1rem;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
         }
         
         .logout-btn:hover {
             color: var(--primary-blue);
         }
         
+        /* Navigation Tabs - FIXED FOR CONSISTENCY WITH DASHBOARD */
         .admin-tabs {
             display: flex;
             gap: 5px;
@@ -122,24 +125,31 @@
         }
         
         .tab-btn {
-            padding: 10px 15px;
+            padding: 10px 15px !important;        /* Force same padding */
             background: transparent;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.9rem !important;          /* Force same font size */
+            font-weight: 600 !important;            /* Force same weight */
             color: #666;
             cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
+            justify-content: center;                /* Center content */
             gap: 6px;
             text-decoration: none;
+            line-height: 1;                         /* Consistent line height */
+            height: 40px !important;                  /* FIXED HEIGHT - all tabs same! */
+            min-height: 40px !important;              /* Force min height */
+            max-height: 40px !important;              /* Force max height */
+            box-sizing: border-box;                  /* Include padding in height */
         }
         
         .tab-btn i {
-            font-size: 1rem;
+            font-size: 1rem !important;              /* Force same icon size */
+            width: 16px;                              /* Fixed icon width */
         }
         
         .tab-btn:hover {
@@ -150,6 +160,11 @@
         .tab-btn.active {
             background: var(--primary-blue);
             color: white;
+            font-weight: 600 !important;              /* Same as inactive */
+            height: 40px !important;                   /* Force same height */
+            min-height: 40px !important;
+            max-height: 40px !important;
+            padding: 10px 15px !important;             /* Force same padding */
         }
         
         .admin-content {
@@ -300,10 +315,7 @@
                 font-size: 0.8rem;
             }
             
-            .tab-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
+            /* Removed tab-btn mobile override - now consistent with desktop */
             
             .coming-soon-title {
                 font-size: 1.8rem;
@@ -333,7 +345,7 @@
                 </div>
             </div>
             
-            <!-- Navigation Tabs -->
+            <!-- Navigation Tabs - ALL EXACTLY 40px TALL -->
             <div class="admin-tabs">
                 <a href="index.html" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="upload.html" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
