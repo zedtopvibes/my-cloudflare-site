@@ -51,6 +51,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
+            margin-bottom: 10px;
         }
         
         .header-top h1 {
@@ -90,17 +91,22 @@
             border: none;
             font-size: 1rem;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
         }
         
         .logout-btn:hover {
             color: var(--primary-blue);
         }
         
+        /* Navigation Tabs - FIXED FOR CONSISTENCY */
         .admin-tabs {
             display: flex;
             gap: 5px;
             overflow-x: auto;
             padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
         
         .admin-tabs::-webkit-scrollbar {
@@ -108,17 +114,31 @@
         }
         
         .tab-btn {
-            padding: 10px 15px;
+            padding: 10px 15px !important;
+            background: transparent;
+            border: none;
             border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
             color: #666;
+            cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
             text-decoration: none;
+            line-height: 1;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            box-sizing: border-box;
+        }
+        
+        .tab-btn i {
+            font-size: 1rem !important;
+            width: 16px;
         }
         
         .tab-btn:hover {
@@ -129,6 +149,11 @@
         .tab-btn.active {
             background: var(--primary-blue);
             color: white;
+            font-weight: 600 !important;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            padding: 10px 15px !important;
         }
         
         .admin-content {
@@ -220,15 +245,14 @@
             .admin-header { padding: 12px; }
             .header-top h1 { font-size: 1.1rem; }
             .user-info { padding: 5px 10px; font-size: 0.8rem; }
-            .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
             .content-header { flex-direction: column; align-items: stretch; }
             .btn { width: 100%; }
+            /* Tabs remain same size - no mobile override */
         }
     </style>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Header -->
         <div class="admin-header">
             <div class="header-top">
                 <h1><i class="fas fa-cog"></i> Songs</h1>
@@ -241,7 +265,7 @@
                 </div>
             </div>
             
-            <!-- Navigation Tabs -->
+            <!-- Navigation Tabs - ALL EXACTLY 40px TALL -->
             <div class="admin-tabs">
                 <a href="index.html" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
@@ -252,7 +276,6 @@
             </div>
         </div>
         
-        <!-- Main Content -->
         <div class="admin-content">
             <div class="content-header">
                 <h2><i class="fas fa-music"></i> Songs Management</h2>
@@ -279,6 +302,23 @@
                 window.location.href = '/admin/login.html';
             }
         }
+
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+            }
+        });
     </script>
 </body>
 </html>
