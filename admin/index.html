@@ -2,504 +2,919 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>aetheric · login</title>
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Inter font -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Dashboard - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ----- RESET & BASE (no scroll) ----- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            /* Blue/ocean theme from frontend */
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --deep-bg: #0b0f1c;
+            --dark: #1a1a1a;
+            --gray: #666;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --card-bg: rgba(22, 28, 40, 0.03);
+            
+            /* Playlists - distinct blue-purple */
+            --playlist-start: #5f3dc7;
+            --playlist-end: #8a6de0;
         }
-
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0b0f1c;
-            height: 100vh;
-            max-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            color: #e0e6f0;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
             line-height: 1.5;
+            color: #333;
         }
-
-        /* ----- AETHERIC OCEAN BACKGROUND ----- */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(47, 142, 208, 0.15) 0%, transparent 35%),
-                radial-gradient(circle at 80% 70%, rgba(112, 200, 255, 0.15) 0%, transparent 35%);
-            pointer-events: none;
-            z-index: 0;
+        
+        /* Container */
+        .admin-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
         }
-
-        .orb {
-            position: fixed;
-            width: 70vmax;
-            height: 70vmax;
-            border-radius: 50%;
-            filter: blur(80px) brightness(0.8);
-            mix-blend-mode: soft-light;
-            pointer-events: none;
-            z-index: 0;
-            animation: orbFloat 30s infinite alternate ease-in-out;
+        
+        /* Header */
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
-
-        .orb1 { background: rgba(47, 142, 208, 0.2); top: -20vh; left: -20vw; animation-duration: 35s; }
-        .orb2 { background: rgba(112, 200, 255, 0.15); bottom: -30vh; right: -15vw; width: 80vmax; height: 80vmax; animation-duration: 40s; mix-blend-mode: overlay; }
-        .orb3 { background: rgba(31, 111, 159, 0.2); top: 40vh; right: 20vw; width: 50vmax; height: 50vmax; animation-duration: 45s; filter: blur(90px); }
-        .orb4 { background: rgba(10, 60, 100, 0.25); bottom: 10vh; left: 30vw; width: 60vmax; height: 60vmax; animation-duration: 38s; }
-
-        @keyframes orbFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(8%, 6%) scale(1.1); }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
-
-        .vine-wave {
-            position: fixed; inset: 0;
-            background: repeating-linear-gradient(115deg, transparent 0%, transparent 25%, rgba(47, 142, 208, 0.03) 30%, rgba(112, 200, 255, 0.03) 35%, transparent 40%, transparent 65%, rgba(31, 111, 159, 0.02) 70%, transparent 75%);
-            background-size: 300% 300%;
-            pointer-events: none; z-index: 1;
-            animation: waveFlow 22s infinite linear;
-            mix-blend-mode: screen;
-        }
-        @keyframes waveFlow { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-
-        .forest-nebula {
-            position: fixed; top: -30%; left: -20%; width: 150%; height: 150%;
-            background: conic-gradient(from 0deg, rgba(47, 142, 208, 0.02), rgba(112, 200, 255, 0.02), rgba(31, 111, 159, 0.02), transparent 70%);
-            filter: blur(50px); pointer-events: none; z-index: 1;
-            animation: nebulaSpin 50s infinite linear;
-        }
-        @keyframes nebulaSpin { 0% { transform: rotate(0deg) scale(1); } 100% { transform: rotate(20deg) scale(1.05); } }
-
-        .mist {
-            position: fixed; inset: 0;
-            background: radial-gradient(ellipse at 30% 60%, rgba(47, 142, 208, 0.08) 0%, transparent 50%),
-                        radial-gradient(ellipse at 80% 30%, rgba(112, 200, 255, 0.08) 0%, transparent 50%);
-            pointer-events: none; z-index: 3;
-            mix-blend-mode: overlay; animation: mistPulse 16s infinite alternate;
-        }
-        @keyframes mistPulse { 0% { opacity: 0.3; } 100% { opacity: 0.7; } }
-
-        .dewdrop {
-            position: fixed; width: 2px; height: 2px; background: #70c8ff;
-            border-radius: 50%; box-shadow: 0 0 12px 3px #2f8ed0, 0 0 24px #1f6f9f;
-            opacity: 0.2; pointer-events: none; z-index: 2;
-            animation: dewdropTwinkle 6s infinite alternate;
-        }
-        @keyframes dewdropTwinkle { 0% { opacity: 0.1; transform: scale(1); } 100% { opacity: 0.5; transform: scale(1.8); } }
-        .dewdrop:nth-child(1) { top: 15%; left: 8%; animation-duration: 5s; }
-        .dewdrop:nth-child(2) { top: 73%; left: 91%; width: 3px; height: 3px; animation-duration: 7s; }
-        .dewdrop:nth-child(3) { top: 42%; left: 23%; animation-duration: 4.5s; }
-        .dewdrop:nth-child(4) { top: 88%; left: 45%; width: 4px; height: 4px; animation-duration: 8s; }
-        .dewdrop:nth-child(5) { top: 31%; left: 76%; animation-duration: 6.2s; }
-        .dewdrop:nth-child(6) { top: 62%; left: 34%; width: 2px; height: 2px; animation-duration: 5.8s; }
-        .dewdrop:nth-child(7) { top: 18%; left: 55%; animation-duration: 7.5s; }
-        .dewdrop:nth-child(8) { top: 94%; left: 12%; width: 3px; height: 3px; animation-duration: 6.8s; }
-        .dewdrop:nth-child(9) { top: 48%; left: 88%; animation-duration: 5.2s; }
-        .dewdrop:nth-child(10) { top: 7%; left: 42%; animation-duration: 9s; }
-        .dewdrop:nth-child(11) { top: 55%; left: 62%; width: 4px; height: 4px; animation-duration: 4.2s; }
-        .dewdrop:nth-child(12) { top: 81%; left: 73%; animation-duration: 6.5s; }
-        .dewdrop:nth-child(13) { top: 25%; left: 15%; animation-duration: 7.8s; }
-        .dewdrop:nth-child(14) { top: 67%; left: 5%; width: 3px; height: 3px; animation-duration: 5.4s; }
-        .dewdrop:nth-child(15) { top: 37%; left: 48%; animation-duration: 8.2s; }
-
-        .vignette {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at 50% 50%, transparent 30%, rgba(5, 15, 30, 0.6) 95%);
-            pointer-events: none; z-index: 25;
-        }
-
-        /* Hide body until auth check completes - prevents flash */
-        body {
-            visibility: hidden;
-        }
-
-        /* ----- MAIN: FLEX CENTERING ----- */
-        main {
-            flex: 1 1 auto;
+        
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 0.5rem 1rem;
-            position: relative;
-            z-index: 20;
-            min-height: 0;
+            gap: 8px;
         }
-
-        /* ----- SQUARE CONTAINER - WIDER ----- */
-        .wp-aether-container {
-            background: rgba(22, 28, 40, 0.85);
-            backdrop-filter: blur(12px) saturate(140%);
-            -webkit-backdrop-filter: blur(12px) saturate(140%);
-            border: 1px solid rgba(47, 142, 208, 0.3);
-            width: 400px;
-            height: auto;
-            min-height: 420px;
-            border-radius: 0;
-            box-shadow: 
-                0 25px 50px -12px #000000,
-                0 0 0 1px rgba(112, 200, 255, 0.1) inset,
-                0 0 30px -8px #2f8ed0;
-            padding: 1.8rem 2rem;
+        
+        .header-top h1 span {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+        
+        /* ===== COMPACT USER INFO & LOGOUT BUTTON ===== */
+        .user-info {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background: var(--light-gray);
+            padding: 4px 4px 4px 12px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            margin-left: auto;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            height: 36px;
+        }
+        
+        .user-info i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+        }
+        
+        .user-info span {
+            font-weight: 600;
+            line-height: 1;
+        }
+        
+        .logout-btn {
+            color: #666;
+            transition: all 0.3s;
+            padding: 6px 10px;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 30px;
+            height: 28px;
+            margin-left: 2px;
+        }
+        
+        .logout-btn i {
+            font-size: 0.9rem;
+            color: #666;
+            transition: color 0.3s;
+        }
+        
+        .logout-btn:hover {
+            color: var(--primary-blue);
+            background: white;
+        }
+        
+        .logout-btn:hover i {
+            color: var(--primary-blue);
+        }
+        
+        /* Navigation Tabs - FIXED FOR CONSISTENCY */
+        .admin-tabs {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 10px 15px !important;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
             justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            line-height: 1;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            box-sizing: border-box;
+        }
+        
+        .tab-btn i {
+            font-size: 1rem !important;
+            width: 16px;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            font-weight: 600 !important;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            padding: 10px 15px !important;
+        }
+        
+        /* Content Area */
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        /* Stats Grid - 2x2 on mobile, 4 on desktop */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+            text-align: center;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
-
-        /* inner glow - square */
-        .wp-aether-container::before {
+        
+        .stat-card::before {
             content: '';
             position: absolute;
-            inset: 0;
-            border-radius: 0;
-            background: radial-gradient(circle at 50% 0%, rgba(112,200,255,0.05), transparent 70%);
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(31, 111, 159, 0.03) 0%,
+                transparent 70%
+            );
             pointer-events: none;
+            animation: rotate-light 20s linear infinite;
         }
-
-        /* icon - SQUARE */
-        .login-icon {
-            text-align: center;
-            margin-bottom: 1rem;
+        
+        .stat-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
         }
-        .login-icon i {
-            font-size: 2.8rem;
-            color: #70c8ff;
-            filter: drop-shadow(0 0 12px #2f8ed0);
-            background: rgba(0,0,0,0.2);
-            width: 80px;
-            height: 80px;
-            line-height: 80px !important;
-            border-radius: 0;
-            border: 2px solid rgba(112,200,255,0.4);
-        }
-
-        .login-title {
-            text-align: center;
-            font-weight: 500;
-            font-size: 1.6rem;
-            letter-spacing: -0.5px;
-            margin-bottom: 1.8rem;
-            background: linear-gradient(135deg, #ffffff, #b6dcff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 5px #00000050;
-            text-transform: lowercase;
-        }
-
-        /* form */
-        .wp-aether-container form {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1.3rem;
-        }
-
-        .wp-field {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .wp-field label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #aad0ff;
-            margin-left: 0.2rem;
-        }
-        .wp-field label i {
-            margin-right: 6px;
-            font-size: 0.85rem;
-            color: #70c8ff;
-        }
-
-        /* INPUT FIELDS - SQUARE */
-        .wp-field input {
-            background: rgba(10, 20, 30, 0.7);
-            border: 1px solid #2f6f9f;
-            border-radius: 0;
-            padding: 0.9rem 1.2rem;
-            font-size: 1rem;
-            color: #ffffff;
-            outline: none;
-            transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
-        }
-        .wp-field input:focus {
-            border-color: #70c8ff;
-            box-shadow: 0 0 0 3px rgba(112,200,255,0.2);
-            background: rgba(20, 35, 50, 0.8);
-        }
-        .wp-field input::placeholder {
-            color: #809ab3;
-            font-weight: 300;
-            font-size: 0.9rem;
-        }
-
-        /* BUTTON - SQUARE, with EXTRA BOTTOM SPACING */
-        .wp-login-button {
-            background: linear-gradient(135deg, #1f6f9f, #2f8ed0);
-            border: none;
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-            letter-spacing: 1.5px;
-            padding: 0.9rem 0.5rem;
-            border-radius: 0;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            margin-top: 0.7rem;
-            margin-bottom: 1.2rem;
-            box-shadow: 0 4px 12px #0b2a40;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .wp-login-button:hover {
-            background: linear-gradient(135deg, #2a7faf, #3f9eff);
-            box-shadow: 0 6px 18px #1f6f9f;
-            transform: scale(1.01);
-            letter-spacing: 2px;
-        }
-
-        /* ----- AUTH MESSAGES ----- */
-        .error-message, .success-message, .loading {
-            display: none;
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-            padding: 0.8rem;
-            border-radius: 0;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .error-message {
-            background: rgba(180, 60, 60, 0.2);
-            border: 1px solid rgba(255, 100, 100, 0.3);
-            color: #ffb0b0;
-        }
-
-        .success-message {
-            background: rgba(60, 180, 120, 0.2);
-            border: 1px solid rgba(100, 255, 180, 0.3);
-            color: #b0ffd0;
-        }
-
-        .loading {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            color: #aad0ff;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(112,200,255,0.3);
-            border-top: 3px solid #70c8ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
+        
+        @keyframes rotate-light {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* ----- CLEAN FOOTER ----- */
-        .login-footer {
-            margin-top: 1rem;
-            padding-top: 0.8rem;
-            text-align: center;
+        
+        .stat-card h3 {
             font-size: 0.8rem;
-            color: #8fa9cc;
-            border-top: 1px solid rgba(47, 142, 208, 0.2);
-            line-height: 1.4;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
         }
-
-        /* responsive adjustments */
-        @media (max-width: 520px) {
-            .wp-aether-container {
-                width: 340px;
-                min-height: 400px;
-                padding: 1.5rem 1.5rem;
-            }
-            .login-icon i {
-                width: 70px;
-                height: 70px;
-                line-height: 70px !important;
-                font-size: 2.4rem;
-            }
-            .login-title { font-size: 1.4rem; margin-bottom: 1.5rem; }
-            .wp-field input { padding: 0.8rem 1rem; }
-            .wp-login-button { 
-                padding: 0.8rem 0.5rem; 
-                font-size: 1rem;
-                margin-bottom: 1rem;
-            }
+        
+        .stat-card .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
         }
-
-        @media (max-width: 380px) {
-            .wp-aether-container {
-                width: 280px;
-                min-height: 380px;
-                padding: 1.2rem;
+        
+        .stat-card .label {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Colored stat cards - ALL TEXT WHITE */
+        .stat-card.blue-gradient {
+            background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
+            border: none;
+        }
+        
+        .stat-card.blue-gradient h3,
+        .stat-card.blue-gradient .number,
+        .stat-card.blue-gradient .label {
+            color: white !important;
+        }
+        
+        .stat-card.purple-gradient {
+            background: linear-gradient(135deg, #6b4f9f 0%, #a07dd0 100%);
+            border: none;
+        }
+        
+        .stat-card.purple-gradient h3,
+        .stat-card.purple-gradient .number,
+        .stat-card.purple-gradient .label {
+            color: white !important;
+        }
+        
+        .stat-card.teal-gradient {
+            background: linear-gradient(135deg, #1f6f5a 0%, #1d9f8f 100%);
+            border: none;
+        }
+        
+        .stat-card.teal-gradient h3,
+        .stat-card.teal-gradient .number,
+        .stat-card.teal-gradient .label {
+            color: white !important;
+        }
+        
+        /* New distinct color for Playlists - blue-purple */
+        .stat-card.playlist-gradient {
+            background: linear-gradient(135deg, #5f3dc7 0%, #8a6de0 100%);
+            border: none;
+        }
+        
+        .stat-card.playlist-gradient h3,
+        .stat-card.playlist-gradient .number,
+        .stat-card.playlist-gradient .label {
+            color: white !important;
+        }
+        
+        /* Quick Actions */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+            min-height: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quick-action-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(31, 111, 159, 0.05) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+            animation: rotate-light 20s linear infinite;
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(31, 111, 159, 0.2);
+            border-color: var(--primary-blue);
+        }
+        
+        .quick-action-btn i {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .quick-action-btn span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-bottom: 12px;
+        }
+        
+        /* Section headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                var(--primary-blue) 20%, 
+                var(--primary-lighter) 50%,
+                var(--primary-blue) 80%, 
+                transparent 95%
+            );
+        }
+        
+        .section-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-header h3 i {
+            color: var(--primary-blue);
+        }
+        
+        .view-all-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border: 1px solid var(--primary-blue);
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+        
+        .view-all-link:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        /* Mobile Cards */
+        .mobile-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .mobile-card {
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mobile-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(31, 111, 159, 0.03) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+        
+        .mobile-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(31, 111, 159, 0.1);
+        }
+        
+        .mobile-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mobile-card-label {
+            color: #666;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .mobile-card-label i {
+            color: var(--primary-blue);
+            margin-right: 8px;
+            width: 20px;
+        }
+        
+        .mobile-card-value {
+            color: var(--primary-blue);
+        }
+        
+        /* Security Info Box */
+        .security-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary-blue);
+            border: 1px solid rgba(31, 111, 159, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .security-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(31, 111, 159, 0.03) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+        
+        .security-box h4 {
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .security-box ul {
+            list-style: none;
+        }
+        
+        .security-box li {
+            padding: 6px 0;
+            color: #666;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+            font-size: 0.85rem;
+        }
+        
+        .security-box li:last-child {
+            border-bottom: none;
+        }
+        
+        .security-box li i {
+            color: var(--primary-blue);
+            width: 20px;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+        
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .admin-container {
+                padding: 20px;
             }
-            .login-icon i {
-                width: 60px;
-                height: 60px;
-                line-height: 60px !important;
+            
+            .admin-header {
+                padding: 20px 25px;
+            }
+            
+            .header-top h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-card h3 {
+                font-size: 0.9rem;
+            }
+            
+            .stat-card .number {
                 font-size: 2rem;
             }
-            .wp-login-button { margin-bottom: 0.8rem; }
+            
+            .stat-card .label {
+                font-size: 0.75rem;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            
+            .quick-action-btn {
+                padding: 20px 10px;
+                min-height: 100px;
+            }
+            
+            .quick-action-btn i {
+                font-size: 2rem;
+            }
+            
+            .quick-action-btn span {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Small phones */
+        @media (max-width: 380px) {
+            .stat-card h3 {
+                font-size: 0.7rem;
+            }
+            
+            .stat-card .number {
+                font-size: 1.5rem;
+            }
+            
+            .stat-card .label {
+                font-size: 0.6rem;
+            }
+            
+            .quick-action-btn span {
+                font-size: 0.7rem;
+            }
+            
+            .header-top h1 {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- background layers -->
-    <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div>
-    <div class="vine-wave"></div><div class="forest-nebula"></div><div class="mist"></div>
-    <div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div>
-    <div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div>
-    <div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div>
-    <div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div>
-    <div class="vignette"></div>
-
-    <!-- LOGIN FORM -->
-    <main>
-        <div class="wp-aether-container">
-            <div class="login-icon">
-                <i class="fas fa-user-astronaut"></i>
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="header-top">
+                <h1>
+                    <i class="fas fa-cog"></i> 
+                    Dashboard
+                </h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                    <button class="logout-btn" title="Logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
             </div>
-            <div class="login-title">login</div>
-
-            <form id="loginForm">
-                <div class="wp-field">
-                    <label for="username"><i class="fas fa-user"></i> username</label>
-                    <input type="text" id="username" name="username" placeholder="your username" autocomplete="username" required>
-                </div>
-                <div class="wp-field">
-                    <label for="password"><i class="fas fa-lock"></i> password</label>
-                    <input type="password" id="password" name="password" placeholder="········" autocomplete="current-password" required>
-                </div>
-
-                <div class="error-message" id="errorMessage"></div>
-                <div class="success-message" id="successMessage"></div>
-                
-                <div class="loading" id="loading">
-                    <div class="loading-spinner"></div>
-                    <div style="margin-top: 8px;">Verifying...</div>
-                </div>
-
-                <button type="submit" class="wp-login-button" id="loginBtn">log in</button>
-            </form>
             
-            <div class="login-footer">
-                <div>Secure Login</div>
-                <div style="font-size: 0.7rem; opacity: 0.6;">© 2026</div>
+            <!-- Navigation Tabs -->
+            <div class="admin-tabs">
+                <a href="index.html" class="tab-btn active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="upload.html" class="tab-btn">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                </a>
+                <a href="songs.html" class="tab-btn">
+                    <i class="fas fa-music"></i> Songs
+                </a>
+                <a href="albums.html" class="tab-btn">
+                    <i class="fas fa-compact-disc"></i> Albums
+                </a>
+                <a href="artists.html" class="tab-btn">
+                    <i class="fas fa-microphone"></i> Artists
+                </a>
+                <a href="playlists.html" class="tab-btn">
+                    <i class="fas fa-list"></i> Playlists
+                </a>
+  <!-- ADD THIS LINE -->
+    <a href="analytics.html" class="tab-btn">
+        <i class="fas fa-chart-line"></i> Analytics
+    </a>
+<a href="media.html" class="tab-btn"><i class="fas fa-images"></i> Media</a>
             </div>
         </div>
-    </main>
+        
+        <!-- Main Content -->
+        <div class="admin-content">
+            <!-- Welcome Header -->
+            <div style="margin-bottom: 20px;">
+                <div class="status-badge">✓ ACTIVE SESSION</div>
+                <h2 style="font-size: 1.3rem; margin-bottom: 5px; color: var(--primary-dark);">Welcome back, Admin</h2>
+                <p style="color: #666; font-size: 0.9rem;" id="currentDate"></p>
+            </div>
+            
+            <!-- Stats Grid - ALL TEXT WHITE ON GRADIENTS -->
+            <div class="stats-grid">
+                <div class="stat-card blue-gradient">
+                    <h3>Total Songs</h3>
+                    <div class="number" id="totalSongs">0</div>
+                    <div class="label">songs</div>
+                </div>
+                <div class="stat-card purple-gradient">
+                    <h3>Total Albums</h3>
+                    <div class="number" id="totalAlbums">0</div>
+                    <div class="label">albums</div>
+                </div>
+                <div class="stat-card teal-gradient">
+                    <h3>Total Artists</h3>
+                    <div class="number" id="totalArtists">0</div>
+                    <div class="label">artists</div>
+                </div>
+                <div class="stat-card playlist-gradient">
+                    <h3>Total Playlists</h3>
+                    <div class="number" id="totalPlaylists">0</div>
+                    <div class="label">playlists</div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="section-header">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <span class="view-all-link" onclick="alert('All actions coming soon!')">view all</span>
+            </div>
+            
+            <div class="quick-actions-grid">
+                <a href="upload.html" class="quick-action-btn">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload Song</span>
+                </a>
+                <a href="#" class="quick-action-btn" onclick="alert('Create album feature coming soon!')">
+                    <i class="fas fa-compact-disc"></i>
+                    <span>New Album</span>
+                </a>
+                <a href="#" class="quick-action-btn" onclick="alert('Create artist feature coming soon!')">
+                    <i class="fas fa-microphone"></i>
+                    <span>New Artist</span>
+                </a>
+                <a href="#" class="quick-action-btn" onclick="alert('Create playlist feature coming soon!')">
+                    <i class="fas fa-list"></i>
+                    <span>New Playlist</span>
+                </a>
+            </div>
+            
+            <!-- Security Info Box -->
+            <div class="security-box">
+                <h4><i class="fas fa-shield-alt"></i> Security Status</h4>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> Authentication: Cloudflare Secrets</li>
+                    <li><i class="fas fa-clock"></i> Session: Active (24h expiry)</li>
+                    <li><i class="fas fa-server"></i> Environment: Production ready</li>
+                </ul>
+            </div>
+            
+            <!-- Mobile Cards -->
+            <div class="section-header" style="margin-top: 10px;">
+                <h3><i class="fas fa-bars"></i> Quick Navigation</h3>
+            </div>
+            
+            <div class="mobile-cards">
+                <div class="mobile-card" onclick="window.location='upload.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-cloud-upload-alt"></i> Upload Song</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='songs.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-music"></i> Manage Songs</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='albums.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-compact-disc"></i> Manage Albums</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='artists.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-microphone"></i> Manage Artists</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='playlists.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-list"></i> Manage Playlists</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Immediate auth check - runs before page renders
-        (function() {
-            // Check for existing session cookie (will be handled server-side)
-            // This just prevents flash - real protection is on the server
-            const hasSession = document.cookie.includes('admin_session=');
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
             
-            if (hasSession) {
-                window.location.href = '/admin/';
-                return;
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/';
+                return false;
             }
             
-            // Show page after check
-            document.addEventListener('DOMContentLoaded', function() {
-                document.body.style.visibility = 'visible';
-            });
-        })();
-
-        // Login form handling
-        const loginForm = document.getElementById('loginForm');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('loginBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
-        const loading = document.getElementById('loading');
-
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-            
-            if (!username || !password) {
-                showError('Please enter both username and password');
-                return;
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/';
+                return false;
             }
             
-            // Show loading
-            loginBtn.disabled = true;
-            loading.style.display = 'block';
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-            
+            return true;
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = '/';
+            }
+        }
+
+        async function loadStats() {
             try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                    credentials: 'same-origin' // Important for cookies
-                });
-                
+                const response = await fetch('/api/stats');
                 const data = await response.json();
                 
-                if (response.ok && data.success) {
-                    successMessage.textContent = 'Login successful! Redirecting...';
-                    successMessage.style.display = 'block';
-                    loading.style.display = 'none';
-                    
-                    // Cookie is set by server, just redirect
-                    setTimeout(() => {
-                        window.location.href = '/admin/';
-                    }, 1000);
-                } else {
-                    showError(data.error || 'Invalid credentials');
+                if (data) {
+                    document.getElementById('totalSongs').textContent = data.songs || 0;
+                    document.getElementById('totalAlbums').textContent = data.albums || 0;
+                    document.getElementById('totalArtists').textContent = data.artists || 0;
+                    document.getElementById('totalPlaylists').textContent = data.playlists || 0;
                 }
             } catch (error) {
-                showError('Connection error. Please try again.');
-                console.error('Login error:', error);
+                console.log('Stats API not ready - keeping zeros');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuth()) return;
+            
+            const dateElement = document.getElementById('currentDate');
+            if (dateElement) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateElement.textContent = new Date().toLocaleDateString('en-GB', options);
+            }
+            
+            loadStats();
+        });
+
+        window.addEventListener('load', function() {
+            if (!window.location.pathname.includes('login.html') && 
+                window.location.pathname !== '/') {
+                checkAuth();
             }
         });
-        
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            loginBtn.disabled = false;
-            loading.style.display = 'none';
-        }
     </script>
 </body>
 </html>
