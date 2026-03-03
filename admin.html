@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>aetheric · login · username only</title>
+    <title>aetheric · login</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Inter font -->
@@ -30,7 +30,7 @@
             line-height: 1.5;
         }
 
-        /* ----- AETHERIC OCEAN BACKGROUND (unchanged) ----- */
+        /* ----- AETHERIC OCEAN BACKGROUND ----- */
         body::before {
             content: '';
             position: fixed;
@@ -123,8 +123,6 @@
             pointer-events: none; z-index: 25;
         }
 
-        /* ----- NO HEADER ----- */
-
         /* ----- MAIN: FLEX CENTERING ----- */
         main {
             flex: 1 1 auto;
@@ -187,7 +185,6 @@
             border: 2px solid rgba(112,200,255,0.4);
         }
 
-        /* UPDATED TITLE: now "login" */
         .login-title {
             text-align: center;
             font-weight: 500;
@@ -277,7 +274,7 @@
             letter-spacing: 2px;
         }
 
-        /* ----- AUTH MESSAGES (matching original style but with aetheric colors) ----- */
+        /* ----- AUTH MESSAGES ----- */
         .error-message, .success-message, .loading {
             display: none;
             margin-top: 0.5rem;
@@ -323,7 +320,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* ----- NEW CLEAN FOOTER (replaces old demo-hint) ----- */
         .login-footer {
             margin-top: 1rem;
             padding-top: 0.8rem;
@@ -334,7 +330,6 @@
             line-height: 1.4;
         }
 
-        /* responsive adjustments */
         @media (max-width: 520px) {
             .wp-aether-container {
                 width: 340px;
@@ -371,7 +366,6 @@
             .wp-login-button { margin-bottom: 0.8rem; }
         }
 
-        /* ----- FOOTER - VISIBLE ----- */
         .simple-footer {
             position: relative;
             z-index: 30;
@@ -398,7 +392,6 @@
             text-shadow: 0 0 8px #2f8ed0;
         }
 
-        /* no scroll safety */
         body, main, footer { 
             overflow: hidden; 
         }
@@ -418,7 +411,7 @@
     <div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div>
     <div class="vignette"></div>
 
-    <!-- MAIN CONTENT - WITH EXACT AUTH FROM ZEDTOPVIBES -->
+    <!-- MAIN CONTENT -->
     <main>
         <div class="wp-aether-container">
             <div class="login-icon">
@@ -436,7 +429,6 @@
                     <input type="password" id="password" name="password" placeholder="········" autocomplete="current-password" required>
                 </div>
 
-                <!-- Auth message containers (same as original) -->
                 <div class="error-message" id="errorMessage"></div>
                 <div class="success-message" id="successMessage"></div>
                 
@@ -448,7 +440,6 @@
                 <button type="submit" class="wp-login-button" id="loginBtn">log in</button>
             </form>
             
-            <!-- NEW CLEAN FOOTER - replaces old demo-hint -->
             <div class="login-footer">
                 <div>Secure Login</div>
                 <div style="font-size: 0.7rem; opacity: 0.6;">© 2026</div>
@@ -456,7 +447,6 @@
         </div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="simple-footer">
         <div class="footer-copyright">
             © 2026 · aetheric veil
@@ -464,7 +454,6 @@
     </footer>
 
     <script>
-        // EXACT AUTHENTICATION CODE FROM ZEDTOPVIBES, adapted for this page
         const loginForm = document.getElementById('loginForm');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
@@ -472,17 +461,6 @@
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
         const loading = document.getElementById('loading');
-
-        // Check if already logged in (using same localStorage keys)
-        if (localStorage.getItem('admin_logged_in') === 'true') {
-            const loginTime = localStorage.getItem('admin_login_time');
-            if (loginTime) {
-                const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-                if (hoursSince < 24) {
-                    window.location.href = '/admin/';
-                }
-            }
-        }
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -495,7 +473,6 @@
                 return;
             }
             
-            // Show loading
             loginBtn.disabled = true;
             loading.style.display = 'block';
             errorMessage.style.display = 'none';
@@ -507,7 +484,8 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username, password }),
+                    credentials: 'same-origin'
                 });
                 
                 const data = await response.json();
@@ -516,9 +494,6 @@
                     successMessage.textContent = 'Login successful! Redirecting...';
                     successMessage.style.display = 'block';
                     loading.style.display = 'none';
-                    
-                    localStorage.setItem('admin_logged_in', 'true');
-                    localStorage.setItem('admin_login_time', Date.now().toString()); 
                     
                     setTimeout(() => {
                         window.location.href = '/admin/';
