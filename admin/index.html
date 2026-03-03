@@ -76,40 +76,59 @@
             font-weight: 400;
         }
         
+        /* ===== COMPACT USER INFO & LOGOUT BUTTON ===== */
         .user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             background: var(--light-gray);
-            padding: 8px 15px;
+            padding: 4px 4px 4px 12px;
             border-radius: 30px;
             font-size: 0.9rem;
             margin-left: auto;
             border: 1px solid rgba(31, 111, 159, 0.1);
+            height: 36px;
         }
         
         .user-info i {
             color: var(--primary-blue);
+            font-size: 0.9rem;
         }
         
         .user-info span {
             font-weight: 600;
+            line-height: 1;
         }
         
         .logout-btn {
             color: #666;
-            transition: color 0.3s;
-            padding: 8px;
+            transition: all 0.3s;
+            padding: 6px 10px;
             text-decoration: none;
-            background: none;
+            background: rgba(255, 255, 255, 0.5);
             border: none;
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
+            gap: 4px;
+            border-radius: 30px;
+            height: 28px;
+            margin-left: 2px;
+        }
+        
+        .logout-btn i {
+            font-size: 0.9rem;
+            color: #666;
+            transition: color 0.3s;
         }
         
         .logout-btn:hover {
+            color: var(--primary-blue);
+            background: white;
+        }
+        
+        .logout-btn:hover i {
             color: var(--primary-blue);
         }
         
@@ -128,31 +147,31 @@
         }
         
         .tab-btn {
-            padding: 10px 15px !important;        /* Force same padding */
+            padding: 10px 15px !important;
             background: transparent;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem !important;          /* Force same font size */
-            font-weight: 600 !important;            /* Force same weight */
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
             color: #666;
             cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            justify-content: center;                /* Center content */
+            justify-content: center;
             gap: 6px;
             text-decoration: none;
-            line-height: 1;                         /* Consistent line height */
-            height: 40px !important;                  /* FIXED HEIGHT - all tabs same! */
-            min-height: 40px !important;              /* Force min height */
-            max-height: 40px !important;              /* Force max height */
-            box-sizing: border-box;                  /* Include padding in height */
+            line-height: 1;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            box-sizing: border-box;
         }
         
         .tab-btn i {
-            font-size: 1rem !important;              /* Force same icon size */
-            width: 16px;                              /* Fixed icon width */
+            font-size: 1rem !important;
+            width: 16px;
         }
         
         .tab-btn:hover {
@@ -163,11 +182,11 @@
         .tab-btn.active {
             background: var(--primary-blue);
             color: white;
-            font-weight: 600 !important;              /* Same as inactive */
-            height: 40px !important;                   /* Force same height */
+            font-weight: 600 !important;
+            height: 40px !important;
             min-height: 40px !important;
             max-height: 40px !important;
-            padding: 10px 15px !important;             /* Force same padding */
+            padding: 10px 15px !important;
         }
         
         /* Content Area */
@@ -182,7 +201,7 @@
         /* Stats Grid - 2x2 on mobile, 4 on desktop */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -252,7 +271,7 @@
             text-overflow: ellipsis;
         }
         
-        /* Colored stat cards (gradient versions) */
+        /* Colored stat cards */
         .stat-card.blue-gradient {
             background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
             border: none;
@@ -289,7 +308,7 @@
         /* Quick Actions */
         .quick-actions-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-top: 15px;
         }
@@ -395,7 +414,7 @@
             margin-bottom: 12px;
         }
         
-        /* Section headers with ocean theme */
+        /* Section headers */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -601,7 +620,6 @@
                 font-size: 1.5rem;
             }
             
-            /* Switch to 4 columns on desktop */
             .stats-grid {
                 grid-template-columns: repeat(4, 1fr);
                 gap: 15px;
@@ -623,7 +641,6 @@
                 font-size: 0.75rem;
             }
             
-            /* Quick actions 4 columns on desktop */
             .quick-actions-grid {
                 grid-template-columns: repeat(4, 1fr);
                 gap: 10px;
@@ -643,7 +660,7 @@
             }
         }
         
-        /* Small phones - ensure text fits */
+        /* Small phones */
         @media (max-width: 380px) {
             .stat-card h3 {
                 font-size: 0.7rem;
@@ -664,11 +681,6 @@
             .header-top h1 {
                 font-size: 1rem;
             }
-            
-            .user-info {
-                padding: 5px 10px;
-                font-size: 0.8rem;
-            }
         }
     </style>
 </head>
@@ -685,12 +697,12 @@
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
                     <button class="logout-btn" title="Logout" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                 </div>
             </div>
             
-            <!-- Navigation Tabs - ALL EXACTLY 40px TALL -->
+            <!-- Navigation Tabs -->
             <div class="admin-tabs">
                 <a href="index.html" class="tab-btn active">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -715,34 +727,34 @@
         
         <!-- Main Content -->
         <div class="admin-content">
-            <!-- Welcome Header with Status Badge -->
+            <!-- Welcome Header -->
             <div style="margin-bottom: 20px;">
                 <div class="status-badge">✓ ACTIVE SESSION</div>
                 <h2 style="font-size: 1.3rem; margin-bottom: 5px; color: var(--primary-dark);">Welcome back, Admin</h2>
                 <p style="color: #666; font-size: 0.9rem;" id="currentDate"></p>
             </div>
             
-            <!-- Stats Grid - 2x2 on mobile, 4 on desktop -->
+            <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card blue-gradient">
-                    <h3 style="color: rgba(255,255,255,0.9);">Total Songs</h3>
-                    <div class="number" style="color: white;" id="totalSongs">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">songs</div>
+                    <h3>Total Songs</h3>
+                    <div class="number" id="totalSongs">0</div>
+                    <div class="label">songs</div>
                 </div>
                 <div class="stat-card purple-gradient">
-                    <h3 style="color: rgba(255,255,255,0.9);">Total Albums</h3>
-                    <div class="number" style="color: white;" id="totalAlbums">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">albums</div>
+                    <h3>Total Albums</h3>
+                    <div class="number" id="totalAlbums">0</div>
+                    <div class="label">albums</div>
                 </div>
                 <div class="stat-card teal-gradient">
-                    <h3 style="color: rgba(255,255,255,0.9);">Total Artists</h3>
-                    <div class="number" style="color: white;" id="totalArtists">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">artists</div>
+                    <h3>Total Artists</h3>
+                    <div class="number" id="totalArtists">0</div>
+                    <div class="label">artists</div>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #2f8ed0, #70c8ff); border: none;">
-                    <h3 style="color: rgba(255,255,255,0.9);">Total Playlists</h3>
-                    <div class="number" style="color: white;" id="totalPlaylists">0</div>
-                    <div class="label" style="color: rgba(255,255,255,0.8);">playlists</div>
+                    <h3>Total Playlists</h3>
+                    <div class="number" id="totalPlaylists">0</div>
+                    <div class="label">playlists</div>
                 </div>
             </div>
             
@@ -822,7 +834,6 @@
     </div>
 
     <script>
-        // ===== AUTHENTICATION FUNCTIONS =====
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
@@ -832,7 +843,6 @@
                 return false;
             }
             
-            // Check 24-hour expiry
             const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
             if (hoursSince > 24) {
                 localStorage.clear();
@@ -843,7 +853,6 @@
             return true;
         }
 
-        // ===== LOGOUT FUNCTION =====
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.clear();
@@ -851,7 +860,6 @@
             }
         }
 
-        // ===== STATS LOADING FUNCTION =====
         async function loadStats() {
             try {
                 const response = await fetch('/api/stats');
@@ -868,7 +876,6 @@
             }
         }
 
-        // ===== INITIALIZE DASHBOARD =====
         document.addEventListener('DOMContentLoaded', function() {
             if (!checkAuth()) return;
             
@@ -881,7 +888,6 @@
             loadStats();
         });
 
-        // ===== PROTECT OTHER PAGES =====
         window.addEventListener('load', function() {
             if (!window.location.pathname.includes('login.html') && 
                 window.location.pathname !== '/') {
