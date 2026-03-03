@@ -1,14 +1,15 @@
-// File: /functions/admin/index.js
 export async function onRequest(context) {
     const { request, env } = context;
     
     // Parse cookies
     const cookie = request.headers.get("Cookie") || "";
     const cookies = Object.fromEntries(
-        cookie.split('; ').filter(c => c).map(c => {
-            const [key, value] = c.split('=');
-            return [key, value];
-        })
+        cookie.split('; ')
+            .filter(c => c)
+            .map(c => {
+                const [key, value] = c.split('=');
+                return [key, value];
+            })
     );
     
     const sessionToken = cookies['admin_session'];
