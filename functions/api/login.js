@@ -1,3 +1,4 @@
+// File: /functions/api/login.js
 export async function onRequest(context) {
     const { request, env } = context;
     
@@ -29,6 +30,12 @@ export async function onRequest(context) {
         
         // Check credentials
         if (username === validUsername && password === validPassword) {
+            // Generate a simple session token (in production, use a proper JWT)
+            const sessionToken = crypto.randomUUID 
+                ? crypto.randomUUID() 
+                : `${Date.now()}-${Math.random().toString(36).substring(2)}`;
+            
+            // Set secure HTTP-only cookie
             return new Response(JSON.stringify({ 
                 success: true,
                 message: "Login successful" 
@@ -37,6 +44,7 @@ export async function onRequest(context) {
                 headers: {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "*",
+                    "Set-Cookie": `admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=86400`, // 24 hours
                 },
             });
         } else {
@@ -52,6 +60,7 @@ export async function onRequest(context) {
             });
         }
     } catch (error) {
+        console.error('Login error:', error);
         return new Response(JSON.stringify({ 
             success: false,
             error: "Server error" 
