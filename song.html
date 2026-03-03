@@ -2,1354 +2,283 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><!-- SONG_TITLE --> - ZED•AETHERIC</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Montserrat + Poppins for logo -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Songs - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@800;900&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        /* ========== BLUE THEME (AETHERIC) ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --dark: #1a1a1a;
+            --gray: #666;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
         body {
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0b0f1c;
-            color: #e0e6f0;
-            line-height: 1.6;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            color: #333;
         }
         
-        .main-content-container {
+        .admin-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px 10px;
+            padding: 10px;
+        }
+        
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
             gap: 10px;
-            width: 100%;
         }
         
-        .left-sidebar {
-            flex: 3;
-            background: rgba(22, 28, 40, 0.85);
-            backdrop-filter: blur(8px);
-            border-radius: 3px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px -12px #00000080;
-            border: 1px solid #2a3b4e;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .right-sidebar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            min-width: 300px;
-        }
-        
-        .pagination-container {
-            width: 100%;
-            padding: 20px;
-            border-top: 1px solid #1f405b;
-            background: rgba(22, 28, 40, 0.85);
-            display: block;
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        .pagination-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: #1e2a3a;
-            border: 1px solid #2f4f6f;
-            border-radius: 3px;
-            color: #b0d0ff;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-        }
-        
-        .pagination-item:hover {
-            background: #2a3f5a;
-            border-color: #70c8ff;
-            color: #ffffff;
-            transform: translateY(-2px);
-        }
-        
-        .pagination-item.active {
-            background: #2f8ed0;
-            border-color: #9ad0ff;
-            color: white;
-            box-shadow: 0 0 15px #2f8ed0;
-        }
-        
-        .pagination-item.active:hover {
-            background: #4aa3e2;
-        }
-        
-        .pagination-ellipsis {
-            color: #8ab0d0;
-            font-weight: 600;
-            padding: 0 5px;
-        }
-        
-        .pagination-prev,
-        .pagination-next {
-            width: auto;
-            padding: 0 15px;
-            gap: 6px;
-        }
-        
-        .pagination-prev i,
-        .pagination-next i {
-            font-size: 0.9rem;
-        }
-        
-        .pagination-prev.disabled,
-        .pagination-next.disabled {
-            opacity: 0.4;
-            filter: grayscale(0.6);
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        
-        .site-header {
-            width: 100%;
-            background: #121624;
-            box-shadow: 0 10px 30px -10px rgba(0,20,40,0.8);
-        }
-        
-        .branding-bar {
-            background-color: #121624;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            z-index: 100;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.7);
-            width: 100%;
-        }
-        
-        .site-logo {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 900;
-            font-size: 26px;
-            letter-spacing: 1px;
-            background: linear-gradient(145deg, #b0e0ff, #ffffff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 12px #0066cc, 2px 4px 0 #004488, 4px 6px 0 #002244;
-            animation: logoFloat 4s infinite alternate ease-in-out;
-            position: relative;
-            margin: 0;
-        }
-        
-        @keyframes logoFloat {
-            0% { filter: drop-shadow(0 0 5px #2f8ed0); }
-            100% { filter: drop-shadow(0 0 20px #70c8ff); }
-        }
-        
-        .site-logo::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(100, 180, 255, 0.2) 25%, 
-                transparent 50%, 
-                rgba(100, 180, 255, 0.2) 75%, 
-                transparent 100%);
-            pointer-events: none;
-        }
-        
-        .hamburger-menu {
-            width: 24px;
-            height: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-        
-        .hamburger-menu span {
-            display: block;
-            height: 3px;
-            width: 100%;
-            background-color: #70c8ff;
-            border-radius: 1.5px;
-            box-shadow: 0 0 8px #2f8ed0;
-            transition: all 0.3s ease;
-        }
-        
-        .profile-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2a6f9c, #4aa3e2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: white;
-            font-size: 1.2rem;
-            box-shadow: 0 2px 15px rgba(0,160,255,0.8);
-        }
-        
-        .profile-icon:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(0,160,255,0.9);
-        }
-        
-        .search-section {
-            background: radial-gradient(circle at 30% 30%, #1a3650, #0b1a2a);
-            padding: 25px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 20px rgba(0,100,200,0.4);
-        }
-        
-        .search-container {
-            width: 100%;
-            max-width: 600px;
-            position: relative;
-        }
-        
-        .search-bar {
-            display: flex;
-            border-radius: 3px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            width: 100%;
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 18px 25px;
-            border: 1px solid #1f4c73;
-            font-size: 16px;
-            color: #f0f4ff;
-            background-color: #1e2638;
-            outline: none;
-            font-family: 'Montserrat', sans-serif;
-        }
-        
-        .search-input::placeholder {
-            color: #90a9c9;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-        }
-        
-        .search-button {
-            background: #1e2638;
-            color: #70c8ff;
-            border: none;
-            border-left: 2px solid #2f6f9f;
-            padding: 0 28px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        
-        .search-button:hover {
-            background: #253040;
-            border-left-color: #9ad0ff;
-        }
-        
-        .search-button i {
-            font-size: 18px;
-        }
-        
-        .hero-section {
-            display: none;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 18px;
-            background: rgba(16, 22, 34, 0.9);
-            border-bottom: 1px solid #1f3f5c;
-            transition: all 0.2s ease;
-            height: 56px;
-            position: relative;
-        }
-        
-        .section-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 5%, 
-                #2f8ed0 20%, 
-                #70c8ff 80%, 
-                transparent 95%);
-        }
-        
-        .section-header:hover {
-            background: #1a2538;
-        }
-        
-        .section-title {
-            font-size: 1.2rem;
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
             font-weight: 700;
-            color: #deecff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0;
-            margin: 0;
-            line-height: 1;
-        }
-        
-        .section-title::before {
-            content: "🌊";
-            font-size: 1.2rem;
-            opacity: 1;
-        }
-        
-        .view-all {
-            color: #bbdbff;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 5px 12px;
-            border: 1px solid #2f8ed0;
-            border-radius: 3px;
-            transition: all 0.2s ease;
-            background: #1d3142;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-        }
-        
-        .view-all:hover {
-            background: #2f6f9f;
-            color: white;
-            transform: translateX(2px);
-        }
-        
-        .section-block {
-            background: rgba(22, 28, 40, 0.85);
-            backdrop-filter: blur(8px);
-            border-radius: 3px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px -12px #00000080;
-            border: 1px solid #2a3b4e;
-        }
-        
-        .latest-albums-list {
-            padding: 5px 0;
-        }
-        
-        .album-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 16px 18px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .album-item:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 18px;
-            right: 18px;
-            height: 1px;
-            background: #1f405b;
-        }
-        
-        .album-item:hover {
-            background: rgba(40, 60, 90, 0.5);
-            backdrop-filter: blur(4px);
-        }
-        
-        .album-item:last-child {
-            border-bottom-left-radius: 3px;
-            border-bottom-right-radius: 3px;
-        }
-        
-        .album-thumbnail {
-            width: 120px;
-            height: 120px;
-            flex-shrink: 0;
-            border-radius: 3px;
-            overflow: hidden;
-            background: #f0f0f0;
-            border: 2px solid #1f4c73;
-            box-shadow: 0 4px 15px #00000080;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 2rem;
-        }
-        
-        .album-thumbnail.song-thumbnail {
-            background: linear-gradient(135deg, #1f6f5a, #1d9f8f);
-            color: white;
-        }
-        
-        .album-thumbnail.artist-thumbnail {
-            background: linear-gradient(135deg, #6b4f9f, #a07dd0);
-            color: white;
-        }
-        
-        .album-thumbnail.playlist-thumbnail {
-            background: linear-gradient(135deg, #2f6f9f, #5fa8e8);
-            color: white;
-        }
-        
-        .album-info {
-            flex-grow: 1;
-            min-width: 0;
-            padding-right: 10px;
-        }
-        
-        .album-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #ecf5ff;
-            margin-bottom: 8px;
-            display: block;
-            white-space: normal;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.4;
-            max-height: 3.6em;
-            text-shadow: 0 2px 4px #00000060;
-        }
-        
-        .album-meta {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-top: 6px;
-            flex-wrap: wrap;
         }
         
-        .album-artist,
-        .album-genre,
-        .album-tracks,
-        .track-duration,
-        .track-number,
-        .artist-stats,
-        .playlist-songs,
-        .song-stats {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 10px;
-            display: inline-block;
-            line-height: 1.2;
-        }
-        
-        .track-number {
-            color: #ffd966;
-            background: rgba(255, 200, 100, 0.15);
-            border: 1px solid #ffb34733;
-        }
-        
-        .album-artist {
-            color: #aad0ff;
-            background: rgba(60, 140, 210, 0.2);
-        }
-        
-        .artist-stats {
-            color: #aad0ff;
-            background: rgba(60, 140, 210, 0.2);
-        }
-        
-        .artist-stats i {
-            color: #70c8ff;
-        }
-        
-        .playlist-songs {
-            color: #c0e1ff;
-            background: rgba(70, 140, 230, 0.25);
-        }
-        
-        .song-stats {
-            color: #b3ffe6;
-            background: rgba(40, 180, 140, 0.25);
-        }
-        
-        .right-sidebar .album-item {
-            padding: 12px 15px;
-            gap: 15px;
-        }
-        
-        .right-sidebar .album-thumbnail {
-            width: 80px;
-            height: 80px;
-            font-size: 1.5rem;
-        }
-        
-        .right-sidebar .album-title {
-            font-size: 0.95rem;
-            margin-bottom: 4px;
-            max-height: 2.8em;
-        }
-        
-        .site-footer {
-            text-align: center;
-            margin-top: 45px;
-            padding: 25px 20px;
-            border-top: 3px solid #2f8ed0;
-            background: #0f172a;
-            border-radius: 8px 8px 0 0;
-            max-width: 1400px;
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
             margin-left: auto;
-            margin-right: auto;
-            width: 100%;
-            box-shadow: 0 -10px 30px #00000080;
-            color: #e0f0ff;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .site-footer p {
-            margin: 10px 0;
-            color: #c0dcff;
-            font-weight: 500;
+        .user-info i {
+            color: var(--primary-blue);
         }
         
-        .site-footer p:first-child {
-            font-weight: 700;
-            color: #ffffff;
-            font-size: 1.2rem;
-        }
-        
-        .site-footer p:last-child {
-            font-size: 1rem;
-            color: #70c8ff;
+        .user-info span {
             font-weight: 600;
         }
         
-        .nav-drawer {
-            position: fixed;
-            top: 0;
-            width: 85%;
-            max-width: 350px;
-            height: 100%;
-            background-color: #101c2c;
-            z-index: 1000;
-            box-shadow: 0 0 30px #000000cc;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            opacity: 0;
+        .logout-btn {
+            color: #666;
+            transition: color 0.3s;
+            padding: 8px;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .logout-btn:hover {
+            color: var(--primary-blue);
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
             display: none;
         }
         
-        .nav-drawer.left {
-            left: 0;
-            transform: translateX(-100%);
+        .tab-btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
         }
         
-        .nav-drawer.right {
-            right: 0;
-            transform: translateX(100%);
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
         }
         
-        .nav-header {
-            padding: 20px;
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            min-height: 500px;
+        }
+        
+        .content-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #264a66;
-            background: linear-gradient(135deg, #1f4460, #0f2f4f);
-        }
-        
-        .nav-header .site-logo {
-            color: white;
-            text-shadow: none;
-            font-size: 18px;
-            background: none;
-            -webkit-text-fill-color: white;
-            animation: none;
-        }
-        
-        .close-nav {
-            font-size: 32px;
-            cursor: pointer;
-            color: white;
-            line-height: 1;
-        }
-        
-        .nav-menu {
-            padding: 20px 0;
-        }
-        
-        .nav-item {
-            display: block;
-            padding: 15px 25px;
-            color: #d5eaff;
-            text-decoration: none;
-            font-size: 17px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-        }
-        
-        .nav-item i {
-            width: 24px;
-            margin-right: 10px;
-            color: #6ab0ff;
-        }
-        
-        .nav-item:hover {
-            background-color: #122d44;
-            color: white;
-            border-left-color: #6ab0ff;
-        }
-        
-        .nav-item.active {
-            background-color: #112b40;
-            color: white;
-            border-left-color: #8fcbff;
-            font-weight: 600;
-        }
-        
-        .nav-divider {
-            height: 1px;
-            background: #264a66;
-            margin: 10px 0;
-        }
-        
-        .nav-section-title {
-            padding: 15px 25px 5px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #90b9e5;
-            font-weight: 600;
-        }
-        
-        /* Song specific styles */
-        .song-header {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            padding: 25px 20px;
-            background: rgba(16, 30, 50, 0.7);
-            border-bottom: 2px solid #1f4c73;
-        }
-        
-        .song-cover {
-            width: 200px;
-            height: 200px;
-            border-radius: 3px;
-            overflow: hidden;
-            box-shadow: 0 0 30px #1f6f9f;
-            border: 4px solid #2f8ed0;
-            background: linear-gradient(135deg, #1f6f5a, #1d9f8f);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 5rem;
-        }
-        
-        .song-info-header {
-            flex: 1;
-        }
-        
-        .song-title-header {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #ecf5ff;
-            margin-bottom: 5px;
-            line-height: 1.2;
-            text-shadow: 0 2px 8px #000;
-        }
-        
-        .song-artist-link {
-            color: #70c8ff;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            display: inline-block;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        
-        .song-artist-link:hover {
-            color: #aad0ff;
-            transform: translateX(2px);
-        }
-        
-        .song-meta-header {
-            display: flex;
-            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
             gap: 15px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
         }
         
-        .song-stats {
-            color: #b0caf0;
-            font-size: 0.9rem;
-            font-weight: 500;
+        .content-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
             display: flex;
             align-items: center;
-            gap: 5px;
-            background: rgba(60, 140, 210, 0.2);
-            padding: 6px 12px;
-            border-radius: 15px;
+            gap: 8px;
         }
         
-        .song-stats i {
-            color: #70c8ff;
+        .content-header h2 i {
+            color: var(--primary-blue);
         }
         
-        .song-description {
-            color: #b0c8f0;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-top: 12px;
-            max-width: 600px;
-        }
-        
-        .compact-actions {
-            padding: 20px;
-            background: rgba(16, 30, 50, 0.5);
-            border-top: 1px solid #1f4c73;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-        
-        .play-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #2f8ed0;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 0 15px #2f8ed0;
-        }
-        
-        .play-btn:hover {
-            background: #4aa3e2;
-            transform: scale(1.05);
-        }
-        
-        .progress-bar {
-            flex: 1;
-            height: 6px;
-            background: #1e2a3a;
-            border-radius: 3px;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .progress-fill {
-            width: 45%;
-            height: 100%;
-            background: linear-gradient(90deg, #2f8ed0, #70c8ff);
-            border-radius: 3px;
-            position: relative;
-        }
-        
-        .download-btn {
-            background: #2f8ed0;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-radius: 3px;
-            cursor: pointer;
+        .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            transition: all 0.2s ease;
-        }
-        
-        .download-btn:hover {
-            background: #4aa3e2;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px #2f8ed0;
-        }
-        
-        .breadcrumbs-left {
-            padding: 15px 15px 5px;
-        }
-        
-        .breadcrumb-nav {
-            background: #1a2538;
-            border-radius: 3px;
-            padding: 10px 12px;
-            border: 1px solid #2f4c6e;
-            font-size: 0.8rem;
-            box-shadow: 0 2px 8px #00000060;
-        }
-        
-        .breadcrumb-list {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            list-style: none;
-            gap: 6px;
-        }
-        
-        .breadcrumb-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .breadcrumb-link {
-            color: #9bbce0;
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-        
-        .breadcrumb-link:hover {
-            color: #70c8ff;
-        }
-        
-        .breadcrumb-separator {
-            color: #4a6f8f;
-            font-size: 0.7rem;
-            margin-left: 3px;
-        }
-        
-        .breadcrumb-current {
-            color: #aad0ff;
-            font-weight: 600;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .now-playing-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #121624;
-            border-top: 2px solid #2f8ed0;
+            gap: 8px;
             padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-        }
-        
-        .now-playing-info {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .now-playing-title {
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
             color: white;
         }
         
-        .now-playing-artist {
-            font-size: 0.85rem;
-            color: #70c8ff;
-            cursor: pointer;
+        .btn-primary:hover {
+            background: var(--primary-light);
         }
         
-        .now-playing-controls {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .now-playing-btn {
-            background: none;
-            border: none;
-            color: #70c8ff;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        
-        .loading {
-            padding: 30px;
+        .empty-state {
             text-align: center;
-            color: #b0caf0;
+            padding: 80px 20px;
+            color: #666;
         }
         
-        @media (max-width: 768px) {
-            .main-content-container {
-                flex-direction: column;
-            }
-            
-            .song-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .song-cover {
-                width: 150px;
-                height: 150px;
-                font-size: 3rem;
-            }
-            
-            .compact-actions {
-                flex-direction: column;
-            }
-            
-            .player-controls {
-                width: 100%;
-            }
-            
-            .download-btn {
-                width: 100%;
-                justify-content: center;
-            }
+        .empty-state i {
+            font-size: 5rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+        
+        .empty-state p {
+            font-size: 1rem;
+            color: #999;
+            margin-bottom: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            .admin-container { padding: 20px; }
+            .admin-header { padding: 20px 25px; }
+            .header-top h1 { font-size: 1.5rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .admin-header { padding: 12px; }
+            .header-top h1 { font-size: 1.1rem; }
+            .user-info { padding: 5px 10px; font-size: 0.8rem; }
+            .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
+            .content-header { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="branding-bar">
-            <div class="hamburger-menu" id="hamburgerMenu">
-                <span></span>
-                <span></span>
-                <span></span>
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-cog"></i> Songs</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
             </div>
             
-            <div class="site-logo">ZED•AETHERIC</div>
-            
-            <div class="profile-icon" id="profileIcon">
-                <i class="fas fa-user-astronaut"></i>
+            <!-- Navigation Tabs -->
+            <div class="admin-tabs">
+                <a href="index.html" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="songs.html" class="tab-btn active"><i class="fas fa-music"></i> Songs</a>
+                <a href="albums.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
             </div>
         </div>
         
-        <section class="search-section">
-            <div class="search-container">
-                <form action="/search" method="GET" style="display: flex; width: 100%;">
-                    <div class="search-bar">
-                        <input type="text" name="q" class="search-input" placeholder="DIVE INTO SONIC WAVES..." value="">
-                        <button type="submit" class="search-button">
-                            <i class="fas fa-whale"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-    </header>
-    
-    <!-- MAIN CONTENT CONTAINER -->
-    <div class="main-content-container">
-        <!-- LEFT SIDEBAR - SONG DETAILS (LARGER) -->
-        <aside class="left-sidebar">
-            <!-- BREADCRUMBS -->
-            <div class="breadcrumbs-left">
-                <nav class="breadcrumb-nav">
-                    <ul class="breadcrumb-list">
-                        <li class="breadcrumb-item">
-                            <a href="/" class="breadcrumb-link"><i class="fas fa-home"></i> Home</a>
-                            <span class="breadcrumb-separator">›</span>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="/artists" class="breadcrumb-link"><i class="fas fa-microphone-alt"></i> Artists</a>
-                            <span class="breadcrumb-separator">›</span>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <span class="breadcrumb-current"><i class="fas fa-user"></i> <!-- ARTIST_NAME --></span>
-                        </li>
-                    </ul>
-                </nav>
+        <!-- Main Content -->
+        <div class="admin-content">
+            <div class="content-header">
+                <h2><i class="fas fa-music"></i> Songs Management</h2>
+                <a href="upload.html" class="btn btn-primary">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload New
+                </a>
             </div>
             
-            <!-- SONG HEADER -->
-            <div class="song-header">
-                <div class="song-cover">
-                    <i class="fas fa-music"></i>
-                </div>
-                <div class="song-info-header">
-                    <h1 class="song-title-header"><!-- SONG_TITLE --></h1>
-                    <a class="song-artist-link"><!-- ARTIST_NAME --></a>
-                    <div class="song-meta-header">
-                        <div class="song-stats">
-                            <i class="fas fa-clock"></i>
-                            <span><!-- DURATION --></span>
-                        </div>
-                        <div class="song-stats">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span><!-- YEAR --></span>
-                        </div>
-                        <div class="song-stats">
-                            <i class="fas fa-headphones"></i>
-                            <span><!-- PLAYS --></span>
-                        </div>
-                        <div class="song-stats">
-                            <i class="fas fa-download"></i>
-                            <span><!-- DOWNLOADS --></span>
-                        </div>
-                        <div class="song-stats">
-                            <i class="fas fa-eye"></i>
-                            <span><!-- VIEWS --></span>
-                        </div>
-                    </div>
-                    <p class="song-description">
-                        <!-- DESCRIPTION -->
-                    </p>
-                </div>
+            <div class="empty-state">
+                <i class="fas fa-music"></i>
+                <h3>No Songs Yet</h3>
+                <p>Songs you upload will appear here</p>
+                <a href="upload.html" class="btn btn-primary">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload Your First Song
+                </a>
             </div>
-            
-            <!-- PLAYER & DOWNLOAD SECTION -->
-            <div class="section-header">
-                <h2 class="section-title">Stream & Download <!-- SONG_TITLE --></h2>
-            </div>
-            
-            <div class="compact-actions">
-                <div class="player-controls">
-                    <button class="play-btn">▶</button>
-                    <div class="progress-bar">
-                        <div class="progress-fill"></div>
-                    </div>
-                </div>
-                <button class="download-btn">
-                    <i class="fas fa-download"></i> Download
-                </button>
-            </div>
-            
-            <!-- TRACK INFORMATION SECTION -->
-            <div class="section-header" style="margin-top: 10px;">
-                <h2 class="section-title">Track Information</h2>
-            </div>
-            
-            <div style="padding: 20px; color: #b0caf0;">
-                <p><i class="fas fa-tag" style="color:#70c8ff; width: 100px; display: inline-block;"></i> <!-- GENRE --></p>
-                <p><i class="fas fa-microphone" style="color:#70c8ff; width: 100px; display: inline-block;"></i> <!-- ARTIST_NAME --></p>
-                <p><i class="fas fa-calendar" style="color:#70c8ff; width: 100px; display: inline-block;"></i> <!-- RELEASE_DATE --></p>
-                <p><i class="fas fa-heartbeat" style="color:#70c8ff; width: 100px; display: inline-block;"></i> <!-- BPM --> BPM</p>
-                <p><i class="fas fa-music" style="color:#70c8ff; width: 100px; display: inline-block;"></i> Key: <!-- KEY --></p>
-            </div>
-        </aside>
-        
-        <!-- RIGHT SIDEBAR - EVERYTHING ELSE (SMALLER) -->
-        <div class="right-sidebar">
-            
-            <!-- FROM THE SAME ALBUM SECTION -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">From The Same Album</h2>
-                    <a href="#" class="view-all">view album ➔</a>
-                </div>
-                
-                <div class="latest-albums-list">
-                    <div class="album-item">
-                        <div class="album-thumbnail song-thumbnail">🎵</div>
-                        <div class="album-info">
-                            <div class="album-title">Another Track From Album</div>
-                            <div class="album-meta">
-                                <span class="track-duration">4:30</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="album-item">
-                        <div class="album-thumbnail song-thumbnail">🎵</div>
-                        <div class="album-info">
-                            <div class="album-title">Featured Track</div>
-                            <div class="album-meta">
-                                <span class="track-duration">3:45</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="album-item">
-                        <div class="album-thumbnail song-thumbnail">🎵</div>
-                        <div class="album-info">
-                            <div class="album-title">Album Closer</div>
-                            <div class="album-meta">
-                                <span class="track-duration">5:12</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- MORE BY THIS ARTIST SECTION -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">More by <!-- ARTIST_NAME --></h2>
-                    <a href="#" class="view-all">view artist ➔</a>
-                </div>
-                
-                <div class="latest-albums-list">
-                    <div class="album-item">
-                        <div class="album-thumbnail song-thumbnail">🎵</div>
-                        <div class="album-info">
-                            <div class="album-title">Popular Song 1</div>
-                            <div class="album-meta">
-                                <span class="song-stats"><i class="fas fa-headphones"></i> 245K</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="album-item">
-                        <div class="album-thumbnail song-thumbnail">🎵</div>
-                        <div class="album-info">
-                            <div class="album-title">Popular Song 2</div>
-                            <div class="album-meta">
-                                <span class="song-stats"><i class="fas fa-headphones"></i> 189K</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="album-item">
-                        <div class="album-thumbnail song-thumbnail">🎵</div>
-                        <div class="album-info">
-                            <div class="album-title">Popular Song 3</div>
-                            <div class="album-meta">
-                                <span class="song-stats"><i class="fas fa-headphones"></i> 156K</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- FEATURED IN PLAYLISTS SECTION -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Featured In Playlists</h2>
-                    <a href="#" class="view-all">see all ➔</a>
-                </div>
-                
-                <div class="latest-albums-list">
-                    <div class="album-item">
-                        <div class="album-thumbnail playlist-thumbnail">📋</div>
-                        <div class="album-info">
-                            <div class="album-title">Chill Vibes 2024</div>
-                            <div class="album-meta">
-                                <span class="playlist-songs">45 tracks</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="album-item">
-                        <div class="album-thumbnail playlist-thumbnail">📋</div>
-                        <div class="album-info">
-                            <div class="album-title">Zambian Hits</div>
-                            <div class="album-meta">
-                                <span class="playlist-songs">32 tracks</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="album-item">
-                        <div class="album-thumbnail playlist-thumbnail">📋</div>
-                        <div class="album-info">
-                            <div class="album-title">Afro Fusion</div>
-                            <div class="album-meta">
-                                <span class="playlist-songs">28 tracks</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- SIMILAR SONGS SECTION -->
-            <section class="section-block">
-                <div class="section-header">
-                    <h2 class="section-title">Similar Songs</h2>
-                    <a href="#" class="view-all">recommend ➔</a>
-                </div>
-                
-                <div class="latest-albums-list">
-                    <div class="album-item">
-                        <div class="album-thumbnail song-thumbnail">🎵</div>
-                        <div class="album-info">
-                            <div class="album-title">Recommended Track</div>
-                            <div class="album-meta">
-                                <span class="album-artist">Artist Name</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="album-item">
-                        <div class="album-thumbnail song-thumbnail">🎵</div>
-                        <div class="album-info">
-                            <div class="album-title">Similar Vibe</div>
-                            <div class="album-meta">
-                                <span class="album-artist">Artist Name</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     </div>
-    
-    <!-- Now Playing Bar (hidden initially) -->
-    <div id="nowPlayingBar" class="now-playing-bar" style="display: none;">
-        <div class="now-playing-info">
-            <div id="nowPlayingTitle" class="now-playing-title">Not playing</div>
-            <div id="nowPlayingArtist" class="now-playing-artist"></div>
-        </div>
-        <div class="now-playing-controls">
-            <button class="now-playing-btn" id="playPauseBtn">▶</button>
-            <button class="now-playing-btn" id="closePlayerBtn">✕</button>
-        </div>
-    </div>
-    
-    <!-- FOOTER -->
-    <footer class="site-footer">
-        <p>© 2024 ZED•AETHERIC - deep zambian frequencies</p>
-        <p>powered by cloud & tide</p>
-    </footer>
-    
-    <!-- LEFT NAVIGATION DRAWER -->
-    <div class="nav-drawer left" id="leftDrawer">
-        <div class="nav-header">
-            <div class="site-logo">ZED•DEEP</div>
-            <div class="close-nav" id="closeLeftDrawer">✕</div>
-        </div>
-        <nav class="nav-menu">
-            <a href="/" class="nav-item"><i class="fas fa-water"></i> Home</a>
-            <a href="/albums" class="nav-item"><i class="fas fa-compact-disc"></i> Albums</a>
-            <a href="/artists" class="nav-item"><i class="fas fa-microphone-alt"></i> Artists</a>
-            <a href="/playlists" class="nav-item"><i class="fas fa-list"></i> Playlists</a>
-            <div class="nav-divider"></div>
-            <div class="nav-section-title">ABYSS</div>
-            <a href="/charts" class="nav-item"><i class="fas fa-chart-line"></i> Tides</a>
-            <a href="/new-releases" class="nav-item"><i class="fas fa-star"></i> New Waves</a>
-            <a href="/genres" class="nav-item"><i class="fas fa-tags"></i> Currents</a>
-        </nav>
-    </div>
-    
-    <!-- RIGHT NAVIGATION DRAWER -->
-    <div class="nav-drawer right" id="rightDrawer">
-        <div class="nav-header">
-            <div class="site-logo">VOID</div>
-            <div class="close-nav" id="closeRightDrawer">✕</div>
-        </div>
-        <nav class="nav-menu">
-            <div class="nav-section-title">MY CRATER</div>
-            <a href="/profile" class="nav-item"><i class="fas fa-user-circle"></i> Profile</a>
-            <a href="/favorites" class="nav-item"><i class="fas fa-heart"></i> Favorites</a>
-            <a href="/my-playlists" class="nav-item"><i class="fas fa-list"></i> My Playlists</a>
-            <a href="/history" class="nav-item"><i class="fas fa-history"></i> Echoes</a>
-            <a href="/downloads" class="nav-item"><i class="fas fa-download"></i> Downloads</a>
-            <div class="nav-divider"></div>
-            <div class="nav-section-title">CREATE</div>
-            <a href="/upload" class="nav-item"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-            <a href="/playlist/create" class="nav-item"><i class="fas fa-plus-circle"></i> New Playlist</a>
-            <div class="nav-divider"></div>
-            <div class="nav-section-title">SETTINGS</div>
-            <a href="/settings" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
-            <a href="/logout" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </nav>
-    </div>
-    
+
     <script>
-        // This script will be replaced by renderer functions
-        document.addEventListener('DOMContentLoaded', function() {
-            // Drawer functionality only
-            const hamburgerMenu = document.getElementById('hamburgerMenu');
-            const leftDrawer = document.getElementById('leftDrawer');
-            const closeLeftDrawer = document.getElementById('closeLeftDrawer');
-            
-            hamburgerMenu.addEventListener('click', () => {
-                leftDrawer.style.display = 'block';
-                setTimeout(() => {
-                    leftDrawer.style.opacity = '1';
-                    leftDrawer.style.transform = 'translateX(0)';
-                }, 10);
-            });
-            
-            closeLeftDrawer.addEventListener('click', () => {
-                leftDrawer.style.opacity = '0';
-                leftDrawer.style.transform = 'translateX(-100%)';
-                setTimeout(() => {
-                    leftDrawer.style.display = 'none';
-                }, 300);
-            });
-            
-            const profileIcon = document.getElementById('profileIcon');
-            const rightDrawer = document.getElementById('rightDrawer');
-            const closeRightDrawer = document.getElementById('closeRightDrawer');
-            
-            profileIcon.addEventListener('click', () => {
-                rightDrawer.style.display = 'block';
-                setTimeout(() => {
-                    rightDrawer.style.opacity = '1';
-                    rightDrawer.style.transform = 'translateX(0)';
-                }, 10);
-            });
-            
-            closeRightDrawer.addEventListener('click', () => {
-                rightDrawer.style.opacity = '0';
-                rightDrawer.style.transform = 'translateX(100%)';
-                setTimeout(() => {
-                    rightDrawer.style.display = 'none';
-                }, 300);
-            });
-            
-            document.addEventListener('click', function(e) {
-                if (!leftDrawer.contains(e.target) && !hamburgerMenu.contains(e.target) && leftDrawer.style.display === 'block') {
-                    closeLeftDrawer.click();
-                }
-                if (!rightDrawer.contains(e.target) && !profileIcon.contains(e.target) && rightDrawer.style.display === 'block') {
-                    closeRightDrawer.click();
-                }
-            });
-            
-            console.log('ZED•AETHERIC - song page structure');
-        });
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+            }
+        }
     </script>
 </body>
 </html>
