@@ -123,6 +123,11 @@
             pointer-events: none; z-index: 25;
         }
 
+        /* Hide body until auth check completes - prevents flash */
+        body {
+            visibility: hidden;
+        }
+
         /* ----- MAIN: FLEX CENTERING ----- */
         main {
             flex: 1 1 auto;
@@ -320,6 +325,7 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* ----- CLEAN FOOTER ----- */
         .login-footer {
             margin-top: 1rem;
             padding-top: 0.8rem;
@@ -330,6 +336,7 @@
             line-height: 1.4;
         }
 
+        /* responsive adjustments */
         @media (max-width: 520px) {
             .wp-aether-container {
                 width: 340px;
@@ -365,40 +372,6 @@
             }
             .wp-login-button { margin-bottom: 0.8rem; }
         }
-
-        .simple-footer {
-            position: relative;
-            z-index: 30;
-            padding: 0.9rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(18, 22, 36, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-top: 2px solid #1f6f9f;
-            font-size: 0.85rem;
-            color: #ffffff;
-            flex-shrink: 0;
-            min-height: 56px;
-            width: 100%;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
-        }
-        .footer-copyright { 
-            color: #ffffff; 
-            opacity: 1;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 8px #2f8ed0;
-        }
-
-        body, main, footer { 
-            overflow: hidden; 
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-        }
     </style>
 </head>
 <body>
@@ -411,7 +384,7 @@
     <div class="dewdrop"></div><div class="dewdrop"></div><div class="dewdrop"></div>
     <div class="vignette"></div>
 
-    <!-- MAIN CONTENT -->
+    <!-- LOGIN FORM -->
     <main>
         <div class="wp-aether-container">
             <div class="login-icon">
@@ -447,13 +420,25 @@
         </div>
     </main>
 
-    <footer class="simple-footer">
-        <div class="footer-copyright">
-            © 2026 · aetheric veil
-        </div>
-    </footer>
-
     <script>
+        // Immediate auth check - runs before page renders
+        (function() {
+            // Check for existing session cookie (will be handled server-side)
+            // This just prevents flash - real protection is on the server
+            const hasSession = document.cookie.includes('admin_session=');
+            
+            if (hasSession) {
+                window.location.href = '/admin/';
+                return;
+            }
+            
+            // Show page after check
+            document.addEventListener('DOMContentLoaded', function() {
+                document.body.style.visibility = 'visible';
+            });
+        })();
+
+        // Login form handling
         const loginForm = document.getElementById('loginForm');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
@@ -473,6 +458,7 @@
                 return;
             }
             
+            // Show loading
             loginBtn.disabled = true;
             loading.style.display = 'block';
             errorMessage.style.display = 'none';
@@ -485,7 +471,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ username, password }),
-                    credentials: 'include'  // ← FIXED: changed from 'same-origin' to 'include'
+                    credentials: 'include'  // 🔥 FIXED: Changed from 'same-origin' to 'include'
                 });
                 
                 const data = await response.json();
@@ -495,6 +481,7 @@
                     successMessage.style.display = 'block';
                     loading.style.display = 'none';
                     
+                    // Cookie is set by server, just redirect
                     setTimeout(() => {
                         window.location.href = '/admin/';
                     }, 1000);
