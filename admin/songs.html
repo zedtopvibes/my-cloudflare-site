@@ -24,15 +24,13 @@
         }
         
         body {
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background: var(--light-gray);
             min-height: 100vh;
-            line-height: 1.5;
             color: #333;
         }
         
         .admin-container {
-            width: 100%;
             max-width: 1400px;
             margin: 0 auto;
             padding: 10px;
@@ -53,7 +51,6 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 10px;
         }
         
         .header-top h1 {
@@ -89,7 +86,6 @@
             color: #666;
             transition: color 0.3s;
             padding: 8px;
-            text-decoration: none;
             background: none;
             border: none;
             font-size: 1rem;
@@ -105,8 +101,6 @@
             gap: 5px;
             overflow-x: auto;
             padding: 5px 0;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
         }
         
         .admin-tabs::-webkit-scrollbar {
@@ -115,23 +109,16 @@
         
         .tab-btn {
             padding: 10px 15px;
-            background: transparent;
-            border: none;
             border-radius: 8px;
             font-size: 0.9rem;
             font-weight: 600;
             color: #666;
-            cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
             gap: 6px;
             text-decoration: none;
-        }
-        
-        .tab-btn i {
-            font-size: 1rem;
         }
         
         .tab-btn:hover {
@@ -196,135 +183,46 @@
         
         .btn-primary:hover {
             background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(31, 111, 159, 0.3);
-        }
-        
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-        }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-        
-        .search-box {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary-blue);
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 12px 15px 12px 45px;
-            border: 2px solid rgba(31, 111, 159, 0.15);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(31, 111, 159, 0.1);
         }
         
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             color: #666;
         }
         
         .empty-state i {
-            font-size: 4rem;
+            font-size: 5rem;
             color: var(--primary-blue);
-            margin-bottom: 15px;
-            opacity: 0.5;
+            margin-bottom: 20px;
+            opacity: 0.3;
         }
         
         .empty-state h3 {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             margin-bottom: 10px;
             color: var(--primary-dark);
         }
         
-        .stats-summary {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            background: rgba(31, 111, 159, 0.03);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .stat-item i {
-            color: var(--primary-blue);
-        }
-        
-        .stat-item strong {
-            color: var(--primary-dark);
+        .empty-state p {
+            font-size: 1rem;
+            color: #999;
+            margin-bottom: 25px;
         }
         
         @media (min-width: 768px) {
-            .admin-container {
-                padding: 20px;
-            }
-            
-            .admin-header {
-                padding: 20px 25px;
-            }
-            
-            .header-top h1 {
-                font-size: 1.5rem;
-            }
+            .admin-container { padding: 20px; }
+            .admin-header { padding: 20px 25px; }
+            .header-top h1 { font-size: 1.5rem; }
         }
         
         @media (max-width: 480px) {
-            .admin-header {
-                padding: 12px;
-            }
-            
-            .header-top h1 {
-                font-size: 1.1rem;
-            }
-            
-            .user-info {
-                padding: 5px 10px;
-                font-size: 0.8rem;
-            }
-            
-            .tab-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .content-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .btn {
-                width: 100%;
-            }
+            .admin-header { padding: 12px; }
+            .header-top h1 { font-size: 1.1rem; }
+            .user-info { padding: 5px 10px; font-size: 0.8rem; }
+            .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
+            .content-header { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; }
         }
     </style>
 </head>
@@ -333,14 +231,11 @@
         <!-- Header -->
         <div class="admin-header">
             <div class="header-top">
-                <h1>
-                    <i class="fas fa-cog"></i> 
-                    Songs
-                </h1>
+                <h1><i class="fas fa-cog"></i> Songs</h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
-                    <button class="logout-btn" title="Logout" onclick="logout()">
+                    <button class="logout-btn" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
@@ -366,23 +261,12 @@
                 </a>
             </div>
             
-            <div class="stats-summary">
-                <div class="stat-item"><i class="fas fa-music"></i> Total Songs: <strong>0</strong></div>
-                <div class="stat-item"><i class="fas fa-play"></i> Total Plays: <strong>0</strong></div>
-                <div class="stat-item"><i class="fas fa-eye"></i> Total Views: <strong>0</strong></div>
-            </div>
-            
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search songs..." disabled>
-            </div>
-            
             <div class="empty-state">
                 <i class="fas fa-music"></i>
                 <h3>No Songs Yet</h3>
-                <p style="margin-bottom: 20px;">Upload your first song to get started</p>
+                <p>Songs you upload will appear here</p>
                 <a href="upload.html" class="btn btn-primary">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload Song
+                    <i class="fas fa-cloud-upload-alt"></i> Upload Your First Song
                 </a>
             </div>
         </div>
