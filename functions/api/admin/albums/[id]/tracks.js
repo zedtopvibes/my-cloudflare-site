@@ -3,7 +3,7 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
@@ -13,61 +13,64 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  // Only allow DELETE
-  if (request.method !== 'DELETE') {
-    return new Response(JSON.stringify({ 
-      error: 'Method not allowed'
-    }), { status: 405, headers });
-  }
+  const albumId = params.id;
 
-  try {
-    const albumId = params.id;
-    const trackId = params.trackId;
-    
-    console.log('Removing track:', { albumId, trackId });
+  // POST - Add track to album
+  if (request.method === 'POST') {
+    try {
+      const { track_id } = await request.json();
+      
+      // Get current max track number
+      const maxTrack = await env.DB.prepare(`
+        SELECT MAX(track_number) as max_num 
+        FROM album_tracks 
+        WHERE album_id = ?
+      `).bind(albumId).first();
+      
+      const trackNumber = (maxTrack?.max_num || 0) + 1;
 
-    // Check if the relationship exists
-    const exists = await env.DB.prepare(`
-      SELECT * FROM album_tracks 
-      WHERE album_id = ? AND track_id = ?
-    `).bind(albumId, trackId).first();
-    
-    if (!exists) {
-      return new Response(JSON.stringify({ 
-        error: 'Track not found in this album'
-      }), { status: 404, headers });
-    }
-
-    // Delete the relationship
-    await env.DB.prepare(`
-      DELETE FROM album_tracks 
-      WHERE album_id = ? AND track_id = ?
-    `).bind(albumId, trackId).run();
-
-    // Reorder remaining tracks (optional)
-    const remaining = await env.DB.prepare(`
-      SELECT track_id FROM album_tracks 
-      WHERE album_id = ? 
-      ORDER BY track_number
-    `).bind(albumId).all();
-
-    for (let i = 0; i < remaining.results.length; i++) {
       await env.DB.prepare(`
-        UPDATE album_tracks 
-        SET track_number = ? 
-        WHERE album_id = ? AND track_id = ?
-      `).bind(i + 1, albumId, remaining.results[i].track_id).run();
+        INSERT INTO album_tracks (album_id, track_id, track_number)
+        VALUES (?, ?, ?)
+      `).bind(albumId, track_id, trackNumber).run();
+
+      return new Response(JSON.stringify({ success: true }), { headers });
+
+    } catch (error) {
+      console.error('Error adding track to album:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
     }
-
-    return new Response(JSON.stringify({ 
-      success: true,
-      message: 'Track removed successfully'
-    }), { headers });
-
-  } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message 
-    }), { status: 500, headers });
   }
+
+  // DELETE - Remove track from album
+  if (request.method === 'DELETE') {
+    try {
+      // Get track_id from URL path
+      const url = new URL(request.url);
+      const pathParts = url.pathname.split('/');
+      const trackId = pathParts[pathParts.length - 1];
+
+      await env.DB.prepare(`
+        DELETE FROM album_tracks 
+        WHERE album_id = ? AND track_id = ?
+      `).bind(albumId, trackId).run();
+
+      return new Response(JSON.stringify({ success: true }), { headers });
+
+    } catch (error) {
+      console.error('Error removing track from album:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
+
+  return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
+    status: 405, 
+    headers 
+  });
 }
