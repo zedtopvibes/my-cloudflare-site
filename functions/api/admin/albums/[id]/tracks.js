@@ -20,6 +20,23 @@ export async function onRequest(context) {
     try {
       const { track_id } = await request.json();
       
+      // Check if track already exists in ANY album
+      const existing = await env.DB.prepare(`
+        SELECT a.title as album_title, at.album_id 
+        FROM album_tracks at
+        JOIN albums a ON at.album_id = a.id
+        WHERE at.track_id = ?
+      `).bind(track_id).first();
+
+      if (existing) {
+        return new Response(JSON.stringify({ 
+          error: `Track is already in album: ${existing.album_title}` 
+        }), { 
+          status: 400, 
+          headers 
+        });
+      }
+      
       // Get current max track number
       const maxTrack = await env.DB.prepare(`
         SELECT MAX(track_number) as max_num 
