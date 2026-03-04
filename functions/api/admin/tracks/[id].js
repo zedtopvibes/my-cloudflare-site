@@ -8,7 +8,7 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS request (CORS preflight)
+  // Handle OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
@@ -23,9 +23,24 @@ export async function onRequest(context) {
 
   try {
     const id = params.id;
+    console.log('Updating track ID:', id);
     
     // Parse request body
     const updates = await request.json();
+    console.log('Update data received:', updates);
+    
+    // Check if track exists first
+    const existing = await env.DB.prepare(
+      'SELECT id FROM tracks WHERE id = ?'
+    ).bind(id).first();
+    
+    if (!existing) {
+      console.log('Track not found:', id);
+      return new Response(JSON.stringify({ error: 'Track not found' }), { 
+        status: 404, 
+        headers 
+      });
+    }
     
     // Build dynamic UPDATE query
     const fields = [];
@@ -41,11 +56,18 @@ export async function onRequest(context) {
     allowedFields.forEach(field => {
       if (updates[field] !== undefined) {
         fields.push(`${field} = ?`);
-        values.push(updates[field]);
+        // Convert boolean to integer for SQLite
+        let value = updates[field];
+        if (typeof value === 'boolean') {
+          value = value ? 1 : 0;
+        }
+        values.push(value);
+        console.log(`Setting ${field} =`, value);
       }
     });
     
     if (fields.length === 0) {
+      console.log('No fields to update');
       return new Response(JSON.stringify({ error: 'No fields to update' }), { 
         status: 400, 
         headers 
@@ -57,12 +79,18 @@ export async function onRequest(context) {
     
     // Execute update
     const query = `UPDATE tracks SET ${fields.join(', ')} WHERE id = ?`;
-    await env.DB.prepare(query).bind(...values).run();
+    console.log('Executing query:', query);
+    console.log('With values:', values);
+    
+    const result = await env.DB.prepare(query).bind(...values).run();
+    console.log('Update result:', result);
     
     // Fetch updated track
     const updated = await env.DB.prepare(
       'SELECT * FROM tracks WHERE id = ?'
     ).bind(id).first();
+    
+    console.log('Updated track:', updated);
     
     return new Response(JSON.stringify({
       success: true,
@@ -70,8 +98,13 @@ export async function onRequest(context) {
     }), { headers });
     
   } catch (error) {
-    console.error('Error updating track:', error);
-    return new Response(JSON.stringify({ error: error.message }), { 
+    console.error('❌ Error updating track:', error);
+    console.error('Error stack:', error.stack);
+    
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      stack: error.stack 
+    }), { 
       status: 500, 
       headers 
     });
