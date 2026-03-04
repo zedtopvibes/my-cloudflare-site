@@ -1340,135 +1340,127 @@
         });
 
         // ==================== TRACK MANAGEMENT ====================
-        window.manageTracks = async (albumId) => {
-            currentAlbumId = albumId;
-            const album = allAlbums.find(a => a.id === albumId);
-            document.getElementById('tracksAlbumTitle').textContent = album.title;
-            
-            try {
-                // Load album tracks
-                const response = await fetch(`${API_BASE}/album/by-slug/${album.slug}`);
-                const albumData = await response.json();
-                const albumTracks = albumData.tracks || [];
-                
-                // Populate track selector
-                const selector = document.getElementById('trackSelector');
-                selector.innerHTML = '<option value="">Select track to add...</option>';
-                
-                const availableTracks = allTracks.filter(t => 
-                    !albumTracks.some(at => at.id === t.id)
-                );
-                
-                availableTracks.forEach(track => {
-                    const option = document.createElement('option');
-                    option.value = track.id;
-                    option.textContent = `${track.title} - ${track.artist}`;
-                    selector.appendChild(option);
-                });
-                
-                // Display current tracks
-                const tracksList = document.getElementById('tracksList');
-                tracksList.innerHTML = albumTracks.map((track, index) => `
-                    <div class="track-list-item">
-                        <div class="track-number">${index + 1}</div>
-                        <div class="track-info">
-                            <div class="track-title">${escapeHtml(track.title)}</div>
-                            <div class="track-artist">${escapeHtml(track.artist)}</div>
-                        </div>
-                        <div class="track-actions">
-                            <button class="action-btn" onclick="removeTrackFromAlbum(${albumId}, ${track.id})" title="Remove">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-                
-                document.getElementById('tracksModal').style.display = 'flex';
-                
-            } catch (error) {
-                console.error('Error loading tracks:', error);
-                showToast('Failed to load tracks', 'error');
-            }
-        };
-
-        window.closeTracksModal = () => {
-            document.getElementById('tracksModal').style.display = 'none';
-            currentAlbumId = null;
-        };
-
-        document.getElementById('trackSelector').addEventListener('change', async (e) => {
-            const trackId = e.target.value;
-            if (!trackId || !currentAlbumId) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/albums/${currentAlbumId}/tracks`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ track_id: parseInt(trackId) })
-                });
-                
-                if (!response.ok) throw new Error('Failed to add track');
-                
-                showToast('Track added to album', 'success');
-                manageTracks(currentAlbumId); // Refresh
-                await loadAlbums(); // Update counts
-                
-            } catch (error) {
-                showToast('Failed to add track', 'error');
-            }
-            
-            // Reset selector
-            e.target.value = '';
-        });
-
-        window.removeTrackFromAlbum = async (albumId, trackId) => {
-            if (!confirm('Remove this track from the album?')) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/albums/${albumId}/tracks/${trackId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) throw new Error('Failed to remove track');
-                
-                showToast('Track removed from album', 'success');
-                manageTracks(albumId); // Refresh
-                await loadAlbums(); // Update counts
-                
-            } catch (error) {
-                showToast('Failed to remove track', 'error');
-            }
-        };
-
-        window.viewAlbumTracks = (albumId) => {
-            manageTracks(albumId);
-        };
-
-        window.uploadCover = (albumId) => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                const formData = new FormData();
-                formData.append('cover', file);
-                formData.append('album_id', albumId);
-                
+window.manageTracks = async (albumId) => {
+    currentAlbumId = albumId;
+    const album = allAlbums.find(a => a.id === albumId);
+    document.getElementById('tracksAlbumTitle').textContent = album.title;
+    
+    try {
+        // Load album tracks
+        const response = await fetch(`${API_BASE}/album/by-slug/${album.slug}`);
+        const albumData = await response.json();
+        const albumTracks = albumData.tracks || [];
+        
+        // Populate track selector - ONLY SHOW TRACKS NOT IN ANY ALBUM
+        const selector = document.getElementById('trackSelector');
+        selector.innerHTML = '<option value="">Select track to add...</option>';
+        
+        // Get all tracks that are NOT in any album
+        const tracksInAlbums = new Set();
+        
+        // Fetch all albums to check which tracks are already in albums
+        const albumsResponse = await fetch(`${API_BASE}/albums`);
+        const allAlbumsList = await albumsResponse.json();
+        
+        for (const otherAlbum of allAlbumsList) {
+            if (otherAlbum.id !== albumId) { // Skip current album
                 try {
-                    await fetch(`${API_BASE}/admin/albums/${albumId}/cover`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    showToast('Cover uploaded!', 'success');
-                    await loadAlbums();
-                } catch (error) {
-                    showToast('Upload failed', 'error');
+                    const otherAlbumData = await fetch(`${API_BASE}/album/by-slug/${otherAlbum.slug}`);
+                    const otherData = await otherAlbumData.json();
+                    (otherData.tracks || []).forEach(t => tracksInAlbums.add(t.id));
+                } catch (e) {
+                    console.warn('Could not load album:', otherAlbum.slug);
                 }
-            };
-            input.click();
-        };
+            }
+        }
+        
+        // Available tracks = tracks not in any album + tracks already in THIS album
+        const availableTracks = allTracks.filter(t => 
+            !tracksInAlbums.has(t.id) || albumTracks.some(at => at.id === t.id)
+        );
+        
+        availableTracks.forEach(track => {
+            // Check if track is already in this album
+            const isInThisAlbum = albumTracks.some(at => at.id === track.id);
+            const option = document.createElement('option');
+            option.value = track.id;
+            option.textContent = `${track.title} - ${track.artist} ${isInThisAlbum ? '(already in album)' : ''}`;
+            if (isInThisAlbum) {
+                option.disabled = true;
+                option.style.color = '#999';
+            }
+            selector.appendChild(option);
+        });
+        
+        // Display current tracks
+        const tracksList = document.getElementById('tracksList');
+        tracksList.innerHTML = albumTracks.map((track, index) => `
+            <div class="track-list-item">
+                <div class="track-number">${index + 1}</div>
+                <div class="track-info">
+                    <div class="track-title">${escapeHtml(track.title)}</div>
+                    <div class="track-artist">${escapeHtml(track.artist)}</div>
+                </div>
+                <div class="track-actions">
+                    <button class="action-btn" onclick="removeTrackFromAlbum(${albumId}, ${track.id})" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('tracksModal').style.display = 'flex';
+        
+    } catch (error) {
+        console.error('Error loading tracks:', error);
+        showToast('Failed to load tracks', 'error');
+    }
+};
+
+// Updated add track function with validation
+document.getElementById('trackSelector').addEventListener('change', async (e) => {
+    const trackId = e.target.value;
+    if (!trackId || !currentAlbumId) return;
+    
+    // Double-check if track is already in another album
+    try {
+        // Check all albums
+        const albumsResponse = await fetch(`${API_BASE}/albums`);
+        const allAlbumsList = await albumsResponse.json();
+        
+        for (const otherAlbum of allAlbumsList) {
+            if (otherAlbum.id !== currentAlbumId) {
+                const albumData = await fetch(`${API_BASE}/album/by-slug/${otherAlbum.slug}`);
+                const data = await albumData.json();
+                if (data.tracks?.some(t => t.id == trackId)) {
+                    showToast(`This track is already in album: ${otherAlbum.title}`, 'error');
+                    e.target.value = '';
+                    return;
+                }
+            }
+        }
+        
+        // If we get here, track is available
+        const response = await fetch(`${API_BASE}/admin/albums/${currentAlbumId}/tracks`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ track_id: parseInt(trackId) })
+        });
+        
+        if (!response.ok) throw new Error('Failed to add track');
+        
+        showToast('Track added to album', 'success');
+        manageTracks(currentAlbumId); // Refresh
+        await loadAlbums(); // Update counts
+        
+    } catch (error) {
+        console.error('Error adding track:', error);
+        showToast('Failed to add track: ' + error.message, 'error');
+    }
+    
+    // Reset selector
+    e.target.value = '';
+});
 
         // ==================== DELETE ====================
         window.showDeleteModal = (id, title) => {
