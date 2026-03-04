@@ -1,6 +1,6 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
-   
+  
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'PUT, DELETE, OPTIONS',
