@@ -62,24 +62,61 @@ export async function onRequest(context) {
     }
   }
 
-  // DELETE - Remove track from album
+  // DELETE - Remove track from album (FIXED)
   if (request.method === 'DELETE') {
     try {
-      // Get track_id from URL path
-      const url = new URL(request.url);
-      const pathParts = url.pathname.split('/');
-      const trackId = pathParts[pathParts.length - 1];
+      // Use params.trackId - it's automatically parsed from the URL pattern [id]/tracks/[trackId]
+      const trackId = params.trackId;
+      
+      console.log(`Removing track ${trackId} from album ${albumId}`);
 
+      // Check if the relationship exists
+      const exists = await env.DB.prepare(`
+        SELECT * FROM album_tracks 
+        WHERE album_id = ? AND track_id = ?
+      `).bind(albumId, trackId).first();
+
+      if (!exists) {
+        return new Response(JSON.stringify({ 
+          error: 'Track not found in this album' 
+        }), { 
+          status: 404, 
+          headers 
+        });
+      }
+
+      // Delete the relationship
       await env.DB.prepare(`
         DELETE FROM album_tracks 
         WHERE album_id = ? AND track_id = ?
       `).bind(albumId, trackId).run();
 
-      return new Response(JSON.stringify({ success: true }), { headers });
+      // Reorder remaining tracks to keep track numbers sequential
+      const remaining = await env.DB.prepare(`
+        SELECT track_id FROM album_tracks 
+        WHERE album_id = ? 
+        ORDER BY track_number
+      `).bind(albumId).all();
+
+      for (let i = 0; i < remaining.results.length; i++) {
+        await env.DB.prepare(`
+          UPDATE album_tracks 
+          SET track_number = ? 
+          WHERE album_id = ? AND track_id = ?
+        `).bind(i + 1, albumId, remaining.results[i].track_id).run();
+      }
+
+      return new Response(JSON.stringify({ 
+        success: true,
+        message: 'Track removed successfully' 
+      }), { headers });
 
     } catch (error) {
       console.error('Error removing track from album:', error);
-      return new Response(JSON.stringify({ error: error.message }), { 
+      return new Response(JSON.stringify({ 
+        error: error.message,
+        stack: error.stack 
+      }), { 
         status: 500, 
         headers 
       });
