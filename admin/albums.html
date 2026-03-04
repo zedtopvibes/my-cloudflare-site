@@ -1421,22 +1421,42 @@
             e.target.value = '';
         });
 
+        // ==================== FIXED: REMOVE TRACK FROM ALBUM ====================
         window.removeTrackFromAlbum = async (albumId, trackId) => {
             if (!confirm('Remove this track from the album?')) return;
             
             try {
-                const response = await fetch(`${API_BASE}/admin/albums/${albumId}/tracks/${trackId}`, {
-                    method: 'DELETE'
+                // Log the URL for debugging
+                const url = `${API_BASE}/admin/albums/${albumId}/tracks/${trackId}`;
+                console.log('Removing track with URL:', url);
+                
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
                 
-                if (!response.ok) throw new Error('Failed to remove track');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(errorText || 'Failed to remove track');
+                }
+                
+                const result = await response.json();
+                console.log('Success:', result);
                 
                 showToast('Track removed from album', 'success');
-                manageTracks(albumId); // Refresh
-                await loadAlbums(); // Update counts
+                
+                // Refresh both the tracks modal and the albums list
+                await manageTracks(albumId);
+                await loadAlbums();
                 
             } catch (error) {
-                showToast('Failed to remove track', 'error');
+                console.error('Error removing track:', error);
+                showToast('Failed to remove track: ' + error.message, 'error');
             }
         };
 
