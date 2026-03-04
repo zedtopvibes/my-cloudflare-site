@@ -21,6 +21,9 @@
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
         }
         
         body {
@@ -28,12 +31,16 @@
             background: var(--light-gray);
             min-height: 100vh;
             color: #333;
+            overflow-x: hidden;
+            width: 100%;
         }
         
         .admin-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 10px;
+            width: 100%;
+            overflow-x: hidden;
         }
         
         .admin-header {
@@ -43,6 +50,7 @@
             margin-bottom: 15px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
         }
         
         .header-top {
@@ -99,7 +107,6 @@
             color: var(--primary-blue);
         }
         
-        /* Navigation Tabs - FIXED FOR CONSISTENCY */
         .admin-tabs {
             display: flex;
             gap: 5px;
@@ -107,6 +114,7 @@
             padding: 5px 0;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            width: 100%;
         }
         
         .admin-tabs::-webkit-scrollbar {
@@ -134,6 +142,7 @@
             min-height: 40px !important;
             max-height: 40px !important;
             box-sizing: border-box;
+            flex-shrink: 0;
         }
         
         .tab-btn i {
@@ -149,11 +158,6 @@
         .tab-btn.active {
             background: var(--primary-blue);
             color: white;
-            font-weight: 600 !important;
-            height: 40px !important;
-            min-height: 40px !important;
-            max-height: 40px !important;
-            padding: 10px 15px !important;
         }
         
         .admin-content {
@@ -163,6 +167,8 @@
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
             min-height: 500px;
+            width: 100%;
+            overflow-x: hidden;
         }
         
         .content-header {
@@ -172,14 +178,16 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
+            width: 100%;
         }
         
         .content-header h2 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: var(--primary-dark);
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
         
         .content-header h2 i {
@@ -190,11 +198,11 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
+            gap: 6px;
+            padding: 8px 16px;
             border: none;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -210,44 +218,550 @@
             background: var(--primary-light);
         }
         
+        .btn-secondary {
+            background: var(--light-gray);
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #bd2130;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            border-radius: 10px;
+            padding: 15px 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .stat-info {
+            min-width: 0;
+            flex: 1;
+        }
+        
+        .stat-info h3 {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .stat-info .stat-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Albums Grid */
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .album-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        
+        .album-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .album-cover {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .album-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .album-cover .cover-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        
+        .album-cover .cover-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .album-cover:hover .cover-actions {
+            opacity: 1;
+        }
+        
+        .cover-action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .cover-action-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .album-info {
+            padding: 15px;
+        }
+        
+        .album-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-dark);
+        }
+        
+        .album-artist {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        
+        .album-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        
+        .album-meta i {
+            color: var(--primary-blue);
+            width: 16px;
+        }
+        
+        .album-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--white);
+            color: var(--gray);
+            border: 1px solid #ddd;
+        }
+        
+        .badge.featured {
+            background: rgba(255, 193, 7, 0.2);
+            color: #856404;
+            border-color: #ffc107;
+        }
+        
+        .album-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            border: none;
+            background: var(--white);
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .action-btn.delete:hover {
+            background: var(--error);
+            color: white;
+        }
+        
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
             color: #666;
+            grid-column: 1 / -1;
         }
         
         .empty-state i {
-            font-size: 5rem;
+            font-size: 4rem;
             color: var(--primary-blue);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             opacity: 0.3;
         }
         
         .empty-state h3 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             margin-bottom: 10px;
             color: var(--primary-dark);
         }
         
         .empty-state p {
-            font-size: 1rem;
             color: #999;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal h3 {
+            margin-bottom: 20px;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .image-upload-area {
+            border: 2px dashed var(--primary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 15px;
+            background: var(--light-gray);
+            transition: all 0.3s;
+        }
+        
+        .image-upload-area:hover {
+            background: rgba(31, 111, 159, 0.05);
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .image-preview.has-image {
+            display: block;
+        }
+        
+        .remove-image {
+            color: var(--error);
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        /* Track List Modal */
+        .track-list-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+        
+        .track-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .track-number {
+            width: 30px;
+            height: 30px;
+            background: var(--light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .track-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .track-artist {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .track-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .page-btn {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+        
+        .page-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .page-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            left: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .toast.success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .toast.error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .toast.info {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Loading skeleton */
+        .skeleton-card {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 12px;
+            height: 300px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Responsive */
         @media (min-width: 768px) {
             .admin-container { padding: 20px; }
-            .admin-header { padding: 20px 25px; }
-            .header-top h1 { font-size: 1.5rem; }
+            .admin-header { padding: 20px; }
+            .admin-content { padding: 20px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .stat-card { padding: 20px; }
+            .stat-icon { width: 50px; height: 50px; font-size: 1.5rem; }
+            .stat-info h3 { font-size: 0.9rem; }
+            .stat-info .stat-number { font-size: 1.5rem; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+            .albums-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        @media (min-width: 1024px) {
+            .albums-grid { grid-template-columns: repeat(4, 1fr); }
         }
         
         @media (max-width: 480px) {
-            .admin-header { padding: 12px; }
             .header-top h1 { font-size: 1.1rem; }
             .user-info { padding: 5px 10px; font-size: 0.8rem; }
-            .content-header { flex-direction: column; align-items: stretch; }
-            .btn { width: 100%; }
-            /* Tabs remain same size */
+            .user-info span { display: none; }
+            .stat-card { padding: 12px 8px; }
+            .stat-icon { width: 35px; height: 35px; font-size: 1rem; }
+            .stat-info h3 { font-size: 0.7rem; }
+            .stat-info .stat-number { font-size: 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .albums-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -255,7 +769,7 @@
     <div class="admin-container">
         <div class="admin-header">
             <div class="header-top">
-                <h1><i class="fas fa-cog"></i> Albums</h1>
+                <h1><i class="fas fa-compact-disc"></i> Albums</h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
@@ -265,37 +779,192 @@
                 </div>
             </div>
             
-            <!-- Navigation Tabs - ALL EXACTLY 40px TALL -->
             <div class="admin-tabs">
-                <a href="index.html" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
-                <a href="albums.html" class="tab-btn active"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums" class="tab-btn active"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/artists" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
             </div>
         </div>
         
         <div class="admin-content">
             <div class="content-header">
-                <h2><i class="fas fa-compact-disc"></i> Albums Management</h2>
-                <button class="btn btn-primary" onclick="alert('Create album feature coming soon!')">
-                    <i class="fas fa-plus"></i> Create Album
+                <h2>
+                    <i class="fas fa-compact-disc"></i> Albums Management
+                    <button onclick="loadAlbums()" class="btn btn-secondary btn-sm" style="margin-left: 5px;">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </h2>
+                <button class="btn btn-primary" onclick="showAddAlbumModal()">
+                    <i class="fas fa-plus-circle"></i> Add New Album
                 </button>
             </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Albums</h3>
+                        <div class="stat-number" id="totalAlbums">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-music"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Tracks</h3>
+                        <div class="stat-number" id="totalTracks">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-headphones"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Plays</h3>
+                        <div class="stat-number" id="totalPlays">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Views</h3>
+                        <div class="stat-number" id="totalViews">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Albums Grid -->
+            <div id="albumsGrid" class="albums-grid">
+                <!-- Loading skeletons -->
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Album Modal -->
+    <div id="albumModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Add New Album</h3>
+            <form id="albumForm">
+                <input type="hidden" id="albumId">
+                
+                <div class="form-group">
+                    <label>Album Cover</label>
+                    <div class="image-upload-area" onclick="document.getElementById('coverInput').click()">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 10px; display: block;"></i>
+                        <div>Click to upload cover image</div>
+                        <div style="font-size: 0.8rem; color: var(--gray); margin-top: 5px;">PNG, JPG, WEBP (max 2MB)</div>
+                    </div>
+                    <input type="file" id="coverInput" accept="image/*" style="display: none;">
+                    <img id="coverPreview" class="image-preview" src="#" alt="Preview">
+                    <a href="#" onclick="removeCover(event)" class="remove-image" style="display: none;">Remove image</a>
+                </div>
+                
+                <div class="form-group">
+                    <label>Album Title *</label>
+                    <input type="text" id="albumTitle" placeholder="e.g. Midnight Waves" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Artist *</label>
+                    <select id="albumArtist" required>
+                        <option value="">Select Artist</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Release Date</label>
+                        <input type="date" id="albumReleaseDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Genre</label>
+                        <input type="text" id="albumGenre" placeholder="e.g. Hip-Hop">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Label</label>
+                        <input type="text" id="albumLabel" placeholder="Record Label">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Total Tracks</label>
+                        <input type="number" id="albumTracks" placeholder="0" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="albumDescription" rows="3" placeholder="Album description..."></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="albumFeatured"> Featured Album
+                    </label>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" onclick="closeAlbumModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Album</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Manage Tracks Modal -->
+    <div id="tracksModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3>Manage Tracks - <span id="tracksAlbumTitle"></span></h3>
             
-            <div class="empty-state">
-                <i class="fas fa-compact-disc"></i>
-                <h3>No Albums Yet</h3>
-                <p>Albums you create will appear here</p>
-                <button class="btn btn-primary" onclick="alert('Create album feature coming soon!')">
-                    <i class="fas fa-plus"></i> Create Your First Album
-                </button>
+            <div class="form-group">
+                <label>Add Tracks</label>
+                <select id="trackSelector" class="form-control">
+                    <option value="">Select track to add...</option>
+                </select>
+            </div>
+            
+            <div id="tracksList" style="margin: 20px 0; max-height: 300px; overflow-y: auto;">
+                <!-- Tracks will be listed here -->
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" onclick="closeTracksModal()" class="btn btn-secondary">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="color: var(--error);">Confirm Delete</h3>
+            <p style="margin-bottom: 25px;">Are you sure you want to delete "<span id="deleteAlbumTitle"></span>"? This will remove the album but keep the tracks.</p>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeDeleteModal()" class="btn btn-secondary">Cancel</button>
+                <button onclick="confirmDelete()" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
 
     <script>
+        const API_BASE = '/api';
+        let currentPage = 1;
+        const itemsPerPage = 12;
+        let allAlbums = [];
+        let allTracks = [];
+        let currentAlbumId = null;
+        let selectedCoverFile = null;
+
+        // ==================== AUTH ====================
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.clear();
@@ -303,21 +972,499 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
             
             if (!isLoggedIn || !loginTime) {
                 window.location.href = '/admin/login.html';
-                return;
+                return false;
             }
             
             const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
             if (hoursSince > 24) {
                 localStorage.clear();
                 window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // ==================== NOTIFICATION ====================
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ==================== LOAD DATA ====================
+        async function loadAlbums() {
+            if (!checkAuth()) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/albums`);
+                if (!response.ok) throw new Error('Failed to load albums');
+                
+                allAlbums = await response.json();
+                await loadTracks(); // Load tracks for artist dropdown
+                updateStats();
+                renderAlbums();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('albumsGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Error Loading Albums</h3>
+                        <p>${error.message}</p>
+                        <button onclick="loadAlbums()" class="btn btn-primary">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadTracks() {
+            try {
+                const response = await fetch(`${API_BASE}/tracks`);
+                if (!response.ok) throw new Error('Failed to load tracks');
+                allTracks = await response.json();
+                populateArtistSelect();
+            } catch (error) {
+                console.error('Error loading tracks:', error);
+            }
+        }
+
+        function populateArtistSelect() {
+            const artists = [...new Set(allTracks.map(t => t.artist).filter(a => a))];
+            const select = document.getElementById('albumArtist');
+            select.innerHTML = '<option value="">Select Artist</option>';
+            
+            artists.sort().forEach(artist => {
+                const option = document.createElement('option');
+                option.value = artist;
+                option.textContent = artist;
+                select.appendChild(option);
+            });
+        }
+
+        // ==================== UPDATE STATS ====================
+        function updateStats() {
+            const totalTracks = allAlbums.reduce((sum, album) => sum + (album.track_count || 0), 0);
+            const totalPlays = allAlbums.reduce((sum, album) => sum + (album.plays || 0), 0);
+            const totalViews = allAlbums.reduce((sum, album) => sum + (album.views || 0), 0);
+            
+            document.getElementById('totalAlbums').textContent = allAlbums.length;
+            document.getElementById('totalTracks').textContent = totalTracks;
+            document.getElementById('totalPlays').textContent = formatNumber(totalPlays);
+            document.getElementById('totalViews').textContent = formatNumber(totalViews);
+        }
+
+        // ==================== RENDER ALBUMS ====================
+        function renderAlbums() {
+            const container = document.getElementById('albumsGrid');
+            
+            if (allAlbums.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-compact-disc"></i>
+                        <h3>No Albums Yet</h3>
+                        <p>Create your first album to get started</p>
+                        <button onclick="showAddAlbumModal()" class="btn btn-primary">
+                            <i class="fas fa-plus-circle"></i> Add New Album
+                        </button>
+                    </div>
+                `;
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageAlbums = allAlbums.slice(start, end);
+            
+            container.innerHTML = pageAlbums.map(album => `
+                <div class="album-card">
+                    <div class="album-cover" onclick="viewAlbumTracks(${album.id})">
+                        ${album.cover_url 
+                            ? `<img src="${album.cover_url}" alt="${album.title}">`
+                            : `<div class="cover-placeholder"><i class="fas fa-compact-disc"></i></div>`
+                        }
+                        <div class="cover-actions">
+                            <button class="cover-action-btn" onclick="event.stopPropagation(); uploadCover(${album.id})" title="Upload Cover">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="album-info">
+                        <div class="album-title">${escapeHtml(album.title)}</div>
+                        <div class="album-artist">${escapeHtml(album.artist)}</div>
+                        <div class="album-meta">
+                            <span><i class="fas fa-music"></i> ${album.track_count || 0} tracks</span>
+                            <span><i class="fas fa-calendar"></i> ${album.release_date ? new Date(album.release_date).getFullYear() : '—'}</span>
+                        </div>
+                        <div class="album-tags">
+                            ${album.genre ? `<span class="badge">${escapeHtml(album.genre)}</span>` : ''}
+                            ${album.is_featured ? '<span class="badge featured">Featured</span>' : ''}
+                        </div>
+                        <div class="album-actions">
+                            <button class="action-btn" onclick="editAlbum(${album.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="manageTracks(${album.id})" title="Manage Tracks">
+                                <i class="fas fa-list"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="showDeleteModal(${album.id}, '${escapeHtml(album.title)}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            renderPagination();
+        }
+
+        // ==================== RENDER PAGINATION ====================
+        function renderPagination() {
+            const totalPages = Math.ceil(allAlbums.length / itemsPerPage);
+            if (totalPages <= 1) {
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            document.getElementById('pagination').innerHTML = html;
+        }
+
+        window.goToPage = (page) => {
+            currentPage = page;
+            renderAlbums();
+        };
+
+        // ==================== COVER IMAGE HANDLING ====================
+        document.getElementById('coverInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file', 'error');
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image must be less than 2MB', 'error');
+                return;
+            }
+            
+            selectedCoverFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('coverPreview');
+                preview.src = e.target.result;
+                preview.classList.add('has-image');
+                document.querySelector('.remove-image').style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        window.removeCover = function(e) {
+            e.preventDefault();
+            selectedCoverFile = null;
+            document.getElementById('coverInput').value = '';
+            document.getElementById('coverPreview').classList.remove('has-image');
+            document.querySelector('.remove-image').style.display = 'none';
+        };
+
+        // ==================== ALBUM CRUD ====================
+        window.showAddAlbumModal = () => {
+            document.getElementById('modalTitle').textContent = 'Add New Album';
+            document.getElementById('albumId').value = '';
+            document.getElementById('albumForm').reset();
+            removeCover(new Event('click'));
+            document.getElementById('albumModal').style.display = 'flex';
+        };
+
+        window.closeAlbumModal = () => {
+            document.getElementById('albumModal').style.display = 'none';
+            selectedCoverFile = null;
+        };
+
+        window.editAlbum = async (id) => {
+            const album = allAlbums.find(a => a.id === id);
+            if (!album) return;
+            
+            document.getElementById('modalTitle').textContent = 'Edit Album';
+            document.getElementById('albumId').value = album.id;
+            document.getElementById('albumTitle').value = album.title || '';
+            document.getElementById('albumArtist').value = album.artist || '';
+            document.getElementById('albumReleaseDate').value = album.release_date || '';
+            document.getElementById('albumGenre').value = album.genre || '';
+            document.getElementById('albumLabel').value = album.label || '';
+            document.getElementById('albumTracks').value = album.track_count || 0;
+            document.getElementById('albumDescription').value = album.description || '';
+            document.getElementById('albumFeatured').checked = album.is_featured === 1 || album.is_featured === true;
+            
+            if (album.cover_url) {
+                document.getElementById('coverPreview').src = album.cover_url;
+                document.getElementById('coverPreview').classList.add('has-image');
+                document.querySelector('.remove-image').style.display = 'inline-block';
+            }
+            
+            document.getElementById('albumModal').style.display = 'flex';
+        };
+
+        document.getElementById('albumForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('albumId').value;
+            const isEditing = !!id;
+            
+            const albumData = {
+                title: document.getElementById('albumTitle').value,
+                artist: document.getElementById('albumArtist').value,
+                release_date: document.getElementById('albumReleaseDate').value || null,
+                genre: document.getElementById('albumGenre').value || null,
+                label: document.getElementById('albumLabel').value || null,
+                description: document.getElementById('albumDescription').value || null,
+                is_featured: document.getElementById('albumFeatured').checked
+            };
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+            
+            try {
+                let response;
+                if (isEditing) {
+                    response = await fetch(`${API_BASE}/admin/albums/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(albumData)
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/admin/albums`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(albumData)
+                    });
+                }
+                
+                if (!response.ok) throw new Error('Failed to save album');
+                
+                const result = await response.json();
+                
+                // Upload cover if selected
+                if (selectedCoverFile) {
+                    const coverFormData = new FormData();
+                    coverFormData.append('cover', selectedCoverFile);
+                    coverFormData.append('album_id', result.id || id);
+                    
+                    await fetch(`${API_BASE}/admin/albums/${result.id || id}/cover`, {
+                        method: 'POST',
+                        body: coverFormData
+                    });
+                }
+                
+                closeAlbumModal();
+                await loadAlbums();
+                showToast(`Album ${isEditing ? 'updated' : 'created'} successfully!`, 'success');
+                
+            } catch (error) {
+                console.error('Error saving album:', error);
+                showToast('Failed to save album: ' + error.message, 'error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
-    </script> 
+
+        // ==================== TRACK MANAGEMENT ====================
+        window.manageTracks = async (albumId) => {
+            currentAlbumId = albumId;
+            const album = allAlbums.find(a => a.id === albumId);
+            document.getElementById('tracksAlbumTitle').textContent = album.title;
+            
+            // Load album tracks
+            const response = await fetch(`${API_BASE}/album/by-slug/${album.slug}`);
+            const albumData = await response.json();
+            const albumTracks = albumData.tracks || [];
+            
+            // Populate track selector
+            const selector = document.getElementById('trackSelector');
+            selector.innerHTML = '<option value="">Select track to add...</option>';
+            
+            const availableTracks = allTracks.filter(t => 
+                !albumTracks.some(at => at.id === t.id)
+            );
+            
+            availableTracks.forEach(track => {
+                const option = document.createElement('option');
+                option.value = track.id;
+                option.textContent = `${track.title} - ${track.artist}`;
+                selector.appendChild(option);
+            });
+            
+            // Display current tracks
+            const tracksList = document.getElementById('tracksList');
+            tracksList.innerHTML = albumTracks.map((track, index) => `
+                <div class="track-list-item">
+                    <div class="track-number">${index + 1}</div>
+                    <div class="track-info">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-artist">${track.artist}</div>
+                    </div>
+                    <div class="track-actions">
+                        <button class="action-btn" onclick="removeTrackFromAlbum(${albumId}, ${track.id})" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('tracksModal').style.display = 'flex';
+        };
+
+        window.closeTracksModal = () => {
+            document.getElementById('tracksModal').style.display = 'none';
+            currentAlbumId = null;
+        };
+
+        document.getElementById('trackSelector').addEventListener('change', async (e) => {
+            const trackId = e.target.value;
+            if (!trackId || !currentAlbumId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums/${currentAlbumId}/tracks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ track_id: trackId })
+                });
+                
+                if (!response.ok) throw new Error('Failed to add track');
+                
+                showToast('Track added to album', 'success');
+                manageTracks(currentAlbumId); // Refresh
+                
+            } catch (error) {
+                showToast('Failed to add track', 'error');
+            }
+        });
+
+        window.removeTrackFromAlbum = async (albumId, trackId) => {
+            if (!confirm('Remove this track from the album?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums/${albumId}/tracks/${trackId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Failed to remove track');
+                
+                showToast('Track removed from album', 'success');
+                manageTracks(albumId); // Refresh
+                await loadAlbums(); // Update counts
+                
+            } catch (error) {
+                showToast('Failed to remove track', 'error');
+            }
+        };
+
+        window.viewAlbumTracks = (albumId) => {
+            manageTracks(albumId);
+        };
+
+        window.uploadCover = (albumId) => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('cover', file);
+                formData.append('album_id', albumId);
+                
+                try {
+                    await fetch(`${API_BASE}/admin/albums/${albumId}/cover`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    showToast('Cover uploaded!', 'success');
+                    await loadAlbums();
+                } catch (error) {
+                    showToast('Upload failed', 'error');
+                }
+            };
+            input.click();
+        };
+
+        // ==================== DELETE ====================
+        window.showDeleteModal = (id, title) => {
+            currentDeleteId = id;
+            document.getElementById('deleteAlbumTitle').textContent = title;
+            document.getElementById('deleteModal').style.display = 'flex';
+        };
+
+        window.closeDeleteModal = () => {
+            document.getElementById('deleteModal').style.display = 'none';
+            currentDeleteId = null;
+        };
+
+        window.confirmDelete = async () => {
+            if (!currentDeleteId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums/${currentDeleteId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Delete failed');
+                
+                closeDeleteModal();
+                await loadAlbums();
+                showToast('Album deleted successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error deleting album:', error);
+                showToast('Failed to delete album: ' + error.message, 'error');
+            }
+        };
+
+        // ==================== HELPER FUNCTIONS ====================
+        function escapeHtml(text) {
+            if (!text) return text;
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadAlbums();
+            }
+        });
+    </script>
 </body>
 </html>
