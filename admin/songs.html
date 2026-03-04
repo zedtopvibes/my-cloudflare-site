@@ -840,6 +840,11 @@
             const genres = [...new Set(allSongs.map(song => song.genre).filter(g => g))];
             const select = document.getElementById('genreFilter');
             
+            // Clear existing options except first
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
             genres.sort().forEach(genre => {
                 const option = document.createElement('option');
                 option.value = genre;
@@ -1073,7 +1078,10 @@
                 }
                 
                 closeEditModal();
-                await loadSongs(); // Reload the list
+                
+                // Force reload all songs from server
+                await loadSongs();
+                
                 showToast('Song updated successfully!', 'success');
                 
             } catch (error) {
@@ -1110,7 +1118,10 @@
                 }
                 
                 closeDeleteModal();
-                await loadSongs(); // Reload the list
+                
+                // Force reload all songs from server
+                await loadSongs();
+                
                 showToast('Song deleted successfully!', 'success');
                 
             } catch (error) {
@@ -1143,6 +1154,15 @@
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('genreFilter').addEventListener('change', applyFilters);
         document.getElementById('sortFilter').addEventListener('change', applyFilters);
+
+        // ==================== REFRESH BUTTON ====================
+        // Add a refresh button to the header
+        const refreshBtn = document.createElement('button');
+        refreshBtn.className = 'btn btn-secondary btn-sm';
+        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+        refreshBtn.onclick = loadSongs;
+        refreshBtn.style.marginLeft = '10px';
+        document.querySelector('.content-header h2').appendChild(refreshBtn);
 
         // ==================== INIT ====================
         document.addEventListener('DOMContentLoaded', () => {
