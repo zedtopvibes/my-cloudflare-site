@@ -8,33 +8,23 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS request (CORS preflight)
+  // Handle OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
 
-  // Only allow DELETE requests
+  // Only allow DELETE
   if (request.method !== 'DELETE') {
     return new Response(JSON.stringify({ 
-      error: 'Method not allowed',
-      allowed: ['DELETE', 'OPTIONS']
+      error: 'Method not allowed'
     }), { status: 405, headers });
   }
 
   try {
-    // Get IDs from params - these come from the URL pattern [id]/tracks/[trackId]
     const albumId = params.id;
     const trackId = params.trackId;
     
-    console.log('🗑️ Removing track:', { albumId, trackId });
-
-    // Validate we have both IDs
-    if (!albumId || !trackId) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing album ID or track ID',
-        params: params
-      }), { status: 400, headers });
-    }
+    console.log('Removing track:', { albumId, trackId });
 
     // Check if the relationship exists
     const exists = await env.DB.prepare(`
@@ -44,9 +34,7 @@ export async function onRequest(context) {
     
     if (!exists) {
       return new Response(JSON.stringify({ 
-        error: 'Track not found in this album',
-        album_id: albumId,
-        track_id: trackId
+        error: 'Track not found in this album'
       }), { status: 404, headers });
     }
 
@@ -56,14 +44,13 @@ export async function onRequest(context) {
       WHERE album_id = ? AND track_id = ?
     `).bind(albumId, trackId).run();
 
-    // Reorder remaining tracks to keep track numbers sequential
+    // Reorder remaining tracks (optional)
     const remaining = await env.DB.prepare(`
       SELECT track_id FROM album_tracks 
       WHERE album_id = ? 
       ORDER BY track_number
     `).bind(albumId).all();
 
-    // Update track numbers to be sequential (1,2,3...)
     for (let i = 0; i < remaining.results.length; i++) {
       await env.DB.prepare(`
         UPDATE album_tracks 
@@ -74,11 +61,11 @@ export async function onRequest(context) {
 
     return new Response(JSON.stringify({ 
       success: true,
-      message: 'Track removed from album successfully'
+      message: 'Track removed successfully'
     }), { headers });
 
   } catch (error) {
-    console.error('❌ Error removing track:', error);
+    console.error('Error:', error);
     return new Response(JSON.stringify({ 
       error: error.message 
     }), { status: 500, headers });
