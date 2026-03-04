@@ -448,7 +448,7 @@
             
             // Show loading
             loginBtn.disabled = true;
-            loading.style.display = 'block';
+            loading.style.display = 'flex';
             errorMessage.style.display = 'none';
             successMessage.style.display = 'none';
             
@@ -468,6 +468,9 @@
                     successMessage.textContent = 'Login successful! Redirecting...';
                     successMessage.style.display = 'block';
                     loading.style.display = 'none';
+                    
+                    // Store login state in localStorage as backup
+                    localStorage.setItem('aetheric_logged_in', 'true');
                     
                     setTimeout(() => {
                         window.location.href = '/admin/';
