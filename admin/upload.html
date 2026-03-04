@@ -499,14 +499,13 @@
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Artist *</label>
                                 <select id="artistSelect" required>
-                                    <option value="">Select Artist</option>
+                                    <option value="">Loading artists...</option>
                                 </select>
                                 <div class="form-hint">
                                     <a href="#" onclick="showNewArtistModal()" style="color: var(--primary-blue);">
                                         <i class="fas fa-plus-circle"></i> Add New Artist
                                     </a>
                                 </div>
-                                <div id="artistLoadError" style="color: var(--error); font-size: 0.85rem; margin-top: 5px; display: none;"></div>
                             </div>
                             
                             <div class="form-row">
@@ -606,12 +605,12 @@
         <div style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px;">
             <h3 style="margin-bottom: 20px; color: var(--primary-blue);">Add New Artist</h3>
             
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 15px;">
                 <label style="display: block; margin-bottom: 5px; font-weight: 600;">Artist Name *</label>
                 <input type="text" id="newArtistName" placeholder="e.g. New Artist" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
             </div>
             
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 15px;">
                 <label style="display: block; margin-bottom: 5px; font-weight: 600;">Country</label>
                 <select id="newArtistCountry" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
                     <option value="">Select Country</option>
@@ -635,7 +634,7 @@
     <script>
         const API_BASE = '/api';
         
-        // ==================== FILE UPLOAD ====================
+        // ==================== FILE UPLOAD HANDLING ====================
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
@@ -644,21 +643,33 @@
         const submitBtn = document.getElementById('submitBtn');
         let selectedFile = null;
 
-        uploadArea.onclick = () => fileInput.click();
-        
-        uploadArea.ondragover = e => { e.preventDefault(); uploadArea.classList.add('dragover'); };
-        uploadArea.ondragleave = () => uploadArea.classList.remove('dragover');
-        uploadArea.ondrop = e => {
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
             const file = e.dataTransfer.files[0];
-            if (file?.type === 'audio/mpeg') handleFileSelect(file);
-            else showStatus('error', 'Please select an MP3 file');
-        };
+            if (file && file.type === 'audio/mpeg') {
+                handleFileSelect(file);
+            } else {
+                showStatus('error', 'Please select an MP3 file');
+            }
+        });
 
-        fileInput.onchange = e => {
-            if (e.target.files[0]) handleFileSelect(e.target.files[0]);
-        };
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
 
         function handleFileSelect(file) {
             if (file.size > 25 * 1024 * 1024) {
@@ -691,24 +702,26 @@
 
         function getAudioDuration(file) {
             const audio = new Audio(URL.createObjectURL(file));
-            audio.onloadedmetadata = () => {
+            audio.addEventListener('loadedmetadata', () => {
                 document.getElementById('duration').value = Math.round(audio.duration);
                 URL.revokeObjectURL(audio.src);
-            };
+            });
         }
 
-        // ==================== ARTWORK ====================
+        // ==================== ARTWORK HANDLING ====================
         const artworkInput = document.getElementById('artworkInput');
         const artworkPreview = document.getElementById('artworkPreview');
         let artworkFile = null;
 
-        artworkInput.onchange = e => {
+        artworkInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
+            
             if (!file.type.startsWith('image/')) {
                 showStatus('error', 'Please select an image file');
                 return;
             }
+            
             if (file.size > 2 * 1024 * 1024) {
                 showStatus('error', 'Image must be less than 2MB');
                 return;
@@ -716,14 +729,14 @@
             
             artworkFile = file;
             const reader = new FileReader();
-            reader.onload = e => {
+            reader.onload = (e) => {
                 artworkPreview.innerHTML = `<img src="${e.target.result}" alt="Preview"><div class="remove-image" onclick="removeArtwork(event)"><i class="fas fa-times"></i></div>`;
                 artworkPreview.classList.add('has-image');
             };
             reader.readAsDataURL(file);
-        };
+        });
 
-        window.removeArtwork = e => {
+        window.removeArtwork = (e) => {
             e.stopPropagation();
             artworkFile = null;
             artworkInput.value = '';
@@ -731,78 +744,46 @@
             artworkPreview.classList.remove('has-image');
         };
 
-        // ==================== ARTISTS ====================
+        // ==================== ARTIST LOADING (UPDATED) ====================
         async function loadArtists() {
             const select = document.getElementById('artistSelect');
-            const errorEl = document.getElementById('artistLoadError');
-            
-            // Show loading state
-            select.innerHTML = '<option value="">Loading artists...</option>';
-            select.disabled = true;
-            errorEl.style.display = 'none';
             
             try {
-                // Try multiple possible endpoints
-                let response;
-                let endpoints = [
-                    `${API_BASE}/artists`,
-                    `${API_BASE}/admin/artists`,
-                    `${API_BASE}/artists/list`
-                ];
+                const response = await fetch(`${API_BASE}/artists`);
                 
-                for (const endpoint of endpoints) {
-                    try {
-                        response = await fetch(endpoint);
-                        if (response.ok) break;
-                    } catch (e) {
-                        continue;
-                    }
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
                 
-                if (!response || !response.ok) {
-                    throw new Error('Could not load artists from any endpoint');
-                }
+                const artists = await response.json();
                 
-                let artists = [];
-                const contentType = response.headers.get('content-type');
-                
-                if (contentType && contentType.includes('application/json')) {
-                    artists = await response.json();
-                } else {
-                    // If not JSON, try to get text and parse
-                    const text = await response.text();
-                    try {
-                        artists = JSON.parse(text);
-                    } catch {
-                        throw new Error('Response is not valid JSON');
-                    }
-                }
-                
-                // Populate select
                 select.innerHTML = '<option value="">Select Artist</option>';
-                select.disabled = false;
                 
-                if (artists && artists.length > 0) {
-                    artists.forEach(artist => {
-                        const option = document.createElement('option');
-                        // Handle different possible response formats
-                        option.value = artist.id || artist.artist_id || '';
-                        option.textContent = artist.name || artist.artist_name || 'Unknown';
-                        select.appendChild(option);
-                    });
-                } else {
-                    select.innerHTML = '<option value="">No artists found</option>';
-                }
+                // Sort artists alphabetically
+                artists.sort((a, b) => a.name.localeCompare(b.name));
+                
+                artists.forEach(artist => {
+                    const option = document.createElement('option');
+                    option.value = artist.name; // Use name as value
+                    
+                    // Show artist with stats
+                    let displayText = artist.name;
+                    if (artist.track_count > 0) {
+                        displayText += ` (${artist.track_count} tracks, ${artist.plays?.total?.toLocaleString() || 0} plays)`;
+                    }
+                    
+                    option.textContent = displayText;
+                    select.appendChild(option);
+                });
                 
             } catch (error) {
                 console.error('Error loading artists:', error);
                 select.innerHTML = '<option value="">Error loading artists</option>';
-                select.disabled = true;
-                errorEl.textContent = 'Failed to load artists. Please try again.';
-                errorEl.style.display = 'block';
+                showStatus('error', 'Failed to load artists. Please refresh.');
             }
         }
 
+        // ==================== NEW ARTIST MODAL ====================
         window.showNewArtistModal = () => {
             document.getElementById('newArtistModal').style.display = 'flex';
             document.getElementById('newArtistName').value = '';
@@ -825,7 +806,6 @@
                 return;
             }
             
-            // Show loading state
             const saveBtn = event.target;
             const originalText = saveBtn.textContent;
             saveBtn.textContent = 'Saving...';
@@ -833,63 +813,47 @@
             statusEl.style.display = 'none';
             
             try {
-                // Try multiple possible endpoints
-                let response;
-                let endpoints = [
-                    `${API_BASE}/admin/artists`,
-                    `${API_BASE}/artists`,
-                    `${API_BASE}/artists/add`
-                ];
-                
-                for (const endpoint of endpoints) {
-                    try {
-                        response = await fetch(endpoint, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                name: name,
-                                country: country || null 
-                            })
-                        });
-                        if (response.ok) break;
-                    } catch (e) {
-                        continue;
-                    }
+                // Try to save to admin endpoint
+                const response = await fetch(`${API_BASE}/admin/artists`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: name,
+                        country: country || null 
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save artist');
                 }
+
+                // Reload artists list
+                await loadArtists();
                 
-                if (!response || !response.ok) {
-                    throw new Error('Could not add artist to any endpoint');
-                }
-                
-                // Try to get response body if any
-                let result = { success: true };
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    try {
-                        result = await response.json();
-                    } catch {
-                        // Ignore JSON parse errors
-                    }
-                }
-                
-                // Success
-                await loadArtists(); // Reload the artist dropdown
+                // Close modal and show success
                 hideNewArtistModal();
                 showStatus('success', `Artist "${name}" added successfully!`);
+                
+                // Select the newly added artist
+                const select = document.getElementById('artistSelect');
+                Array.from(select.options).forEach(option => {
+                    if (option.textContent.startsWith(name)) {
+                        select.value = option.value;
+                    }
+                });
                 
             } catch (error) {
                 console.error('Error adding artist:', error);
                 statusEl.textContent = error.message;
                 statusEl.style.display = 'block';
             } finally {
-                // Reset button
                 saveBtn.textContent = originalText;
                 saveBtn.disabled = false;
             }
         };
 
-        // ==================== FORM SUBMIT ====================
-        document.getElementById('uploadForm').onsubmit = async e => {
+        // ==================== FORM SUBMISSION ====================
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             // Validate
@@ -899,7 +863,7 @@
             }
 
             const title = document.getElementById('title').value.trim();
-            const artistId = document.getElementById('artistSelect').value;
+            const artistName = document.getElementById('artistSelect').value;
 
             if (!title) {
                 showStatus('error', 'Please enter a title');
@@ -907,7 +871,7 @@
                 return;
             }
 
-            if (!artistId) {
+            if (!artistName) {
                 showStatus('error', 'Please select an artist');
                 return;
             }
@@ -925,7 +889,7 @@
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 formData.append('title', title);
-                formData.append('artist_id', artistId);
+                formData.append('artist', artistName); // Send artist name
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', document.getElementById('duration').value);
@@ -949,38 +913,19 @@
                     }
                 }, 300);
 
-                // Try multiple endpoints for upload
-                let response;
-                let endpoints = [
-                    `${API_BASE}/admin/tracks`,
-                    `${API_BASE}/tracks`,
-                    `${API_BASE}/upload`
-                ];
-                
-                for (const endpoint of endpoints) {
-                    try {
-                        response = await fetch(endpoint, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        if (response.ok) break;
-                    } catch (e) {
-                        continue;
-                    }
-                }
+                // Send to upload endpoint
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
 
                 clearInterval(interval);
 
-                if (!response || !response.ok) {
-                    throw new Error('Upload failed - could not find working endpoint');
+                if (!response.ok) {
+                    throw new Error('Upload failed');
                 }
 
-                let result;
-                try {
-                    result = await response.json();
-                } catch {
-                    result = { success: true };
-                }
+                const result = await response.json();
                 
                 // Success
                 progressFill.style.width = '100%';
@@ -1002,55 +947,47 @@
                 showStatus('error', error.message || 'Upload failed');
                 submitBtn.disabled = false;
             }
-        };
+        });
 
+        // ==================== RESET FORM ====================
         window.resetForm = () => {
             clearSelectedFile();
-            // Remove artwork if exists
             if (artworkFile) {
                 artworkFile = null;
                 artworkInput.value = '';
                 artworkPreview.innerHTML = '<span>Click to upload artwork</span>';
                 artworkPreview.classList.remove('has-image');
             }
-            // Clear text inputs
             document.getElementById('title').value = '';
             document.getElementById('genre').value = '';
             document.getElementById('releaseDate').value = '';
             document.getElementById('description').value = '';
             document.getElementById('bpm').value = '';
-            // Reset selects
             document.getElementById('artistSelect').value = '';
-            // Uncheck checkboxes
             document.getElementById('explicit').checked = false;
             document.getElementById('featured').checked = false;
             document.getElementById('editorPick').checked = false;
         };
 
+        // ==================== STATUS MESSAGES ====================
         function showStatus(type, message) {
             const statusEl = document.getElementById('statusMessage');
             const icon = statusEl.querySelector('i');
             const span = statusEl.querySelector('span');
             
-            // Set classes
             statusEl.className = 'status-message';
             statusEl.classList.add(`status-${type}`);
             
-            // Set icon
             const icons = {
                 success: 'fa-check-circle',
                 error: 'fa-exclamation-circle',
                 info: 'fa-info-circle'
             };
+            
             icon.className = `fas ${icons[type]}`;
-            
-            // Set message
             span.textContent = message;
-            
-            // Show
             statusEl.style.display = 'flex';
             
-            // Auto-hide after 5 seconds (except info)
             if (type !== 'info') {
                 setTimeout(() => {
                     statusEl.style.display = 'none';
@@ -1058,7 +995,7 @@
             }
         }
 
-        // ==================== INIT ====================
+        // ==================== INITIALIZE ====================
         document.addEventListener('DOMContentLoaded', loadArtists);
     </script>
 </body>
