@@ -12,6 +12,7 @@ export async function onRequest(context) {
         });
     } 
 
+    // Only allow POST
     if (request.method !== "POST") {
         return new Response(JSON.stringify({ error: "Method not allowed" }), {
             status: 405,
@@ -22,13 +23,12 @@ export async function onRequest(context) {
     try {
         const { username, password } = await request.json();
         
-        // Get credentials from Cloudflare environment variables
+        // Get credentials from Cloudflare secrets
         const validUsername = env.ADMIN_USERNAME;
         const validPassword = env.ADMIN_PASSWORD;
         
-        // Simple credential check
+        // Check credentials
         if (username === validUsername && password === validPassword) {
-            // Return success - no session, no cookie
             return new Response(JSON.stringify({ 
                 success: true,
                 message: "Login successful" 
@@ -52,7 +52,6 @@ export async function onRequest(context) {
             });
         }
     } catch (error) {
-        console.error('Login error:', error);
         return new Response(JSON.stringify({ 
             success: false,
             error: "Server error" 
