@@ -1088,6 +1088,7 @@
             document.getElementById('editModal').style.display = 'none';
         };
 
+        // ==================== FIXED EDIT FORM SUBMIT HANDLER ====================
         document.getElementById('editForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1126,27 +1127,36 @@
                 
                 addDebug(`Response status: ${response.status}`);
                 
+                // FIX: Check content type before reading the response body
+                const contentType = response.headers.get('content-type');
                 let responseData;
-                try {
+                let responseText;
+                
+                if (contentType && contentType.includes('application/json')) {
+                    // If JSON, parse it directly
                     responseData = await response.json();
                     addDebug('Response data:', responseData);
-                } catch {
-                    const text = await response.text();
-                    addDebug('Response text:', text);
+                } else {
+                    // If not JSON, read as text
+                    responseText = await response.text();
+                    addDebug('Response text:', responseText);
                 }
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                    // If error, use response data if available
+                    const errorMessage = responseData?.message || responseText || `HTTP ${response.status}`;
+                    throw new Error(errorMessage);
                 }
                 
                 closeEditModal();
                 
-                // Wait a moment then reload
+                // Show success message
+                showToast('Song updated successfully!', 'success');
+                
+                // Reload songs after a short delay
                 setTimeout(async () => {
                     await loadSongs();
                 }, 500);
-                
-                showToast('Song updated successfully!', 'success');
                 
             } catch (error) {
                 console.error('Error updating song:', error);
@@ -1188,12 +1198,13 @@
                 
                 closeDeleteModal();
                 
+                // Show success message
+                showToast('Song deleted successfully!', 'success');
+                
                 // Reload after delete
                 setTimeout(async () => {
                     await loadSongs();
                 }, 500);
-                
-                showToast('Song deleted successfully!', 'success');
                 
             } catch (error) {
                 console.error('Error deleting song:', error);
