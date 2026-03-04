@@ -12,7 +12,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            /* Blue/ocean theme from frontend */
             --primary-blue: #1f6f9f;
             --primary-light: #2f8ed0;
             --primary-lighter: #70c8ff;
@@ -70,12 +69,6 @@
             gap: 8px;
         }
         
-        .header-top h1 span {
-            color: #666;
-            font-size: 0.9rem;
-            font-weight: 400;
-        }
-        
         .user-info {
             display: flex;
             align-items: center;
@@ -84,7 +77,6 @@
             padding: 8px 15px;
             border-radius: 30px;
             font-size: 0.9rem;
-            margin-left: auto;
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
@@ -100,20 +92,16 @@
             color: #666;
             transition: color 0.3s;
             padding: 8px;
-            text-decoration: none;
             background: none;
             border: none;
             font-size: 1rem;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
         }
         
         .logout-btn:hover {
             color: var(--primary-blue);
         }
         
-        /* Navigation Tabs - FIXED FOR CONSISTENCY WITH DASHBOARD */
         .admin-tabs {
             display: flex;
             gap: 5px;
@@ -140,19 +128,9 @@
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 6px;
             text-decoration: none;
-            line-height: 1;
             height: 40px !important;
-            min-height: 40px !important;
-            max-height: 40px !important;
-            box-sizing: border-box;
-        }
-        
-        .tab-btn i {
-            font-size: 1rem !important;
-            width: 16px;
         }
         
         .tab-btn:hover {
@@ -163,14 +141,8 @@
         .tab-btn.active {
             background: var(--primary-blue);
             color: white;
-            font-weight: 600 !important;
-            height: 40px !important;
-            min-height: 40px !important;
-            max-height: 40px !important;
-            padding: 10px 15px !important;
         }
         
-        /* Upload Form Styles */
         .upload-form-container {
             background: var(--white);
             border-radius: 12px;
@@ -184,10 +156,8 @@
             gap: 25px;
         }
         
-        /* File Upload Area */
         .file-upload-section {
             grid-column: 1 / -1;
-            margin-bottom: 10px;
         }
         
         .upload-area {
@@ -267,7 +237,6 @@
             background: rgba(220, 53, 69, 0.1);
         }
         
-        /* Form Groups */
         .form-group {
             margin-bottom: 20px;
         }
@@ -305,12 +274,6 @@
             box-shadow: 0 0 0 3px rgba(31, 111, 159, 0.1);
         }
         
-        .form-group input.error,
-        .form-group select.error,
-        .form-group textarea.error {
-            border-color: var(--error);
-        }
-        
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -323,7 +286,6 @@
             margin-top: 4px;
         }
         
-        /* Checkbox Group */
         .checkbox-group {
             display: flex;
             flex-wrap: wrap;
@@ -339,12 +301,6 @@
             font-size: 0.95rem;
         }
         
-        .checkbox-label input[type="checkbox"] {
-            width: auto;
-            margin-right: 5px;
-        }
-        
-        /* Artwork Preview */
         .artwork-preview {
             width: 120px;
             height: 120px;
@@ -395,8 +351,8 @@
             opacity: 1;
         }
         
-        /* Progress Bar */
         .upload-progress {
+            grid-column: 1 / -1;
             margin: 20px 0;
             display: none;
         }
@@ -414,7 +370,6 @@
             background: var(--primary-blue);
             width: 0%;
             transition: width 0.3s;
-            border-radius: 4px;
         }
         
         .progress-text {
@@ -424,7 +379,6 @@
             margin-top: 5px;
         }
         
-        /* Action Buttons */
         .form-actions {
             grid-column: 1 / -1;
             display: flex;
@@ -476,15 +430,14 @@
             background: #e0e0e0;
         }
         
-        /* Status Messages */
         .status-message {
+            grid-column: 1 / -1;
             padding: 15px;
             border-radius: 8px;
             margin: 20px 0 0;
             display: none;
             align-items: center;
             gap: 10px;
-            grid-column: 1 / -1;
         }
         
         .status-success {
@@ -508,11 +461,9 @@
             display: flex;
         }
         
-        /* Responsive */
         @media (max-width: 768px) {
             .upload-grid {
                 grid-template-columns: 1fr;
-                gap: 15px;
             }
             
             .form-row {
@@ -526,51 +477,21 @@
             .btn {
                 width: 100%;
             }
-            
-            .admin-container {
-                padding: 10px;
-            }
-            
-            .upload-form-container {
-                padding: 15px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .admin-header {
-                padding: 12px;
-            }
-            
-            .header-top h1 {
-                font-size: 1.1rem;
-            }
-            
-            .user-info {
-                padding: 5px 10px;
-                font-size: 0.8rem;
-            }
         }
     </style>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Header -->
         <div class="admin-header">
             <div class="header-top">
-                <h1>
-                    <i class="fas fa-cloud-upload-alt"></i> 
-                    Upload Song
-                </h1>
+                <h1><i class="fas fa-cloud-upload-alt"></i> Upload Song</h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span id="adminName">Admin</span>
-                    <button class="logout-btn" title="Logout" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
+                    <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
             
-            <!-- Navigation Tabs -->
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="/admin/upload" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
@@ -581,38 +502,28 @@
             </div>
         </div>
         
-        <!-- Main Content - Upload Form -->
         <div class="admin-content">
             <div class="upload-form-container">
                 <form id="uploadForm" enctype="multipart/form-data">
                     <div class="upload-grid">
-                        <!-- File Upload Section -->
                         <div class="file-upload-section">
                             <div id="uploadArea" class="upload-area">
-                                <div class="upload-icon">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                </div>
+                                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                                 <div class="upload-text">Click or drag MP3 to upload</div>
                                 <div class="upload-hint">MP3 files only, max 25MB</div>
                             </div>
                             <input type="file" id="fileInput" accept="audio/mpeg" style="display: none;">
                             
-                            <!-- Selected File Info (hidden initially) -->
                             <div id="fileInfo" class="file-info" style="display: none;">
-                                <div class="file-icon">
-                                    <i class="fas fa-music"></i>
-                                </div>
+                                <div class="file-icon"><i class="fas fa-music"></i></div>
                                 <div class="file-details">
                                     <div id="fileName" class="file-name"></div>
                                     <div id="fileSize" class="file-size"></div>
                                 </div>
-                                <div class="remove-file" onclick="clearSelectedFile()">
-                                    <i class="fas fa-times"></i>
-                                </div>
+                                <div class="remove-file" onclick="clearSelectedFile()"><i class="fas fa-times"></i></div>
                             </div>
                         </div>
 
-                        <!-- Basic Info - Left Column -->
                         <div class="form-section">
                             <h3 style="margin-bottom: 20px; color: var(--primary-blue);">
                                 <i class="fas fa-info-circle"></i> Basic Information
@@ -621,14 +532,12 @@
                             <div class="form-group">
                                 <label><i class="fas fa-heading"></i> Song Title *</label>
                                 <input type="text" id="title" placeholder="e.g. Midnight Waves" required>
-                                <div class="form-hint" id="titleError" style="color: var(--error); display: none;"></div>
                             </div>
                             
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Artist *</label>
                                 <select id="artistSelect" required>
                                     <option value="">Select Artist</option>
-                                    <!-- Artists will be loaded here -->
                                 </select>
                                 <div class="form-hint">
                                     <a href="#" onclick="showNewArtistModal()" style="color: var(--primary-blue);">
@@ -661,7 +570,6 @@
                                 <div class="form-group">
                                     <label><i class="fas fa-clock"></i> Duration (seconds)</label>
                                     <input type="number" id="duration" placeholder="Auto-detected" readonly>
-                                    <div class="form-hint">Auto-detected from file</div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -671,7 +579,6 @@
                             </div>
                         </div>
                         
-                        <!-- Right Column -->
                         <div class="form-section">
                             <h3 style="margin-bottom: 20px; color: var(--primary-blue);">
                                 <i class="fas fa-paint-brush"></i> Artwork & Description
@@ -683,7 +590,7 @@
                                 <div id="artworkPreview" class="artwork-preview" onclick="document.getElementById('artworkInput').click()">
                                     <span>Click to upload artwork</span>
                                 </div>
-                                <div class="form-hint">JPG, PNG, WEBP (max 2MB, 1000x1000)</div>
+                                <div class="form-hint">JPG, PNG, WEBP (max 2MB)</div>
                             </div>
                             
                             <div class="form-group">
@@ -697,10 +604,10 @@
                             
                             <div class="checkbox-group">
                                 <label class="checkbox-label">
-                                    <input type="checkbox" id="explicit"> Explicit Content
+                                    <input type="checkbox" id="explicit"> Explicit
                                 </label>
                                 <label class="checkbox-label">
-                                    <input type="checkbox" id="featured"> Featured Track
+                                    <input type="checkbox" id="featured"> Featured
                                 </label>
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="editorPick"> Editor's Pick
@@ -708,21 +615,15 @@
                             </div>
                         </div>
                         
-                        <!-- Progress Bar -->
                         <div id="uploadProgress" class="upload-progress">
-                            <div class="progress-bar">
-                                <div id="progressFill" class="progress-fill"></div>
-                            </div>
+                            <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
                             <div id="progressText" class="progress-text">0%</div>
                         </div>
                         
-                        <!-- Status Message -->
                         <div id="statusMessage" class="status-message">
-                            <i class="fas fa-info-circle"></i>
-                            <span></span>
+                            <i class="fas fa-info-circle"></i> <span></span>
                         </div>
                         
-                        <!-- Action Buttons -->
                         <div class="form-actions">
                             <button type="button" class="btn btn-secondary" onclick="resetForm()">
                                 <i class="fas fa-undo"></i> Reset
@@ -737,7 +638,6 @@
         </div>
     </div>
 
-    <!-- New Artist Modal -->
     <div id="newArtistModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
         <div style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px;">
             <h3 style="margin-bottom: 20px; color: var(--primary-blue);">Add New Artist</h3>
@@ -757,39 +657,25 @@
     </div>
 
     <script>
-        // API Base
         const API_BASE = '/api';
         
-        // ==================== AUTHENTICATION ====================
+        // ==================== AUTH ====================
         async function checkAuth() {
             try {
-                const response = await fetch(`${API_BASE}/admin/auth/check`, {
-                    credentials: 'include'
-                });
-                if (!response.ok) {
-                    window.location.href = '/admin/login';
-                    return false;
-                }
-                const data = await response.json();
-                document.getElementById('adminName').textContent = data.username || 'Admin';
-                return true;
-            } catch (error) {
-                window.location.href = '/admin/login';
-                return false;
-            }
+                const res = await fetch(`${API_BASE}/admin/auth/check`, { credentials: 'include' });
+                if (!res.ok) window.location.href = '/admin/login';
+                else document.getElementById('adminName').textContent = (await res.json()).username || 'Admin';
+            } catch { window.location.href = '/admin/login'; }
         }
 
-        async function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                await fetch(`${API_BASE}/admin/auth/logout`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
+        window.logout = async () => {
+            if (confirm('Logout?')) {
+                await fetch(`${API_BASE}/admin/auth/logout`, { method: 'POST', credentials: 'include' });
                 window.location.href = '/admin/login';
             }
-        }
+        };
 
-        // ==================== FILE UPLOAD HANDLING ====================
+        // ==================== FILE UPLOAD ====================
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
@@ -798,217 +684,139 @@
         const submitBtn = document.getElementById('submitBtn');
         let selectedFile = null;
 
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
+        uploadArea.onclick = () => fileInput.click();
+        
+        uploadArea.ondragover = e => { e.preventDefault(); uploadArea.classList.add('dragover'); };
+        uploadArea.ondragleave = () => uploadArea.classList.remove('dragover');
+        uploadArea.ondrop = e => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
             const file = e.dataTransfer.files[0];
-            if (file && file.type === 'audio/mpeg') {
-                handleFileSelect(file);
-            } else {
-                showStatus('error', 'Please select an MP3 file');
-            }
-        });
+            if (file?.type === 'audio/mpeg') handleFileSelect(file);
+            else showStatus('error', 'Please select an MP3 file');
+        };
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                handleFileSelect(file);
-            }
-        });
+        fileInput.onchange = e => e.target.files[0] && handleFileSelect(e.target.files[0]);
 
         function handleFileSelect(file) {
-            // Check file size (25MB max)
-            if (file.size > 25 * 1024 * 1024) {
-                showStatus('error', 'File too large. Maximum size is 25MB');
-                return;
-            }
-            
+            if (file.size > 25 * 1024 * 1024) return showStatus('error', 'File too large (max 25MB)');
             selectedFile = file;
             fileName.textContent = file.name;
             fileSize.textContent = formatFileSize(file.size);
             fileInfo.style.display = 'flex';
             uploadArea.style.display = 'none';
             submitBtn.disabled = false;
-            
-            // Auto-detect duration
             getAudioDuration(file);
         }
 
-        function clearSelectedFile() {
+        window.clearSelectedFile = () => {
             selectedFile = null;
             fileInput.value = '';
             fileInfo.style.display = 'none';
             uploadArea.style.display = 'flex';
             submitBtn.disabled = true;
             document.getElementById('duration').value = '';
-        }
+        };
 
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        function formatFileSize(b) {
+            if (b < 1024) return b + ' B';
+            if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+            return (b/1048576).toFixed(1) + ' MB';
         }
 
         function getAudioDuration(file) {
-            const audio = new Audio();
-            audio.src = URL.createObjectURL(file);
-            audio.addEventListener('loadedmetadata', () => {
+            const audio = new Audio(URL.createObjectURL(file));
+            audio.onloadedmetadata = () => {
                 document.getElementById('duration').value = Math.round(audio.duration);
                 URL.revokeObjectURL(audio.src);
-            });
+            };
         }
 
-        // ==================== ARTWORK HANDLING ====================
+        // ==================== ARTWORK ====================
         const artworkInput = document.getElementById('artworkInput');
         const artworkPreview = document.getElementById('artworkPreview');
         let artworkFile = null;
 
-        artworkInput.addEventListener('change', (e) => {
+        artworkInput.onchange = e => {
             const file = e.target.files[0];
-            if (file) {
-                if (!file.type.startsWith('image/')) {
-                    showStatus('error', 'Please select an image file');
-                    return;
-                }
-                if (file.size > 2 * 1024 * 1024) {
-                    showStatus('error', 'Image must be less than 2MB');
-                    return;
-                }
-                
-                artworkFile = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    artworkPreview.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview">
-                        <div class="remove-image" onclick="removeArtwork(event)"><i class="fas fa-times"></i></div>
-                    `;
-                    artworkPreview.classList.add('has-image');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+            if (!file) return;
+            if (!file.type.startsWith('image/')) return showStatus('error', 'Please select an image');
+            if (file.size > 2 * 1024 * 1024) return showStatus('error', 'Image must be <2MB');
+            
+            artworkFile = file;
+            const reader = new FileReader();
+            reader.onload = e => {
+                artworkPreview.innerHTML = `<img src="${e.target.result}"><div class="remove-image" onclick="removeArtwork(event)"><i class="fas fa-times"></i></div>`;
+                artworkPreview.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+        };
 
-        function removeArtwork(event) {
-            event.stopPropagation();
+        window.removeArtwork = e => {
+            e.stopPropagation();
             artworkFile = null;
             artworkInput.value = '';
             artworkPreview.innerHTML = '<span>Click to upload artwork</span>';
             artworkPreview.classList.remove('has-image');
-        }
+        };
 
-        // ==================== ARTIST SELECTION ====================
+        // ==================== ARTISTS ====================
         async function loadArtists() {
             try {
-                const response = await fetch(`${API_BASE}/artists`);
-                if (!response.ok) throw new Error('Failed to load artists');
-                const artists = await response.json();
-                
+                const res = await fetch(`${API_BASE}/artists`);
+                const artists = await res.json();
                 const select = document.getElementById('artistSelect');
                 select.innerHTML = '<option value="">Select Artist</option>';
-                
-                artists.forEach(artist => {
-                    const option = document.createElement('option');
-                    option.value = artist.id;
-                    option.textContent = artist.name;
-                    select.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error loading artists:', error);
-                showStatus('error', 'Failed to load artists');
-            }
+                artists.forEach(a => select.add(new Option(a.name, a.id)));
+            } catch { showStatus('error', 'Failed to load artists'); }
         }
 
-        // ==================== NEW ARTIST MODAL ====================
-        function showNewArtistModal() {
-            document.getElementById('newArtistModal').style.display = 'flex';
-        }
-
-        function hideNewArtistModal() {
+        window.showNewArtistModal = () => document.getElementById('newArtistModal').style.display = 'flex';
+        window.hideNewArtistModal = () => {
             document.getElementById('newArtistModal').style.display = 'none';
             document.getElementById('newArtistName').value = '';
             document.getElementById('newArtistCountry').value = '';
-        }
+        };
 
-        async function saveNewArtist() {
+        window.saveNewArtist = async () => {
             const name = document.getElementById('newArtistName').value.trim();
             const country = document.getElementById('newArtistCountry').value;
-            
-            if (!name) {
-                alert('Please enter artist name');
-                return;
-            }
+            if (!name) return alert('Enter artist name');
             
             try {
-                const response = await fetch(`${API_BASE}/admin/artists`, {
+                const res = await fetch(`${API_BASE}/admin/artists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, country }),
                     credentials: 'include'
                 });
-                
-                if (response.ok) {
+                if (res.ok) {
                     await loadArtists();
                     hideNewArtistModal();
-                    showStatus('success', 'Artist added successfully');
-                } else {
-                    const error = await response.json();
-                    showStatus('error', error.message || 'Failed to add artist');
-                }
-            } catch (error) {
-                showStatus('error', error.message);
-            }
-        }
+                    showStatus('success', 'Artist added');
+                } else throw new Error();
+            } catch { showStatus('error', 'Failed to add artist'); }
+        };
 
-        // ==================== FORM SUBMISSION ====================
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        // ==================== FORM SUBMIT ====================
+        document.getElementById('uploadForm').onsubmit = async e => {
             e.preventDefault();
-            
-            // Validate
-            if (!selectedFile) {
-                showStatus('error', 'Please select an MP3 file');
-                return;
-            }
+            if (!selectedFile) return showStatus('error', 'Select an MP3 file');
+            if (!document.getElementById('title').value.trim()) return showStatus('error', 'Title required');
+            if (!document.getElementById('artistSelect').value) return showStatus('error', 'Select artist');
 
-            const title = document.getElementById('title').value.trim();
-            const artistId = document.getElementById('artistSelect').value;
-
-            if (!title) {
-                showStatus('error', 'Title is required');
-                document.getElementById('title').focus();
-                return;
-            }
-
-            if (!artistId) {
-                showStatus('error', 'Please select an artist');
-                return;
-            }
-
-            // Show progress
             const progressDiv = document.getElementById('uploadProgress');
             const progressFill = document.getElementById('progressFill');
             const progressText = document.getElementById('progressText');
             progressDiv.style.display = 'block';
-            
             submitBtn.disabled = true;
-            showStatus('info', 'Uploading track...');
+            showStatus('info', 'Uploading...');
 
             try {
-                // Create form data
                 const formData = new FormData();
                 formData.append('file', selectedFile);
-                formData.append('title', title);
-                formData.append('artist_id', artistId);
+                formData.append('title', document.getElementById('title').value.trim());
+                formData.append('artist_id', document.getElementById('artistSelect').value);
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', document.getElementById('duration').value);
@@ -1017,111 +825,48 @@
                 formData.append('explicit', document.getElementById('explicit').checked ? '1' : '0');
                 formData.append('featured', document.getElementById('featured').checked ? '1' : '0');
                 formData.append('editor_pick', document.getElementById('editorPick').checked ? '1' : '0');
-                
-                if (artworkFile) {
-                    formData.append('artwork', artworkFile);
-                }
+                if (artworkFile) formData.append('artwork', artworkFile);
 
-                // Simulate progress (in real app, use XMLHttpRequest for actual progress)
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += 10;
-                    if (progress <= 90) {
-                        progressFill.style.width = progress + '%';
-                        progressText.textContent = progress + '%';
-                    }
-                }, 300);
-
-                // Send to API
-                const response = await fetch(`${API_BASE}/admin/tracks`, {
+                const res = await fetch(`${API_BASE}/admin/tracks`, {
                     method: 'POST',
                     body: formData,
                     credentials: 'include'
                 });
 
-                clearInterval(interval);
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error || 'Upload failed');
-                }
+                if (!res.ok) throw new Error((await res.json()).error || 'Upload failed');
                 
                 progressFill.style.width = '100%';
                 progressText.textContent = '100%';
-                
-                showStatus('success', 'Track uploaded successfully!');
-                
-                // Reset form after success
-                setTimeout(() => {
-                    resetForm();
-                    progressDiv.style.display = 'none';
-                    progressFill.style.width = '0%';
-                }, 1500);
-                
-            } catch (error) {
-                progressFill.style.width = '0%';
-                progressText.textContent = '0%';
-                showStatus('error', 'Upload failed: ' + error.message);
+                showStatus('success', 'Upload complete!');
+                setTimeout(resetForm, 1500);
+            } catch (err) {
+                showStatus('error', err.message);
                 submitBtn.disabled = false;
+                progressDiv.style.display = 'none';
             }
-        });
+        };
 
-        function resetForm() {
+        window.resetForm = () => {
             clearSelectedFile();
-            removeArtwork(event);
-            document.getElementById('title').value = '';
+            removeArtwork({ stopPropagation: () => {} });
+            ['title', 'genre', 'releaseDate', 'description', 'bpm'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('artistSelect').value = '';
-            document.getElementById('genre').value = '';
-            document.getElementById('releaseDate').value = '';
-            document.getElementById('duration').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('bpm').value = '';
-            document.getElementById('explicit').checked = false;
-            document.getElementById('featured').checked = false;
-            document.getElementById('editorPick').checked = false;
+            ['explicit', 'featured', 'editorPick'].forEach(id => document.getElementById(id).checked = false);
+        };
+
+        function showStatus(type, msg) {
+            const el = document.getElementById('statusMessage');
+            el.className = `status-message status-${type}`;
+            el.querySelector('span').textContent = msg;
+            el.style.display = 'flex';
+            if (type !== 'info') setTimeout(() => el.style.display = 'none', 5000);
         }
 
-        function showStatus(type, message) {
-            const statusEl = document.getElementById('statusMessage');
-            const icon = statusEl.querySelector('i');
-            const span = statusEl.querySelector('span');
-            
-            statusEl.className = 'status-message status-' + type;
-            
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                info: 'fa-info-circle'
-            };
-            
-            icon.className = 'fas ' + icons[type];
-            span.textContent = message;
-            statusEl.style.display = 'flex';
-            
-            if (type !== 'info') {
-                setTimeout(() => {
-                    statusEl.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        // ==================== INITIALIZATION ====================
+        // ==================== INIT ====================
         document.addEventListener('DOMContentLoaded', async () => {
-            const authenticated = await checkAuth();
-            if (authenticated) {
-                await loadArtists();
-            }
+            await checkAuth();
+            await loadArtists();
         });
-
-        // Make functions global
-        window.clearSelectedFile = clearSelectedFile;
-        window.showNewArtistModal = showNewArtistModal;
-        window.hideNewArtistModal = hideNewArtistModal;
-        window.saveNewArtist = saveNewArtist;
-        window.removeArtwork = removeArtwork;
-        window.resetForm = resetForm;
-        window.logout = logout;
     </script>
 </body>
 </html>
