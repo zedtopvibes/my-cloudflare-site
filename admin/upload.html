@@ -627,6 +627,7 @@
                 <button onclick="hideNewArtistModal()" class="btn btn-secondary">Cancel</button>
                 <button onclick="saveNewArtist()" class="btn btn-primary">Save Artist</button>
             </div>
+            <div id="artistModalStatus" style="margin-top: 10px; font-size: 0.9rem; color: var(--error); display: none;"></div>
         </div>
     </div>
 
@@ -739,15 +740,17 @@
                 const select = document.getElementById('artistSelect');
                 select.innerHTML = '<option value="">Select Artist</option>';
                 
-                artists.forEach(artist => {
-                    const option = document.createElement('option');
-                    option.value = artist.id;
-                    option.textContent = artist.name;
-                    select.appendChild(option);
-                });
+                if (artists && artists.length > 0) {
+                    artists.forEach(artist => {
+                        const option = document.createElement('option');
+                        option.value = artist.id;
+                        option.textContent = artist.name;
+                        select.appendChild(option);
+                    });
+                }
             } catch (error) {
                 console.error('Error loading artists:', error);
-                showStatus('error', 'Failed to load artists');
+                // Don't show error for artists list - might be empty
             }
         }
 
@@ -755,6 +758,7 @@
             document.getElementById('newArtistModal').style.display = 'flex';
             document.getElementById('newArtistName').value = '';
             document.getElementById('newArtistCountry').value = '';
+            document.getElementById('artistModalStatus').style.display = 'none';
         };
         
         window.hideNewArtistModal = () => {
@@ -764,9 +768,11 @@
         window.saveNewArtist = async () => {
             const name = document.getElementById('newArtistName').value.trim();
             const country = document.getElementById('newArtistCountry').value;
+            const statusEl = document.getElementById('artistModalStatus');
             
             if (!name) {
-                alert('Please enter artist name');
+                statusEl.textContent = 'Please enter artist name';
+                statusEl.style.display = 'block';
                 return;
             }
             
@@ -775,8 +781,12 @@
             const originalText = saveBtn.textContent;
             saveBtn.textContent = 'Saving...';
             saveBtn.disabled = true;
+            statusEl.style.display = 'none';
             
             try {
+                console.log('Sending request to:', `${API_BASE}/admin/artists`);
+                console.log('Payload:', { name, country: country || null });
+                
                 const response = await fetch(`${API_BASE}/admin/artists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -786,20 +796,39 @@
                     })
                 });
 
-                const result = await response.json();
-                
+                // Check if response is OK
                 if (!response.ok) {
-                    throw new Error(result.error || 'Failed to add artist');
+                    // Try to get error message
+                    let errorMsg = 'Failed to add artist';
+                    try {
+                        const errorData = await response.json();
+                        errorMsg = errorData.error || errorData.message || errorMsg;
+                    } catch {
+                        // If response is not JSON, get text
+                        const text = await response.text();
+                        if (text) errorMsg = text;
+                    }
+                    throw new Error(errorMsg);
+                }
+
+                // Try to parse JSON response
+                let result;
+                try {
+                    result = await response.json();
+                } catch {
+                    // If no JSON, assume success
+                    result = { success: true };
                 }
                 
                 // Success
-                await loadArtists();
+                await loadArtists(); // Reload the artist dropdown
                 hideNewArtistModal();
                 showStatus('success', `Artist "${name}" added successfully!`);
                 
             } catch (error) {
                 console.error('Error adding artist:', error);
-                showStatus('error', error.message || 'Failed to add artist');
+                statusEl.textContent = error.message;
+                statusEl.style.display = 'block';
             } finally {
                 // Reset button
                 saveBtn.textContent = originalText;
@@ -858,7 +887,7 @@
                     formData.append('artwork', artworkFile);
                 }
 
-                // Simulate progress (in production, use XMLHttpRequest for real progress)
+                // Simulate progress
                 let progress = 0;
                 const interval = setInterval(() => {
                     progress += 10;
@@ -876,10 +905,23 @@
 
                 clearInterval(interval);
 
-                const result = await response.json();
-
                 if (!response.ok) {
-                    throw new Error(result.error || 'Upload failed');
+                    let errorMsg = 'Upload failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMsg = errorData.error || errorData.message || errorMsg;
+                    } catch {
+                        const text = await response.text();
+                        if (text) errorMsg = text;
+                    }
+                    throw new Error(errorMsg);
+                }
+
+                let result;
+                try {
+                    result = await response.json();
+                } catch {
+                    result = { success: true };
                 }
                 
                 // Success
