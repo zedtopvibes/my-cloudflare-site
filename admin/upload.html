@@ -563,7 +563,7 @@
                 </h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
-                    <span>Admin</span>
+                    <span id="adminName">Admin</span>
                     <button class="logout-btn" title="Logout" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
@@ -572,12 +572,12 @@
             
             <!-- Navigation Tabs -->
             <div class="admin-tabs">
-                <a href="index.html" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="upload.html" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
-                <a href="albums.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/tracks" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/artists" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
             </div>
         </div>
         
@@ -621,6 +621,7 @@
                             <div class="form-group">
                                 <label><i class="fas fa-heading"></i> Song Title *</label>
                                 <input type="text" id="title" placeholder="e.g. Midnight Waves" required>
+                                <div class="form-hint" id="titleError" style="color: var(--error); display: none;"></div>
                             </div>
                             
                             <div class="form-group">
@@ -659,7 +660,7 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label><i class="fas fa-clock"></i> Duration (seconds)</label>
-                                    <input type="number" id="duration" placeholder="e.g. 210" readonly>
+                                    <input type="number" id="duration" placeholder="Auto-detected" readonly>
                                     <div class="form-hint">Auto-detected from file</div>
                                 </div>
                                 
@@ -759,6 +760,35 @@
         // API Base
         const API_BASE = '/api';
         
+        // ==================== AUTHENTICATION ====================
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/auth/check`, {
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    window.location.href = '/admin/login';
+                    return false;
+                }
+                const data = await response.json();
+                document.getElementById('adminName').textContent = data.username || 'Admin';
+                return true;
+            } catch (error) {
+                window.location.href = '/admin/login';
+                return false;
+            }
+        }
+
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                await fetch(`${API_BASE}/admin/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/admin/login';
+            }
+        }
+
         // ==================== FILE UPLOAD HANDLING ====================
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
@@ -768,10 +798,8 @@
         const submitBtn = document.getElementById('submitBtn');
         let selectedFile = null;
 
-        // Click upload area
         uploadArea.addEventListener('click', () => fileInput.click());
 
-        // Drag and drop
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('dragover');
@@ -792,7 +820,6 @@
             }
         });
 
-        // File input change
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -801,6 +828,12 @@
         });
 
         function handleFileSelect(file) {
+            // Check file size (25MB max)
+            if (file.size > 25 * 1024 * 1024) {
+                showStatus('error', 'File too large. Maximum size is 25MB');
+                return;
+            }
+            
             selectedFile = file;
             fileName.textContent = file.name;
             fileSize.textContent = formatFileSize(file.size);
@@ -808,7 +841,7 @@
             uploadArea.style.display = 'none';
             submitBtn.disabled = false;
             
-            // Try to auto-detect duration
+            // Auto-detect duration
             getAudioDuration(file);
         }
 
@@ -827,7 +860,6 @@
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
-        // Auto-detect audio duration
         function getAudioDuration(file) {
             const audio = new Audio();
             audio.src = URL.createObjectURL(file);
@@ -879,6 +911,7 @@
         async function loadArtists() {
             try {
                 const response = await fetch(`${API_BASE}/artists`);
+                if (!response.ok) throw new Error('Failed to load artists');
                 const artists = await response.json();
                 
                 const select = document.getElementById('artistSelect');
@@ -892,6 +925,7 @@
                 });
             } catch (error) {
                 console.error('Error loading artists:', error);
+                showStatus('error', 'Failed to load artists');
             }
         }
 
@@ -903,6 +937,7 @@
         function hideNewArtistModal() {
             document.getElementById('newArtistModal').style.display = 'none';
             document.getElementById('newArtistName').value = '';
+            document.getElementById('newArtistCountry').value = '';
         }
 
         async function saveNewArtist() {
@@ -915,10 +950,11 @@
             }
             
             try {
-                const response = await fetch(`${API_BASE}/admin/artists/quick`, {
+                const response = await fetch(`${API_BASE}/admin/artists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, country })
+                    body: JSON.stringify({ name, country }),
+                    credentials: 'include'
                 });
                 
                 if (response.ok) {
@@ -926,7 +962,8 @@
                     hideNewArtistModal();
                     showStatus('success', 'Artist added successfully');
                 } else {
-                    showStatus('error', 'Failed to add artist');
+                    const error = await response.json();
+                    showStatus('error', error.message || 'Failed to add artist');
                 }
             } catch (error) {
                 showStatus('error', error.message);
@@ -937,16 +974,23 @@
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // Validate
             if (!selectedFile) {
                 showStatus('error', 'Please select an MP3 file');
                 return;
             }
 
-            const title = document.getElementById('title').value;
+            const title = document.getElementById('title').value.trim();
             const artistId = document.getElementById('artistSelect').value;
 
-            if (!title || !artistId) {
-                showStatus('error', 'Title and artist are required');
+            if (!title) {
+                showStatus('error', 'Title is required');
+                document.getElementById('title').focus();
+                return;
+            }
+
+            if (!artistId) {
+                showStatus('error', 'Please select an artist');
                 return;
             }
 
@@ -960,16 +1004,6 @@
             showStatus('info', 'Uploading track...');
 
             try {
-                // Simulate progress (in real app, you'd use XMLHttpRequest for progress)
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += 10;
-                    if (progress <= 90) {
-                        progressFill.style.width = progress + '%';
-                        progressText.textContent = progress + '%';
-                    }
-                }, 300);
-
                 // Create form data
                 const formData = new FormData();
                 formData.append('file', selectedFile);
@@ -979,7 +1013,7 @@
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', document.getElementById('duration').value);
                 formData.append('description', document.getElementById('description').value);
-                formData.append('bpm', document.getElementById('bpm').value);
+                formData.append('bpm', document.getElementById('bpm').value || '0');
                 formData.append('explicit', document.getElementById('explicit').checked ? '1' : '0');
                 formData.append('featured', document.getElementById('featured').checked ? '1' : '0');
                 formData.append('editor_pick', document.getElementById('editorPick').checked ? '1' : '0');
@@ -988,15 +1022,24 @@
                     formData.append('artwork', artworkFile);
                 }
 
+                // Simulate progress (in real app, use XMLHttpRequest for actual progress)
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    if (progress <= 90) {
+                        progressFill.style.width = progress + '%';
+                        progressText.textContent = progress + '%';
+                    }
+                }, 300);
+
                 // Send to API
                 const response = await fetch(`${API_BASE}/admin/tracks`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    credentials: 'include'
                 });
 
                 clearInterval(interval);
-                progressFill.style.width = '100%';
-                progressText.textContent = '100%';
 
                 const result = await response.json();
 
@@ -1004,18 +1047,23 @@
                     throw new Error(result.error || 'Upload failed');
                 }
                 
+                progressFill.style.width = '100%';
+                progressText.textContent = '100%';
+                
                 showStatus('success', 'Track uploaded successfully!');
-                resetForm();
+                
+                // Reset form after success
+                setTimeout(() => {
+                    resetForm();
+                    progressDiv.style.display = 'none';
+                    progressFill.style.width = '0%';
+                }, 1500);
                 
             } catch (error) {
                 progressFill.style.width = '0%';
                 progressText.textContent = '0%';
                 showStatus('error', 'Upload failed: ' + error.message);
-            } finally {
                 submitBtn.disabled = false;
-                setTimeout(() => {
-                    document.getElementById('uploadProgress').style.display = 'none';
-                }, 2000);
             }
         });
 
@@ -1058,32 +1106,12 @@
             }
         }
 
-        // ==================== AUTHENTICATION ====================
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
-                window.location.href = '/';
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', async () => {
+            const authenticated = await checkAuth();
+            if (authenticated) {
+                await loadArtists();
             }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/';
-                return false;
-            }
-            
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/';
-                return false;
-            }
-            
-            // Load artists
-            loadArtists();
         });
 
         // Make functions global
