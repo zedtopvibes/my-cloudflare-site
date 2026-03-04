@@ -37,6 +37,8 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 10px;
+            width: 100%;
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
         
         .admin-header {
@@ -46,6 +48,7 @@
             margin-bottom: 15px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
         }
         
         .header-top {
@@ -102,7 +105,7 @@
             color: var(--primary-blue);
         }
         
-        /* Navigation Tabs */
+        /* Navigation Tabs - Scrollable but no horizontal scroll on body */
         .admin-tabs {
             display: flex;
             gap: 5px;
@@ -110,6 +113,7 @@
             padding: 5px 0;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            width: 100%;
         }
         
         .admin-tabs::-webkit-scrollbar {
@@ -137,6 +141,7 @@
             min-height: 40px !important;
             max-height: 40px !important;
             box-sizing: border-box;
+            flex-shrink: 0; /* Prevent tabs from shrinking */
         }
         
         .tab-btn i {
@@ -157,27 +162,31 @@
         .admin-content {
             background: var(--white);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
             min-height: 500px;
+            width: 100%;
+            overflow-x: hidden;
         }
         
         .content-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
+            width: 100%;
         }
         
         .content-header h2 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: var(--primary-dark);
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
         
         .content-header h2 i {
@@ -188,6 +197,7 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            width: 100%;
         }
         
         .search-box {
@@ -195,44 +205,46 @@
             align-items: center;
             background: var(--light-gray);
             border-radius: 8px;
-            padding: 5px 15px;
+            padding: 5px 12px;
             border: 1px solid #ddd;
-            min-width: 250px;
+            flex: 1;
+            min-width: 200px;
         }
         
         .search-box i {
             color: var(--primary-blue);
-            margin-right: 10px;
+            margin-right: 8px;
+            font-size: 0.9rem;
         }
         
         .search-box input {
             border: none;
             background: transparent;
-            padding: 10px 0;
+            padding: 8px 0;
             width: 100%;
             outline: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         
         .filter-select {
-            padding: 10px 15px;
+            padding: 8px 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
             background: var(--white);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
-            min-width: 150px;
+            min-width: 130px;
         }
         
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
+            gap: 6px;
+            padding: 8px 16px;
             border: none;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -268,78 +280,96 @@
         }
         
         .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.85rem;
+            padding: 5px 10px;
+            font-size: 0.8rem;
         }
         
-        /* Stats Cards */
+        /* Stats Cards - 2x2 Grid on Mobile */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
         }
         
         .stat-card {
             background: var(--light-gray);
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px 10px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .stat-icon {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: var(--primary-blue);
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .stat-info {
+            min-width: 0; /* Prevent overflow */
+            flex: 1;
         }
         
         .stat-info h3 {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             color: var(--gray);
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .stat-info .stat-number {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        /* Songs Table */
+        /* Songs Table - Horizontal Scroll Only Inside Container */
         .songs-table-container {
             overflow-x: auto;
             border-radius: 8px;
             border: 1px solid #eee;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
         }
         
         .songs-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            min-width: 700px; /* Allow table to be wider */
         }
         
         .songs-table th {
             background: var(--light-gray);
-            padding: 15px;
+            padding: 12px 10px;
             text-align: left;
             font-weight: 600;
             color: var(--primary-dark);
             border-bottom: 2px solid #ddd;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
         
         .songs-table td {
-            padding: 15px;
+            padding: 12px 10px;
             border-bottom: 1px solid #eee;
             vertical-align: middle;
+            font-size: 0.85rem;
         }
         
         .songs-table tr:hover td {
@@ -349,40 +379,50 @@
         .song-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         
         .song-thumb {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 6px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .song-details {
+            min-width: 0;
         }
         
         .song-details h4 {
-            font-size: 1rem;
-            margin-bottom: 3px;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
         }
         
         .song-details span {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: var(--gray);
         }
         
         .badge {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.65rem;
             font-weight: 600;
             background: var(--light-gray);
             color: var(--gray);
-            margin-right: 5px;
+            margin-right: 3px;
+            white-space: nowrap;
         }
         
         .badge.featured {
@@ -402,14 +442,14 @@
         
         .action-buttons {
             display: flex;
-            gap: 8px;
+            gap: 5px;
             flex-wrap: wrap;
         }
         
         .action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
             border: none;
             background: var(--light-gray);
             color: var(--gray);
@@ -418,6 +458,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            font-size: 0.85rem;
         }
         
         .action-btn:hover {
@@ -432,24 +473,25 @@
         
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 15px;
             color: #666;
         }
         
         .empty-state i {
-            font-size: 4rem;
+            font-size: 3rem;
             color: var(--primary-blue);
             margin-bottom: 15px;
             opacity: 0.3;
         }
         
         .empty-state h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
             color: var(--primary-dark);
         }
         
         .empty-state p {
+            font-size: 0.9rem;
             color: #999;
             margin-bottom: 20px;
         }
@@ -459,18 +501,19 @@
             display: flex;
             justify-content: center;
             gap: 5px;
-            margin-top: 25px;
+            margin-top: 20px;
             flex-wrap: wrap;
         }
         
         .page-btn {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border: 1px solid #ddd;
             border-radius: 6px;
             background: white;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 0.85rem;
         }
         
         .page-btn:hover {
@@ -500,16 +543,17 @@
         }
         
         .skeleton-row {
-            height: 70px;
-            margin-bottom: 10px;
+            height: 60px;
+            margin-bottom: 8px;
         }
         
         /* Toast Notification */
         .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
+            top: 10px;
+            right: 10px;
+            left: 10px;
+            padding: 12px 15px;
             border-radius: 8px;
             font-weight: 500;
             z-index: 2000;
@@ -518,6 +562,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 0.9rem;
         }
         
         .toast.success {
@@ -535,65 +580,111 @@
             color: white;
         }
         
-        /* Debug Panel */
-        .debug-panel {
-            background: #1e1e1e;
-            color: #00ff00;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            margin-top: 20px;
-            max-height: 200px;
-            overflow: auto;
-            display: none;
-        }
-        
-        .debug-panel pre {
-            margin: 0;
-            white-space: pre-wrap;
-        }
-        
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .search-section {
-                width: 100%;
-            }
-            
-            .search-box {
-                flex: 1;
-            }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+            overflow-y: auto;
         }
         
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal h3 {
+            margin-bottom: 15px;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+        
+        .modal .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .modal label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .modal input,
+        .modal select,
+        .modal textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .modal .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .modal .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+        }
+        
+        .modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        /* Tablet and up */
+        @media (min-width: 768px) {
+            .admin-container { padding: 20px; }
+            .admin-header { padding: 20px; }
+            .admin-content { padding: 20px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); } /* 4x1 on tablet/desktop */
+            .stat-card { padding: 20px; }
+            .stat-icon { width: 50px; height: 50px; font-size: 1.5rem; }
+            .stat-info h3 { font-size: 0.9rem; }
+            .stat-info .stat-number { font-size: 1.5rem; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+        }
+        
+        /* Small mobile fixes */
         @media (max-width: 480px) {
-            .admin-header { padding: 12px; }
             .header-top h1 { font-size: 1.1rem; }
             .user-info { padding: 5px 10px; font-size: 0.8rem; }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .content-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-            
-            .search-section {
-                flex-direction: column;
-            }
+            .user-info span { display: none; } /* Hide username, keep icon */
+            .search-section { flex-direction: column; }
+            .search-box { width: 100%; }
+            .filter-select { width: 100%; }
+            .content-header h2 .btn-sm { margin-left: 0 !important; margin-top: 5px; }
+            .stat-card { padding: 12px 8px; }
+            .stat-icon { width: 35px; height: 35px; font-size: 1rem; }
+            .stat-info h3 { font-size: 0.7rem; }
+            .stat-info .stat-number { font-size: 1rem; }
         }
     </style>
 </head>
@@ -627,11 +718,8 @@
             <div class="content-header">
                 <h2>
                     <i class="fas fa-music"></i> Songs Management
-                    <button onclick="loadSongs()" class="btn btn-secondary btn-sm" style="margin-left: 10px;">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                    <button onclick="toggleDebug()" class="btn btn-secondary btn-sm" style="margin-left: 5px;">
-                        <i class="fas fa-bug"></i> Debug
+                    <button onclick="loadSongs()" class="btn btn-secondary btn-sm" style="margin-left: 5px;">
+                        <i class="fas fa-sync-alt"></i>
                     </button>
                 </h2>
                 <div class="search-section">
@@ -643,17 +731,15 @@
                         <option value="">All Genres</option>
                     </select>
                     <select id="sortFilter" class="filter-select">
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
                         <option value="plays">Most Plays</option>
-                        <option value="downloads">Most Downloads</option>
-                        <option value="views">Most Views</option>
                         <option value="title">Title A-Z</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Stats Cards -->
+            <!-- Stats Cards - 2x2 on mobile, 4x1 on desktop -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-music"></i></div>
@@ -695,70 +781,64 @@
 
             <!-- Pagination -->
             <div class="pagination" id="pagination"></div>
-            
-            <!-- Debug Panel -->
-            <div id="debugPanel" class="debug-panel">
-                <pre id="debugContent">Click Debug button to see API responses</pre>
-            </div>
         </div>
     </div>
 
     <!-- Edit Song Modal -->
-    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
-        <div style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
-            <h3 style="margin-bottom: 20px; color: var(--primary-blue);">Edit Song</h3>
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Song</h3>
             <form id="editForm">
                 <input type="hidden" id="editId">
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Title *</label>
-                    <input type="text" id="editTitle" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;" required>
+                <div class="form-group">
+                    <label>Title *</label>
+                    <input type="text" id="editTitle" required>
                 </div>
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Artist</label>
-                    <input type="text" id="editArtist" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;" readonly disabled>
+                <div class="form-group">
+                    <label>Artist</label>
+                    <input type="text" id="editArtist" readonly disabled>
                 </div>
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Genre</label>
-                    <input type="text" id="editGenre" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                <div class="form-group">
+                    <label>Genre</label>
+                    <input type="text" id="editGenre">
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Duration (sec)</label>
-                        <input type="number" id="editDuration" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">BPM</label>
-                        <input type="number" id="editBpm" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                    </div>
+                <div class="form-group">
+                    <label>Duration (sec)</label>
+                    <input type="number" id="editDuration">
                 </div>
                 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Release Date</label>
-                    <input type="date" id="editReleaseDate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                <div class="form-group">
+                    <label>BPM</label>
+                    <input type="number" id="editBpm">
                 </div>
                 
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Description</label>
-                    <textarea id="editDescription" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
+                <div class="form-group">
+                    <label>Release Date</label>
+                    <input type="date" id="editReleaseDate">
                 </div>
                 
-                <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-                    <label style="display: flex; align-items: center; gap: 5px;">
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
                         <input type="checkbox" id="editExplicit"> Explicit
                     </label>
-                    <label style="display: flex; align-items: center; gap: 5px;">
+                    <label class="checkbox-label">
                         <input type="checkbox" id="editFeatured"> Featured
                     </label>
-                    <label style="display: flex; align-items: center; gap: 5px;">
+                    <label class="checkbox-label">
                         <input type="checkbox" id="editEditorPick"> Editor's Pick
                     </label>
                 </div>
                 
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <div class="modal-actions">
                     <button type="button" onclick="closeEditModal()" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
@@ -767,9 +847,9 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
-        <div style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px;">
-            <h3 style="margin-bottom: 15px; color: var(--error);">Confirm Delete</h3>
+    <div id="deleteModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="color: var(--error);">Confirm Delete</h3>
             <p style="margin-bottom: 25px;">Are you sure you want to delete "<span id="deleteSongTitle"></span>"? This action cannot be undone.</p>
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="closeDeleteModal()" class="btn btn-secondary">Cancel</button>
@@ -785,7 +865,6 @@
         let allSongs = [];
         let filteredSongs = [];
         let currentDeleteId = null;
-        let debugMode = false;
 
         // ==================== AUTH ====================
         function logout() {
@@ -813,23 +892,6 @@
             return true;
         }
 
-        // ==================== DEBUG ====================
-        window.toggleDebug = () => {
-            debugMode = !debugMode;
-            document.getElementById('debugPanel').style.display = debugMode ? 'block' : 'none';
-        };
-
-        function addDebug(message, data = null) {
-            if (!debugMode) return;
-            const debugEl = document.getElementById('debugContent');
-            const timestamp = new Date().toLocaleTimeString();
-            let text = `[${timestamp}] ${message}`;
-            if (data) {
-                text += '\n' + JSON.stringify(data, null, 2);
-            }
-            debugEl.textContent = text + '\n\n' + debugEl.textContent;
-        }
-
         // ==================== NOTIFICATION ====================
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
@@ -849,18 +911,11 @@
         async function loadSongs() {
             if (!checkAuth()) return;
             
-            addDebug('Loading songs...');
-            
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
-                addDebug(`GET /tracks response: ${response.status} ${response.statusText}`);
-                
                 if (!response.ok) throw new Error('Failed to load songs');
                 
-                const data = await response.json();
-                addDebug(`Received ${data.length} songs`, data.slice(0, 2));
-                
-                allSongs = data;
+                allSongs = await response.json();
                 filteredSongs = [...allSongs];
                 
                 updateStats();
@@ -869,7 +924,6 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                addDebug(`ERROR: ${error.message}`);
                 document.getElementById('songsTableContainer').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle"></i>
@@ -898,7 +952,6 @@
             const genres = [...new Set(allSongs.map(song => song.genre).filter(g => g))];
             const select = document.getElementById('genreFilter');
             
-            // Clear existing options except first
             while (select.options.length > 1) {
                 select.remove(1);
             }
@@ -924,17 +977,12 @@
                 return matchesSearch && matchesGenre;
             });
             
-            // Sort
             filteredSongs.sort((a, b) => {
                 switch(sort) {
                     case 'oldest':
                         return new Date(a.uploaded_at) - new Date(b.uploaded_at);
                     case 'plays':
                         return (b.plays || 0) - (a.plays || 0);
-                    case 'downloads':
-                        return (b.downloads || 0) - (a.downloads || 0);
-                    case 'views':
-                        return (b.views || 0) - (a.views || 0);
                     case 'title':
                         return (a.title || '').localeCompare(b.title || '');
                     default: // newest
@@ -978,7 +1026,6 @@
                                 <th>Artist</th>
                                 <th>Genre</th>
                                 <th>Stats</th>
-                                <th>Tags</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -986,11 +1033,6 @@
             `;
             
             pageSongs.forEach(song => {
-                const tags = [];
-                if (song.explicit === '1' || song.explicit === 1 || song.explicit === true) tags.push('<span class="badge explicit">Explicit</span>');
-                if (song.featured === '1' || song.featured === 1 || song.featured === true) tags.push('<span class="badge featured">Featured</span>');
-                if (song.editor_pick === '1' || song.editor_pick === 1 || song.editor_pick === true) tags.push('<span class="badge editor">Editor</span>');
-                
                 html += `
                     <tr>
                         <td>
@@ -1007,9 +1049,7 @@
                         <td>
                             <div><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</div>
                             <div><i class="fas fa-download"></i> ${formatNumber(song.downloads)}</div>
-                            <div><i class="fas fa-eye"></i> ${formatNumber(song.views)}</div>
                         </td>
-                        <td>${tags.join(' ')}</td>
                         <td>
                             <div class="action-buttons">
                                 <button class="action-btn" onclick="editSong(${song.id})" title="Edit">
@@ -1063,11 +1103,9 @@
         };
 
         // ==================== EDIT SONG ====================
-        window.editSong = async (id) => {
+        window.editSong = (id) => {
             const song = allSongs.find(s => s.id === id);
             if (!song) return;
-            
-            addDebug('Opening edit modal for song ID: ' + id, song);
             
             document.getElementById('editId').value = song.id;
             document.getElementById('editTitle').value = song.title || '';
@@ -1077,9 +1115,9 @@
             document.getElementById('editBpm').value = song.bpm || '';
             document.getElementById('editReleaseDate').value = song.release_date || '';
             document.getElementById('editDescription').value = song.description || '';
-            document.getElementById('editExplicit').checked = song.explicit === '1' || song.explicit === 1 || song.explicit === true;
-            document.getElementById('editFeatured').checked = song.featured === '1' || song.featured === 1 || song.featured === true;
-            document.getElementById('editEditorPick').checked = song.editor_pick === '1' || song.editor_pick === 1 || song.editor_pick === true;
+            document.getElementById('editExplicit').checked = song.explicit === 1 || song.explicit === true;
+            document.getElementById('editFeatured').checked = song.featured === 1 || song.featured === true;
+            document.getElementById('editEditorPick').checked = song.editor_pick === 1 || song.editor_pick === true;
             
             document.getElementById('editModal').style.display = 'flex';
         };
@@ -1105,52 +1143,28 @@
                 editor_pick: document.getElementById('editEditorPick').checked
             };
             
-            addDebug('Updating song ID: ' + id, updatedSong);
-            
-            // Show loading state
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Saving...';
             submitBtn.disabled = true;
             
             try {
-                // First try the admin endpoint
-                const endpoint = `${API_BASE}/admin/tracks/${id}`;
-                addDebug(`Sending PUT to ${endpoint}`);
-                
-                const response = await fetch(endpoint, {
+                const response = await fetch(`${API_BASE}/admin/tracks/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updatedSong)
                 });
-                
-                addDebug(`Response status: ${response.status}`);
-                
-                let responseData;
-                try {
-                    responseData = await response.json();
-                    addDebug('Response data:', responseData);
-                } catch {
-                    const text = await response.text();
-                    addDebug('Response text:', text);
-                }
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
                 
                 closeEditModal();
-                
-                // Wait a moment then reload
-                setTimeout(async () => {
-                    await loadSongs();
-                }, 500);
-                
+                await loadSongs();
                 showToast('Song updated successfully!', 'success');
                 
             } catch (error) {
                 console.error('Error updating song:', error);
-                addDebug(`ERROR: ${error.message}`);
                 showToast('Failed to update song: ' + error.message, 'error');
             } finally {
                 submitBtn.textContent = originalText;
@@ -1173,31 +1187,21 @@
         window.confirmDelete = async () => {
             if (!currentDeleteId) return;
             
-            addDebug('Deleting song ID: ' + currentDeleteId);
-            
             try {
                 const response = await fetch(`${API_BASE}/delete/${currentDeleteId}`, {
                     method: 'DELETE'
                 });
-                
-                addDebug(`Delete response: ${response.status}`);
                 
                 if (!response.ok) {
                     throw new Error('Delete failed');
                 }
                 
                 closeDeleteModal();
-                
-                // Reload after delete
-                setTimeout(async () => {
-                    await loadSongs();
-                }, 500);
-                
+                await loadSongs();
                 showToast('Song deleted successfully!', 'success');
                 
             } catch (error) {
                 console.error('Error deleting song:', error);
-                addDebug(`ERROR: ${error.message}`);
                 showToast('Failed to delete song: ' + error.message, 'error');
             }
         };
