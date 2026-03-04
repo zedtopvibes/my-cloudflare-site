@@ -31,6 +31,8 @@
             background: var(--light-gray);
             min-height: 100vh;
             color: #333;
+            overflow-x: hidden; /* Kill horizontal scroll on body */
+            width: 100%;
         }
         
         .admin-container {
@@ -301,6 +303,7 @@
             align-items: center;
             gap: 12px;
             border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
         }
         
         .stat-icon {
@@ -339,13 +342,106 @@
             text-overflow: ellipsis;
         }
         
-        /* Songs Table - Horizontal Scroll Only Inside Container */
+        /* Mobile Card View for Songs (replaces table on mobile) */
+        .songs-mobile-grid {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .song-mobile-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #eee;
+            width: 100%;
+        }
+        
+        .song-mobile-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .song-mobile-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        
+        .song-mobile-info {
+            flex: 1;
+        }
+        
+        .song-mobile-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .song-mobile-artist {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .song-mobile-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .song-mobile-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .song-mobile-stat i {
+            color: var(--primary-blue);
+            width: 16px;
+        }
+        
+        .song-mobile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .song-mobile-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .song-mobile-actions .action-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        /* Songs Table - Hidden on mobile */
         .songs-table-container {
             overflow-x: auto;
             border-radius: 8px;
             border: 1px solid #eee;
             width: 100%;
             -webkit-overflow-scrolling: touch;
+            display: block;
         }
         
         .songs-table {
@@ -547,6 +643,12 @@
             margin-bottom: 8px;
         }
         
+        .skeleton-card {
+            height: 120px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+        }
+        
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -639,10 +741,48 @@
             font-family: 'Montserrat', sans-serif;
         }
         
+        /* Image Upload Styles */
+        .image-upload-area {
+            border: 2px dashed var(--primary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 15px;
+            background: var(--light-gray);
+            transition: all 0.3s;
+        }
+        
+        .image-upload-area:hover {
+            background: rgba(31, 111, 159, 0.05);
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .image-preview.has-image {
+            display: block;
+        }
+        
+        .remove-image {
+            color: var(--error);
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
         .modal .checkbox-group {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
+            margin: 15px 0;
         }
         
         .modal .checkbox-label {
@@ -659,12 +799,12 @@
             margin-top: 20px;
         }
         
-        /* Tablet and up */
+        /* Responsive Breakpoints */
         @media (min-width: 768px) {
             .admin-container { padding: 20px; }
             .admin-header { padding: 20px; }
             .admin-content { padding: 20px; }
-            .stats-grid { grid-template-columns: repeat(4, 1fr); } /* 4x1 on tablet/desktop */
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
             .stat-card { padding: 20px; }
             .stat-icon { width: 50px; height: 50px; font-size: 1.5rem; }
             .stat-info h3 { font-size: 0.9rem; }
@@ -672,11 +812,22 @@
             .toast { left: auto; right: 20px; min-width: 300px; }
         }
         
+        /* Mobile: Hide table, show cards */
+        @media (max-width: 767px) {
+            .songs-table-container {
+                display: none;
+            }
+            
+            .songs-mobile-grid {
+                display: flex;
+            }
+        }
+        
         /* Small mobile fixes */
         @media (max-width: 480px) {
             .header-top h1 { font-size: 1.1rem; }
             .user-info { padding: 5px 10px; font-size: 0.8rem; }
-            .user-info span { display: none; } /* Hide username, keep icon */
+            .user-info span { display: none; }
             .search-section { flex-direction: column; }
             .search-box { width: 100%; }
             .filter-select { width: 100%; }
@@ -739,7 +890,7 @@
                 </div>
             </div>
 
-            <!-- Stats Cards - 2x2 on mobile, 4x1 on desktop -->
+            <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-music"></i></div>
@@ -771,7 +922,7 @@
                 </div>
             </div>
 
-            <!-- Songs Table -->
+            <!-- Songs Table (Desktop) -->
             <div id="songsTableContainer">
                 <!-- Loading Skeletons -->
                 <div class="skeleton-row"></div>
@@ -779,17 +930,33 @@
                 <div class="skeleton-row"></div>
             </div>
 
+            <!-- Songs Mobile Grid -->
+            <div id="songsMobileGrid" class="songs-mobile-grid"></div>
+
             <!-- Pagination -->
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
 
-    <!-- Edit Song Modal -->
+    <!-- Edit Song Modal with Image Upload -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <h3>Edit Song</h3>
             <form id="editForm">
                 <input type="hidden" id="editId">
+                
+                <!-- Image Upload Section -->
+                <div class="form-group">
+                    <label>Song Artwork</label>
+                    <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 10px; display: block;"></i>
+                        <div>Click to upload or drag image</div>
+                        <div style="font-size: 0.8rem; color: var(--gray); margin-top: 5px;">PNG, JPG, WEBP (max 2MB)</div>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <img id="imagePreview" class="image-preview" src="#" alt="Preview">
+                    <a href="#" onclick="removeImage(event)" class="remove-image" style="display: none;">Remove image</a>
+                </div>
                 
                 <div class="form-group">
                     <label>Title *</label>
@@ -865,6 +1032,7 @@
         let allSongs = [];
         let filteredSongs = [];
         let currentDeleteId = null;
+        let selectedImageFile = null;
 
         // ==================== AUTH ====================
         function logout() {
@@ -994,12 +1162,13 @@
             renderSongs();
         }
 
-        // ==================== RENDER SONGS ====================
+        // ==================== RENDER SONGS (Desktop Table + Mobile Cards) ====================
         function renderSongs() {
-            const container = document.getElementById('songsTableContainer');
+            const tableContainer = document.getElementById('songsTableContainer');
+            const mobileContainer = document.getElementById('songsMobileGrid');
             
             if (filteredSongs.length === 0) {
-                container.innerHTML = `
+                const emptyHtml = `
                     <div class="empty-state">
                         <i class="fas fa-music"></i>
                         <h3>No Songs Found</h3>
@@ -1009,6 +1178,8 @@
                         </a>
                     </div>
                 `;
+                tableContainer.innerHTML = emptyHtml;
+                mobileContainer.innerHTML = '';
                 document.getElementById('pagination').innerHTML = '';
                 return;
             }
@@ -1017,6 +1188,16 @@
             const end = start + itemsPerPage;
             const pageSongs = filteredSongs.slice(start, end);
             
+            // Desktop Table
+            renderDesktopTable(tableContainer, pageSongs);
+            
+            // Mobile Cards
+            renderMobileCards(mobileContainer, pageSongs);
+            
+            renderPagination();
+        }
+
+        function renderDesktopTable(container, songs) {
             let html = `
                 <div class="songs-table-container">
                     <table class="songs-table">
@@ -1032,12 +1213,14 @@
                         <tbody>
             `;
             
-            pageSongs.forEach(song => {
+            songs.forEach(song => {
                 html += `
                     <tr>
                         <td>
                             <div class="song-info">
-                                <div class="song-thumb"><i class="fas fa-music"></i></div>
+                                <div class="song-thumb">
+                                    ${song.artwork_url ? '<img src="' + song.artwork_url + '" style="width:100%; height:100%; object-fit:cover;">' : '<i class="fas fa-music"></i>'}
+                                </div>
                                 <div class="song-details">
                                     <h4>${escapeHtml(song.title) || 'Untitled'}</h4>
                                     <span>${formatDuration(song.duration)}</span>
@@ -1069,8 +1252,48 @@
             
             html += '</tbody></table></div>';
             container.innerHTML = html;
+        }
+
+        function renderMobileCards(container, songs) {
+            let html = '';
             
-            renderPagination();
+            songs.forEach(song => {
+                const tags = [];
+                if (song.explicit) tags.push('<span class="badge explicit">Explicit</span>');
+                if (song.featured) tags.push('<span class="badge featured">Featured</span>');
+                if (song.editor_pick) tags.push('<span class="badge editor">Editor</span>');
+                
+                html += `
+                    <div class="song-mobile-card">
+                        <div class="song-mobile-header">
+                            <div class="song-mobile-thumb">
+                                ${song.artwork_url ? '<img src="' + song.artwork_url + '" style="width:100%; height:100%; object-fit:cover;">' : '<i class="fas fa-music"></i>'}
+                            </div>
+                            <div class="song-mobile-info">
+                                <div class="song-mobile-title">${escapeHtml(song.title) || 'Untitled'}</div>
+                                <div class="song-mobile-artist">${escapeHtml(song.artist) || 'Unknown'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="song-mobile-details">
+                            <div class="song-mobile-stat"><i class="fas fa-clock"></i> ${formatDuration(song.duration)}</div>
+                            <div class="song-mobile-stat"><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</div>
+                            <div class="song-mobile-stat"><i class="fas fa-download"></i> ${formatNumber(song.downloads)}</div>
+                            <div class="song-mobile-stat"><i class="fas fa-eye"></i> ${formatNumber(song.views)}</div>
+                        </div>
+                        
+                        ${tags.length > 0 ? `<div class="song-mobile-tags">${tags.join(' ')}</div>` : ''}
+                        
+                        <div class="song-mobile-actions">
+                            <button class="action-btn" onclick="editSong(${song.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn" onclick="previewSong('${song.slug}')" title="Preview"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn delete" onclick="showDeleteModal(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
         }
 
         // ==================== ESCAPE HTML ====================
@@ -1102,6 +1325,41 @@
             renderSongs();
         };
 
+        // ==================== IMAGE HANDLING ====================
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file', 'error');
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image must be less than 2MB', 'error');
+                return;
+            }
+            
+            selectedImageFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('imagePreview');
+                preview.src = e.target.result;
+                preview.classList.add('has-image');
+                document.querySelector('.remove-image').style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        window.removeImage = function(e) {
+            e.preventDefault();
+            selectedImageFile = null;
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imagePreview').classList.remove('has-image');
+            document.querySelector('.remove-image').style.display = 'none';
+        };
+
         // ==================== EDIT SONG ====================
         window.editSong = (id) => {
             const song = allSongs.find(s => s.id === id);
@@ -1119,17 +1377,48 @@
             document.getElementById('editFeatured').checked = song.featured === 1 || song.featured === true;
             document.getElementById('editEditorPick').checked = song.editor_pick === 1 || song.editor_pick === true;
             
+            // Show existing image if any
+            if (song.artwork_url) {
+                document.getElementById('imagePreview').src = song.artwork_url;
+                document.getElementById('imagePreview').classList.add('has-image');
+                document.querySelector('.remove-image').style.display = 'inline-block';
+            } else {
+                document.getElementById('imagePreview').classList.remove('has-image');
+                document.querySelector('.remove-image').style.display = 'none';
+            }
+            
+            selectedImageFile = null;
+            document.getElementById('imageInput').value = '';
+            
             document.getElementById('editModal').style.display = 'flex';
         };
 
         window.closeEditModal = () => {
             document.getElementById('editModal').style.display = 'none';
+            selectedImageFile = null;
+            document.getElementById('imageInput').value = '';
         };
 
         document.getElementById('editForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const id = document.getElementById('editId').value;
+            
+            // First upload image if selected
+            if (selectedImageFile) {
+                const imageFormData = new FormData();
+                imageFormData.append('image', selectedImageFile);
+                imageFormData.append('track_id', id);
+                
+                try {
+                    await fetch(`${API_BASE}/admin/tracks/${id}/image`, {
+                        method: 'POST',
+                        body: imageFormData
+                    });
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                }
+            }
             
             const updatedSong = {
                 title: document.getElementById('editTitle').value,
