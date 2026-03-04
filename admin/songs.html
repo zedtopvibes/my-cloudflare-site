@@ -535,6 +535,25 @@
             color: white;
         }
         
+        /* Debug Panel */
+        .debug-panel {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow: auto;
+            display: none;
+        }
+        
+        .debug-panel pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -606,7 +625,15 @@
         <div class="admin-content">
             <!-- Header with Search -->
             <div class="content-header">
-                <h2><i class="fas fa-music"></i> Songs Management</h2>
+                <h2>
+                    <i class="fas fa-music"></i> Songs Management
+                    <button onclick="loadSongs()" class="btn btn-secondary btn-sm" style="margin-left: 10px;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button onclick="toggleDebug()" class="btn btn-secondary btn-sm" style="margin-left: 5px;">
+                        <i class="fas fa-bug"></i> Debug
+                    </button>
+                </h2>
                 <div class="search-section">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
@@ -668,6 +695,11 @@
 
             <!-- Pagination -->
             <div class="pagination" id="pagination"></div>
+            
+            <!-- Debug Panel -->
+            <div id="debugPanel" class="debug-panel">
+                <pre id="debugContent">Click Debug button to see API responses</pre>
+            </div>
         </div>
     </div>
 
@@ -753,6 +785,7 @@
         let allSongs = [];
         let filteredSongs = [];
         let currentDeleteId = null;
+        let debugMode = false;
 
         // ==================== AUTH ====================
         function logout() {
@@ -780,6 +813,23 @@
             return true;
         }
 
+        // ==================== DEBUG ====================
+        window.toggleDebug = () => {
+            debugMode = !debugMode;
+            document.getElementById('debugPanel').style.display = debugMode ? 'block' : 'none';
+        };
+
+        function addDebug(message, data = null) {
+            if (!debugMode) return;
+            const debugEl = document.getElementById('debugContent');
+            const timestamp = new Date().toLocaleTimeString();
+            let text = `[${timestamp}] ${message}`;
+            if (data) {
+                text += '\n' + JSON.stringify(data, null, 2);
+            }
+            debugEl.textContent = text + '\n\n' + debugEl.textContent;
+        }
+
         // ==================== NOTIFICATION ====================
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
@@ -799,11 +849,18 @@
         async function loadSongs() {
             if (!checkAuth()) return;
             
+            addDebug('Loading songs...');
+            
             try {
                 const response = await fetch(`${API_BASE}/tracks`);
+                addDebug(`GET /tracks response: ${response.status} ${response.statusText}`);
+                
                 if (!response.ok) throw new Error('Failed to load songs');
                 
-                allSongs = await response.json();
+                const data = await response.json();
+                addDebug(`Received ${data.length} songs`, data.slice(0, 2));
+                
+                allSongs = data;
                 filteredSongs = [...allSongs];
                 
                 updateStats();
@@ -812,6 +869,7 @@
                 
             } catch (error) {
                 console.error('Error:', error);
+                addDebug(`ERROR: ${error.message}`);
                 document.getElementById('songsTableContainer').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle"></i>
@@ -1009,6 +1067,8 @@
             const song = allSongs.find(s => s.id === id);
             if (!song) return;
             
+            addDebug('Opening edit modal for song ID: ' + id, song);
+            
             document.getElementById('editId').value = song.id;
             document.getElementById('editTitle').value = song.title || '';
             document.getElementById('editArtist').value = song.artist || '';
@@ -1045,6 +1105,8 @@
                 editor_pick: document.getElementById('editEditorPick').checked
             };
             
+            addDebug('Updating song ID: ' + id, updatedSong);
+            
             // Show loading state
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
@@ -1052,40 +1114,43 @@
             submitBtn.disabled = true;
             
             try {
-                // Try multiple possible endpoints
-                let response;
-                let endpoints = [
-                    `${API_BASE}/admin/tracks/${id}`,
-                    `${API_BASE}/tracks/${id}`,
-                    `${API_BASE}/update/track/${id}`
-                ];
+                // First try the admin endpoint
+                const endpoint = `${API_BASE}/admin/tracks/${id}`;
+                addDebug(`Sending PUT to ${endpoint}`);
                 
-                for (const endpoint of endpoints) {
-                    try {
-                        response = await fetch(endpoint, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(updatedSong)
-                        });
-                        if (response.ok) break;
-                    } catch (e) {
-                        continue;
-                    }
+                const response = await fetch(endpoint, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedSong)
+                });
+                
+                addDebug(`Response status: ${response.status}`);
+                
+                let responseData;
+                try {
+                    responseData = await response.json();
+                    addDebug('Response data:', responseData);
+                } catch {
+                    const text = await response.text();
+                    addDebug('Response text:', text);
                 }
                 
-                if (!response || !response.ok) {
-                    throw new Error('Could not update song on any endpoint');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
                 
                 closeEditModal();
                 
-                // Force reload all songs from server
-                await loadSongs();
+                // Wait a moment then reload
+                setTimeout(async () => {
+                    await loadSongs();
+                }, 500);
                 
                 showToast('Song updated successfully!', 'success');
                 
             } catch (error) {
                 console.error('Error updating song:', error);
+                addDebug(`ERROR: ${error.message}`);
                 showToast('Failed to update song: ' + error.message, 'error');
             } finally {
                 submitBtn.textContent = originalText;
@@ -1108,10 +1173,14 @@
         window.confirmDelete = async () => {
             if (!currentDeleteId) return;
             
+            addDebug('Deleting song ID: ' + currentDeleteId);
+            
             try {
                 const response = await fetch(`${API_BASE}/delete/${currentDeleteId}`, {
                     method: 'DELETE'
                 });
+                
+                addDebug(`Delete response: ${response.status}`);
                 
                 if (!response.ok) {
                     throw new Error('Delete failed');
@@ -1119,13 +1188,16 @@
                 
                 closeDeleteModal();
                 
-                // Force reload all songs from server
-                await loadSongs();
+                // Reload after delete
+                setTimeout(async () => {
+                    await loadSongs();
+                }, 500);
                 
                 showToast('Song deleted successfully!', 'success');
                 
             } catch (error) {
                 console.error('Error deleting song:', error);
+                addDebug(`ERROR: ${error.message}`);
                 showToast('Failed to delete song: ' + error.message, 'error');
             }
         };
@@ -1154,15 +1226,6 @@
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('genreFilter').addEventListener('change', applyFilters);
         document.getElementById('sortFilter').addEventListener('change', applyFilters);
-
-        // ==================== REFRESH BUTTON ====================
-        // Add a refresh button to the header
-        const refreshBtn = document.createElement('button');
-        refreshBtn.className = 'btn btn-secondary btn-sm';
-        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
-        refreshBtn.onclick = loadSongs;
-        refreshBtn.style.marginLeft = '10px';
-        document.querySelector('.content-header h2').appendChild(refreshBtn);
 
         // ==================== INIT ====================
         document.addEventListener('DOMContentLoaded', () => {
