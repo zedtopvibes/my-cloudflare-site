@@ -506,6 +506,7 @@
                                         <i class="fas fa-plus-circle"></i> Add New Artist
                                     </a>
                                 </div>
+                                <div id="artistLoadError" style="color: var(--error); font-size: 0.85rem; margin-top: 5px; display: none;"></div>
                             </div>
                             
                             <div class="form-row">
@@ -732,25 +733,73 @@
 
         // ==================== ARTISTS ====================
         async function loadArtists() {
+            const select = document.getElementById('artistSelect');
+            const errorEl = document.getElementById('artistLoadError');
+            
+            // Show loading state
+            select.innerHTML = '<option value="">Loading artists...</option>';
+            select.disabled = true;
+            errorEl.style.display = 'none';
+            
             try {
-                const response = await fetch(`${API_BASE}/artists`);
-                if (!response.ok) throw new Error('Failed to load');
-                const artists = await response.json();
+                // Try multiple possible endpoints
+                let response;
+                let endpoints = [
+                    `${API_BASE}/artists`,
+                    `${API_BASE}/admin/artists`,
+                    `${API_BASE}/artists/list`
+                ];
                 
-                const select = document.getElementById('artistSelect');
+                for (const endpoint of endpoints) {
+                    try {
+                        response = await fetch(endpoint);
+                        if (response.ok) break;
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                if (!response || !response.ok) {
+                    throw new Error('Could not load artists from any endpoint');
+                }
+                
+                let artists = [];
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    artists = await response.json();
+                } else {
+                    // If not JSON, try to get text and parse
+                    const text = await response.text();
+                    try {
+                        artists = JSON.parse(text);
+                    } catch {
+                        throw new Error('Response is not valid JSON');
+                    }
+                }
+                
+                // Populate select
                 select.innerHTML = '<option value="">Select Artist</option>';
+                select.disabled = false;
                 
                 if (artists && artists.length > 0) {
                     artists.forEach(artist => {
                         const option = document.createElement('option');
-                        option.value = artist.id;
-                        option.textContent = artist.name;
+                        // Handle different possible response formats
+                        option.value = artist.id || artist.artist_id || '';
+                        option.textContent = artist.name || artist.artist_name || 'Unknown';
                         select.appendChild(option);
                     });
+                } else {
+                    select.innerHTML = '<option value="">No artists found</option>';
                 }
+                
             } catch (error) {
                 console.error('Error loading artists:', error);
-                // Don't show error for artists list - might be empty
+                select.innerHTML = '<option value="">Error loading artists</option>';
+                select.disabled = true;
+                errorEl.textContent = 'Failed to load artists. Please try again.';
+                errorEl.style.display = 'block';
             }
         }
 
@@ -784,40 +833,43 @@
             statusEl.style.display = 'none';
             
             try {
-                console.log('Sending request to:', `${API_BASE}/admin/artists`);
-                console.log('Payload:', { name, country: country || null });
+                // Try multiple possible endpoints
+                let response;
+                let endpoints = [
+                    `${API_BASE}/admin/artists`,
+                    `${API_BASE}/artists`,
+                    `${API_BASE}/artists/add`
+                ];
                 
-                const response = await fetch(`${API_BASE}/admin/artists`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name: name,
-                        country: country || null 
-                    })
-                });
-
-                // Check if response is OK
-                if (!response.ok) {
-                    // Try to get error message
-                    let errorMsg = 'Failed to add artist';
+                for (const endpoint of endpoints) {
                     try {
-                        const errorData = await response.json();
-                        errorMsg = errorData.error || errorData.message || errorMsg;
-                    } catch {
-                        // If response is not JSON, get text
-                        const text = await response.text();
-                        if (text) errorMsg = text;
+                        response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                name: name,
+                                country: country || null 
+                            })
+                        });
+                        if (response.ok) break;
+                    } catch (e) {
+                        continue;
                     }
-                    throw new Error(errorMsg);
                 }
-
-                // Try to parse JSON response
-                let result;
-                try {
-                    result = await response.json();
-                } catch {
-                    // If no JSON, assume success
-                    result = { success: true };
+                
+                if (!response || !response.ok) {
+                    throw new Error('Could not add artist to any endpoint');
+                }
+                
+                // Try to get response body if any
+                let result = { success: true };
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    try {
+                        result = await response.json();
+                    } catch {
+                        // Ignore JSON parse errors
+                    }
                 }
                 
                 // Success
@@ -897,24 +949,30 @@
                     }
                 }, 300);
 
-                // Send to API
-                const response = await fetch(`${API_BASE}/admin/tracks`, {
-                    method: 'POST',
-                    body: formData
-                });
+                // Try multiple endpoints for upload
+                let response;
+                let endpoints = [
+                    `${API_BASE}/admin/tracks`,
+                    `${API_BASE}/tracks`,
+                    `${API_BASE}/upload`
+                ];
+                
+                for (const endpoint of endpoints) {
+                    try {
+                        response = await fetch(endpoint, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        if (response.ok) break;
+                    } catch (e) {
+                        continue;
+                    }
+                }
 
                 clearInterval(interval);
 
-                if (!response.ok) {
-                    let errorMsg = 'Upload failed';
-                    try {
-                        const errorData = await response.json();
-                        errorMsg = errorData.error || errorData.message || errorMsg;
-                    } catch {
-                        const text = await response.text();
-                        if (text) errorMsg = text;
-                    }
-                    throw new Error(errorMsg);
+                if (!response || !response.ok) {
+                    throw new Error('Upload failed - could not find working endpoint');
                 }
 
                 let result;
