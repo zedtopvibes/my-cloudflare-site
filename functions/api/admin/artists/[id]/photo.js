@@ -1,75 +1,66 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
   
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers });
-  }
-
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-      status: 405, 
-      headers: { ...headers, 'Content-Type': 'application/json' }
-    });
-  }
-
   try {
-    const artistId = params.id;
-    const formData = await request.formData();
-    const photo = formData.get('photo');
+    // The filename from the URL might include 'artists/' prefix
+    let filename = params.filename;
+    
+    console.log('Serving image:', filename);
 
-    if (!photo) {
-      return new Response(JSON.stringify({ error: 'No photo uploaded' }), { 
-        status: 400, 
-        headers: { ...headers, 'Content-Type': 'application/json' }
-      });
+    // If the filename doesn't start with 'artists/', add it
+    // This handles both old and new URLs
+    if (!filename.startsWith('artists/')) {
+      filename = `artists/${filename}`;
     }
-
-    // Check if artist exists
-    const artist = await env.DB.prepare(
-      'SELECT slug FROM artists WHERE id = ?'
-    ).bind(artistId).first();
-
-    if (!artist) {
-      return new Response(JSON.stringify({ error: 'Artist not found' }), { 
-        status: 404, 
-        headers: { ...headers, 'Content-Type': 'application/json' }
-      });
+    
+    // Get the image from R2
+    const object = await env.AUDIO.get(filename);
+    
+    if (!object) {
+      console.log('Image not found:', filename);
+      
+      // Try without the artists/ prefix as fallback
+      if (filename.startsWith('artists/')) {
+        const fallbackFilename = filename.replace('artists/', '');
+        const fallbackObject = await env.AUDIO.get(fallbackFilename);
+        
+        if (fallbackObject) {
+          console.log('Found with fallback:', fallbackFilename);
+          const contentType = fallbackObject.httpMetadata?.contentType || 
+                             (fallbackFilename.endsWith('.png') ? 'image/png' : 
+                              fallbackFilename.endsWith('.jpg') || fallbackFilename.endsWith('.jpeg') ? 'image/jpeg' : 
+                              fallbackFilename.endsWith('.webp') ? 'image/webp' : 'image/jpeg');
+          
+          return new Response(fallbackObject.body, {
+            headers: {
+              'Content-Type': contentType,
+              'Cache-Control': 'public, max-age=31536000',
+              'Access-Control-Allow-Origin': '*'
+            }
+          });
+        }
+      }
+      
+      return new Response('Image not found', { status: 404 });
     }
-
-    // Generate filename
-    const extension = photo.name.split('.').pop();
-    const filename = `artists/${artist.slug}-${Date.now()}.${extension}`;
-
-    // Upload to R2 using AUDIO binding
-    await env.AUDIO.put(filename, await photo.arrayBuffer(), {
-      httpMetadata: { contentType: photo.type }
+    
+    // Determine content type
+    const contentType = object.httpMetadata?.contentType || 
+                       (filename.endsWith('.png') ? 'image/png' : 
+                        filename.endsWith('.jpg') || filename.endsWith('.jpeg') ? 'image/jpeg' : 
+                        filename.endsWith('.webp') ? 'image/webp' : 'image/jpeg');
+    
+    // Return the image
+    return new Response(object.body, {
+      headers: {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=31536000',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
-
-    // Use the serve endpoint URL (only ONE declaration)
-    const imageUrl = `/api/artist-image/${filename}`;
-
-    // Update database with image URL
-    await env.DB.prepare(
-      'UPDATE artists SET image_url = ? WHERE id = ?'
-    ).bind(imageUrl, artistId).run();
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      image_url: imageUrl,
-      message: 'Photo uploaded successfully'
-    }), { headers: { ...headers, 'Content-Type': 'application/json' } });
-
+    
   } catch (error) {
-    console.error('Error uploading photo:', error);
-    return new Response(JSON.stringify({ error: error.message }), { 
-      status: 500, 
-      headers: { ...headers, 'Content-Type': 'application/json' }
-    });
+    console.error('Error serving image:', error);
+    return new Response('Error loading image: ' + error.message, { status: 500 });
   }
 }
