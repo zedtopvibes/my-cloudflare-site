@@ -269,7 +269,7 @@
             font-size: 0.8rem;
         }
         
-        /* Stats Cards - More Compact */
+        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -323,7 +323,7 @@
             text-overflow: ellipsis;
         }
         
-        /* Artists Grid - More Compact Cards */
+        /* Artists Grid */
         .artists-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -359,12 +359,14 @@
             flex-shrink: 0;
             position: relative;
             cursor: pointer;
+            overflow: hidden;
         }
         
         .artist-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
         
         .artist-avatar .avatar-upload {
@@ -385,6 +387,7 @@
             opacity: 0;
             transition: opacity 0.2s;
             font-size: 0.9rem;
+            z-index: 10;
         }
         
         .artist-avatar:hover .avatar-upload {
@@ -960,6 +963,13 @@
                 if (!response.ok) throw new Error('Failed to load artists');
                 
                 allArtists = await response.json();
+                
+                // Log image URLs for debugging
+                console.log('Artists loaded:', allArtists.map(a => ({ 
+                    name: a.name, 
+                    image_url: a.image_url 
+                })));
+                
                 updateStats();
                 renderArtists();
                 
@@ -1016,11 +1026,16 @@
             const end = start + itemsPerPage;
             const pageArtists = filtered.slice(start, end);
             
-            container.innerHTML = pageArtists.map(artist => `
+            container.innerHTML = pageArtists.map(artist => {
+                // Handle image URL - ensure it's absolute if needed
+                let imageUrl = artist.image_url || '';
+                
+                return `
                 <div class="artist-card">
                     <div class="artist-avatar" onclick="openPhotoModal(${artist.id})">
-                        ${artist.image_url 
-                            ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">`
+                        ${imageUrl ? 
+                            `<img src="${imageUrl}" alt="${escapeHtml(artist.name)}" 
+                                  onerror="this.onerror=null; this.style.display='none'; this.parentNode.innerHTML='<i class=\'fas fa-user\'></i>';">` 
                             : `<i class="fas fa-user"></i>`
                         }
                         <div class="avatar-upload" title="Upload photo">
@@ -1068,7 +1083,7 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
             
             renderPagination(totalPages);
         }
