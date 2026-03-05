@@ -6,7 +6,7 @@
     <title>Artists - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,9 +14,7 @@
         :root {
             --primary-blue: #1f6f9f;
             --primary-light: #2f8ed0;
-            --primary-lighter: #70c8ff;
             --primary-dark: #1f4c73;
-            --dark: #1a1a1a;
             --gray: #666;
             --light-gray: #f0f2f5;
             --white: #ffffff;
@@ -29,7 +27,6 @@
             font-family: 'Montserrat', sans-serif;
             background: var(--light-gray);
             min-height: 100vh;
-            color: #333;
         }
         
         .admin-container {
@@ -44,7 +41,6 @@
             padding: 15px 20px;
             margin-bottom: 20px;
             box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .header-top {
@@ -71,19 +67,10 @@
             border-radius: 30px;
         }
         
-        .logout-btn {
-            color: var(--gray);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        
         .admin-tabs {
             display: flex;
             gap: 5px;
             overflow-x: auto;
-            padding-bottom: 5px;
         }
         
         .tab-btn {
@@ -99,11 +86,6 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-        }
-        
-        .tab-btn:hover {
-            background: #f0f0f0;
-            color: var(--primary-blue);
         }
         
         .tab-btn.active {
@@ -125,20 +107,6 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
-        }
-        
-        .content-header h2 {
-            font-size: 1.2rem;
-            color: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .search-section {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
         }
         
         .search-box {
@@ -182,54 +150,45 @@
             color: white;
         }
         
-        .btn-primary:hover {
-            background: var(--primary-light);
+        /* Ultra Compact Artist List */
+        .artists-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         
-        .btn-secondary {
-            background: var(--light-gray);
-            color: #333;
-            border: 1px solid #ddd;
-        }
-        
-        /* Compact Artists Grid */
-        .artists-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 12px;
-        }
-        
-        .artist-card {
+        .artist-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
             background: var(--white);
             border: 1px solid #eee;
             border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
             transition: all 0.2s;
-            box-shadow: var(--shadow);
-            height: 70px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
         }
         
-        .artist-card:hover {
+        .artist-row:hover {
             border-color: var(--primary-blue);
-            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
-            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(31, 111, 159, 0.1);
+            transform: translateX(2px);
         }
         
         .artist-avatar {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 6px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.2rem;
-            flex-shrink: 0;
+            font-size: 1rem;
+            margin-right: 12px;
             overflow: hidden;
+            flex-shrink: 0;
         }
         
         .artist-avatar img {
@@ -238,29 +197,31 @@
             object-fit: cover;
         }
         
-        .artist-info {
+        .artist-row-info {
             flex: 1;
-            min-width: 0;
-        }
-        
-        .artist-name-row {
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 4px;
+            gap: 15px;
+            min-width: 0;
         }
         
         .artist-name {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--primary-dark);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            min-width: 150px;
+        }
+        
+        .artist-badges {
+            display: flex;
+            gap: 4px;
         }
         
         .badge {
-            padding: 2px 5px;
+            padding: 2px 6px;
             border-radius: 4px;
             font-size: 0.55rem;
             font-weight: 600;
@@ -278,53 +239,31 @@
             border: 1px solid #28a745;
         }
         
-        .artist-meta {
+        .artist-stats {
             display: flex;
-            gap: 12px;
-            font-size: 0.7rem;
+            gap: 15px;
+            font-size: 0.75rem;
             color: var(--gray);
         }
         
-        .artist-meta span {
+        .artist-stats span {
             display: flex;
             align-items: center;
-            gap: 3px;
-        }
-        
-        .artist-meta i {
-            color: var(--primary-blue);
-            font-size: 0.65rem;
-        }
-        
-        .artist-actions {
-            display: flex;
             gap: 4px;
         }
         
-        .action-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 4px;
-            border: none;
-            background: var(--light-gray);
+        .artist-stats i {
+            color: var(--primary-blue);
+            width: 14px;
+        }
+        
+        .artist-country {
+            font-size: 0.75rem;
             color: var(--gray);
-            cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            transition: all 0.2s;
-            text-decoration: none;
-        }
-        
-        .action-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .action-btn.delete:hover {
-            background: var(--error);
-            color: white;
+            gap: 4px;
+            white-space: nowrap;
         }
         
         .pagination {
@@ -332,7 +271,6 @@
             justify-content: center;
             gap: 5px;
             margin-top: 20px;
-            flex-wrap: wrap;
         }
         
         .page-btn {
@@ -350,39 +288,14 @@
             border-color: var(--primary-blue);
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            grid-column: 1 / -1;
-        }
-        
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-        }
-        
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--error); }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
         @media (max-width: 768px) {
-            .artists-grid {
-                grid-template-columns: 1fr;
-            }
-            .artist-card {
-                height: auto;
+            .artist-row-info {
                 flex-wrap: wrap;
+                gap: 8px;
+            }
+            .artist-stats {
+                flex-wrap: wrap;
+                gap: 8px;
             }
         }
     </style>
@@ -406,36 +319,27 @@
                 <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
                 <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="/admin/artists" class="tab-btn active"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/artists/index.html" class="tab-btn active"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
             </div>
         </div>
         
         <div class="admin-content">
             <div class="content-header">
-                <h2>
-                    <i class="fas fa-microphone"></i> Artists
-                    <button onclick="loadArtists()" class="btn btn-secondary btn-sm" style="margin-left: 5px;">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </h2>
-                <div class="search-section">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search artists..." onkeyup="searchArtists()">
-                    </div>
-                    <a href="edit.html" class="btn btn-primary">
-                        <i class="fas fa-plus-circle"></i> Add Artist
-                    </a>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search artists..." onkeyup="searchArtists()">
                 </div>
+                <a href="/admin/artists/edit.html" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i> Add Artist
+                </a>
             </div>
 
-            <!-- Artists Grid -->
-            <div id="artistsGrid" class="artists-grid">
+            <!-- Artists List -->
+            <div id="artistsList" class="artists-list">
                 <!-- Loading skeletons -->
-                <div class="artist-card" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); animation: loading 1.5s infinite;"></div>
-                <div class="artist-card" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); animation: loading 1.5s infinite;"></div>
-                <div class="artist-card" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); animation: loading 1.5s infinite;"></div>
+                <div class="artist-row" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); animation: loading 1.5s infinite; height: 56px;"></div>
+                <div class="artist-row" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); animation: loading 1.5s infinite; height: 56px;"></div>
             </div>
 
             <!-- Pagination -->
@@ -459,48 +363,39 @@
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            if (!isLoggedIn) {
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            return true;
-        }
-
-        function showToast(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            if (!isLoggedIn) window.location.href = '/admin/login.html';
+            return isLoggedIn;
         }
 
         async function loadArtists() {
             if (!checkAuth()) return;
             
             try {
-                const res = await fetch(`${API_BASE}/admin/artists`);
-                allArtists = await res.json();
+                const [artistsRes, tracksRes] = await Promise.all([
+                    fetch(`${API_BASE}/admin/artists`),
+                    fetch(`${API_BASE}/tracks`)
+                ]);
                 
-                // Load tracks for counts
-                const tracksRes = await fetch(`${API_BASE}/tracks`);
+                allArtists = await artistsRes.json();
                 allTracks = await tracksRes.json();
                 
                 renderArtists();
             } catch (error) {
-                showToast('Failed to load artists', 'error');
+                console.error('Failed to load artists');
             }
         }
 
         function renderArtists() {
-            const container = document.getElementById('artistsGrid');
+            const container = document.getElementById('artistsList');
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
             let filtered = allArtists.filter(a => 
-                a.name.toLowerCase().includes(searchTerm)
+                a.name.toLowerCase().includes(searchTerm) ||
+                (a.country && a.country.toLowerCase().includes(searchTerm))
             );
             
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state">No artists found</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 40px;">No artists found</div>';
                 return;
             }
             
@@ -517,34 +412,30 @@
                     .reduce((sum, t) => sum + (t.plays || 0), 0);
                 
                 return `
-                <div class="artist-card">
+                <a href="/admin/artists/profile.html?id=${artist.id}" class="artist-row">
                     <div class="artist-avatar">
                         ${artist.image_url 
                             ? `<img src="${artist.image_url}" alt="${artist.name}">`
                             : `<i class="fas fa-user"></i>`
                         }
                     </div>
-                    <div class="artist-info">
-                        <div class="artist-name-row">
-                            <span class="artist-name">${escapeHtml(artist.name)}</span>
+                    <div class="artist-row-info">
+                        <span class="artist-name">${escapeHtml(artist.name)}</span>
+                        <div class="artist-badges">
                             ${artist.is_featured ? '<span class="badge featured">F</span>' : ''}
                             ${artist.is_zambian_legend ? '<span class="badge legend">L</span>' : ''}
                         </div>
-                        <div class="artist-meta">
+                        <div class="artist-stats">
                             <span><i class="fas fa-music"></i> ${trackCount}</span>
                             <span><i class="fas fa-headphones"></i> ${formatNumber(totalPlays)}</span>
-                            ${artist.country ? `<span><i class="fas fa-map-marker-alt"></i> ${artist.country}</span>` : ''}
                         </div>
+                        ${artist.country ? `
+                            <div class="artist-country">
+                                <i class="fas fa-map-marker-alt"></i> ${artist.country}
+                            </div>
+                        ` : ''}
                     </div>
-                    <div class="artist-actions">
-                        <a href="edit.html?id=${artist.id}" class="action-btn" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <button class="action-btn delete" onclick="deleteArtist(${artist.id}, '${escapeHtml(artist.name)}')" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
+                </a>
             `}).join('');
             
             renderPagination(totalPages);
@@ -571,23 +462,6 @@
         function searchArtists() {
             currentPage = 1;
             renderArtists();
-        }
-
-        async function deleteArtist(id, name) {
-            if (!confirm(`Delete "${name}"?`)) return;
-            
-            try {
-                const res = await fetch(`${API_BASE}/admin/artists/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!res.ok) throw new Error();
-                
-                showToast('Artist deleted', 'success');
-                loadArtists();
-            } catch {
-                showToast('Delete failed', 'error');
-            }
         }
 
         function escapeHtml(text) {
