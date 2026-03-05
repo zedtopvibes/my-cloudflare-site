@@ -269,7 +269,7 @@
             font-size: 0.8rem;
         }
         
-        /* Stats Cards - More Compact */
+        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -323,7 +323,7 @@
             text-overflow: ellipsis;
         }
         
-        /* Artists Grid - Ultra Compact Cards */
+        /* Artists Grid */
         .artists-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -339,7 +339,7 @@
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
-            height: 80px;
+            height: 100px;
             overflow: hidden;
         }
         
@@ -350,14 +350,14 @@
         }
         
         .artist-avatar {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.8rem;
+            font-size: 2rem;
             flex-shrink: 0;
             position: relative;
             cursor: pointer;
@@ -413,13 +413,13 @@
         }
         
         .artist-name {
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--primary-dark);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 140px;
+            max-width: 180px;
         }
         
         .artist-badges {
@@ -432,7 +432,7 @@
             display: inline-block;
             padding: 2px 5px;
             border-radius: 8px;
-            font-size: 0.55rem;
+            font-size: 0.6rem;
             font-weight: 600;
             line-height: 1;
         }
@@ -450,7 +450,7 @@
         }
         
         .artist-slug {
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: var(--gray);
             font-family: monospace;
             margin-bottom: 2px;
@@ -460,7 +460,7 @@
         }
         
         .artist-country {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             color: var(--gray);
             display: flex;
             align-items: center;
@@ -477,8 +477,32 @@
             font-size: 0.6rem;
         }
         
-        .artist-bio {
+        /* Content Stats */
+        .artist-content-stats {
+            display: flex;
+            gap: 8px;
+            margin: 4px 0;
+            font-size: 0.7rem;
+            color: var(--gray);
+            flex-wrap: wrap;
+        }
+        
+        .content-stat {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            background: var(--light-gray);
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .content-stat i {
+            color: var(--primary-blue);
             font-size: 0.65rem;
+        }
+        
+        .artist-bio {
+            font-size: 0.7rem;
             color: #555;
             line-height: 1.2;
             display: -webkit-box;
@@ -496,8 +520,8 @@
         }
         
         .action-btn {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 4px;
             border: none;
             background: var(--light-gray);
@@ -507,7 +531,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
         }
         
         .action-btn:hover {
@@ -533,6 +557,73 @@
         .action-btn.active {
             background: var(--primary-blue);
             color: white;
+        }
+        
+        /* Details Modal */
+        .details-modal {
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .details-section {
+            margin-bottom: 20px;
+        }
+        
+        .details-section h4 {
+            font-size: 0.95rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .details-section h4 i {
+            color: var(--primary-blue);
+        }
+        
+        .details-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 5px;
+        }
+        
+        .details-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.8rem;
+        }
+        
+        .details-item:last-child {
+            border-bottom: none;
+        }
+        
+        .details-item-title {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        
+        .details-item-meta {
+            color: var(--gray);
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .empty-details {
+            color: #999;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 15px;
         }
         
         /* Pagination */
@@ -718,7 +809,7 @@
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
             border-radius: 8px;
-            height: 80px;
+            height: 100px;
         }
         
         @keyframes loading {
@@ -734,6 +825,8 @@
             .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 12px; }
             .toast { left: auto; right: 20px; min-width: 300px; }
             .artists-grid { grid-template-columns: repeat(2, 1fr); }
+            .artist-card { height: 120px; }
+            .artist-avatar { width: 120px; height: 120px; }
         }
         
         @media (min-width: 1024px) {
@@ -905,9 +998,19 @@
         </div>
     </div>
 
+    <!-- Artist Details Modal (dynamic) -->
+    <div id="detailsModal" class="modal" style="display: none;">
+        <div class="modal-content details-modal" id="detailsModalContent">
+            <!-- Content will be inserted dynamically -->
+        </div>
+    </div>
+
     <script>
         const API_BASE = '/api';
         let allArtists = [];
+        let allTracks = [];
+        let allAlbums = [];
+        let allPlaylists = [];
         let currentArtistId = null;
         let currentPhotoArtistId = null;
         let currentPage = 1;
@@ -954,15 +1057,45 @@
             }, 3000);
         }
 
-        // ==================== LOAD ARTISTS ====================
+        // ==================== LOAD ALL DATA ====================
         async function loadArtists() {
             if (!checkAuth()) return;
             
             try {
-                const response = await fetch(`${API_BASE}/admin/artists`);
-                if (!response.ok) throw new Error('Failed to load artists');
+                // Load artists
+                const artistsResponse = await fetch(`${API_BASE}/admin/artists`);
+                if (!artistsResponse.ok) throw new Error('Failed to load artists');
+                allArtists = await artistsResponse.json();
                 
-                allArtists = await response.json();
+                // Load tracks for content stats
+                try {
+                    const tracksResponse = await fetch(`${API_BASE}/tracks`);
+                    if (tracksResponse.ok) {
+                        allTracks = await tracksResponse.json();
+                    }
+                } catch (e) {
+                    console.warn('Could not load tracks');
+                }
+                
+                // Load albums for content stats
+                try {
+                    const albumsResponse = await fetch(`${API_BASE}/albums`);
+                    if (albumsResponse.ok) {
+                        allAlbums = await albumsResponse.json();
+                    }
+                } catch (e) {
+                    console.warn('Could not load albums');
+                }
+                
+                // Load playlists for content stats
+                try {
+                    const playlistsResponse = await fetch(`${API_BASE}/playlists`);
+                    if (playlistsResponse.ok) {
+                        allPlaylists = await playlistsResponse.json();
+                    }
+                } catch (e) {
+                    console.warn('Could not load playlists');
+                }
                 
                 updateStats();
                 renderArtists();
@@ -1023,6 +1156,13 @@
             container.innerHTML = pageArtists.map(artist => {
                 let imageUrl = artist.image_url || '';
                 
+                // Count artist's content
+                const artistTracks = allTracks ? allTracks.filter(t => t.artist === artist.name).length : 0;
+                const artistAlbums = allAlbums ? allAlbums.filter(a => a.artist === artist.name).length : 0;
+                const totalPlays = allTracks ? allTracks
+                    .filter(t => t.artist === artist.name)
+                    .reduce((sum, t) => sum + (t.plays || 0), 0) : 0;
+                
                 return `
                 <div class="artist-card">
                     <div class="artist-avatar" onclick="openPhotoModal(${artist.id})">
@@ -1052,11 +1192,27 @@
                             </div>
                         ` : ''}
                         
+                        <!-- Content Stats -->
+                        <div class="artist-content-stats">
+                            <span class="content-stat" title="Tracks">
+                                <i class="fas fa-music"></i> ${artistTracks}
+                            </span>
+                            <span class="content-stat" title="Albums">
+                                <i class="fas fa-compact-disc"></i> ${artistAlbums}
+                            </span>
+                            <span class="content-stat" title="Total Plays">
+                                <i class="fas fa-headphones"></i> ${formatNumber(totalPlays)}
+                            </span>
+                        </div>
+                        
                         ${artist.bio ? `
-                            <div class="artist-bio">${escapeHtml(artist.bio.substring(0, 40))}${artist.bio.length > 40 ? '...' : ''}</div>
+                            <div class="artist-bio">${escapeHtml(artist.bio.substring(0, 30))}${artist.bio.length > 30 ? '...' : ''}</div>
                         ` : ''}
                         
                         <div class="artist-actions">
+                            <button class="action-btn" onclick="viewArtistDetails(${artist.id})" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
                             <button class="action-btn ${artist.is_featured ? 'active' : ''}" 
                                     onclick="toggleFeatured(${artist.id}, ${!artist.is_featured})" 
                                     title="${artist.is_featured ? 'Remove Featured' : 'Mark Featured'}">
@@ -1236,6 +1392,91 @@
             }
         }
 
+        // ==================== VIEW ARTIST DETAILS ====================
+        async function viewArtistDetails(artistId) {
+            const artist = allArtists.find(a => a.id === artistId);
+            if (!artist) return;
+            
+            // Get tracks by this artist
+            const artistTracks = allTracks ? allTracks.filter(t => t.artist === artist.name) : [];
+            
+            // Get albums by this artist
+            const artistAlbums = allAlbums ? allAlbums.filter(a => a.artist === artist.name) : [];
+            
+            // Get playlists that might feature this artist (if any)
+            const artistPlaylists = allPlaylists ? allPlaylists.filter(p => 
+                p.description && p.description.includes(artist.name)
+            ) : [];
+            
+            // Build details HTML
+            let detailsHtml = `
+                <div style="padding: 5px;">
+                    <h3 style="color: var(--primary-blue); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-microphone"></i> ${escapeHtml(artist.name)} - Content
+                    </h3>
+                    
+                    <div class="details-section">
+                        <h4><i class="fas fa-music"></i> Tracks (${artistTracks.length})</h4>
+                        ${artistTracks.length > 0 ? `
+                            <div class="details-list">
+                                ${artistTracks.map(t => `
+                                    <div class="details-item">
+                                        <span class="details-item-title" title="${escapeHtml(t.title)}">${escapeHtml(t.title)}</span>
+                                        <span class="details-item-meta">
+                                            <i class="fas fa-headphones"></i> ${formatNumber(t.plays || 0)}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div class="empty-details">No tracks found</div>'}
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4><i class="fas fa-compact-disc"></i> Albums (${artistAlbums.length})</h4>
+                        ${artistAlbums.length > 0 ? `
+                            <div class="details-list">
+                                ${artistAlbums.map(a => `
+                                    <div class="details-item">
+                                        <span class="details-item-title" title="${escapeHtml(a.title)}">${escapeHtml(a.title)}</span>
+                                        <span class="details-item-meta">
+                                            <i class="fas fa-calendar"></i> ${a.release_date ? new Date(a.release_date).getFullYear() : '—'}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div class="empty-details">No albums found</div>'}
+                    </div>
+                    
+                    <div class="details-section">
+                        <h4><i class="fas fa-list"></i> Featured in Playlists (${artistPlaylists.length})</h4>
+                        ${artistPlaylists.length > 0 ? `
+                            <div class="details-list">
+                                ${artistPlaylists.map(p => `
+                                    <div class="details-item">
+                                        <span class="details-item-title">${escapeHtml(p.name)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div class="empty-details">No playlists found</div>'}
+                    </div>
+                </div>
+            `;
+            
+            // Show in modal
+            const modal = document.getElementById('detailsModal');
+            const modalContent = document.getElementById('detailsModalContent');
+            modalContent.innerHTML = detailsHtml + `
+                <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+                    <button onclick="closeDetailsModal()" class="btn btn-secondary">Close</button>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
         // ==================== PHOTO UPLOAD ====================
         function previewPhoto(input) {
             const preview = document.getElementById('photoPreview');
@@ -1340,6 +1581,13 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
         }
 
         // ==================== INIT ====================
