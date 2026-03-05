@@ -51,15 +51,7 @@ export async function onRequest(context) {
       httpMetadata: { contentType: photo.type }
     });
 
-    // Generate public URL - you need to get your R2 public URL
-    // Option 1: If you have public access enabled
-    const imageUrl = `https://pub-${env.AUDIO.id}.r2.dev/${filename}`;
-    
-    // Option 2: If you have a custom domain
-    // const imageUrl = `https://cdn.yourdomain.com/${filename}`;
-    
-    // Option 3: If you're not sure, we'll store the key and create a serve endpoint
-    // For now, let's use the key and we'll create a serve endpoint later
+    // Use the serve endpoint URL (only ONE declaration)
     const imageUrl = `/api/artist-image/${filename}`;
 
     // Update database with image URL
