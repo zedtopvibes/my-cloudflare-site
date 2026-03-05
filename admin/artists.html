@@ -886,8 +886,8 @@
 
         // ==================== UPDATE STATS ====================
         function updateStats() {
-            const featured = allArtists.filter(a => a.is_featured).length;
-            const legends = allArtists.filter(a => a.is_zambian_legend).length;
+            const featured = allArtists.filter(a => a.is_featured === 1 || a.is_featured === true).length;
+            const legends = allArtists.filter(a => a.is_zambian_legend === 1 || a.is_zambian_legend === true).length;
             const countries = [...new Set(allArtists.map(a => a.country).filter(c => c))].length;
             
             document.getElementById('totalArtists').textContent = allArtists.length;
@@ -995,8 +995,8 @@
             document.getElementById('artistName').value = artist.name || '';
             document.getElementById('artistCountry').value = artist.country || '';
             document.getElementById('artistBio').value = artist.bio || '';
-            document.getElementById('artistFeatured').checked = artist.is_featured === 1;
-            document.getElementById('artistLegend').checked = artist.is_zambian_legend === 1;
+            document.getElementById('artistFeatured').checked = artist.is_featured === 1 || artist.is_featured === true;
+            document.getElementById('artistLegend').checked = artist.is_zambian_legend === 1 || artist.is_zambian_legend === true;
             
             document.getElementById('artistModal').style.display = 'flex';
         }
