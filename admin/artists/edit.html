@@ -194,46 +194,6 @@
             height: 16px;
         }
         
-        .stats-section {
-            background: var(--light-gray);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        
-        .stats-section h3 {
-            font-size: 1rem;
-            color: var(--primary-dark);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-        
-        .stat-item {
-            background: white;
-            padding: 12px;
-            border-radius: 6px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-        
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -289,17 +249,7 @@
             color: var(--primary-blue);
         }
         
-        .error-message {
-            color: var(--error);
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
-        
         @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
             .checkbox-group {
                 flex-direction: column;
                 gap: 10px;
@@ -334,7 +284,6 @@
     <script>
         const API_BASE = '/api';
         let currentPhotoFile = null;
-        let artistData = null;
 
         async function loadArtistForEdit() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -377,7 +326,6 @@
                     throw new Error('Artist not found');
                 }
                 
-                artistData = artist;
                 pageTitle.textContent = `Edit Artist: ${artist.name}`;
                 renderForm(artist);
                 
@@ -394,33 +342,9 @@
             }
         }
 
-        async function renderForm(artist) {
+        function renderForm(artist) {
             const isEditing = !!artist;
             const formContainer = document.getElementById('formContainer');
-            
-            // Fetch tracks and albums for stats if editing
-            let artistTracks = [];
-            let artistAlbums = [];
-            let totalPlays = 0;
-            
-            if (isEditing) {
-                try {
-                    const [tracksRes, albumsRes] = await Promise.all([
-                        fetch(`${API_BASE}/tracks`).catch(() => ({ ok: false })),
-                        fetch(`${API_BASE}/albums`).catch(() => ({ ok: false }))
-                    ]);
-                    
-                    const allTracks = tracksRes.ok ? await tracksRes.json() : [];
-                    const allAlbums = albumsRes.ok ? await albumsRes.json() : [];
-                    
-                    artistTracks = allTracks.filter(t => t.artist === artist.name);
-                    artistAlbums = allAlbums.filter(a => a.artist === artist.name);
-                    totalPlays = artistTracks.reduce((sum, t) => sum + (t.plays || 0), 0);
-                    
-                } catch (e) {
-                    console.log('Could not load stats');
-                }
-            }
             
             formContainer.innerHTML = `
                 <form id="artistForm">
@@ -429,7 +353,7 @@
                     <div class="image-section">
                         <div class="current-image" id="currentImage">
                             ${artist?.image_url 
-                                ? `<img src="${artist.image_url}" alt="${artist.name}">`
+                                ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">`
                                 : '<i class="fas fa-user"></i>'
                             }
                         </div>
@@ -446,7 +370,7 @@
                     
                     <div class="form-group">
                         <label><i class="fas fa-user"></i> Artist Name *</label>
-                        <input type="text" id="artistName" value="${escapeHtml(artist?.name || '')}" required>
+                        <input type="text" id="artistName" value="${escapeHtml(artist?.name || '')}" placeholder="e.g. Slap Dee" required>
                     </div>
                     
                     <div class="form-group">
@@ -467,26 +391,6 @@
                             <input type="checkbox" id="artistLegend" ${artist?.is_zambian_legend ? 'checked' : ''}> Zambian Legend
                         </label>
                     </div>
-                    
-                    ${isEditing ? `
-                        <div class="stats-section">
-                            <h3><i class="fas fa-chart-bar"></i> Current Stats</h3>
-                            <div class="stats-grid">
-                                <div class="stat-item">
-                                    <div class="stat-value">${formatNumber(artistTracks.length)}</div>
-                                    <div class="stat-label">Tracks</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">${formatNumber(artistAlbums.length)}</div>
-                                    <div class="stat-label">Albums</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value">${formatNumber(totalPlays)}</div>
-                                    <div class="stat-label">Total Plays</div>
-                                </div>
-                            </div>
-                        </div>
-                    ` : ''}
                     
                     <div class="action-buttons">
                         <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/artists/index.html'">
@@ -511,6 +415,12 @@
                     const preview = document.getElementById('preview');
                     preview.src = e.target.result;
                     preview.style.display = 'block';
+                    
+                    // Hide current image when preview is shown
+                    const currentImage = document.getElementById('currentImage');
+                    if (currentImage) {
+                        currentImage.style.opacity = '0.5';
+                    }
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -584,7 +494,7 @@
                 
                 showToast(`Artist ${isEditing ? 'updated' : 'created'} successfully!`, 'success');
                 
-                // Redirect after short delay
+                // Redirect to profile after short delay
                 setTimeout(() => {
                     window.location.href = `/admin/artists/profile.html?id=${artistId}`;
                 }, 1500);
@@ -625,13 +535,6 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        }
-
-        function formatNumber(num) {
-            if (!num || isNaN(num)) return '0';
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
         }
 
         // Check authentication
