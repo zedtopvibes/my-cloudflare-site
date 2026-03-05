@@ -118,16 +118,18 @@
             align-items: flex-end;
             gap: 24px;
             padding: 0 32px 20px 32px;
-            margin-top: -50px;
+            margin-top: -60px; /* Increased negative margin to pull avatar up */
         }
         
         .artist-avatar {
-            width: 120px;
-            height: 120px;
+            width: 140px; /* Increased size */
+            height: 140px; /* Increased size */
             border-radius: 50%;
             background: white;
             padding: 4px;
             box-shadow: var(--shadow-lg);
+            position: relative;
+            z-index: 10;
         }
         
         .artist-avatar-inner {
@@ -139,7 +141,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 3rem;
+            font-size: 3.5rem;
             overflow: hidden;
         }
         
@@ -151,7 +153,7 @@
         
         .artist-title {
             flex: 1;
-            margin-bottom: 8px;
+            margin-bottom: 15px; /* Adjusted for alignment */
         }
         
         .artist-name {
@@ -195,10 +197,10 @@
             border: 1px solid #10b981;
         }
         
-        /* Stats Grid */
+        /* Stats Grid - Now 6 columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 16px;
             padding: 24px 32px;
             background: var(--gray-50);
@@ -468,12 +470,12 @@
                 align-items: center;
                 text-align: center;
                 padding: 0 20px 20px 20px;
-                margin-top: -40px;
+                margin-top: -50px;
             }
             
             .artist-avatar {
-                width: 100px;
-                height: 100px;
+                width: 120px;
+                height: 120px;
             }
             
             .artist-name {
@@ -487,6 +489,10 @@
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
                 padding: 20px;
+            }
+            
+            .stats-grid .stat-card:last-child {
+                grid-column: span 2;
             }
             
             .info-grid {
@@ -558,17 +564,22 @@
                 if (!artist) throw new Error('Artist not found');
                 
                 // Fetch tracks and albums
-                const [tracksRes, albumsRes] = await Promise.all([
+                const [tracksRes, albumsRes, playlistsRes] = await Promise.all([
                     fetch(`${API_BASE}/tracks`).catch(() => ({ ok: false })),
-                    fetch(`${API_BASE}/albums`).catch(() => ({ ok: false }))
+                    fetch(`${API_BASE}/albums`).catch(() => ({ ok: false })),
+                    fetch(`${API_BASE}/playlists`).catch(() => ({ ok: false }))
                 ]);
                 
                 const allTracks = tracksRes.ok ? await tracksRes.json() : [];
                 const allAlbums = albumsRes.ok ? await albumsRes.json() : [];
+                const allPlaylists = playlistsRes.ok ? await playlistsRes.json() : [];
                 
                 // Filter content
                 const artistTracks = allTracks.filter(t => t.artist === artist.name);
                 const artistAlbums = allAlbums.filter(a => a.artist === artist.name);
+                const artistPlaylists = allPlaylists.filter(p => 
+                    p.description && p.description.includes(artist.name)
+                );
                 
                 // Calculate stats
                 const totalPlays = artistTracks.reduce((sum, t) => sum + (t.plays || 0), 0);
@@ -601,7 +612,7 @@
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-headphones"></i></div>
                             <div class="stat-value">${formatNumber(totalPlays)}</div>
-                            <div class="stat-label">Total Plays</div>
+                            <div class="stat-label">Plays</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-download"></i></div>
@@ -622,6 +633,11 @@
                             <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
                             <div class="stat-value">${artistAlbums.length}</div>
                             <div class="stat-label">Albums</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-list"></i></div>
+                            <div class="stat-value">${artistPlaylists.length}</div>
+                            <div class="stat-label">Playlists</div>
                         </div>
                     </div>
                     
