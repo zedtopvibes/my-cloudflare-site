@@ -14,7 +14,7 @@ export async function onRequest(context) {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
       status: 405, 
-      headers 
+      headers: { ...headers, 'Content-Type': 'application/json' }
     });
   }
 
@@ -26,7 +26,7 @@ export async function onRequest(context) {
     if (!photo) {
       return new Response(JSON.stringify({ error: 'No photo uploaded' }), { 
         status: 400, 
-        headers 
+        headers: { ...headers, 'Content-Type': 'application/json' }
       });
     }
 
@@ -38,7 +38,7 @@ export async function onRequest(context) {
     if (!artist) {
       return new Response(JSON.stringify({ error: 'Artist not found' }), { 
         status: 404, 
-        headers 
+        headers: { ...headers, 'Content-Type': 'application/json' }
       });
     }
 
@@ -46,29 +46,38 @@ export async function onRequest(context) {
     const extension = photo.name.split('.').pop();
     const filename = `artists/${artist.slug}-${Date.now()}.${extension}`;
 
-    // Upload to R2 (assuming you have an IMAGES bucket)
-    await env.IMAGES.put(filename, await photo.arrayBuffer(), {
+    // Upload to R2 using AUDIO binding
+    await env.AUDIO.put(filename, await photo.arrayBuffer(), {
       httpMetadata: { contentType: photo.type }
     });
 
-    // Get public URL (adjust this based on your R2 setup)
-    const imageUrl = `https://pub-${env.IMAGES_ID}.r2.dev/${filename}`;
+    // Generate public URL - you need to get your R2 public URL
+    // Option 1: If you have public access enabled
+    const imageUrl = `https://pub-${env.AUDIO.id}.r2.dev/${filename}`;
+    
+    // Option 2: If you have a custom domain
+    // const imageUrl = `https://cdn.yourdomain.com/${filename}`;
+    
+    // Option 3: If you're not sure, we'll store the key and create a serve endpoint
+    // For now, let's use the key and we'll create a serve endpoint later
+    const imageUrl = `/api/artist-image/${filename}`;
 
-    // Update database
+    // Update database with image URL
     await env.DB.prepare(
       'UPDATE artists SET image_url = ? WHERE id = ?'
     ).bind(imageUrl, artistId).run();
 
     return new Response(JSON.stringify({ 
       success: true, 
-      image_url: imageUrl 
-    }), { headers });
+      image_url: imageUrl,
+      message: 'Photo uploaded successfully'
+    }), { headers: { ...headers, 'Content-Type': 'application/json' } });
 
   } catch (error) {
     console.error('Error uploading photo:', error);
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500, 
-      headers 
+      headers: { ...headers, 'Content-Type': 'application/json' }
     });
   }
 }
