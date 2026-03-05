@@ -9,7 +9,7 @@ export async function onRequest(context) {
     
     if (!object) {
       return new Response('Image not found', { status: 404 });
-    }
+    }v
     
     // Return the image
     return new Response(object.body, {
