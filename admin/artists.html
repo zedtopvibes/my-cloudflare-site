@@ -264,6 +264,11 @@
             background: #bd2130;
         }
         
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
         /* Stats Cards */
         .stats-grid {
             display: grid;
@@ -309,7 +314,7 @@
         /* Artists Grid */
         .artists-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -330,15 +335,16 @@
         }
         
         .artist-avatar {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 2rem;
+            font-size: 2.5rem;
             flex-shrink: 0;
+            position: relative;
         }
         
         .artist-avatar img {
@@ -347,47 +353,110 @@
             object-fit: cover;
         }
         
+        .artist-avatar .avatar-upload {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .artist-avatar:hover .avatar-upload {
+            opacity: 1;
+        }
+        
         .artist-info {
             padding: 12px;
             flex: 1;
+        }
+        
+        .artist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
         }
         
         .artist-name {
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--primary-dark);
-            margin-bottom: 4px;
         }
         
         .artist-slug {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--gray);
-            margin-bottom: 8px;
             font-family: monospace;
         }
         
-        .artist-stats {
+        .artist-badges {
             display: flex;
-            gap: 12px;
-            margin-bottom: 10px;
-            font-size: 0.75rem;
-            color: var(--gray);
+            gap: 5px;
         }
         
-        .artist-stats span {
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        
+        .badge.featured {
+            background: rgba(255, 193, 7, 0.15);
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+        
+        .badge.legend {
+            background: rgba(40, 167, 69, 0.15);
+            color: #155724;
+            border: 1px solid #28a745;
+        }
+        
+        .artist-country {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 5px;
         }
         
-        .artist-stats i {
+        .artist-country i {
             color: var(--primary-blue);
+            width: 16px;
+        }
+        
+        .artist-bio {
+            font-size: 0.8rem;
+            color: #555;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            max-height: 60px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
         }
         
         .artist-actions {
             display: flex;
             gap: 5px;
             justify-content: flex-end;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
         }
         
         .action-btn {
@@ -402,6 +471,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            font-size: 0.8rem;
         }
         
         .action-btn:hover {
@@ -409,8 +479,23 @@
             color: white;
         }
         
+        .action-btn.featured:hover {
+            background: #ffc107;
+            color: #856404;
+        }
+        
+        .action-btn.legend:hover {
+            background: #28a745;
+            color: white;
+        }
+        
         .action-btn.delete:hover {
             background: var(--error);
+            color: white;
+        }
+        
+        .action-btn.active {
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -427,6 +512,7 @@
             justify-content: center;
             z-index: 1000;
             padding: 15px;
+            overflow-y: auto;
         }
         
         .modal-content {
@@ -458,6 +544,7 @@
         }
         
         .form-group input,
+        .form-group select,
         .form-group textarea {
             width: 100%;
             padding: 8px 10px;
@@ -471,6 +558,19 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
         }
         
         .modal-actions {
@@ -554,7 +654,7 @@
         
         @media (max-width: 480px) {
             .artist-card { flex-direction: column; }
-            .artist-avatar { width: 100%; height: 120px; }
+            .artist-avatar { width: 100%; height: 150px; }
             .form-row { grid-template-columns: 1fr; }
         }
     </style>
@@ -612,35 +712,34 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-music"></i></div>
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
                     <div class="stat-info">
-                        <h3>Total Tracks</h3>
-                        <div class="stat-number" id="totalTracks">0</div>
+                        <h3>Featured</h3>
+                        <div class="stat-number" id="totalFeatured">0</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-headphones"></i></div>
+                    <div class="stat-icon"><i class="fas fa-crown"></i></div>
                     <div class="stat-info">
-                        <h3>Total Plays</h3>
-                        <div class="stat-number" id="totalPlays">0</div>
+                        <h3>Legends</h3>
+                        <div class="stat-number" id="totalLegends">0</div>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
+                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
                     <div class="stat-info">
-                        <h3>Total Albums</h3>
-                        <div class="stat-number" id="totalAlbums">0</div>
+                        <h3>Countries</h3>
+                        <div class="stat-number" id="totalCountries">0</div>
                     </div>
                 </div>
             </div>
 
             <!-- Artists Grid -->
             <div id="artistsGrid" class="artists-grid">
-                <div class="empty-state">
-                    <i class="fas fa-microphone"></i>
-                    <h3>No Artists Found</h3>
-                    <p>Click "Add Artist" to create your first artist</p>
-                </div>
+                <!-- Loading skeletons -->
+                <div class="skeleton-card" style="height: 200px;"></div>
+                <div class="skeleton-card" style="height: 200px;"></div>
+                <div class="skeleton-card" style="height: 200px;"></div>
             </div>
         </div>
     </div>
@@ -662,16 +761,20 @@
                         <label>Country</label>
                         <input type="text" id="artistCountry" placeholder="e.g. Zambia">
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Genre</label>
-                        <input type="text" id="artistGenre" placeholder="e.g. Hip-Hop">
-                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label>Bio</label>
                     <textarea id="artistBio" rows="3" placeholder="Artist biography..."></textarea>
+                </div>
+                
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="artistFeatured"> Featured Artist
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="artistLegend"> Zambian Legend
+                    </label>
                 </div>
                 
                 <div class="modal-actions">
@@ -694,12 +797,26 @@
         </div>
     </div>
 
+    <!-- Photo Upload Modal -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3>Upload Photo</h3>
+            <div class="form-group">
+                <label>Select Image</label>
+                <input type="file" id="photoInput" accept="image/*">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                <button onclick="closePhotoModal()" class="btn btn-secondary">Cancel</button>
+                <button onclick="uploadPhoto()" class="btn btn-primary">Upload</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = '/api';
         let allArtists = [];
-        let allTracks = [];
-        let allAlbums = [];
-        let currentDeleteId = null;
+        let currentArtistId = null;
+        let currentPhotoArtistId = null;
 
         // ==================== AUTH ====================
         function logout() {
@@ -742,48 +859,15 @@
             }, 3000);
         }
 
-        // ==================== LOAD DATA ====================
+        // ==================== LOAD ARTISTS ====================
         async function loadArtists() {
             if (!checkAuth()) return;
             
             try {
-                // Load artists from tracks (unique artists)
-                const tracksResponse = await fetch(`${API_BASE}/tracks`);
-                if (!tracksResponse.ok) throw new Error('Failed to load tracks');
+                const response = await fetch(`${API_BASE}/admin/artists`);
+                if (!response.ok) throw new Error('Failed to load artists');
                 
-                allTracks = await tracksResponse.json();
-                
-                // Get unique artists from tracks
-                const artistMap = new Map();
-                allTracks.forEach(track => {
-                    if (track.artist && !artistMap.has(track.artist)) {
-                        artistMap.set(track.artist, {
-                            name: track.artist,
-                            slug: track.artist_slug,
-                            tracks: [],
-                            plays: 0,
-                            downloads: 0,
-                            views: 0
-                        });
-                    }
-                    
-                    if (track.artist && artistMap.has(track.artist)) {
-                        const artist = artistMap.get(track.artist);
-                        artist.tracks.push(track.id);
-                        artist.plays += track.plays || 0;
-                        artist.downloads += track.downloads || 0;
-                        artist.views += track.views || 0;
-                    }
-                });
-                
-                allArtists = Array.from(artistMap.values());
-                
-                // Load albums for album count
-                const albumsResponse = await fetch(`${API_BASE}/albums`);
-                if (albumsResponse.ok) {
-                    allAlbums = await albumsResponse.json();
-                }
-                
+                allArtists = await response.json();
                 updateStats();
                 renderArtists();
                 
@@ -802,13 +886,14 @@
 
         // ==================== UPDATE STATS ====================
         function updateStats() {
-            const totalTracks = allTracks.length;
-            const totalPlays = allTracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+            const featured = allArtists.filter(a => a.is_featured).length;
+            const legends = allArtists.filter(a => a.is_zambian_legend).length;
+            const countries = [...new Set(allArtists.map(a => a.country).filter(c => c))].length;
             
             document.getElementById('totalArtists').textContent = allArtists.length;
-            document.getElementById('totalTracks').textContent = totalTracks;
-            document.getElementById('totalPlays').textContent = formatNumber(totalPlays);
-            document.getElementById('totalAlbums').textContent = allAlbums.length;
+            document.getElementById('totalFeatured').textContent = featured;
+            document.getElementById('totalLegends').textContent = legends;
+            document.getElementById('totalCountries').textContent = countries;
         }
 
         // ==================== RENDER ARTISTS ====================
@@ -817,7 +902,8 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
             const filtered = allArtists.filter(artist => 
-                artist.name.toLowerCase().includes(searchTerm)
+                artist.name.toLowerCase().includes(searchTerm) ||
+                (artist.country && artist.country.toLowerCase().includes(searchTerm))
             );
             
             if (filtered.length === 0) {
@@ -825,7 +911,7 @@
                     <div class="empty-state" style="grid-column: 1/-1;">
                         <i class="fas fa-microphone"></i>
                         <h3>No Artists Found</h3>
-                        <p>${searchTerm ? 'Try a different search term' : 'Add your first artist from the tracks you upload'}</p>
+                        <p>${searchTerm ? 'Try a different search term' : 'Click "Add Artist" to create your first artist'}</p>
                     </div>
                 `;
                 return;
@@ -833,22 +919,52 @@
             
             container.innerHTML = filtered.map(artist => `
                 <div class="artist-card">
-                    <div class="artist-avatar">
-                        <i class="fas fa-user"></i>
+                    <div class="artist-avatar" onclick="openPhotoModal(${artist.id})">
+                        ${artist.image_url 
+                            ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">`
+                            : `<i class="fas fa-user"></i>`
+                        }
+                        <div class="avatar-upload" title="Upload photo">
+                            <i class="fas fa-camera"></i>
+                        </div>
                     </div>
                     <div class="artist-info">
-                        <div class="artist-name">${escapeHtml(artist.name)}</div>
-                        <div class="artist-slug">${artist.slug || ''}</div>
-                        <div class="artist-stats">
-                            <span><i class="fas fa-music"></i> ${artist.tracks.length}</span>
-                            <span><i class="fas fa-headphones"></i> ${formatNumber(artist.plays)}</span>
-                            <span><i class="fas fa-download"></i> ${formatNumber(artist.downloads)}</span>
+                        <div class="artist-header">
+                            <div>
+                                <div class="artist-name">${escapeHtml(artist.name)}</div>
+                                <div class="artist-slug">${artist.slug || ''}</div>
+                            </div>
+                            <div class="artist-badges">
+                                ${artist.is_featured ? '<span class="badge featured">Featured</span>' : ''}
+                                ${artist.is_zambian_legend ? '<span class="badge legend">Legend</span>' : ''}
+                            </div>
                         </div>
+                        
+                        ${artist.country ? `
+                            <div class="artist-country">
+                                <i class="fas fa-map-marker-alt"></i> ${escapeHtml(artist.country)}
+                            </div>
+                        ` : ''}
+                        
+                        ${artist.bio ? `
+                            <div class="artist-bio">${escapeHtml(artist.bio)}</div>
+                        ` : ''}
+                        
                         <div class="artist-actions">
-                            <button class="action-btn" onclick="editArtist('${escapeHtml(artist.name)}')" title="Edit">
+                            <button class="action-btn ${artist.is_featured ? 'active' : ''}" 
+                                    onclick="toggleFeatured(${artist.id}, ${!artist.is_featured})" 
+                                    title="${artist.is_featured ? 'Remove Featured' : 'Mark Featured'}">
+                                <i class="fas fa-star"></i>
+                            </button>
+                            <button class="action-btn ${artist.is_zambian_legend ? 'active legend' : ''}" 
+                                    onclick="toggleLegend(${artist.id}, ${!artist.is_zambian_legend})" 
+                                    title="${artist.is_zambian_legend ? 'Remove Legend' : 'Mark Legend'}">
+                                <i class="fas fa-crown"></i>
+                            </button>
+                            <button class="action-btn" onclick="editArtist(${artist.id})" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="action-btn delete" onclick="showDeleteModal('${escapeHtml(artist.name)}')" title="Delete">
+                            <button class="action-btn delete" onclick="showDeleteModal(${artist.id}, '${escapeHtml(artist.name)}')" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -870,13 +986,18 @@
             document.getElementById('artistModal').style.display = 'flex';
         }
 
-        function editArtist(name) {
+        async function editArtist(id) {
+            const artist = allArtists.find(a => a.id === id);
+            if (!artist) return;
+            
             document.getElementById('modalTitle').textContent = 'Edit Artist';
-            document.getElementById('artistId').value = name;
-            document.getElementById('artistName').value = name;
-            document.getElementById('artistCountry').value = '';
-            document.getElementById('artistGenre').value = '';
-            document.getElementById('artistBio').value = '';
+            document.getElementById('artistId').value = artist.id;
+            document.getElementById('artistName').value = artist.name || '';
+            document.getElementById('artistCountry').value = artist.country || '';
+            document.getElementById('artistBio').value = artist.bio || '';
+            document.getElementById('artistFeatured').checked = artist.is_featured === 1;
+            document.getElementById('artistLegend').checked = artist.is_zambian_legend === 1;
+            
             document.getElementById('artistModal').style.display = 'flex';
         }
 
@@ -888,13 +1009,16 @@
         document.getElementById('artistForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const name = document.getElementById('artistName').value;
-            const originalName = document.getElementById('artistId').value;
+            const id = document.getElementById('artistId').value;
+            const isEditing = !!id;
             
-            if (!name) {
-                showToast('Artist name is required', 'error');
-                return;
-            }
+            const artistData = {
+                name: document.getElementById('artistName').value,
+                country: document.getElementById('artistCountry').value || null,
+                bio: document.getElementById('artistBio').value || null,
+                is_featured: document.getElementById('artistFeatured').checked,
+                is_zambian_legend: document.getElementById('artistLegend').checked
+            };
             
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
@@ -902,34 +1026,167 @@
             submitBtn.disabled = true;
             
             try {
-                // For now, just show success since we're using tracks table
-                showToast(`Artist ${originalName ? 'updated' : 'added'} successfully!`, 'success');
+                let response;
+                
+                if (isEditing) {
+                    response = await fetch(`${API_BASE}/admin/artists/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(artistData)
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/admin/artists`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(artistData)
+                    });
+                }
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to save artist');
+                }
+                
                 closeArtistModal();
                 await loadArtists();
+                showToast(`Artist ${isEditing ? 'updated' : 'created'} successfully!`, 'success');
                 
             } catch (error) {
-                showToast('Failed to save artist', 'error');
+                console.error('Error saving artist:', error);
+                showToast(error.message || 'Failed to save artist', 'error');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             }
         });
 
+        // ==================== TOGGLE FEATURED ====================
+        async function toggleFeatured(id, featured) {
+            const button = event?.target?.closest('button');
+            if (button) button.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${id}/featured`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ featured })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update');
+                
+                showToast(`Artist ${featured ? 'marked as featured' : 'removed from featured'}`, 'success');
+                await loadArtists();
+                
+            } catch (error) {
+                showToast('Failed to update featured status', 'error');
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
+        // ==================== TOGGLE LEGEND ====================
+        async function toggleLegend(id, legend) {
+            const button = event?.target?.closest('button');
+            if (button) button.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${id}/legend`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ legend })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update');
+                
+                showToast(`Artist ${legend ? 'marked as legend' : 'removed from legend'}`, 'success');
+                await loadArtists();
+                
+            } catch (error) {
+                showToast('Failed to update legend status', 'error');
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
+        // ==================== PHOTO UPLOAD ====================
+        function openPhotoModal(id) {
+            currentPhotoArtistId = id;
+            document.getElementById('photoInput').value = '';
+            document.getElementById('photoModal').style.display = 'flex';
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').style.display = 'none';
+            currentPhotoArtistId = null;
+        }
+
+        async function uploadPhoto() {
+            const file = document.getElementById('photoInput').files[0];
+            if (!file) {
+                showToast('Please select a photo', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('photo', file);
+            
+            const button = event?.target;
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'Uploading...';
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${currentPhotoArtistId}/photo`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Upload failed');
+                
+                showToast('Photo uploaded successfully!', 'success');
+                closePhotoModal();
+                await loadArtists();
+                
+            } catch (error) {
+                showToast('Failed to upload photo', 'error');
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = 'Upload';
+                }
+            }
+        }
+
         // ==================== DELETE ====================
-        function showDeleteModal(artistName) {
-            currentDeleteId = artistName;
-            document.getElementById('deleteArtistName').textContent = artistName;
+        function showDeleteModal(id, name) {
+            currentArtistId = id;
+            document.getElementById('deleteArtistName').textContent = name;
             document.getElementById('deleteModal').style.display = 'flex';
         }
 
         function closeDeleteModal() {
             document.getElementById('deleteModal').style.display = 'none';
-            currentDeleteId = null;
+            currentArtistId = null;
         }
 
-        function confirmDelete() {
-            showToast('Artists are managed through tracks. Delete tracks to remove artists.', 'info');
-            closeDeleteModal();
+        async function confirmDelete() {
+            if (!currentArtistId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${currentArtistId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Delete failed');
+                
+                closeDeleteModal();
+                await loadArtists();
+                showToast('Artist deleted successfully!', 'success');
+                
+            } catch (error) {
+                showToast('Failed to delete artist', 'error');
+            }
         }
 
         // ==================== HELPER FUNCTIONS ====================
@@ -938,13 +1195,6 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        }
-
-        function formatNumber(num) {
-            if (!num) return '0';
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
         }
 
         // ==================== INIT ====================
