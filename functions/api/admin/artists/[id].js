@@ -42,11 +42,11 @@ export async function onRequest(context) {
           .replace(/^-+|-+$/g, '');
       }
 
-      // Update artist
+      // Update artist - REMOVED updated_at
       await env.DB.prepare(`
         UPDATE artists 
         SET name = ?, slug = ?, country = ?, bio = ?, 
-            is_featured = ?, is_zambian_legend = ?, updated_at = CURRENT_TIMESTAMP
+            is_featured = ?, is_zambian_legend = ?
         WHERE id = ?
       `).bind(
         name || existing.name,
