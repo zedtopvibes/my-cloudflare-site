@@ -70,13 +70,17 @@ export async function onRequest(context) {
 
     // Add track to playlist
     await env.DB.prepare(`
-      INSERT INTO playlist_tracks (playlist_id, track_id, position)
-      VALUES (?, ?, ?)
+      INSERT INTO playlist_tracks (playlist_id, track_id, position, added_at)
+      VALUES (?, ?, ?, CURRENT_TIMESTAMP)
     `).bind(playlistId, track_id, position).run();
+
+    // Update playlist stats (increment track count conceptually)
+    // Note: You don't have track_count column, so we just return success
 
     return new Response(JSON.stringify({ 
       success: true, 
-      position 
+      position,
+      message: 'Track added to playlist'
     }), { headers });
 
   } catch (error) {
