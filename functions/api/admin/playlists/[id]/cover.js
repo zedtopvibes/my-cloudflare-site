@@ -30,7 +30,7 @@ export async function onRequest(context) {
       });
     }
 
-    // Check if playlist exists
+    // Check if playlist exists and get slug
     const playlist = await env.DB.prepare(
       'SELECT slug FROM playlists WHERE id = ?'
     ).bind(playlistId).first();
@@ -56,12 +56,13 @@ export async function onRequest(context) {
 
     // Update database
     await env.DB.prepare(
-      'UPDATE playlists SET cover_url = ? WHERE id = ?'
+      'UPDATE playlists SET cover_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
     ).bind(coverUrl, playlistId).run();
 
     return new Response(JSON.stringify({ 
       success: true, 
-      cover_url: coverUrl 
+      cover_url: coverUrl,
+      message: 'Cover uploaded successfully'
     }), { headers: { ...headers, 'Content-Type': 'application/json' } });
 
   } catch (error) {
