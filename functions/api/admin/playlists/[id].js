@@ -17,7 +17,7 @@ export async function onRequest(context) {
   // PUT - Update playlist
   if (request.method === 'PUT') {
     try {
-      const { name, description } = await request.json();
+      const { name, description, is_featured, cover_emoji } = await request.json();
 
       const existing = await env.DB.prepare(
         'SELECT * FROM playlists WHERE id = ?'
@@ -43,12 +43,15 @@ export async function onRequest(context) {
 
       await env.DB.prepare(`
         UPDATE playlists 
-        SET name = ?, slug = ?, description = ?, updated_at = CURRENT_TIMESTAMP
+        SET name = ?, slug = ?, description = ?, 
+            is_featured = ?, cover_emoji = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `).bind(
         name || existing.name,
         slug,
         description !== undefined ? description : existing.description,
+        is_featured !== undefined ? (is_featured ? 1 : 0) : existing.is_featured,
+        cover_emoji || existing.cover_emoji,
         id
       ).run();
 
@@ -70,7 +73,6 @@ export async function onRequest(context) {
   // DELETE - Delete playlist
   if (request.method === 'DELETE') {
     try {
-      // This will cascade delete playlist_tracks if foreign key has CASCADE
       await env.DB.prepare(
         'DELETE FROM playlists WHERE id = ?'
       ).bind(id).run();
