@@ -12,17 +12,25 @@ export async function onRequest(context) {
     ];
 
     let object = null;
+    let usedPath = null;
+
     for (const path of paths) {
       object = await env.AUDIO.get(path);
-      if (object) break;
+      if (object) {
+        usedPath = path;
+        break;
+      }
     }
 
     if (!object) {
       return new Response('Cover not found', { status: 404 });
     }
 
+    // Determine content type
     const contentType = object.httpMetadata?.contentType || 
-                       (filename.endsWith('.png') ? 'image/png' : 'image/jpeg');
+                       (filename.endsWith('.png') ? 'image/png' : 
+                        filename.endsWith('.jpg') || filename.endsWith('.jpeg') ? 'image/jpeg' : 
+                        filename.endsWith('.webp') ? 'image/webp' : 'image/jpeg');
 
     return new Response(object.body, {
       headers: {
