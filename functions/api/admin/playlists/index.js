@@ -3,7 +3,7 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
@@ -12,7 +12,7 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  if (request.method !== 'POST') {
+  if (request.method !== 'GET') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
       status: 405, 
       headers 
@@ -20,40 +20,19 @@ export async function onRequest(context) {
   }
 
   try {
-    const { name, description } = await request.json();
+    const { results } = await env.DB.prepare(`
+      SELECT p.*, 
+        (SELECT COUNT(*) FROM playlist_tracks WHERE playlist_id = p.id) as track_count
+      FROM playlists p
+      ORDER BY 
+        p.is_featured DESC,
+        p.created_at DESC
+    `).all();
 
-    if (!name) {
-      return new Response(JSON.stringify({ error: 'Playlist name is required' }), { 
-        status: 400, 
-        headers 
-      });
-    }
-
-    // Generate slug
-    const slug = name
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\w-]/g, '')
-      .replace(/--+/g, '-')
-      .replace(/^-+|-+$/g, '');
-
-    const result = await env.DB.prepare(`
-      INSERT INTO playlists (name, slug, description, created_at)
-      VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-      RETURNING id
-    `).bind(name, slug, description || null).run();
-
-    const newPlaylist = await env.DB.prepare(`
-      SELECT * FROM playlists WHERE id = ?
-    `).bind(result.results[0].id).first();
-
-    return new Response(JSON.stringify(newPlaylist), { 
-      status: 201, 
-      headers 
-    });
+    return new Response(JSON.stringify(results), { headers });
 
   } catch (error) {
-    console.error('Error creating playlist:', error);
+    console.error('Error fetching playlists:', error);
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500, 
       headers 
