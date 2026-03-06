@@ -3,7 +3,7 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
@@ -12,7 +12,7 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  if (request.method !== 'GET') {
+  if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
       status: 405, 
       headers 
@@ -20,19 +20,49 @@ export async function onRequest(context) {
   }
 
   try {
-    const { results } = await env.DB.prepare(`
-      SELECT p.*, 
-        (SELECT COUNT(*) FROM playlist_tracks WHERE playlist_id = p.id) as track_count
-      FROM playlists p
-      ORDER BY 
-        p.is_featured DESC,
-        p.created_at DESC
-    `).all();
+    const { name, description, is_featured, cover_emoji } = await request.json();
 
-    return new Response(JSON.stringify(results), { headers });
+    if (!name) {
+      return new Response(JSON.stringify({ error: 'Playlist name is required' }), { 
+        status: 400, 
+        headers 
+      });
+    }
+
+    // Generate slug
+    const slug = name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]/g, '')
+      .replace(/--+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    const result = await env.DB.prepare(`
+      INSERT INTO playlists (
+        name, slug, description, cover_emoji, is_featured, 
+        created_by, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      RETURNING id
+    `).bind(
+      name, 
+      slug, 
+      description || null, 
+      cover_emoji || '📋', 
+      is_featured ? 1 : 0,
+      'Admin' // or get from session
+    ).run();
+
+    const newPlaylist = await env.DB.prepare(`
+      SELECT * FROM playlists WHERE id = ?
+    `).bind(result.results[0].id).first();
+
+    return new Response(JSON.stringify(newPlaylist), { 
+      status: 201, 
+      headers 
+    });
 
   } catch (error) {
-    console.error('Error fetching playlists:', error);
+    console.error('Error creating playlist:', error);
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500, 
       headers 
