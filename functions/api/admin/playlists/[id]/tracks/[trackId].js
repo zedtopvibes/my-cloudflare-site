@@ -55,7 +55,10 @@ export async function onRequest(context) {
       `).bind(i + 1, playlistId, remaining.results[i].track_id).run();
     }
 
-    return new Response(JSON.stringify({ success: true }), { headers });
+    return new Response(JSON.stringify({ 
+      success: true,
+      message: 'Track removed from playlist'
+    }), { headers });
 
   } catch (error) {
     console.error('Error removing track from playlist:', error);
