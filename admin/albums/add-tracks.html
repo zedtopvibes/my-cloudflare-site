@@ -164,10 +164,15 @@
             font-size: 0.8rem;
             color: var(--gray-700);
             margin-right: 8px;
+            margin-bottom: 8px;
         }
         
         .stats-badge i {
             color: var(--primary);
+        }
+        
+        .stats-badge.available i {
+            color: var(--success);
         }
         
         /* Search Section */
@@ -231,7 +236,7 @@
             border-color: var(--primary);
         }
         
-        /* Tracks Container */
+        /* Tracks Grid */
         .tracks-container {
             padding: 20px;
             max-height: 500px;
@@ -247,18 +252,29 @@
             border-radius: var(--radius-md);
             margin-bottom: 8px;
             transition: all 0.2s;
-            cursor: pointer;
         }
         
-        .track-item:hover {
+        .track-item:not(.disabled):hover {
             background: var(--primary-soft);
             border-color: var(--primary);
+            cursor: pointer;
         }
         
         .track-item.selected {
             background: var(--primary-soft);
             border-color: var(--primary);
             border-width: 2px;
+        }
+        
+        .track-item.disabled {
+            opacity: 0.6;
+            background: var(--gray-100);
+            cursor: not-allowed;
+        }
+        
+        .track-item.disabled:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
         }
         
         .track-checkbox {
@@ -269,6 +285,11 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
+        }
+        
+        .track-checkbox input:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
         }
         
         .track-cover {
@@ -282,6 +303,7 @@
             color: white;
             font-size: 1rem;
             margin-right: 12px;
+            flex-shrink: 0;
         }
         
         .track-cover img {
@@ -293,25 +315,33 @@
         
         .track-info {
             flex: 1;
+            min-width: 0;
         }
         
         .track-title {
             font-weight: 600;
             color: var(--gray-800);
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .track-artist {
             font-size: 0.8rem;
             color: var(--gray-500);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .track-meta {
             display: flex;
-            gap: 20px;
-            margin-right: 16px;
+            gap: 16px;
+            margin-right: 12px;
             font-size: 0.8rem;
             color: var(--gray-500);
+            flex-shrink: 0;
         }
         
         .track-meta span {
@@ -325,40 +355,24 @@
             font-size: 0.7rem;
         }
         
-        .unavailable-track {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
-            margin-bottom: 6px;
-            opacity: 0.7;
-            border-left: 3px solid var(--gray-400);
-        }
-        
-        .unavailable-info {
-            flex: 1;
-            margin-left: 10px;
-        }
-        
-        .unavailable-title {
-            font-size: 0.85rem;
-            font-weight: 500;
+        .track-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: var(--gray-200);
             color: var(--gray-600);
+            white-space: nowrap;
+            margin-left: 8px;
         }
         
-        .unavailable-artist {
-            font-size: 0.7rem;
-            color: var(--gray-500);
-        }
-        
-        .album-badge {
-            font-size: 0.7rem;
+        .track-badge.other-album {
             background: var(--primary-soft);
             color: var(--primary);
-            padding: 2px 8px;
-            border-radius: 12px;
-            white-space: nowrap;
+        }
+        
+        .track-badge.in-this-album {
+            background: var(--gray-300);
+            color: var(--gray-700);
         }
         
         /* Selection Bar */
@@ -446,24 +460,6 @@
             margin-bottom: 16px;
         }
         
-        .info-section {
-            margin-top: 20px;
-            padding: 16px;
-            background: var(--gray-50);
-            border-radius: var(--radius-md);
-            border: 1px dashed var(--gray-300);
-        }
-        
-        .info-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--gray-600);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
         /* Toast */
         .toast {
             position: fixed;
@@ -478,7 +474,6 @@
         
         .toast.success { background: var(--success); }
         .toast.error { background: #ef4444; }
-        .toast.info { background: var(--primary); }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -499,6 +494,11 @@
                 width: 100%;
                 margin-left: 58px;
                 margin-top: 8px;
+            }
+            
+            .track-badge {
+                margin-left: 58px;
+                margin-top: 4px;
             }
             
             .selection-bar {
@@ -543,10 +543,9 @@
         let albumId = null;
         let album = null;
         let allTracks = [];
+        let allAlbums = [];
         let albumTrackIds = new Set();
-        let tracksInOtherAlbums = new Set();
-        let unavailableTracks = [];
-        let availableTracks = [];
+        let tracksInOtherAlbums = new Map(); // track_id -> {albumId, albumTitle}
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
@@ -560,7 +559,7 @@
             }
             
             try {
-                // Load album details and all tracks in parallel
+                // Load album details, all tracks, and all albums in parallel
                 const [albumRes, tracksRes, albumsRes] = await Promise.all([
                     fetch(`${API_BASE}/albums/${albumId}`),
                     fetch(`${API_BASE}/tracks`),
@@ -571,37 +570,25 @@
                 
                 album = await albumRes.json();
                 allTracks = await tracksRes.json();
-                const allAlbums = await albumsRes.json();
+                allAlbums = await albumsRes.json();
                 
                 // Get IDs of tracks already in THIS album
                 albumTrackIds = new Set((album.tracks || []).map(t => t.id));
                 
-                // Build set of track IDs that are in OTHER albums
+                // Build map of tracks in OTHER albums
                 tracksInOtherAlbums.clear();
                 for (const otherAlbum of allAlbums) {
                     if (otherAlbum.id == albumId) continue; // Skip current album
-                    if (otherAlbum.tracks) {
-                        otherAlbum.tracks.forEach(t => tracksInOtherAlbums.add(t.id));
+                    
+                    if (otherAlbum.tracks && otherAlbum.tracks.length > 0) {
+                        for (const track of otherAlbum.tracks) {
+                            tracksInOtherAlbums.set(track.id, {
+                                albumId: otherAlbum.id,
+                                albumTitle: otherAlbum.title
+                            });
+                        }
                     }
                 }
-                
-                // Calculate available tracks: NOT in this album AND NOT in other albums
-                availableTracks = allTracks.filter(t => 
-                    !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id)
-                );
-                
-                // Tracks in other albums (for info display)
-                unavailableTracks = allTracks.filter(t => 
-                    tracksInOtherAlbums.has(t.id) && !albumTrackIds.has(t.id)
-                );
-                
-                console.log('📊 Track stats:', {
-                    total: allTracks.length,
-                    inThisAlbum: albumTrackIds.size,
-                    inOtherAlbums: tracksInOtherAlbums.size,
-                    available: availableTracks.length,
-                    unavailable: unavailableTracks.length
-                });
                 
                 renderPage();
                 
@@ -619,21 +606,33 @@
         }
 
         function renderPage() {
-            // Apply search and filter to available tracks
+            // Calculate stats
+            const availableCount = allTracks.filter(t => 
+                !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id)
+            ).length;
+            
+            const inThisAlbumCount = albumTrackIds.size;
+            const inOtherAlbumsCount = tracksInOtherAlbums.size;
+            
+            // Apply search and filter
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-            const filteredTracks = availableTracks.filter(track => {
-                const matchesSearch = track.title.toLowerCase().includes(searchTerm) ||
-                                    track.artist.toLowerCase().includes(searchTerm);
-                
-                if (currentFilter === 'all') return matchesSearch;
-                if (currentFilter === 'featured') return matchesSearch && track.featured;
-                if (currentFilter === 'recent') {
-                    const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-                    const trackDate = new Date(track.uploaded_at).getTime();
-                    return matchesSearch && trackDate > sevenDaysAgo;
-                }
-                return matchesSearch;
+            
+            // First filter by search
+            let filteredTracks = allTracks.filter(track => {
+                return track.title.toLowerCase().includes(searchTerm) ||
+                       track.artist.toLowerCase().includes(searchTerm);
             });
+            
+            // Then apply category filter
+            if (currentFilter === 'available') {
+                filteredTracks = filteredTracks.filter(t => 
+                    !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id)
+                );
+            } else if (currentFilter === 'in-this-album') {
+                filteredTracks = filteredTracks.filter(t => albumTrackIds.has(t.id));
+            } else if (currentFilter === 'in-other-albums') {
+                filteredTracks = filteredTracks.filter(t => tracksInOtherAlbums.has(t.id));
+            }
 
             const contentCard = document.getElementById('contentCard');
             
@@ -661,39 +660,44 @@
                         <input type="text" id="searchInput" placeholder="Search tracks by title or artist..." value="${escapeHtml(searchTerm)}">
                     </div>
                     
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
-                        <span class="stats-badge">
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                            ${availableTracks.length} Available
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;">
+                        <span class="stats-badge available">
+                            <i class="fas fa-check-circle"></i>
+                            ${availableCount} Available
                         </span>
                         <span class="stats-badge">
                             <i class="fas fa-music"></i>
-                            ${albumTrackIds.size} In this album
+                            ${inThisAlbumCount} In this album
                         </span>
                         <span class="stats-badge">
-                            <i class="fas fa-lock" style="color: var(--gray-500);"></i>
-                            ${unavailableTracks.length} In other albums
+                            <i class="fas fa-lock"></i>
+                            ${inOtherAlbumsCount} In other albums
                         </span>
                     </div>
                     
                     <div class="filter-bar">
                         <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
-                        <button class="filter-btn ${currentFilter === 'featured' ? 'active' : ''}" onclick="setFilter('featured')">Featured</button>
-                        <button class="filter-btn ${currentFilter === 'recent' ? 'active' : ''}" onclick="setFilter('recent')">Recent</button>
+                        <button class="filter-btn ${currentFilter === 'available' ? 'active' : ''}" onclick="setFilter('available')">Available</button>
+                        <button class="filter-btn ${currentFilter === 'in-this-album' ? 'active' : ''}" onclick="setFilter('in-this-album')">In This Album</button>
+                        <button class="filter-btn ${currentFilter === 'in-other-albums' ? 'active' : ''}" onclick="setFilter('in-other-albums')">In Other Albums</button>
                     </div>
                 </div>
                 
                 <div class="tracks-container">
-                    ${filteredTracks.length > 0 ? `
-                        <div style="margin-bottom: 10px; color: var(--gray-500); font-size: 0.85rem;">
-                            <i class="fas fa-check-circle" style="color: var(--success);"></i> 
-                            Showing ${filteredTracks.length} available tracks
-                        </div>
-                        ${filteredTracks.map(track => `
-                            <div class="track-item ${selectedTracks.has(track.id) ? 'selected' : ''}" onclick="toggleTrack(${track.id}, event)">
+                    ${filteredTracks.length > 0 
+                        ? filteredTracks.map(track => {
+                            const isInThisAlbum = albumTrackIds.has(track.id);
+                            const inOtherAlbum = tracksInOtherAlbums.get(track.id);
+                            const isDisabled = isInThisAlbum || inOtherAlbum;
+                            const isSelected = selectedTracks.has(track.id);
+                            
+                            return `
+                            <div class="track-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}" 
+                                 ${!isDisabled ? `onclick="toggleTrack(${track.id}, event)"` : ''}>
                                 <div class="track-checkbox" onclick="event.stopPropagation()">
                                     <input type="checkbox" 
-                                           ${selectedTracks.has(track.id) ? 'checked' : ''} 
+                                           ${isSelected ? 'checked' : ''} 
+                                           ${isDisabled ? 'disabled' : ''}
                                            onchange="toggleTrack(${track.id})">
                                 </div>
                                 <div class="track-cover">
@@ -710,44 +714,18 @@
                                     <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
                                     <span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
                                 </div>
+                                ${isInThisAlbum ? '<span class="track-badge in-this-album">Already in this album</span>' : ''}
+                                ${inOtherAlbum ? `<span class="track-badge other-album">In "${escapeHtml(inOtherAlbum.albumTitle)}"</span>` : ''}
                             </div>
-                        `).join('')
-                    } : availableTracks.length === 0 ? `
-                        <div class="empty-state">
-                            <i class="fas fa-check-circle" style="color: var(--success); font-size: 3rem;"></i>
-                            <h3>All tracks are assigned</h3>
-                            <p>Every track in your library already belongs to an album</p>
-                        </div>
-                    ` : `
-                        <div class="empty-state">
-                            <i class="fas fa-search"></i>
-                            <h3>No matches found</h3>
-                            <p>Try a different search term</p>
-                        </div>
-                    `}
-                    
-                    ${unavailableTracks.length > 0 && searchTerm === '' ? `
-                        <div class="info-section">
-                            <div class="info-title">
-                                <i class="fas fa-info-circle"></i> 
-                                Tracks in other albums (${unavailableTracks.length})
+                        `}).join('')
+                        : `
+                            <div class="empty-state">
+                                <i class="fas fa-music"></i>
+                                <h3>No tracks found</h3>
+                                <p>Try a different search or filter</p>
                             </div>
-                            ${unavailableTracks.slice(0, 5).map(track => `
-                                <div class="unavailable-track">
-                                    <i class="fas fa-lock" style="color: var(--gray-400); width: 20px;"></i>
-                                    <div class="unavailable-info">
-                                        <div class="unavailable-title">${escapeHtml(track.title)}</div>
-                                        <div class="unavailable-artist">${escapeHtml(track.artist)}</div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                            ${unavailableTracks.length > 5 ? `
-                                <div style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--gray-500);">
-                                    +${unavailableTracks.length - 5} more tracks in other albums
-                                </div>
-                            ` : ''}
-                        </div>
-                    ` : ''}
+                        `
+                    }
                 </div>
                 
                 <div class="selection-bar">
@@ -768,7 +746,11 @@
             // Add search listener
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
-                searchInput.addEventListener('input', debounce(() => {
+                // Remove existing listener to avoid duplicates
+                const newSearchInput = searchInput.cloneNode(true);
+                searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+                
+                newSearchInput.addEventListener('input', debounce(() => {
                     renderPage();
                 }, 300));
             }
@@ -778,7 +760,10 @@
             if (selectedTracks.has(trackId)) {
                 selectedTracks.delete(trackId);
             } else {
-                selectedTracks.add(trackId);
+                // Check if track is available (not in this album and not in other albums)
+                if (!albumTrackIds.has(trackId) && !tracksInOtherAlbums.has(trackId)) {
+                    selectedTracks.add(trackId);
+                }
             }
             renderPage();
         }
@@ -801,7 +786,6 @@
 
             let successCount = 0;
             let errorCount = 0;
-            const errors = [];
 
             for (const trackId of selectedTracks) {
                 try {
@@ -818,23 +802,22 @@
                         albumTrackIds.add(trackId);
                     } else {
                         errorCount++;
-                        errors.push(data.error || 'Unknown error');
+                        console.error('Failed to add track:', data.error);
                     }
                 } catch (error) {
                     console.error('Error adding track:', error);
                     errorCount++;
-                    errors.push(error.message);
                 }
             }
 
             selectedTracks.clear();
 
             if (errorCount === 0) {
-                showToast(`✅ Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
+                showToast(`Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
             } else if (successCount > 0) {
-                showToast(`⚠️ Added ${successCount} tracks (${errorCount} failed)`, 'error');
+                showToast(`Added ${successCount} tracks (${errorCount} failed)`, 'error');
             } else {
-                showToast(`❌ ${errors[0] || 'Failed to add tracks'}`, 'error');
+                showToast('Failed to add tracks', 'error');
             }
 
             // Reload page to show updated album
