@@ -397,7 +397,6 @@
             margin-bottom: 16px;
         }
         
-        /* Responsive */
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -463,7 +462,6 @@
                 if (!res.ok) throw new Error('Album not found');
                 
                 const album = await res.json();
-                console.log('Album data:', album);
                 
                 // Tracks should be in album.tracks
                 const tracks = album.tracks || [];
@@ -493,7 +491,7 @@
                     <div class="album-cover-large">
                         ${album.cover_url 
                             ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}">`
-                            : `<div class="default-cover">${album.cover_emoji || '💿'}</div>`
+                            : `<div class="default-cover">💿</div>`
                         }
                     </div>
                     
@@ -525,7 +523,7 @@
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${formatDuration(totalDuration)}</div>
-                            <div class="stat-label">Total Duration</div>
+                            <div class="stat-label">Duration</div>
                         </div>
                     </div>
                     
@@ -582,7 +580,6 @@
                 `;
                 
             } catch (error) {
-                console.error('Error loading album:', error);
                 document.getElementById('profileContent').innerHTML = `
                     <div style="text-align: center; padding: 60px;">
                         <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
@@ -605,9 +602,12 @@
                     method: 'DELETE'
                 });
                 
-                if (!res.ok) throw new Error('Failed to remove track');
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Failed to remove track');
+                }
                 
-                // Remove track from UI
+                // Remove track from UI with animation
                 const trackItem = button.closest('.track-item');
                 trackItem.style.animation = 'fadeOut 0.3s';
                 setTimeout(() => {
@@ -627,13 +627,13 @@
                     const tracksStat = document.querySelector('.stat-card:first-child .stat-value');
                     if (tracksStat) tracksStat.textContent = trackCount;
                     
-                    // If no tracks left, reload to show empty state
+                    // If no tracks left, show empty state
                     if (trackCount === 0) {
                         location.reload();
                     }
+                    
+                    showToast('Track removed from album', 'success');
                 }, 300);
-                
-                showToast('Track removed from album', 'success');
                 
             } catch (error) {
                 showToast(error.message, 'error');
