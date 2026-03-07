@@ -3,20 +3,46 @@ export async function onRequest(context) {
   
   try {
     const filename = params.filename;
+    console.log('Serving album image:', filename);
+
+    // Try different path variations (just like artist-image endpoint)
+    const pathsToTry = [
+      `albums/${filename}`,           // albums/filename.jpg
+      filename,                        // filename.jpg
+      `albums/${filename.split('/').pop()}`, // just the filename part
+    ];
+
+    // Remove duplicates
+    const uniquePaths = [...new Set(pathsToTry)];
     
-    // Get the image from R2 (assuming they're stored in AUDIO bucket under "albums/")
-    const object = await env.AUDIO.get(`albums/${filename}`);
-    
+    let object = null;
+    let usedPath = null;
+
+    // Try each path
+    for (const path of uniquePaths) {
+      object = await env.AUDIO.get(path);
+      if (object) {
+        usedPath = path;
+        console.log('Found image at:', usedPath);
+        break;
+      }
+    }
+
     if (!object) {
+      console.log('Image not found for:', filename);
       return new Response('Image not found', { status: 404 });
     }
-    
+
     // Determine content type
-    const contentType = object.httpMetadata?.contentType || 
-                       (filename.endsWith('.png') ? 'image/png' : 
-                        filename.endsWith('.jpg') || filename.endsWith('.jpeg') ? 'image/jpeg' : 
-                        filename.endsWith('.webp') ? 'image/webp' : 'image/jpeg');
-    
+    let contentType = object.httpMetadata?.contentType;
+    if (!contentType) {
+      if (filename.endsWith('.png')) contentType = 'image/png';
+      else if (filename.endsWith('.jpg') || filename.endsWith('.jpeg')) contentType = 'image/jpeg';
+      else if (filename.endsWith('.webp')) contentType = 'image/webp';
+      else if (filename.endsWith('.gif')) contentType = 'image/gif';
+      else contentType = 'image/jpeg';
+    }
+
     // Return the image
     return new Response(object.body, {
       headers: {
@@ -25,8 +51,9 @@ export async function onRequest(context) {
         'Access-Control-Allow-Origin': '*'
       }
     });
-    
+
   } catch (error) {
-    return new Response('Error loading image', { status: 500 });
+    console.error('Error serving album image:', error);
+    return new Response('Error loading image: ' + error.message, { status: 500 });
   }
 }
