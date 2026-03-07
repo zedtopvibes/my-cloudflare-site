@@ -25,7 +25,7 @@ export async function onRequest(context) {
       SELECT * FROM albums ORDER BY created_at DESC
     `).all();
     
-    // For each album, get its tracks (just like playlists does)
+    // For each album, get its tracks (SAME AS PLAYLISTS APPROACH)
     const albumsWithTracks = await Promise.all(
       albums.results.map(async (album) => {
         const tracks = await env.DB.prepare(`
