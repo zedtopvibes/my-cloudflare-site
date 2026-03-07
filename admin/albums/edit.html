@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Album | ZEDTOPVIBES</title>
+    <title>Edit Album - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -55,9 +55,8 @@
         }
         
         .header h1 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            color: var(--gray-800);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -68,31 +67,35 @@
         }
         
         .back-btn {
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: var(--gray-100);
             border-radius: var(--radius-md);
             color: var(--gray-700);
             text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
             border: 1px solid var(--gray-200);
         }
         
         .form-card {
             background: white;
             border-radius: var(--radius-lg);
-            padding: 30px;
+            padding: 24px;
             box-shadow: var(--shadow-md);
             border: 1px solid var(--gray-200);
         }
         
         .cover-section {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
         
         .cover-preview {
             width: 150px;
             height: 150px;
-            margin: 0 auto 15px;
+            margin: 0 auto 16px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: var(--radius-lg);
             display: flex;
@@ -101,6 +104,7 @@
             color: white;
             font-size: 3rem;
             overflow: hidden;
+            border: 3px solid var(--gray-200);
         }
         
         .cover-preview img {
@@ -115,10 +119,14 @@
             padding: 8px 16px;
             border-radius: var(--radius-md);
             cursor: pointer;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         
-        #coverInput { display: none; }
+        #coverInput {
+            display: none;
+        }
         
         .form-group {
             margin-bottom: 20px;
@@ -126,9 +134,15 @@
         
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 500;
+            font-size: 0.9rem;
             color: var(--gray-700);
+        }
+        
+        .form-group label i {
+            color: var(--primary);
+            margin-right: 6px;
         }
         
         .form-group input,
@@ -137,204 +151,352 @@
             padding: 10px 12px;
             border: 1px solid var(--gray-200);
             border-radius: var(--radius-md);
+            font-size: 0.95rem;
             font-family: 'Inter', sans-serif;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
         }
         
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
         }
         
-        .checkbox {
+        .checkbox-label {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin: 20px 0;
+            cursor: pointer;
+            font-size: 0.9rem;
         }
         
-        .actions {
+        .action-buttons {
             display: flex;
             gap: 12px;
             justify-content: flex-end;
-            margin-top: 30px;
+            margin-top: 24px;
         }
         
         .btn {
-            padding: 10px 20px;
+            padding: 10px 24px;
             border: none;
             border-radius: var(--radius-md);
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
-            text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
         
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+        }
         
         .loading {
             text-align: center;
             padding: 40px;
-            color: var(--gray-500);
+        }
+        
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-compact-disc"></i> <span id="pageTitle">Create Album</span></h1>
-            <a href="/admin/albums/index.html" class="back-btn">Back</a>
+            <h1>
+                <i class="fas fa-compact-disc"></i>
+                <span id="pageTitle">Create Album</span>
+            </h1>
+            <a href="/admin/albums/index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
         </div>
         
         <div class="form-card" id="formCard">
-            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+            <div class="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <div>Loading...</div>
+            </div>
         </div>
     </div>
 
     <script>
-        const API = '/api';
-        let coverFile = null;
-
-        async function loadAlbum() {
+        const API_BASE = '/api';
+        let currentCoverFile = null;
+        
+        async function loadAlbumForEdit() {
             const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
+            const albumId = urlParams.get('id');
             
-            if (!id) {
-                document.getElementById('pageTitle').textContent = 'Create Album';
+            const pageTitle = document.getElementById('pageTitle');
+            const formCard = document.getElementById('formCard');
+            
+            if (!albumId) {
+                pageTitle.textContent = 'Create Album';
                 renderForm(null);
                 return;
             }
             
             try {
-                const res = await fetch(`${API}/albums/${id}`);
+                const res = await fetch(`${API_BASE}/albums/${albumId}`);
+                if (!res.ok) throw new Error('Album not found');
                 const album = await res.json();
-                document.getElementById('pageTitle').textContent = 'Edit Album';
+                
+                pageTitle.textContent = `Edit: ${album.title}`;
                 renderForm(album);
+                
             } catch (error) {
-                document.getElementById('formCard').innerHTML = '<div class="loading">Failed to load album</div>';
+                formCard.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 16px;"></i>
+                        <h3>Failed to load album</h3>
+                        <p style="margin: 16px 0;">${error.message}</p>
+                        <a href="/admin/albums/index.html" class="btn btn-primary">Back to Albums</a>
+                    </div>
+                `;
             }
         }
-
+        
         function renderForm(album) {
+            const isEditing = !!album;
+            
             document.getElementById('formCard').innerHTML = `
                 <form id="albumForm">
                     <input type="hidden" id="albumId" value="${album?.id || ''}">
                     
                     <div class="cover-section">
                         <div class="cover-preview" id="coverPreview">
-                            ${album?.cover_url ? `<img src="${album.cover_url}" alt="Cover">` : '<i class="fas fa-compact-disc"></i>'}
+                            ${album?.cover_url 
+                                ? `<img src="${album.cover_url}" alt="Cover">`
+                                : '<i class="fas fa-compact-disc"></i>'
+                            }
                         </div>
-                        <label for="coverInput" class="cover-upload-btn">
-                            <i class="fas fa-camera"></i> ${album?.cover_url ? 'Change Cover' : 'Upload Cover'}
-                        </label>
-                        <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+                        
+                        <div>
+                            <label for="coverInput" class="cover-upload-btn">
+                                <i class="fas fa-camera"></i>
+                                ${album?.cover_url ? 'Change Cover' : 'Upload Cover'}
+                            </label>
+                            <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label>Title *</label>
-                        <input type="text" id="title" value="${escape(album?.title || '')}" required>
+                        <label><i class="fas fa-tag"></i> Album Title *</label>
+                        <input type="text" id="albumTitle" value="${escapeHtml(album?.title || '')}" placeholder="e.g. Midnight Waves" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Artist *</label>
-                        <input type="text" id="artist" value="${escape(album?.artist || '')}" required>
+                        <label><i class="fas fa-user"></i> Artist *</label>
+                        <input type="text" id="albumArtist" value="${escapeHtml(album?.artist || '')}" placeholder="e.g. Slap Dee" required>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Release Date</label>
-                            <input type="date" id="releaseDate" value="${album?.release_date || ''}">
+                            <label><i class="fas fa-calendar"></i> Release Date</label>
+                            <input type="date" id="albumReleaseDate" value="${album?.release_date || ''}">
                         </div>
+                        
                         <div class="form-group">
-                            <label>Genre</label>
-                            <input type="text" id="genre" value="${escape(album?.genre || '')}">
+                            <label><i class="fas fa-tag"></i> Genre</label>
+                            <input type="text" id="albumGenre" value="${escapeHtml(album?.genre || '')}" placeholder="e.g. Hip-Hop">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="description" rows="3">${escape(album?.description || '')}</textarea>
+                        <label><i class="fas fa-align-left"></i> Description</label>
+                        <textarea id="albumDescription" rows="3" placeholder="Album description...">${escapeHtml(album?.description || '')}</textarea>
                     </div>
                     
-                    <div class="checkbox">
-                        <input type="checkbox" id="featured" ${album?.is_featured ? 'checked' : ''}>
-                        <label for="featured">Featured Album</label>
+                    <div class="checkbox-label">
+                        <input type="checkbox" id="albumFeatured" ${album?.is_featured ? 'checked' : ''}>
+                        <i class="fas fa-star" style="color: var(--primary);"></i> Featured Album
                     </div>
                     
-                    <div class="actions">
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/albums/index.html'">Cancel</button>
-                        <button type="submit" class="btn btn-primary">${album ? 'Update' : 'Create'}</button>
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/albums/index.html'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            ${isEditing ? 'Update Album' : 'Create Album'}
+                        </button>
                     </div>
                 </form>
             `;
+            
             document.getElementById('albumForm').addEventListener('submit', handleSubmit);
         }
-
+        
         function previewCover(input) {
             if (input.files && input.files[0]) {
-                coverFile = input.files[0];
+                currentCoverFile = input.files[0];
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('coverPreview').innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                reader.onload = function(e) {
+                    const preview = document.getElementById('coverPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
                 };
-                reader.readAsDataURL(coverFile);
+                reader.readAsDataURL(input.files[0]);
             }
         }
-
+        
         async function handleSubmit(e) {
             e.preventDefault();
             
             const id = document.getElementById('albumId').value;
-            const data = {
-                title: document.getElementById('title').value,
-                artist: document.getElementById('artist').value,
-                release_date: document.getElementById('releaseDate').value || null,
-                genre: document.getElementById('genre').value || null,
-                description: document.getElementById('description').value || null,
-                is_featured: document.getElementById('featured').checked
+            const isEditing = !!id;
+            
+            const albumData = {
+                title: document.getElementById('albumTitle').value.trim(),
+                artist: document.getElementById('albumArtist').value.trim(),
+                release_date: document.getElementById('albumReleaseDate').value || null,
+                genre: document.getElementById('albumGenre').value.trim() || null,
+                description: document.getElementById('albumDescription').value.trim() || null,
+                is_featured: document.getElementById('albumFeatured').checked
             };
-
+            
+            if (!albumData.title || !albumData.artist) {
+                alert('Title and artist are required');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
             try {
-                let res;
-                if (id) {
-                    res = await fetch(`${API}/admin/albums/${id}`, {
+                let response;
+                
+                if (isEditing) {
+                    response = await fetch(`${API_BASE}/admin/albums/${id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
+                        body: JSON.stringify(albumData)
                     });
                 } else {
-                    res = await fetch(`${API}/admin/albums`, {
+                    response = await fetch(`${API_BASE}/admin/albums`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
+                        body: JSON.stringify(albumData)
                     });
                 }
                 
-                const result = await res.json();
-                const albumId = result.id || id;
+                const data = await response.json();
                 
-                if (coverFile) {
-                    const formData = new FormData();
-                    formData.append('cover', coverFile);
-                    await fetch(`${API}/admin/albums/${albumId}/cover`, {
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to save');
+                }
+                
+                const albumId = data.id || id;
+                
+                // Upload cover if selected
+                if (currentCoverFile) {
+                    const coverData = new FormData();
+                    coverData.append('cover', currentCoverFile);
+                    
+                    const coverRes = await fetch(`${API_BASE}/admin/albums/${albumId}/cover`, {
                         method: 'POST',
-                        body: formData
+                        body: coverData
                     });
+                    
+                    if (!coverRes.ok) {
+                        console.warn('Cover upload failed');
+                    }
                 }
                 
-                window.location.href = `/admin/albums/profile.html?id=${albumId}`;
+                showToast(`Album ${isEditing ? 'updated' : 'created'}!`, 'success');
+                
+                setTimeout(() => {
+                    window.location.href = `/admin/albums/profile.html?id=${albumId}`;
+                }, 1500);
+                
             } catch (error) {
-                alert('Failed to save album');
+                showToast(error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = isEditing ? 'Update Album' : 'Create Album';
             }
         }
-
-        function escape(str) { if (!str) return ''; const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
-
-        if (!localStorage.getItem('admin_logged_in')) window.location.href = '/admin/login.html';
-        else loadAlbum();
+        
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 2000;
+                animation: slideIn 0.3s;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Check authentication
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            if (!isLoggedIn) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Initialize
+        if (checkAuth()) {
+            loadAlbumForEdit();
+        }
+        
+        // Add animation style
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
