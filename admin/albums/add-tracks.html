@@ -429,6 +429,12 @@
             color: var(--gray-500);
         }
         
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -522,7 +528,7 @@
         let allTracks = [];
         let allAlbums = [];
         let albumTrackIds = new Set();
-        let tracksInOtherAlbums = new Map(); // track_id -> {albumId, albumTitle}
+        let tracksInOtherAlbums = new Map();
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
@@ -536,52 +542,46 @@
             }
             
             try {
-                // Load album details
-                const albumRes = await fetch(`${API_BASE}/albums/${albumId}`);
-                if (!albumRes.ok) throw new Error('Album not found');
-                album = await albumRes.json();
+                // Load ALL data in parallel - just 3 fast API calls like playlists!
+                const [albumRes, tracksRes, albumsRes] = await Promise.all([
+                    fetch(`${API_BASE}/albums/${albumId}`),      // Gets album with its tracks
+                    fetch(`${API_BASE}/tracks`),                  // Gets all tracks
+                    fetch(`${API_BASE}/albums`)                   // Gets all albums with their tracks pre-loaded
+                ]);
                 
-                // Load all tracks
-                const tracksRes = await fetch(`${API_BASE}/tracks`);
+                if (!albumRes.ok) throw new Error('Album not found');
+                if (!tracksRes.ok) throw new Error('Failed to load tracks');
+                if (!albumsRes.ok) throw new Error('Failed to load albums');
+                
+                album = await albumRes.json();
                 allTracks = await tracksRes.json();
+                allAlbums = await albumsRes.json(); // Each album already has its tracks!
+                
+                console.log('Loaded:', {
+                    album: album.title,
+                    trackCount: allTracks.length,
+                    albumCount: allAlbums.length
+                });
                 
                 // Get IDs of tracks already in THIS album
                 albumTrackIds = new Set((album.tracks || []).map(t => t.id));
                 
-                // Load ALL albums to find which tracks are in other albums
-                const albumsRes = await fetch(`${API_BASE}/albums`);
-                allAlbums = await albumsRes.json();
-                
-                // Clear previous map
+                // Build map of tracks in OTHER albums (from the pre-loaded data)
                 tracksInOtherAlbums.clear();
                 
-                // For each album (except current), get its tracks
                 for (const otherAlbum of allAlbums) {
+                    // Skip current album
                     if (otherAlbum.id == albumId) continue;
                     
-                    // If tracks are included in the album object
+                    // Tracks are already included! No extra API calls needed
                     if (otherAlbum.tracks && otherAlbum.tracks.length > 0) {
                         for (const track of otherAlbum.tracks) {
-                            tracksInOtherAlbums.set(track.id, {
-                                albumId: otherAlbum.id,
-                                albumTitle: otherAlbum.title
-                            });
-                        }
-                    } else {
-                        // Fetch tracks for this album
-                        try {
-                            const otherAlbumRes = await fetch(`${API_BASE}/albums/${otherAlbum.id}`);
-                            const otherAlbumData = await otherAlbumRes.json();
-                            if (otherAlbumData.tracks) {
-                                for (const track of otherAlbumData.tracks) {
-                                    tracksInOtherAlbums.set(track.id, {
-                                        albumId: otherAlbum.id,
-                                        albumTitle: otherAlbum.title
-                                    });
-                                }
+                            if (!tracksInOtherAlbums.has(track.id)) {
+                                tracksInOtherAlbums.set(track.id, {
+                                    albumId: otherAlbum.id,
+                                    albumTitle: otherAlbum.title
+                                });
                             }
-                        } catch (e) {
-                            console.warn(`Could not fetch tracks for album ${otherAlbum.id}`);
                         }
                     }
                 }
@@ -756,7 +756,11 @@
             // Add search listener
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
-                searchInput.addEventListener('input', debounce(() => {
+                // Remove existing listener if any
+                const newSearchInput = searchInput.cloneNode(true);
+                searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+                
+                newSearchInput.addEventListener('input', debounce(() => {
                     renderPage();
                 }, 300));
             }
