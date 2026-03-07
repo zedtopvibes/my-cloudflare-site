@@ -84,6 +84,23 @@
             border: 1px solid var(--gray-200);
         }
         
+        .back-btn:hover {
+            background: var(--gray-200);
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .badge.featured {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+        
         /* Profile Card */
         .profile-card {
             background: white;
@@ -113,6 +130,7 @@
         
         .playlist-cover-large .default-cover {
             opacity: 0.8;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         
         /* Playlist Info */
@@ -135,6 +153,7 @@
             color: var(--gray-500);
             font-size: 0.9rem;
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
         
         .playlist-description {
@@ -147,7 +166,7 @@
         /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             border-bottom: 1px solid var(--gray-200);
         }
         
@@ -193,6 +212,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        
+        .section-header h2 i {
+            color: var(--primary);
         }
         
         .track-count {
@@ -300,6 +323,12 @@
             border: 1px dashed var(--gray-300);
         }
         
+        .empty-tracks i {
+            font-size: 3rem;
+            color: var(--gray-300);
+            margin-bottom: 12px;
+        }
+        
         /* Action Buttons */
         .action-buttons {
             display: flex;
@@ -337,9 +366,17 @@
             border: 1px solid var(--gray-200);
         }
         
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+        
         .btn-danger {
             background: #ef4444;
             color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
         }
         
         .loading {
@@ -348,12 +385,24 @@
             color: var(--gray-500);
         }
         
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             
             .stat-card:nth-child(3) {
+                border-right: 1px solid var(--gray-200);
+            }
+            
+            .stat-card:nth-child(5) {
+                grid-column: span 2;
                 border-right: none;
             }
             
@@ -365,6 +414,15 @@
                 width: 100%;
                 margin-left: 42px;
                 margin-top: 8px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -403,19 +461,19 @@
             }
             
             try {
-                // Fetch playlist details
-                const playlistRes = await fetch(`${API_BASE}/playlists/${playlistId}`);
-                if (!playlistRes.ok) throw new Error('Playlist not found');
-                const playlist = await playlistRes.json();
+                // Fetch playlist details - this already includes tracks!
+                const res = await fetch(`${API_BASE}/playlists/${playlistId}`);
+                if (!res.ok) throw new Error('Playlist not found');
                 
-                // Fetch tracks in playlist
-                const tracksRes = await fetch(`${API_BASE}/playlists/${playlistId}/tracks`).catch(() => ({ ok: false }));
-                const tracks = tracksRes.ok ? await tracksRes.json() : [];
+                const playlist = await res.json();
+                console.log('Playlist data:', playlist); // For debugging
+                
+                // Tracks are already in playlist.tracks
+                const tracks = playlist.tracks || [];
                 
                 // Calculate stats
                 const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
                 const totalDuration = tracks.reduce((sum, t) => sum + (t.duration || 0), 0);
-                const avgDuration = tracks.length ? Math.round(totalDuration / tracks.length) : 0;
                 
                 // Format duration
                 const formatDuration = (seconds) => {
@@ -425,11 +483,20 @@
                     return `${mins}:${secs.toString().padStart(2, '0')}`;
                 };
                 
+                // Format date
+                const createdDate = playlist.created_at 
+                    ? new Date(playlist.created_at).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })
+                    : 'Unknown';
+                
                 document.getElementById('profileContent').innerHTML = `
                     <div class="playlist-cover-large">
                         ${playlist.cover_url 
                             ? `<img src="${playlist.cover_url}" alt="${escapeHtml(playlist.name)}">`
-                            : `<i class="fas fa-list default-cover"></i>`
+                            : `<div class="default-cover">${playlist.cover_emoji || '📋'}</div>`
                         }
                     </div>
                     
@@ -437,8 +504,8 @@
                         <h1 class="playlist-name">${escapeHtml(playlist.name)}</h1>
                         <div class="playlist-creator">
                             <i class="fas fa-user-circle"></i>
-                            Created by ${playlist.created_by || 'Zedtopvibes'}
-                            ${playlist.created_at ? ` • ${new Date(playlist.created_at).toLocaleDateString()}` : ''}
+                            Created by ${playlist.created_by || 'Zedtopvibes'} • ${createdDate}
+                            ${playlist.is_featured ? '<span class="badge featured" style="margin-left: 10px;">Featured</span>' : ''}
                         </div>
                         ${playlist.description ? `
                             <div class="playlist-description">${escapeHtml(playlist.description)}</div>
@@ -451,8 +518,16 @@
                             <div class="stat-label">Tracks</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${formatNumber(totalPlays)}</div>
-                            <div class="stat-label">Total Plays</div>
+                            <div class="stat-value">${formatNumber(playlist.plays || 0)}</div>
+                            <div class="stat-label">Plays</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${formatNumber(playlist.views || 0)}</div>
+                            <div class="stat-label">Views</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${formatNumber(playlist.downloads || 0)}</div>
+                            <div class="stat-label">Downloads</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${formatDuration(totalDuration)}</div>
@@ -490,7 +565,7 @@
                             </div>
                         ` : `
                             <div class="empty-tracks">
-                                <i class="fas fa-music" style="font-size: 2rem; margin-bottom: 12px; opacity: 0.5;"></i>
+                                <i class="fas fa-music"></i>
                                 <p>No tracks in this playlist yet</p>
                                 <button class="btn btn-primary" style="margin-top: 16px;" onclick="addTracks(${playlist.id})">
                                     <i class="fas fa-plus-circle"></i> Add Tracks
@@ -513,6 +588,7 @@
                 `;
                 
             } catch (error) {
+                console.error('Error loading playlist:', error);
                 document.getElementById('profileContent').innerHTML = `
                     <div style="text-align: center; padding: 60px;">
                         <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
@@ -542,8 +618,13 @@
                 trackItem.style.animation = 'fadeOut 0.3s';
                 setTimeout(() => {
                     trackItem.remove();
-                    // Reload page if no tracks left
-                    if (document.querySelectorAll('.track-item').length === 0) {
+                    
+                    // Update track count
+                    const trackCount = document.querySelectorAll('.track-item').length;
+                    document.querySelector('.track-count').textContent = trackCount + ' tracks';
+                    
+                    // If no tracks left, reload to show empty state
+                    if (trackCount === 0) {
                         location.reload();
                     }
                 }, 300);
@@ -558,8 +639,8 @@
         }
         
         function addTracks(playlistId) {
-            // This would open a modal or redirect to track selection page
-            window.location.href = `/admin/playlists/add-tracks.html?id=${playlistId}`;
+            // For now, just show a message
+            showToast('Add tracks feature coming soon!', 'info');
         }
         
         async function deletePlaylist(id) {
@@ -582,14 +663,14 @@
             }
         }
         
-        function showToast(message, type) {
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
                 padding: 12px 20px;
-                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
                 color: white;
                 border-radius: 6px;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -615,14 +696,7 @@
             return num.toString();
         }
         
-        // Auth check
-        if (localStorage.getItem('admin_logged_in') === 'true') {
-            loadPlaylist();
-        } else {
-            window.location.href = '/admin/login.html';
-        }
-        
-        // Add animation style
+        // Add animation styles
         const style = document.createElement('style');
         style.textContent = `
             @keyframes fadeOut {
@@ -635,6 +709,32 @@
             }
         `;
         document.head.appendChild(style);
+        
+        // Check authentication
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Initialize
+        if (checkAuth()) {
+            loadPlaylist();
+        } else {
+            window.location.href = '/admin/login.html';
+        }
     </script>
 </body>
 </html>
