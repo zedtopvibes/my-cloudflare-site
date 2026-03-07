@@ -16,13 +16,17 @@
             --primary-light: #2a4a8a;
             --primary-soft: #e8f0fe;
             --secondary: #00b4d8;
+            --success: #10b981;
+            --error: #ef4444;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
             --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
             --gray-500: #6b7280;
             --gray-600: #4b5563;
             --gray-700: #374151;
+            --gray-800: #1f2937;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --radius-sm: 6px;
@@ -34,18 +38,19 @@
             font-family: 'Inter', sans-serif;
             background: var(--gray-50);
             color: var(--gray-800);
+            min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
         }
         
         .header {
             background: white;
             border-radius: var(--radius-lg);
-            padding: 16px 20px;
+            padding: 16px 24px;
             margin-bottom: 20px;
             box-shadow: var(--shadow-sm);
             display: flex;
@@ -55,8 +60,9 @@
         }
         
         .header h1 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 600;
+            color: var(--gray-800);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -67,34 +73,39 @@
         }
         
         .back-btn {
-            padding: 6px 14px;
+            padding: 8px 16px;
             background: var(--gray-100);
             border-radius: var(--radius-md);
             color: var(--gray-700);
             text-decoration: none;
-            font-size: 0.85rem;
-            display: flex;
+            font-size: 0.9rem;
+            display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             border: 1px solid var(--gray-200);
+            transition: all 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: var(--gray-200);
         }
         
         .form-card {
             background: white;
             border-radius: var(--radius-lg);
-            padding: 24px;
+            padding: 30px;
             box-shadow: var(--shadow-md);
             border: 1px solid var(--gray-200);
         }
         
         .cover-section {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
         }
         
         .cover-preview {
-            width: 150px;
-            height: 150px;
+            width: 200px;
+            height: 200px;
             margin: 0 auto 16px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: var(--radius-lg);
@@ -102,9 +113,11 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 3rem;
+            font-size: 4rem;
             overflow: hidden;
-            border: 3px solid var(--gray-200);
+            border: 4px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+            position: relative;
         }
         
         .cover-preview img {
@@ -113,19 +126,55 @@
             object-fit: cover;
         }
         
+        .cover-preview .default-icon {
+            opacity: 0.9;
+        }
+        
+        .cover-upload {
+            display: inline-block;
+            position: relative;
+        }
+        
         .cover-upload-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .cover-upload-btn:hover {
+            background: var(--primary-light);
+        }
+        
+        #coverInput {
+            display: none;
+        }
+        
+        .remove-cover {
+            margin-left: 10px;
+            padding: 10px 16px;
             background: var(--gray-100);
             border: 1px solid var(--gray-200);
-            padding: 8px 16px;
             border-radius: var(--radius-md);
+            color: var(--gray-600);
+            font-size: 0.9rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
         
-        #coverInput {
-            display: none;
+        .remove-cover:hover {
+            background: var(--gray-200);
+            color: var(--error);
         }
         
         .form-group {
@@ -143,16 +192,19 @@
         .form-group label i {
             color: var(--primary);
             margin-right: 6px;
+            width: 18px;
         }
         
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px 14px;
             border: 1px solid var(--gray-200);
             border-radius: var(--radius-md);
             font-size: 0.95rem;
             font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: var(--gray-50);
         }
         
         .form-group input:focus,
@@ -160,12 +212,24 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-soft);
+            background: white;
         }
         
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
             gap: 12px;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            margin: 24px 0;
         }
         
         .checkbox-label {
@@ -173,18 +237,72 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            color: var(--gray-700);
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .stats-preview {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin: 24px 0;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .stats-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
         }
         
         .action-buttons {
             display: flex;
             gap: 12px;
             justify-content: flex-end;
-            margin-top: 24px;
+            margin-top: 30px;
         }
         
         .btn {
-            padding: 10px 24px;
+            padding: 12px 24px;
             border: none;
             border-radius: var(--radius-md);
             font-size: 0.95rem;
@@ -193,6 +311,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            transition: all 0.2s;
         }
         
         .btn-primary {
@@ -200,8 +319,15 @@
             color: white;
         }
         
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         .btn-secondary {
@@ -210,24 +336,56 @@
             border: 1px solid var(--gray-200);
         }
         
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+        
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
+            color: var(--gray-500);
+        }
+        
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        
+        .error-message {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
         @media (max-width: 640px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
+            .container { padding: 0; }
+            .header { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .form-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -236,10 +394,10 @@
         <div class="header">
             <h1>
                 <i class="fas fa-compact-disc"></i>
-                <span id="pageTitle">Create Album</span>
+                <span id="pageTitle">Create New Album</span>
             </h1>
             <a href="/admin/albums/index.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back
+                <i class="fas fa-arrow-left"></i> Back to Albums
             </a>
         </div>
         
@@ -254,7 +412,9 @@
     <script>
         const API_BASE = '/api';
         let currentCoverFile = null;
-        
+        let originalCoverUrl = null;
+        let albumData = null;
+
         async function loadAlbumForEdit() {
             const urlParams = new URLSearchParams(window.location.search);
             const albumId = urlParams.get('id');
@@ -263,53 +423,74 @@
             const formCard = document.getElementById('formCard');
             
             if (!albumId) {
-                pageTitle.textContent = 'Create Album';
+                pageTitle.textContent = 'Create New Album';
                 renderForm(null);
                 return;
             }
             
             try {
+                // Fetch album data
                 const res = await fetch(`${API_BASE}/albums/${albumId}`);
                 if (!res.ok) throw new Error('Album not found');
-                const album = await res.json();
                 
-                pageTitle.textContent = `Edit: ${album.title}`;
-                renderForm(album);
+                albumData = await res.json();
+                console.log('Album loaded:', albumData);
+                
+                pageTitle.textContent = `Edit: ${albumData.title}`;
+                renderForm(albumData);
                 
             } catch (error) {
+                console.error('Error loading album:', error);
                 formCard.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #ef4444;">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 16px;"></i>
-                        <h3>Failed to load album</h3>
-                        <p style="margin: 16px 0;">${error.message}</p>
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--error); margin-bottom: 16px;"></i>
+                        <h3 style="color: var(--gray-700); margin-bottom: 8px;">Failed to Load Album</h3>
+                        <p style="color: var(--gray-500); margin-bottom: 20px;">${error.message}</p>
                         <a href="/admin/albums/index.html" class="btn btn-primary">Back to Albums</a>
                     </div>
                 `;
             }
         }
-        
+
         function renderForm(album) {
             const isEditing = !!album;
+            const formCard = document.getElementById('formCard');
             
-            document.getElementById('formCard').innerHTML = `
+            // Calculate stats if editing
+            const trackCount = album?.tracks?.length || 0;
+            const totalPlays = album?.tracks?.reduce((sum, t) => sum + (t.plays || 0), 0) || 0;
+            
+            formCard.innerHTML = `
                 <form id="albumForm">
                     <input type="hidden" id="albumId" value="${album?.id || ''}">
                     
                     <div class="cover-section">
                         <div class="cover-preview" id="coverPreview">
                             ${album?.cover_url 
-                                ? `<img src="${album.cover_url}" alt="Cover">`
-                                : '<i class="fas fa-compact-disc"></i>'
+                                ? `<img src="${album.cover_url}" alt="Cover" onerror="this.style.display='none'; this.parentNode.innerHTML='<i class=\'fas fa-compact-disc default-icon\'></i>';">`
+                                : '<i class="fas fa-compact-disc default-icon"></i>'
                             }
                         </div>
                         
-                        <div>
-                            <label for="coverInput" class="cover-upload-btn">
-                                <i class="fas fa-camera"></i>
-                                ${album?.cover_url ? 'Change Cover' : 'Upload Cover'}
-                            </label>
-                            <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <div class="cover-upload">
+                                <label for="coverInput" class="cover-upload-btn">
+                                    <i class="fas fa-camera"></i>
+                                    ${album?.cover_url ? 'Change Cover' : 'Upload Cover'}
+                                </label>
+                                <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+                            </div>
+                            
+                            ${album?.cover_url ? `
+                                <button type="button" class="remove-cover" onclick="removeCover()">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            ` : ''}
                         </div>
+                        
+                        <p style="font-size: 0.8rem; color: var(--gray-500); margin-top: 8px;">
+                            Recommended: Square image, at least 500x500px (PNG, JPG)
+                        </p>
                     </div>
                     
                     <div class="form-group">
@@ -318,7 +499,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-user"></i> Artist *</label>
+                        <label><i class="fas fa-user"></i> Artist Name *</label>
                         <input type="text" id="albumArtist" value="${escapeHtml(album?.artist || '')}" placeholder="e.g. Slap Dee" required>
                     </div>
                     
@@ -336,13 +517,38 @@
                     
                     <div class="form-group">
                         <label><i class="fas fa-align-left"></i> Description</label>
-                        <textarea id="albumDescription" rows="3" placeholder="Album description...">${escapeHtml(album?.description || '')}</textarea>
+                        <textarea id="albumDescription" rows="4" placeholder="Album description, background story, or notes...">${escapeHtml(album?.description || '')}</textarea>
                     </div>
                     
-                    <div class="checkbox-label">
-                        <input type="checkbox" id="albumFeatured" ${album?.is_featured ? 'checked' : ''}>
-                        <i class="fas fa-star" style="color: var(--primary);"></i> Featured Album
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="albumFeatured" ${album?.is_featured ? 'checked' : ''}>
+                            <i class="fas fa-star" style="color: ${album?.is_featured ? '#f59e0b' : 'var(--gray-400)'};"></i>
+                            Mark as Featured Album
+                        </label>
                     </div>
+                    
+                    ${isEditing ? `
+                        <div class="stats-preview">
+                            <div class="stats-title">
+                                <i class="fas fa-chart-bar"></i> Current Album Stats
+                            </div>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value">${trackCount}</div>
+                                    <div class="stat-label">Tracks</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${formatNumber(album?.plays || 0)}</div>
+                                    <div class="stat-label">Total Plays</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${formatNumber(album?.views || 0)}</div>
+                                    <div class="stat-label">Views</div>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
                     
                     <div class="action-buttons">
                         <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/albums/index.html'">
@@ -355,21 +561,59 @@
                 </form>
             `;
             
+            // Store original cover URL for remove functionality
+            if (album?.cover_url) {
+                originalCoverUrl = album.cover_url;
+            }
+            
             document.getElementById('albumForm').addEventListener('submit', handleSubmit);
         }
-        
+
         function previewCover(input) {
             if (input.files && input.files[0]) {
                 currentCoverFile = input.files[0];
+                
+                // Validate file type
+                const fileType = currentCoverFile.type;
+                if (!fileType.startsWith('image/')) {
+                    showToast('Please select an image file', 'error');
+                    currentCoverFile = null;
+                    input.value = '';
+                    return;
+                }
+                
+                // Validate file size (max 5MB)
+                if (currentCoverFile.size > 5 * 1024 * 1024) {
+                    showToast('Image must be less than 5MB', 'error');
+                    currentCoverFile = null;
+                    input.value = '';
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const preview = document.getElementById('coverPreview');
                     preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
                 };
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(currentCoverFile);
             }
         }
-        
+
+        function removeCover() {
+            if (confirm('Remove the current cover image?')) {
+                currentCoverFile = null;
+                document.getElementById('coverInput').value = '';
+                const preview = document.getElementById('coverPreview');
+                preview.innerHTML = '<i class="fas fa-compact-disc default-icon"></i>';
+                
+                // If editing, we need to mark that cover should be removed
+                // This will be handled in the submit
+                if (albumData) {
+                    albumData.cover_url = null;
+                }
+            }
+        }
+
         async function handleSubmit(e) {
             e.preventDefault();
             
@@ -385,18 +629,26 @@
                 is_featured: document.getElementById('albumFeatured').checked
             };
             
-            if (!albumData.title || !albumData.artist) {
-                alert('Title and artist are required');
+            // Validate
+            if (!albumData.title) {
+                showToast('Album title is required', 'error');
+                return;
+            }
+            if (!albumData.artist) {
+                showToast('Artist name is required', 'error');
                 return;
             }
             
             const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             
             try {
                 let response;
+                let result;
                 
+                // Save album metadata
                 if (isEditing) {
                     response = await fetch(`${API_BASE}/admin/albums/${id}`, {
                         method: 'PUT',
@@ -411,92 +663,89 @@
                     });
                 }
                 
-                const data = await response.json();
+                result = await response.json();
                 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Failed to save');
+                    throw new Error(result.error || 'Failed to save album');
                 }
                 
-                const albumId = data.id || id;
+                const albumId = result.id || id;
                 
-                // Upload cover if selected
+                // Upload new cover if selected
                 if (currentCoverFile) {
-                    const coverData = new FormData();
-                    coverData.append('cover', currentCoverFile);
+                    const formData = new FormData();
+                    formData.append('cover', currentCoverFile);
                     
                     const coverRes = await fetch(`${API_BASE}/admin/albums/${albumId}/cover`, {
                         method: 'POST',
-                        body: coverData
+                        body: formData
                     });
                     
                     if (!coverRes.ok) {
-                        console.warn('Cover upload failed');
+                        console.warn('Cover upload failed but album was saved');
                     }
                 }
                 
-                showToast(`Album ${isEditing ? 'updated' : 'created'}!`, 'success');
+                showToast(`Album ${isEditing ? 'updated' : 'created'} successfully!`, 'success');
                 
+                // Redirect to profile page
                 setTimeout(() => {
                     window.location.href = `/admin/albums/profile.html?id=${albumId}`;
                 }, 1500);
                 
             } catch (error) {
-                showToast(error.message, 'error');
+                console.error('Error saving album:', error);
+                showToast(error.message || 'Failed to save album', 'error');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = isEditing ? 'Update Album' : 'Create Album';
+                submitBtn.textContent = originalText;
             }
         }
-        
+
         function showToast(message, type) {
             const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#10b981' : '#ef4444'};
-                color: white;
-                border-radius: 6px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 2000;
-                animation: slideIn 0.3s;
-            `;
+            toast.className = `toast ${type}`;
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
-        
+
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
-        
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
         // Check authentication
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            if (!isLoggedIn) {
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
                 window.location.href = '/admin/login.html';
                 return false;
             }
             return true;
         }
-        
+
         // Initialize
         if (checkAuth()) {
             loadAlbumForEdit();
         }
-        
-        // Add animation style
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
