@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Tracks | ZEDTOPVIBES</title>
+    <title>Add Tracks - Album | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -37,11 +37,12 @@
             font-family: 'Inter', sans-serif;
             background: var(--gray-50);
             color: var(--gray-800);
+            line-height: 1.5;
             padding: 20px;
         }
         
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
         
@@ -58,7 +59,7 @@
         }
         
         .header h1 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
             color: var(--gray-800);
             display: flex;
@@ -71,26 +72,42 @@
         }
         
         .back-btn {
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: var(--gray-100);
             border-radius: var(--radius-md);
             color: var(--gray-700);
             text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             border: 1px solid var(--gray-200);
         }
         
-        .album-info {
+        .back-btn:hover {
+            background: var(--gray-200);
+        }
+        
+        /* Main Content */
+        .content-card {
             background: white;
             border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
             border: 1px solid var(--gray-200);
         }
         
-        .album-cover {
+        /* Album Header */
+        .album-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-soft), white);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .album-cover-small {
             width: 60px;
             height: 60px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -99,221 +116,783 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
         }
         
-        .album-cover img {
+        .album-cover-small img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: var(--radius-md);
         }
         
-        .search-box {
-            background: white;
-            border-radius: var(--radius-lg);
+        .album-details h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+        
+        .album-artist {
+            font-size: 0.95rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .album-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        
+        .album-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Stats Badges */
+        .stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: var(--gray-100);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--gray-700);
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .stats-badge i {
+            color: var(--primary);
+        }
+        
+        .stats-badge.available i {
+            color: var(--success);
+        }
+        
+        /* Search Section */
+        .search-section {
             padding: 20px;
-            margin-bottom: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            background: white;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            padding: 8px 16px;
             border: 1px solid var(--gray-200);
+            width: 100%;
+        }
+        
+        .search-box i {
+            color: var(--gray-400);
+            margin-right: 10px;
         }
         
         .search-box input {
+            border: none;
+            background: transparent;
+            padding: 8px 0;
             width: 100%;
-            padding: 12px;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
+            outline: none;
+            font-size: 0.95rem;
         }
         
-        .tracks-list {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            max-height: 400px;
-            overflow-y: auto;
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 6px 14px;
+            background: var(--gray-100);
             border: 1px solid var(--gray-200);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Tracks Grid */
+        .tracks-container {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
         }
         
         .track-item {
             display: flex;
             align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid var(--gray-200);
+            padding: 12px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        
+        .track-item:not(.disabled):hover {
+            background: var(--primary-soft);
+            border-color: var(--primary);
             cursor: pointer;
         }
         
-        .track-item:hover { background: var(--gray-50); }
-        .track-item.selected { background: var(--primary-soft); }
+        .track-item.selected {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            border-width: 2px;
+        }
         
-        .track-checkbox { margin-right: 15px; }
-        .track-info { flex: 1; }
-        .track-title { font-weight: 500; }
-        .track-artist { font-size: 0.8rem; color: var(--gray-500); }
-        .track-meta { color: var(--gray-500); font-size: 0.8rem; }
+        .track-item.disabled {
+            opacity: 0.6;
+            background: var(--gray-100);
+            cursor: not-allowed;
+        }
         
-        .actions {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-top: 20px;
+        .track-item.disabled:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+        }
+        
+        .track-checkbox {
+            margin-right: 12px;
+        }
+        
+        .track-checkbox input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .track-checkbox input:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .track-cover {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .track-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+        
+        .track-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .track-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .track-artist {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .track-meta {
+            display: flex;
+            gap: 16px;
+            margin-right: 12px;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            flex-shrink: 0;
+        }
+        
+        .track-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .track-meta i {
+            color: var(--primary);
+            font-size: 0.7rem;
+        }
+        
+        .track-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: var(--gray-200);
+            color: var(--gray-600);
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+        
+        .track-badge.other-album {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+        
+        .track-badge.in-this-album {
+            background: var(--gray-300);
+            color: var(--gray-700);
+        }
+        
+        /* Selection Bar */
+        .selection-bar {
+            padding: 16px 20px;
+            background: var(--gray-100);
+            border-top: 1px solid var(--gray-200);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--gray-200);
+        }
+        
+        .selected-count {
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+        
+        .selected-count span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
         }
         
         .btn {
-            padding: 10px 20px;
+            padding: 8px 20px;
             border: none;
             border-radius: var(--radius-md);
+            font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
         }
         
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-light);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
         
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             color: var(--gray-500);
+        }
+        
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-300);
+            margin-bottom: 16px;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 6px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .album-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .track-item {
+                flex-wrap: wrap;
+            }
+            
+            .track-meta {
+                width: 100%;
+                margin-left: 58px;
+                margin-top: 8px;
+            }
+            
+            .track-badge {
+                margin-left: 58px;
+                margin-top: 4px;
+            }
+            
+            .selection-bar {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .action-buttons {
+                width: 100%;
+            }
+            
+            .btn {
+                flex: 1;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-music"></i> Add Tracks</h1>
-            <a href="/admin/albums/index.html" class="back-btn">Back</a>
+            <h1>
+                <i class="fas fa-music"></i>
+                Add Tracks to Album
+            </h1>
+            <a href="/admin/albums/index.html" class="back-btn" id="backBtn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Albums
+            </a>
         </div>
         
-        <div id="content">
-            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+        <div class="content-card" id="contentCard">
+            <div class="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <div>Loading tracks...</div>
+            </div>
         </div>
     </div>
 
     <script>
-        const API = '/api';
-        const urlParams = new URLSearchParams(window.location.search);
-        const albumId = urlParams.get('id');
-        
+        const API_BASE = '/api';
+        let albumId = null;
         let album = null;
         let allTracks = [];
+        let allAlbums = [];
         let albumTrackIds = new Set();
+        let tracksInOtherAlbums = new Map(); // track_id -> {albumId, albumTitle}
         let selectedTracks = new Set();
+        let currentFilter = 'all';
 
-        async function loadData() {
+        async function loadPage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            albumId = urlParams.get('id');
+            
+            if (!albumId) {
+                window.location.href = '/admin/albums/index.html';
+                return;
+            }
+            
             try {
-                const [albumRes, tracksRes] = await Promise.all([
-                    fetch(`${API}/albums/${albumId}`),
-                    fetch(`${API}/tracks`)
+                // Load album details, all tracks, and all albums in parallel
+                const [albumRes, tracksRes, albumsRes] = await Promise.all([
+                    fetch(`${API_BASE}/albums/${albumId}`),
+                    fetch(`${API_BASE}/tracks`),
+                    fetch(`${API_BASE}/albums`)
                 ]);
+                
+                if (!albumRes.ok) throw new Error('Album not found');
                 
                 album = await albumRes.json();
                 allTracks = await tracksRes.json();
+                allAlbums = await albumsRes.json();
+                
+                // Get IDs of tracks already in THIS album
                 albumTrackIds = new Set((album.tracks || []).map(t => t.id));
                 
-                render();
+                // Build map of tracks in OTHER albums
+                tracksInOtherAlbums.clear();
+                for (const otherAlbum of allAlbums) {
+                    if (otherAlbum.id == albumId) continue; // Skip current album
+                    
+                    if (otherAlbum.tracks && otherAlbum.tracks.length > 0) {
+                        for (const track of otherAlbum.tracks) {
+                            tracksInOtherAlbums.set(track.id, {
+                                albumId: otherAlbum.id,
+                                albumTitle: otherAlbum.title
+                            });
+                        }
+                    }
+                }
+                
+                renderPage();
+                
             } catch (error) {
-                document.getElementById('content').innerHTML = '<div class="loading">Failed to load</div>';
+                console.error('Error:', error);
+                document.getElementById('contentCard').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                        <h3>Failed to Load</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <button onclick="loadPage()" class="btn btn-primary">Try Again</button>
+                    </div>
+                `;
             }
         }
 
-        function render() {
-            const availableTracks = allTracks.filter(t => !albumTrackIds.has(t.id));
+        function renderPage() {
+            // Calculate stats
+            const availableCount = allTracks.filter(t => 
+                !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id)
+            ).length;
             
-            document.getElementById('content').innerHTML = `
-                <div class="album-info">
-                    <div class="album-cover">
-                        ${album.cover_url ? `<img src="${album.cover_url}" alt="">` : '<i class="fas fa-compact-disc"></i>'}
+            const inThisAlbumCount = albumTrackIds.size;
+            const inOtherAlbumsCount = tracksInOtherAlbums.size;
+            
+            // Apply search and filter
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            
+            // First filter by search
+            let filteredTracks = allTracks.filter(track => {
+                return track.title.toLowerCase().includes(searchTerm) ||
+                       track.artist.toLowerCase().includes(searchTerm);
+            });
+            
+            // Then apply category filter
+            if (currentFilter === 'available') {
+                filteredTracks = filteredTracks.filter(t => 
+                    !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id)
+                );
+            } else if (currentFilter === 'in-this-album') {
+                filteredTracks = filteredTracks.filter(t => albumTrackIds.has(t.id));
+            } else if (currentFilter === 'in-other-albums') {
+                filteredTracks = filteredTracks.filter(t => tracksInOtherAlbums.has(t.id));
+            }
+
+            const contentCard = document.getElementById('contentCard');
+            
+            contentCard.innerHTML = `
+                <div class="album-header">
+                    <div class="album-cover-small">
+                        ${album.cover_url 
+                            ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}">`
+                            : '💿'
+                        }
                     </div>
-                    <div>
-                        <h3>${escape(album.title)}</h3>
-                        <p>${escape(album.artist)} • ${album.tracks?.length || 0} tracks</p>
-                    </div>
-                </div>
-                
-                <div class="search-box">
-                    <input type="text" id="search" placeholder="Search tracks..." oninput="filterTracks(this.value)">
-                </div>
-                
-                <div class="tracks-list" id="tracksList">
-                    ${availableTracks.map(track => `
-                        <div class="track-item ${selectedTracks.has(track.id) ? 'selected' : ''}" 
-                             onclick="toggleTrack(${track.id})">
-                            <div class="track-checkbox">
-                                <input type="checkbox" ${selectedTracks.has(track.id) ? 'checked' : ''}>
-                            </div>
-                            <div class="track-info">
-                                <div class="track-title">${escape(track.title)}</div>
-                                <div class="track-artist">${escape(track.artist)}</div>
-                            </div>
-                            <div class="track-meta">
-                                <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
-                            </div>
+                    <div class="album-details">
+                        <h2>${escapeHtml(album.title)}</h2>
+                        <div class="album-artist">${escapeHtml(album.artist)}</div>
+                        <div class="album-stats">
+                            <span><i class="fas fa-music"></i> ${album.tracks?.length || 0} tracks</span>
+                            <span><i class="fas fa-headphones"></i> ${formatNumber(album.plays || 0)} plays</span>
                         </div>
-                    `).join('')}
+                    </div>
                 </div>
                 
-                <div class="actions">
-                    <span>${selectedTracks.size} selected</span>
-                    <div>
-                        <button class="btn btn-secondary" onclick="clearSelection()">Clear</button>
-                        <button class="btn btn-primary" onclick="addTracks()" ${selectedTracks.size === 0 ? 'disabled' : ''}>
-                            Add Selected
+                <div class="search-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search tracks by title or artist..." value="${escapeHtml(searchTerm)}">
+                    </div>
+                    
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;">
+                        <span class="stats-badge available">
+                            <i class="fas fa-check-circle"></i>
+                            ${availableCount} Available
+                        </span>
+                        <span class="stats-badge">
+                            <i class="fas fa-music"></i>
+                            ${inThisAlbumCount} In this album
+                        </span>
+                        <span class="stats-badge">
+                            <i class="fas fa-lock"></i>
+                            ${inOtherAlbumsCount} In other albums
+                        </span>
+                    </div>
+                    
+                    <div class="filter-bar">
+                        <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
+                        <button class="filter-btn ${currentFilter === 'available' ? 'active' : ''}" onclick="setFilter('available')">Available</button>
+                        <button class="filter-btn ${currentFilter === 'in-this-album' ? 'active' : ''}" onclick="setFilter('in-this-album')">In This Album</button>
+                        <button class="filter-btn ${currentFilter === 'in-other-albums' ? 'active' : ''}" onclick="setFilter('in-other-albums')">In Other Albums</button>
+                    </div>
+                </div>
+                
+                <div class="tracks-container">
+                    ${filteredTracks.length > 0 
+                        ? filteredTracks.map(track => {
+                            const isInThisAlbum = albumTrackIds.has(track.id);
+                            const inOtherAlbum = tracksInOtherAlbums.get(track.id);
+                            const isDisabled = isInThisAlbum || inOtherAlbum;
+                            const isSelected = selectedTracks.has(track.id);
+                            
+                            return `
+                            <div class="track-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}" 
+                                 ${!isDisabled ? `onclick="toggleTrack(${track.id}, event)"` : ''}>
+                                <div class="track-checkbox" onclick="event.stopPropagation()">
+                                    <input type="checkbox" 
+                                           ${isSelected ? 'checked' : ''} 
+                                           ${isDisabled ? 'disabled' : ''}
+                                           onchange="toggleTrack(${track.id})">
+                                </div>
+                                <div class="track-cover">
+                                    ${track.artwork_url 
+                                        ? `<img src="${track.artwork_url}" alt="">`
+                                        : '<i class="fas fa-music"></i>'
+                                    }
+                                </div>
+                                <div class="track-info">
+                                    <div class="track-title">${escapeHtml(track.title)}</div>
+                                    <div class="track-artist">${escapeHtml(track.artist)}</div>
+                                </div>
+                                <div class="track-meta">
+                                    <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
+                                    <span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                                </div>
+                                ${isInThisAlbum ? '<span class="track-badge in-this-album">Already in this album</span>' : ''}
+                                ${inOtherAlbum ? `<span class="track-badge other-album">In "${escapeHtml(inOtherAlbum.albumTitle)}"</span>` : ''}
+                            </div>
+                        `}).join('')
+                        : `
+                            <div class="empty-state">
+                                <i class="fas fa-music"></i>
+                                <h3>No tracks found</h3>
+                                <p>Try a different search or filter</p>
+                            </div>
+                        `
+                    }
+                </div>
+                
+                <div class="selection-bar">
+                    <div class="selected-count">
+                        <span>${selectedTracks.size}</span> track${selectedTracks.size !== 1 ? 's' : ''} selected
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="clearSelection()">
+                            Clear
+                        </button>
+                        <button class="btn btn-primary" onclick="addSelectedTracks()" ${selectedTracks.size === 0 ? 'disabled' : ''}>
+                            <i class="fas fa-plus-circle"></i> Add to Album
                         </button>
                     </div>
                 </div>
             `;
+
+            // Add search listener
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                // Remove existing listener to avoid duplicates
+                const newSearchInput = searchInput.cloneNode(true);
+                searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+                
+                newSearchInput.addEventListener('input', debounce(() => {
+                    renderPage();
+                }, 300));
+            }
         }
 
-        function toggleTrack(id) {
-            if (selectedTracks.has(id)) selectedTracks.delete(id);
-            else selectedTracks.add(id);
-            render();
+        function toggleTrack(trackId, event) {
+            if (selectedTracks.has(trackId)) {
+                selectedTracks.delete(trackId);
+            } else {
+                // Check if track is available (not in this album and not in other albums)
+                if (!albumTrackIds.has(trackId) && !tracksInOtherAlbums.has(trackId)) {
+                    selectedTracks.add(trackId);
+                }
+            }
+            renderPage();
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            renderPage();
         }
 
         function clearSelection() {
             selectedTracks.clear();
-            render();
+            renderPage();
         }
 
-        function filterTracks(search) {
-            // Simple filter implementation
-            const items = document.querySelectorAll('.track-item');
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(search.toLowerCase()) ? 'flex' : 'none';
-            });
-        }
+        async function addSelectedTracks() {
+            if (selectedTracks.size === 0) return;
 
-        async function addTracks() {
-            const btn = document.querySelector('.btn-primary');
-            btn.disabled = true;
-            btn.textContent = 'Adding...';
-            
-            let success = 0;
+            const addButtons = document.querySelectorAll('.btn-primary');
+            addButtons.forEach(btn => btn.disabled = true);
+
+            let successCount = 0;
+            let errorCount = 0;
+
             for (const trackId of selectedTracks) {
                 try {
-                    const res = await fetch(`${API}/admin/albums/${albumId}/tracks`, {
+                    const res = await fetch(`${API_BASE}/admin/albums/${albumId}/tracks`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ track_id: trackId })
                     });
-                    if (res.ok) success++;
-                } catch (e) {}
+
+                    const data = await res.json();
+                    
+                    if (res.ok) {
+                        successCount++;
+                        albumTrackIds.add(trackId);
+                    } else {
+                        errorCount++;
+                        console.error('Failed to add track:', data.error);
+                    }
+                } catch (error) {
+                    console.error('Error adding track:', error);
+                    errorCount++;
+                }
             }
-            
-            alert(`Added ${success} tracks`);
-            window.location.href = `/admin/albums/profile.html?id=${albumId}`;
+
+            selectedTracks.clear();
+
+            if (errorCount === 0) {
+                showToast(`Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
+            } else if (successCount > 0) {
+                showToast(`Added ${successCount} tracks (${errorCount} failed)`, 'error');
+            } else {
+                showToast('Failed to add tracks', 'error');
+            }
+
+            // Reload page to show updated album
+            setTimeout(() => {
+                window.location.href = `/admin/albums/profile.html?id=${albumId}`;
+            }, 1500);
         }
 
-        function escape(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
-        function formatNumber(n) { if (!n) return '0'; if (n >= 1e6) return (n/1e6).toFixed(1) + 'M'; if (n >= 1e3) return (n/1e3).toFixed(1) + 'K'; return n.toString(); }
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
 
-        if (!localStorage.getItem('admin_logged_in')) window.location.href = '/admin/login.html';
-        else loadData();
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Update back button to return to profile
+        document.getElementById('backBtn').href = `/admin/albums/profile.html?id=${albumId}`;
+
+        // Check authentication
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Initialize
+        if (checkAuth()) {
+            loadPage();
+        }
     </script>
 </body>
 </html>
