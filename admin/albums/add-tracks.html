@@ -71,21 +71,6 @@
             color: var(--primary);
         }
         
-        .album-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .album-badge {
-            background: var(--primary-soft);
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        
         .back-btn {
             padding: 6px 14px;
             background: var(--gray-100);
@@ -323,15 +308,6 @@
             font-size: 0.7rem;
         }
         
-        .added-badge {
-            background: var(--success);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        
         /* Selection Bar */
         .selection-bar {
             padding: 16px 20px;
@@ -507,7 +483,6 @@
                 const albumRes = await fetch(`${API_BASE}/albums/${albumId}`);
                 if (!albumRes.ok) throw new Error('Album not found');
                 album = await albumRes.json();
-                console.log('Album loaded:', album);
                 
                 // Load all tracks
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
@@ -519,7 +494,6 @@
                 renderPage();
                 
             } catch (error) {
-                console.error('Error loading data:', error);
                 document.getElementById('contentCard').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
@@ -544,7 +518,6 @@
                 if (currentFilter === 'all') return matchesSearch;
                 if (currentFilter === 'featured') return matchesSearch && track.featured;
                 if (currentFilter === 'recent') {
-                    // Last 7 days
                     const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
                     const trackDate = new Date(track.uploaded_at).getTime();
                     return matchesSearch && trackDate > sevenDaysAgo;
@@ -559,7 +532,7 @@
                     <div class="album-cover-small">
                         ${album.cover_url 
                             ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}">`
-                            : album.cover_emoji || '💿'
+                            : '💿'
                         }
                     </div>
                     <div class="album-details">
@@ -681,12 +654,9 @@
                         successCount++;
                         albumTrackIds.add(trackId);
                     } else {
-                        const error = await res.json();
-                        console.error('Failed to add track:', error);
                         errorCount++;
                     }
                 } catch (error) {
-                    console.error('Error adding track:', error);
                     errorCount++;
                 }
             }
