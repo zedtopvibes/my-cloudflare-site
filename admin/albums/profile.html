@@ -10,58 +10,97 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #1e3c72;
+            --primary-light: #2a4a8a;
+            --primary-soft: #e8f0fe;
+            --secondary: #00b4d8;
+            --success: #10b981;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background: #f3f4f6;
+            background: var(--gray-50);
+            color: var(--gray-800);
             padding: 20px;
         }
-        .container { max-width: 800px; margin: 0 auto; }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
         
         .header {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-sm);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid var(--gray-200);
         }
+        
         .header h1 {
             font-size: 1.3rem;
-            color: #1e3c72;
+            font-weight: 600;
+            color: var(--gray-800);
             display: flex;
             align-items: center;
             gap: 10px;
         }
+        
+        .header h1 i {
+            color: var(--primary);
+        }
+        
         .back-btn {
             padding: 8px 16px;
-            background: #f3f4f6;
-            border-radius: 8px;
-            color: #374151;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            color: var(--gray-700);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            border: 1px solid var(--gray-200);
         }
         
         .profile-card {
             background: white;
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
         }
         
         .cover {
             height: 200px;
-            background: linear-gradient(135deg, #1e3c72, #00b4d8);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 5rem;
-            position: relative;
         }
+        
         .cover img {
             width: 100%;
             height: 100%;
@@ -69,52 +108,101 @@
         }
         
         .info {
-            padding: 30px;
-            border-bottom: 1px solid #e5e7eb;
+            padding: 24px;
+            border-bottom: 1px solid var(--gray-200);
         }
-        .info h1 { font-size: 2rem; color: #1f2937; margin-bottom: 5px; }
-        .info .artist { font-size: 1.2rem; color: #1e3c72; margin-bottom: 10px; }
-        .info .date { color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; }
-        .info .description { color: #4b5563; line-height: 1.6; }
+        
+        .info h1 {
+            font-size: 2rem;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+        
+        .artist {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .date {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        
+        .description {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
         
         .stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--gray-200);
         }
+        
         .stat {
             padding: 20px;
             text-align: center;
-            border-right: 1px solid #e5e7eb;
+            border-right: 1px solid var(--gray-200);
         }
-        .stat:last-child { border-right: none; }
-        .stat-value { font-size: 1.8rem; font-weight: 700; color: #1e3c72; }
-        .stat-label { font-size: 0.8rem; color: #6b7280; text-transform: uppercase; }
         
-        .tracks {
-            padding: 30px;
+        .stat:last-child { border-right: none; }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
         }
-        .tracks h2 {
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+        }
+        
+        .tracks-section {
+            padding: 24px;
+        }
+        
+        .tracks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .tracks-header h2 {
             font-size: 1.2rem;
-            color: #374151;
-            margin-bottom: 20px;
+            color: var(--gray-700);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
-        .track-list {
+        
+        .track-count {
+            background: var(--gray-100);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .tracks-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
+        
         .track-item {
             display: flex;
             align-items: center;
             padding: 12px;
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
         }
+        
         .track-number {
             width: 30px;
             height: 30px;
@@ -124,42 +212,70 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: #1e3c72;
+            color: var(--primary);
             margin-right: 12px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--gray-200);
         }
-        .track-info { flex: 1; }
-        .track-title { font-weight: 500; color: #1f2937; }
-        .track-artist { font-size: 0.8rem; color: #6b7280; }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .track-title {
+            font-weight: 500;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+        }
+        
+        .track-artist {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        
         .track-stats {
             display: flex;
             gap: 16px;
             margin-right: 16px;
-            color: #6b7280;
+            color: var(--gray-500);
             font-size: 0.8rem;
         }
+        
         .remove-btn {
             width: 30px;
             height: 30px;
             border: none;
             border-radius: 50%;
-            background: #f3f4f6;
-            color: #6b7280;
+            background: var(--gray-200);
+            color: var(--gray-500);
             cursor: pointer;
         }
-        .remove-btn:hover { background: #ef4444; color: white; }
+        
+        .remove-btn:hover {
+            background: var(--error);
+            color: white;
+        }
+        
+        .empty-tracks {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-500);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--gray-300);
+        }
         
         .actions {
-            padding: 20px 30px 30px;
+            padding: 20px 24px 24px;
             display: flex;
             gap: 12px;
             justify-content: flex-end;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid var(--gray-200);
         }
+        
         .btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-weight: 500;
             cursor: pointer;
             text-decoration: none;
@@ -167,10 +283,16 @@
             align-items: center;
             gap: 8px;
         }
-        .btn-primary { background: #1e3c72; color: white; }
-        .btn-secondary { background: #f3f4f6; color: #374151; }
-        .btn-danger { background: #ef4444; color: white; }
-        .loading { text-align: center; padding: 60px; color: #6b7280; }
+        
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); }
+        .btn-danger { background: var(--error); color: white; }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-500);
+        }
     </style>
 </head>
 <body>
@@ -202,7 +324,6 @@
 
         function renderAlbum(album) {
             const tracks = album.tracks || [];
-            const totalDuration = tracks.reduce((sum, t) => sum + (t.duration || 0), 0);
             const formatDuration = (s) => s ? `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}` : '0:00';
             
             document.getElementById('profile').innerHTML = `
@@ -221,27 +342,36 @@
                     <div class="stat"><div class="stat-value">${tracks.length}</div><div class="stat-label">Tracks</div></div>
                     <div class="stat"><div class="stat-value">${formatNumber(album.plays || 0)}</div><div class="stat-label">Plays</div></div>
                     <div class="stat"><div class="stat-value">${formatNumber(album.views || 0)}</div><div class="stat-label">Views</div></div>
-                    <div class="stat"><div class="stat-value">${formatDuration(totalDuration)}</div><div class="stat-label">Duration</div></div>
+                    <div class="stat"><div class="stat-value">${formatDuration(tracks.reduce((sum, t) => sum + (t.duration || 0), 0))}</div><div class="stat-label">Duration</div></div>
                 </div>
                 
-                <div class="tracks">
-                    <h2><i class="fas fa-music"></i> Tracks (${tracks.length})</h2>
-                    <div class="track-list">
-                        ${tracks.map((track, i) => `
-                            <div class="track-item">
-                                <div class="track-number">${i+1}</div>
-                                <div class="track-info">
-                                    <div class="track-title">${escape(track.title)}</div>
-                                    <div class="track-artist">${escape(track.artist)}</div>
-                                </div>
-                                <div class="track-stats">
-                                    <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
-                                    <span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
-                                </div>
-                                <button class="remove-btn" onclick="removeTrack(${album.id}, ${track.id})"><i class="fas fa-times"></i></button>
-                            </div>
-                        `).join('')}
+                <div class="tracks-section">
+                    <div class="tracks-header">
+                        <h2><i class="fas fa-music"></i> Tracks</h2>
+                        <span class="track-count">${tracks.length} tracks</span>
                     </div>
+                    
+                    ${tracks.length > 0 ? `
+                        <div class="tracks-list">
+                            ${tracks.map((track, i) => `
+                                <div class="track-item">
+                                    <div class="track-number">${i+1}</div>
+                                    <div class="track-info">
+                                        <div class="track-title">${escape(track.title)}</div>
+                                        <div class="track-artist">${escape(track.artist)}</div>
+                                    </div>
+                                    <div class="track-stats">
+                                        <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeTrack(${album.id}, ${track.id})"><i class="fas fa-times"></i></button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <div class="empty-tracks">
+                            <p>No tracks in this album yet</p>
+                        </div>
+                    `}
                 </div>
                 
                 <div class="actions">
