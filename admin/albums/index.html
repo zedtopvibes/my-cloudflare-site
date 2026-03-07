@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Albums - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +16,7 @@
             --primary-light: #2a4a8a;
             --primary-soft: #e8f0fe;
             --secondary: #00b4d8;
+            --success: #10b981;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -177,7 +178,6 @@
             padding: 8px 0;
             width: 100%;
             outline: none;
-            font-size: 0.95rem;
         }
         
         .btn {
@@ -208,10 +208,11 @@
             border: 1px solid var(--gray-200);
         }
         
+        /* Albums Grid */
         .albums-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            gap: 16px;
             margin-bottom: 24px;
         }
         
@@ -228,19 +229,20 @@
         }
         
         .album-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-2px);
             box-shadow: var(--shadow-md);
             border-color: var(--primary);
         }
         
         .album-cover {
-            height: 180px;
+            height: 140px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 3rem;
+            font-size: 2.5rem;
         }
         
         .album-cover img {
@@ -251,9 +253,9 @@
         
         .featured-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #fbbf24;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 193, 7, 0.9);
             color: #92400e;
             padding: 4px 8px;
             border-radius: 20px;
@@ -276,7 +278,7 @@
         }
         
         .album-artist {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--primary);
             margin-bottom: 8px;
         }
@@ -286,6 +288,7 @@
             gap: 12px;
             font-size: 0.8rem;
             color: var(--gray-500);
+            margin-bottom: 8px;
         }
         
         .album-meta span {
@@ -294,18 +297,35 @@
             gap: 4px;
         }
         
+        .album-meta i {
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-300);
+            margin-bottom: 16px;
+        }
+        
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin-top: 30px;
+            gap: 6px;
+            margin-top: 20px;
         }
         
         .page-btn {
             width: 36px;
             height: 36px;
             border: 1px solid var(--gray-200);
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             background: white;
             cursor: pointer;
         }
@@ -322,11 +342,23 @@
             color: var(--gray-500);
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 60px;
-            color: var(--gray-500);
-            grid-column: 1 / -1;
+        @media (max-width: 640px) {
+            .albums-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-section {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -356,7 +388,12 @@
         
         <div class="admin-content">
             <div class="content-header">
-                <h2><i class="fas fa-compact-disc"></i> All Albums</h2>
+                <h2>
+                    <i class="fas fa-compact-disc"></i> All Albums
+                    <button onclick="loadAlbums()" class="btn btn-secondary" style="margin-left: 8px;">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </h2>
                 <div class="search-section">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
@@ -368,12 +405,15 @@
                 </div>
             </div>
 
+            <!-- Albums Grid -->
             <div id="albumsGrid" class="albums-grid">
                 <div class="loading">
-                    <i class="fas fa-circle-notch fa-spin"></i> Loading...
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <div>Loading albums...</div>
                 </div>
             </div>
 
+            <!-- Pagination -->
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
@@ -398,43 +438,71 @@
         }
 
         async function loadAlbums() {
+            if (!checkAuth()) return;
+            
             try {
                 const res = await fetch(`${API_BASE}/albums`);
+                if (!res.ok) throw new Error('Failed to load albums');
+                
                 allAlbums = await res.json();
                 renderAlbums();
+                
             } catch (error) {
-                document.getElementById('albumsGrid').innerHTML = '<div class="empty-state">Failed to load albums</div>';
+                document.getElementById('albumsGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                        <h3>Failed to Load Albums</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <button onclick="loadAlbums()" class="btn btn-primary">Try Again</button>
+                    </div>
+                `;
             }
         }
 
         function renderAlbums() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allAlbums.filter(a => 
-                a.title.toLowerCase().includes(search) || 
-                a.artist.toLowerCase().includes(search)
+            const container = document.getElementById('albumsGrid');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = allAlbums.filter(album => 
+                album.title.toLowerCase().includes(searchTerm) ||
+                album.artist.toLowerCase().includes(searchTerm)
             );
             
             if (filtered.length === 0) {
-                document.getElementById('albumsGrid').innerHTML = '<div class="empty-state">No albums found</div>';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-compact-disc"></i>
+                        <h3>No albums found</h3>
+                        <p>${searchTerm ? 'Try a different search' : 'Create your first album'}</p>
+                        <a href="/admin/albums/edit.html" class="btn btn-primary" style="margin-top: 16px;">
+                            <i class="fas fa-plus-circle"></i> New Album
+                        </a>
+                    </div>
+                `;
                 document.getElementById('pagination').innerHTML = '';
                 return;
             }
             
+            // Pagination
             const totalPages = Math.ceil(filtered.length / itemsPerPage);
             const start = (currentPage - 1) * itemsPerPage;
-            const pageItems = filtered.slice(start, start + itemsPerPage);
+            const end = start + itemsPerPage;
+            const pageAlbums = filtered.slice(start, end);
             
-            document.getElementById('albumsGrid').innerHTML = pageItems.map(album => `
+            container.innerHTML = pageAlbums.map(album => `
                 <a href="/admin/albums/profile.html?id=${album.id}" class="album-card">
                     <div class="album-cover">
-                        ${album.cover_url ? `<img src="${album.cover_url}" alt="${album.title}">` : '<i class="fas fa-compact-disc"></i>'}
+                        ${album.cover_url 
+                            ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}">`
+                            : `<i class="fas fa-compact-disc"></i>`
+                        }
                         ${album.is_featured ? '<span class="featured-badge">Featured</span>' : ''}
                     </div>
                     <div class="album-info">
                         <div class="album-title">${escapeHtml(album.title)}</div>
                         <div class="album-artist">${escapeHtml(album.artist)}</div>
                         <div class="album-meta">
-                            <span><i class="fas fa-music"></i> ${album.tracks?.length || 0}</span>
+                            <span><i class="fas fa-music"></i> ${album.track_count || 0} tracks</span>
                             <span><i class="fas fa-headphones"></i> ${formatNumber(album.plays || 0)}</span>
                         </div>
                     </div>
@@ -444,35 +512,47 @@
             renderPagination(totalPages);
         }
 
-        function renderPagination(total) {
-            if (total <= 1) {
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) {
                 document.getElementById('pagination').innerHTML = '';
                 return;
             }
+            
             let html = '';
-            for (let i = 1; i <= total; i++) {
+            for (let i = 1; i <= totalPages; i++) {
                 html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
             }
             document.getElementById('pagination').innerHTML = html;
         }
 
-        function goToPage(page) { currentPage = page; renderAlbums(); }
-        function searchAlbums() { currentPage = 1; renderAlbums(); }
-        
-        function escapeHtml(text) { 
-            const div = document.createElement('div'); 
-            div.textContent = text; 
-            return div.innerHTML; 
-        }
-        
-        function formatNumber(n) { 
-            if (!n) return '0'; 
-            if (n >= 1e6) return (n/1e6).toFixed(1) + 'M'; 
-            if (n >= 1e3) return (n/1e3).toFixed(1) + 'K'; 
-            return n.toString(); 
+        function goToPage(page) {
+            currentPage = page;
+            renderAlbums();
         }
 
-        if (checkAuth()) loadAlbums();
+        function searchAlbums() {
+            currentPage = 1;
+            renderAlbums();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        // Initialize
+        if (checkAuth()) {
+            loadAlbums();
+        }
     </script>
 </body>
 </html>
