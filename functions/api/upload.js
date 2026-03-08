@@ -1,93 +1,762 @@
-export async function onRequest(context) {
-  const { request, env } = context;
-  
-  // CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Song - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #1e3c72;
+            --primary-light: #2a4a8a;
+            --primary-soft: #e8f0fe;
+            --secondary: #00b4d8;
+            --success: #10b981;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+        }
+        
+        .admin-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .header-top h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-top h1 i {
+            color: var(--primary);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gray-100);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        
+        .tab-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .tab-btn:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .upload-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .upload-card h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+        
+        .form-group label i {
+            color: var(--primary);
+            margin-right: 6px;
+            width: 18px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+            background: white;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            padding: 10px;
+            background: var(--gray-100);
+            border-style: dashed;
+            cursor: pointer;
+        }
+        
+        .file-info {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .file-info.success {
+            color: var(--success);
+        }
+        
+        .file-info.error {
+            color: var(--error);
+        }
+        
+        .add-new {
+            margin-top: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .add-new a {
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .add-new a:hover {
+            text-decoration: underline;
+        }
+        
+        .filename-preview {
+            background: var(--primary-soft);
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin: 15px 0;
+            border: 1px dashed var(--primary);
+            word-break: break-all;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .hint {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+        
+        .required::after {
+            content: "*";
+            color: var(--error);
+            margin-left: 4px;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .modal-content input,
+        .modal-content select,
+        .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+        }
+        
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-cloud-upload-alt"></i> Upload Song</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+            </div>
+        </div>
+        
+        <div class="upload-card">
+            <h2><i class="fas fa-music"></i> Upload New Song</h2>
+            
+            <form id="uploadForm">
+                <!-- Custom Filename (optional) -->
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Custom Filename (optional)</label>
+                    <input type="text" id="customFilename" placeholder="Leave empty for auto: Artist - Title.mp3">
+                    <div class="hint">Auto-generated as: Artist - Title (Zedtopvibes.Com).mp3</div>
+                </div>
+                
+                <!-- Artist Dropdown -->
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Artist <span class="required"></span></label>
+                    <select id="artistId" required>
+                        <option value="">Select Artist</option>
+                    </select>
+                    <div class="add-new">
+                        <a onclick="openNewArtistModal()">+ Add New Artist</a>
+                    </div>
+                </div>
+                
+                <!-- Title -->
+                <div class="form-group">
+                    <label><i class="fas fa-heading"></i> Title <span class="required"></span></label>
+                    <input type="text" id="title" placeholder="Song title" required>
+                </div>
+                
+                <!-- Description -->
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description (optional)</label>
+                    <textarea id="description" rows="3" placeholder="Song description, lyrics, notes..."></textarea>
+                </div>
+                
+                <!-- Genre -->
+                <div class="form-group">
+                    <label><i class="fas fa-guitar"></i> Genre</label>
+                    <select id="genre">
+                        <option value="">Select Genre</option>
+                        <option value="Pop">Pop</option>
+                        <option value="Rock">Rock</option>
+                        <option value="Hip-Hop">Hip-Hop</option>
+                        <option value="R&B">R&B</option>
+                        <option value="Electronic">Electronic</option>
+                        <option value="Jazz">Jazz</option>
+                        <option value="Classical">Classical</option>
+                        <option value="Reggae">Reggae</option>
+                        <option value="Afrobeats">Afrobeats</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <!-- Filename Preview -->
+                <div id="filenamePreview" class="filename-preview">
+                    <strong>Preview:</strong> <span id="previewText">Artist - Title (Zedtopvibes.Com).mp3</span>
+                </div>
+                
+                <!-- MP3 File -->
+                <div class="form-group">
+                    <label><i class="fas fa-file-audio"></i> MP3 File <span class="required"></span></label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="mp3File" accept=".mp3,audio/mpeg" required>
+                    </div>
+                    <div id="mp3FileInfo" class="file-info"></div>
+                </div>
+                
+                <!-- Duration (hidden) -->
+                <input type="hidden" id="duration" value="">
+                
+                <!-- Progress Bar -->
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload Song
+                </button>
+            </form>
+        </div>
+    </div>
 
-  // Handle OPTIONS request (CORS preflight)
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers });
-  }
+    <!-- New Artist Modal -->
+    <div id="newArtistModal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Artist</h3>
+            <input type="text" id="newArtistName" placeholder="Artist name">
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button onclick="closeNewArtistModal()" class="btn-secondary">Cancel</button>
+                <button onclick="saveNewArtist()" class="btn-primary" style="padding: 8px 16px;">Save</button>
+            </div>
+        </div>
+    </div>
 
-  // Only allow POST
-  if (request.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405, headers });
-  }
-
-  try {
-    // Parse form data
-    const formData = await request.formData();
-    const file = formData.get('file');
-    const title = formData.get('title');
-    const artist = formData.get('artist');
-    const description = formData.get('description') || '';
-    const genre = formData.get('genre') || 'unknown';
-    const duration = parseInt(formData.get('duration')) || 0;
-
-    // Validate required fields
-    if (!file || !title || !artist) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing required fields' 
-      }), { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
-    }
-
-    // Check if it's an audio file
-    if (!file.type.startsWith('audio/')) {
-      return new Response(JSON.stringify({ 
-        error: 'File must be an audio file' 
-      }), { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    const filename = `${timestamp}-${safeTitle}.mp3`;
-    const r2Key = `audio/${filename}`;
-
-    // Upload to R2
-    await env.AUDIO.put(r2Key, file.stream(), {
-      httpMetadata: {
-        contentType: file.type,
-        contentDisposition: `inline; filename="${filename}"`,
-      },
-      customMetadata: {
-        title,
-        artist,
-        uploadedAt: new Date().toISOString(),
-      },
-    });
-
-    // Insert into D1
-    const result = await env.DB.prepare(`
-      INSERT INTO tracks (title, artist, description, r2_key, filename, genre, duration)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-      RETURNING id
-    `).bind(title, artist, description, r2Key, filename, genre, duration).run();
-
-    const trackId = result.results[0]?.id;
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      id: trackId,
-      message: 'Track uploaded successfully',
-      r2Key,
-      filename
-    }), { 
-      status: 200, 
-      headers: { 'Content-Type': 'application/json', ...headers } 
-    });
-
-  } catch (error) {
-    console.error('Upload error:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message || 'Upload failed' 
-    }), { 
-      status: 500, 
-      headers: { 'Content-Type': 'application/json', ...headers } 
-    });
-  }
-}
+    <script>
+        const API_BASE = '/api';
+        const SITENAME = 'Zedtopvibes.Com';
+        let audioContext = null;
+        let selectedMP3File = null;
+        let durationMs = 0;
+        
+        // Initialize audio context
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {}
+        
+        // Load artists
+        async function loadArtists() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/artists`);
+                const artists = await res.json();
+                const select = document.getElementById('artistId');
+                select.innerHTML = '<option value="">Select Artist</option>';
+                artists.forEach(artist => {
+                    const option = document.createElement('option');
+                    option.value = artist.id;
+                    option.textContent = artist.name;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Failed to load artists');
+            }
+        }
+        
+        // Update filename preview
+        function updateFilenamePreview() {
+            const artistSelect = document.getElementById('artistId');
+            const title = document.getElementById('title').value || 'Title';
+            const artist = artistSelect.options[artistSelect.selectedIndex]?.text || 'Artist';
+            const custom = document.getElementById('customFilename').value;
+            
+            let preview;
+            if (custom) {
+                preview = custom.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
+                preview = `${preview} (${SITENAME}).mp3`;
+            } else {
+                const cleanArtist = artist.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
+                const cleanTitle = title.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
+                preview = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
+            }
+            
+            document.getElementById('previewText').textContent = preview;
+        }
+        
+        // MP3 File handler
+        document.getElementById('mp3File').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            selectedMP3File = file;
+            const info = document.getElementById('mp3FileInfo');
+            
+            if (!file) {
+                info.innerHTML = '';
+                return;
+            }
+            
+            if (!file.name.toLowerCase().endsWith('.mp3')) {
+                info.innerHTML = '❌ Must be MP3 file';
+                info.className = 'file-info error';
+                return;
+            }
+            
+            if (file.size > 15 * 1024 * 1024) {
+                info.innerHTML = `❌ File too large: ${(file.size / 1024 / 1024).toFixed(2)}MB (max 15MB)`;
+                info.className = 'file-info error';
+                return;
+            }
+            
+            info.innerHTML = `✅ ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`;
+            info.className = 'file-info success';
+            
+            // Detect duration
+            if (audioContext) {
+                try {
+                    const buffer = await file.arrayBuffer();
+                    const decoded = await audioContext.decodeAudioData(buffer.slice(0));
+                    durationMs = Math.floor(decoded.duration * 1000);
+                    const mins = Math.floor(decoded.duration / 60);
+                    const secs = Math.floor(decoded.duration % 60);
+                    info.innerHTML += ` ⏱️ ${mins}:${secs.toString().padStart(2, '0')}`;
+                    document.getElementById('duration').value = durationMs;
+                } catch (err) {}
+            }
+            
+            checkFormValidity();
+        });
+        
+        // Form validation
+        function checkFormValidity() {
+            const artist = document.getElementById('artistId').value;
+            const title = document.getElementById('title').value;
+            const mp3 = selectedMP3File;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            submitBtn.disabled = !(artist && title && mp3);
+        }
+        
+        // Input listeners
+        document.getElementById('artistId').addEventListener('change', () => {
+            updateFilenamePreview();
+            checkFormValidity();
+        });
+        document.getElementById('title').addEventListener('input', () => {
+            updateFilenamePreview();
+            checkFormValidity();
+        });
+        document.getElementById('customFilename').addEventListener('input', updateFilenamePreview);
+        
+        // Modal Functions
+        function openNewArtistModal() {
+            document.getElementById('newArtistModal').style.display = 'flex';
+        }
+        
+        function closeNewArtistModal() {
+            document.getElementById('newArtistModal').style.display = 'none';
+            document.getElementById('newArtistName').value = '';
+        }
+        
+        async function saveNewArtist() {
+            const name = document.getElementById('newArtistName').value.trim();
+            
+            if (!name) {
+                showToast('Artist name required', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('newArtistModal');
+            const saveBtn = modal.querySelector('.btn-primary');
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            
+            try {
+                const artistData = {
+                    name: name,
+                    country: null,
+                    bio: null,
+                    is_featured: false,
+                    is_zambian_legend: false
+                };
+                
+                const res = await fetch(`${API_BASE}/admin/artists`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(artistData)
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to create artist');
+                }
+                
+                await loadArtists();
+                closeNewArtistModal();
+                showToast('Artist created successfully', 'success');
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
+            }
+        }
+        
+        // Toast notification
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 2000;
+                animation: slideIn 0.3s;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // Form submission
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            
+            // Get artist name from select
+            const artistSelect = document.getElementById('artistId');
+            const artistName = artistSelect.options[artistSelect.selectedIndex]?.text || '';
+            
+            // Match the working endpoint's expected fields
+            formData.append('file', selectedMP3File);  // Must be "file"
+            formData.append('title', document.getElementById('title').value);
+            formData.append('artist', artistName);     // Send name string, not ID
+            formData.append('description', document.getElementById('description').value);
+            formData.append('genre', document.getElementById('genre').value);
+            formData.append('duration', durationMs);
+            
+            // Show progress bar
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            progressBar.style.display = 'block';
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            
+            try {
+                const res = await fetch(`${API_BASE}/admin/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Upload failed');
+                }
+                
+                progressFill.style.width = '100%';
+                
+                // Build query string for success page
+                const params = new URLSearchParams({
+                    title: data.title || document.getElementById('title').value,
+                    artist: artistName,
+                    genre: document.getElementById('genre').value || '',
+                    duration: durationMs,
+                    filename: data.filename || document.getElementById('previewText').textContent
+                });
+                
+                showToast('Upload successful!', 'success');
+                
+                // Redirect to success page
+                setTimeout(() => {
+                    window.location.href = `/admin/upload-success.html?${params.toString()}`;
+                }, 1000);
+                
+            } catch (error) {
+                showToast('Upload failed: ' + error.message, 'error');
+                progressBar.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Song';
+            }
+        });
+        
+        // Auth
+        function logout() {
+            if (confirm('Logout?')) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+            }
+        }
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            if (!isLoggedIn) window.location.href = '/admin/login.html';
+            return isLoggedIn;
+        }
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeNewArtistModal();
+            }
+        });
+        
+        // Initialize
+        if (checkAuth()) {
+            loadArtists();
+            updateFilenamePreview();
+        }
+        
+        // Animation style
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
