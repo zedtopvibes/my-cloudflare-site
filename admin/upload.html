@@ -336,6 +336,51 @@
             margin-left: 4px;
         }
         
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .modal-content input,
+        .modal-content select,
+        .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+        }
+        
         @media (max-width: 640px) {
             .form-row,
             .form-row-3,
@@ -500,19 +545,19 @@
     </div>
 
     <!-- New Artist Modal -->
-    <div id="newArtistModal" class="modal" style="display: none;">
+    <div id="newArtistModal" class="modal">
         <div class="modal-content">
             <h3>Add New Artist</h3>
             <input type="text" id="newArtistName" placeholder="Artist name">
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                <button onclick="closeNewArtistModal()" class="btn btn-secondary">Cancel</button>
-                <button onclick="saveNewArtist()" class="btn btn-primary">Save</button>
+                <button onclick="closeNewArtistModal()" class="btn-secondary">Cancel</button>
+                <button onclick="saveNewArtist()" class="btn-primary" style="padding: 8px 16px;">Save</button>
             </div>
         </div>
     </div>
 
     <!-- New Album Modal -->
-    <div id="newAlbumModal" class="modal" style="display: none;">
+    <div id="newAlbumModal" class="modal">
         <div class="modal-content">
             <h3>Add New Album</h3>
             <input type="text" id="newAlbumTitle" placeholder="Album title">
@@ -520,67 +565,24 @@
                 <option value="">Select Artist</option>
             </select>
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                <button onclick="closeNewAlbumModal()" class="btn btn-secondary">Cancel</button>
-                <button onclick="saveNewAlbum()" class="btn btn-primary">Save</button>
+                <button onclick="closeNewAlbumModal()" class="btn-secondary">Cancel</button>
+                <button onclick="saveNewAlbum()" class="btn-primary" style="padding: 8px 16px;">Save</button>
             </div>
         </div>
     </div>
 
     <!-- New Playlist Modal -->
-    <div id="newPlaylistModal" class="modal" style="display: none;">
+    <div id="newPlaylistModal" class="modal">
         <div class="modal-content">
             <h3>Create New Playlist</h3>
             <input type="text" id="newPlaylistName" placeholder="Playlist name">
-            <textarea id="newPlaylistDescription" placeholder="Description (optional)"></textarea>
+            <textarea id="newPlaylistDescription" placeholder="Description (optional)" rows="3"></textarea>
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                <button onclick="closeNewPlaylistModal()" class="btn btn-secondary">Cancel</button>
-                <button onclick="saveNewPlaylist()" class="btn btn-primary">Create</button>
+                <button onclick="closeNewPlaylistModal()" class="btn-secondary">Cancel</button>
+                <button onclick="saveNewPlaylist()" class="btn-primary" style="padding: 8px 16px;">Create</button>
             </div>
         </div>
     </div>
-
-    <style>
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-        }
-        .modal-content h3 {
-            margin-bottom: 20px;
-            color: var(--primary);
-        }
-        .modal-content input,
-        .modal-content select,
-        .modal-content textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
-        }
-        .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 1px solid var(--gray-200);
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-        }
-    </style>
 
     <script>
         const API_BASE = '/api';
@@ -779,23 +781,50 @@
         }
         
         async function saveNewArtist() {
-            const name = document.getElementById('newArtistName').value;
-            if (!name) return alert('Artist name required');
+            const name = document.getElementById('newArtistName').value.trim();
+            
+            if (!name) {
+                showToast('Artist name required', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('newArtistModal');
+            const saveBtn = modal.querySelector('.btn-primary');
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
             
             try {
+                // EXACT same format as working artist creation
+                const artistData = {
+                    name: name,
+                    country: null,
+                    bio: null,
+                    is_featured: false,
+                    is_zambian_legend: false
+                };
+                
                 const res = await fetch(`${API_BASE}/admin/artists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name })
+                    body: JSON.stringify(artistData)
                 });
                 
-                if (!res.ok) throw new Error('Failed to create artist');
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to create artist');
+                }
                 
                 await loadArtists();
                 closeNewArtistModal();
                 showToast('Artist created successfully', 'success');
+                
             } catch (error) {
-                showToast('Failed to create artist', 'error');
+                showToast(error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
             }
         }
         
@@ -809,25 +838,57 @@
         }
         
         async function saveNewAlbum() {
-            const title = document.getElementById('newAlbumTitle').value;
-            const artistId = document.getElementById('newAlbumArtistId').value;
+            const title = document.getElementById('newAlbumTitle').value.trim();
+            const artistSelect = document.getElementById('newAlbumArtistId');
+            const artistName = artistSelect.options[artistSelect.selectedIndex]?.text || '';
             
-            if (!title || !artistId) return alert('Title and artist required');
+            if (!title) {
+                showToast('Album title required', 'error');
+                return;
+            }
+            if (!artistName) {
+                showToast('Please select an artist', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('newAlbumModal');
+            const saveBtn = modal.querySelector('.btn-primary');
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
             
             try {
+                // EXACT same format as working album creation
+                const albumData = {
+                    title: title,
+                    artist: artistName,  // Just the artist name, no ID
+                    release_date: null,
+                    genre: null,
+                    description: null,
+                    is_featured: false
+                };
+                
                 const res = await fetch(`${API_BASE}/admin/albums`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, artist_id: artistId })
+                    body: JSON.stringify(albumData)
                 });
                 
-                if (!res.ok) throw new Error('Failed to create album');
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to create album');
+                }
                 
                 await loadAlbums();
                 closeNewAlbumModal();
                 showToast('Album created successfully', 'success');
+                
             } catch (error) {
-                showToast('Failed to create album', 'error');
+                showToast(error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
             }
         }
         
@@ -842,25 +903,48 @@
         }
         
         async function saveNewPlaylist() {
-            const name = document.getElementById('newPlaylistName').value;
-            const description = document.getElementById('newPlaylistDescription').value;
+            const name = document.getElementById('newPlaylistName').value.trim();
+            const description = document.getElementById('newPlaylistDescription').value.trim();
             
-            if (!name) return alert('Playlist name required');
+            if (!name) {
+                showToast('Playlist name required', 'error');
+                return;
+            }
+            
+            const modal = document.getElementById('newPlaylistModal');
+            const saveBtn = modal.querySelector('.btn-primary');
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
             
             try {
+                // EXACT same format as working playlist creation
+                const playlistData = {
+                    name: name,
+                    description: description || null
+                };
+                
                 const res = await fetch(`${API_BASE}/admin/playlists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, description })
+                    body: JSON.stringify(playlistData)
                 });
                 
-                if (!res.ok) throw new Error('Failed to create playlist');
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to create playlist');
+                }
                 
                 await loadPlaylists();
                 closeNewPlaylistModal();
                 showToast('Playlist created successfully', 'success');
+                
             } catch (error) {
-                showToast('Failed to create playlist', 'error');
+                showToast(error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
             }
         }
         
@@ -963,6 +1047,15 @@
             if (!isLoggedIn) window.location.href = '/admin/login.html';
             return isLoggedIn;
         }
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeNewArtistModal();
+                closeNewAlbumModal();
+                closeNewPlaylistModal();
+            }
+        });
         
         // Initialize
         if (checkAuth()) {
