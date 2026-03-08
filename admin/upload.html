@@ -188,6 +188,12 @@
             gap: 15px;
         }
         
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        
         .file-input-wrapper {
             position: relative;
         }
@@ -236,9 +242,6 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin: 10px 0;
-            max-height: 150px;
-            overflow-y: auto;
-            padding: 5px;
         }
         
         .playlist-checkbox {
@@ -251,6 +254,15 @@
         .playlist-checkbox input[type="checkbox"] {
             width: 16px;
             height: 16px;
+        }
+        
+        .duration-preview {
+            background: var(--gray-100);
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            display: inline-block;
         }
         
         .filename-preview {
@@ -324,7 +336,6 @@
             margin-left: 4px;
         }
         
-        /* Modal Styles */
         .modal {
             position: fixed;
             top: 0;
@@ -341,17 +352,14 @@
         .modal-content {
             background: white;
             padding: 30px;
-            border-radius: var(--radius-lg);
+            border-radius: 12px;
             width: 90%;
             max-width: 400px;
-            max-height: 80vh;
-            overflow-y: auto;
         }
         
         .modal-content h3 {
             margin-bottom: 20px;
             color: var(--primary);
-            font-size: 1.2rem;
         }
         
         .modal-content input,
@@ -362,19 +370,6 @@
             margin-bottom: 15px;
             border: 1px solid var(--gray-200);
             border-radius: var(--radius-md);
-            font-size: 0.95rem;
-        }
-        
-        .modal-content textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
         }
         
         .btn-secondary {
@@ -384,21 +379,13 @@
             padding: 8px 16px;
             border-radius: var(--radius-md);
             cursor: pointer;
-            font-weight: 500;
-        }
-        
-        .btn-secondary:hover {
-            background: var(--gray-200);
         }
         
         @media (max-width: 640px) {
             .form-row,
+            .form-row-3,
             .playlists-group {
                 grid-template-columns: 1fr;
-            }
-            
-            .modal-content {
-                padding: 20px;
             }
         }
     </style>
@@ -435,7 +422,7 @@
                 <div class="form-group">
                     <label><i class="fas fa-tag"></i> Custom Filename (optional)</label>
                     <input type="text" id="customFilename" placeholder="Leave empty for auto: Artist - Title.mp3">
-                    <div class="hint">Auto-generated as: Artist - Title (Zedtopvibes.Com).mp3</div>
+                    <div class="hint">Auto-generated as: Artist - Title (ZEDTOPVIBES).mp3</div>
                 </div>
                 
                 <!-- Artist -->
@@ -519,7 +506,7 @@
                 
                 <!-- Filename Preview -->
                 <div id="filenamePreview" class="filename-preview">
-                    <strong>Preview:</strong> <span id="previewText">Artist - Title (Zedtopvibes.Com).mp3</span>
+                    <strong>Preview:</strong> <span id="previewText">Artist - Title (ZEDTOPVIBES).mp3</span>
                 </div>
                 
                 <!-- MP3 File -->
@@ -529,7 +516,6 @@
                         <input type="file" id="mp3File" accept=".mp3,audio/mpeg" required>
                     </div>
                     <div id="mp3FileInfo" class="file-info"></div>
-                    <div class="hint">MP3 format, max 15MB</div>
                 </div>
                 
                 <!-- Cover Art -->
@@ -542,7 +528,7 @@
                     <div class="hint">PNG, JPG, WEBP (max 2MB)</div>
                 </div>
                 
-                <!-- Duration (hidden) -->
+                <!-- Duration (hidden, will be set by JS) -->
                 <input type="hidden" id="duration" value="">
                 
                 <!-- Progress Bar -->
@@ -551,7 +537,7 @@
                 </div>
                 
                 <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
                     <i class="fas fa-cloud-upload-alt"></i> Upload Song
                 </button>
             </form>
@@ -562,10 +548,10 @@
     <div id="newArtistModal" class="modal">
         <div class="modal-content">
             <h3>Add New Artist</h3>
-            <input type="text" id="newArtistName" placeholder="Artist name" required>
-            <div class="modal-buttons">
+            <input type="text" id="newArtistName" placeholder="Artist name">
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
                 <button onclick="closeNewArtistModal()" class="btn-secondary">Cancel</button>
-                <button onclick="saveNewArtist()" class="btn-primary" style="width: auto;">Save</button>
+                <button onclick="saveNewArtist()" class="btn-primary" style="padding: 8px 16px;">Save</button>
             </div>
         </div>
     </div>
@@ -574,13 +560,13 @@
     <div id="newAlbumModal" class="modal">
         <div class="modal-content">
             <h3>Add New Album</h3>
-            <input type="text" id="newAlbumTitle" placeholder="Album title" required>
-            <select id="newAlbumArtistId" required>
+            <input type="text" id="newAlbumTitle" placeholder="Album title">
+            <select id="newAlbumArtistId">
                 <option value="">Select Artist</option>
             </select>
-            <div class="modal-buttons">
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
                 <button onclick="closeNewAlbumModal()" class="btn-secondary">Cancel</button>
-                <button onclick="saveNewAlbum()" class="btn-primary" style="width: auto;">Save</button>
+                <button onclick="saveNewAlbum()" class="btn-primary" style="padding: 8px 16px;">Save</button>
             </div>
         </div>
     </div>
@@ -589,18 +575,17 @@
     <div id="newPlaylistModal" class="modal">
         <div class="modal-content">
             <h3>Create New Playlist</h3>
-            <input type="text" id="newPlaylistName" placeholder="Playlist name" required>
+            <input type="text" id="newPlaylistName" placeholder="Playlist name">
             <textarea id="newPlaylistDescription" placeholder="Description (optional)" rows="3"></textarea>
-            <div class="modal-buttons">
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
                 <button onclick="closeNewPlaylistModal()" class="btn-secondary">Cancel</button>
-                <button onclick="saveNewPlaylist()" class="btn-primary" style="width: auto;">Create</button>
+                <button onclick="saveNewPlaylist()" class="btn-primary" style="padding: 8px 16px;">Create</button>
             </div>
         </div>
     </div>
 
     <script>
         const API_BASE = '/api';
-        const SITENAME = 'Zedtopvibes.Com';
         let audioContext = null;
         let selectedMP3File = null;
         let selectedCoverFile = null;
@@ -609,15 +594,12 @@
         // Initialize audio context
         try {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (e) {
-            console.warn('AudioContext not supported');
-        }
+        } catch (e) {}
         
-        // Load artists
+        // Load initial data
         async function loadArtists() {
             try {
                 const res = await fetch(`${API_BASE}/admin/artists`);
-                if (!res.ok) throw new Error('Failed to load artists');
                 const artists = await res.json();
                 const select = document.getElementById('artistId');
                 select.innerHTML = '<option value="">Select Artist</option>';
@@ -638,16 +620,13 @@
                     albumArtistSelect.appendChild(option);
                 });
             } catch (error) {
-                console.error('Failed to load artists:', error);
-                showToast('Failed to load artists', 'error');
+                console.error('Failed to load artists');
             }
         }
         
-        // Load albums
         async function loadAlbums() {
             try {
                 const res = await fetch(`${API_BASE}/albums`);
-                if (!res.ok) throw new Error('Failed to load albums');
                 const albums = await res.json();
                 const select = document.getElementById('albumId');
                 select.innerHTML = '<option value="">Select Album</option>';
@@ -658,15 +637,13 @@
                     select.appendChild(option);
                 });
             } catch (error) {
-                console.error('Failed to load albums:', error);
+                console.error('Failed to load albums');
             }
         }
         
-        // Load playlists
         async function loadPlaylists() {
             try {
                 const res = await fetch(`${API_BASE}/playlists`);
-                if (!res.ok) throw new Error('Failed to load playlists');
                 const playlists = await res.json();
                 const container = document.getElementById('playlistsContainer');
                 container.innerHTML = '';
@@ -680,7 +657,7 @@
                     container.appendChild(div);
                 });
             } catch (error) {
-                console.error('Failed to load playlists:', error);
+                console.error('Failed to load playlists');
             }
         }
         
@@ -688,23 +665,23 @@
         function updateFilenamePreview() {
             const artistSelect = document.getElementById('artistId');
             const title = document.getElementById('title').value || 'Title';
-            const artist = artistSelect.options[artistSelect.selectedIndex]?.text || 'Artist';
+            const artist = artistSelect.options[artistSelect.selectedIndex]?.text?.split(' - ')[0] || 'Artist';
             const custom = document.getElementById('customFilename').value;
             
             let preview;
             if (custom) {
                 preview = custom.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
-                preview = `${preview} (${SITENAME}).mp3`;
+                preview = `${preview} (ZEDTOPVIBES).mp3`;
             } else {
                 const cleanArtist = artist.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
                 const cleanTitle = title.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
-                preview = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
+                preview = `${cleanArtist} - ${cleanTitle} (ZEDTOPVIBES).mp3`;
             }
             
             document.getElementById('previewText').textContent = preview;
         }
         
-        // MP3 File handler
+        // File handlers
         document.getElementById('mp3File').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             selectedMP3File = file;
@@ -740,15 +717,12 @@
                     const secs = Math.floor(decoded.duration % 60);
                     info.innerHTML += ` ⏱️ ${mins}:${secs.toString().padStart(2, '0')}`;
                     document.getElementById('duration').value = durationMs;
-                } catch (err) {
-                    console.warn('Could not detect duration');
-                }
+                } catch (err) {}
             }
             
             checkFormValidity();
         });
         
-        // Cover File handler
         document.getElementById('coverFile').addEventListener('change', (e) => {
             const file = e.target.files[0];
             selectedCoverFile = file;
@@ -796,20 +770,22 @@
         });
         document.getElementById('customFilename').addEventListener('input', updateFilenamePreview);
         
-        // Modal Functions
-        function openNewArtistModal() { 
-            document.getElementById('newArtistModal').style.display = 'flex'; 
+        // Modal functions
+        function openNewArtistModal() {
+            document.getElementById('newArtistModal').style.display = 'flex';
         }
-        function closeNewArtistModal() { 
+        
+        function closeNewArtistModal() {
             document.getElementById('newArtistModal').style.display = 'none';
             document.getElementById('newArtistName').value = '';
         }
         
         async function saveNewArtist() {
             const name = document.getElementById('newArtistName').value.trim();
-            if (!name) { 
-                showToast('Artist name required', 'error'); 
-                return; 
+            
+            if (!name) {
+                showToast('Artist name required', 'error');
+                return;
             }
             
             const modal = document.getElementById('newArtistModal');
@@ -819,24 +795,31 @@
             saveBtn.textContent = 'Saving...';
             
             try {
+                // EXACT same format as working artist creation
+                const artistData = {
+                    name: name,
+                    country: null,
+                    bio: null,
+                    is_featured: false,
+                    is_zambian_legend: false
+                };
+                
                 const res = await fetch(`${API_BASE}/admin/artists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name, 
-                        country: null, 
-                        bio: null, 
-                        is_featured: false, 
-                        is_zambian_legend: false 
-                    })
+                    body: JSON.stringify(artistData)
                 });
                 
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Failed to create artist');
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to create artist');
+                }
                 
                 await loadArtists();
                 closeNewArtistModal();
                 showToast('Artist created successfully', 'success');
+                
             } catch (error) {
                 showToast(error.message, 'error');
             } finally {
@@ -845,10 +828,11 @@
             }
         }
         
-        function openNewAlbumModal() { 
-            document.getElementById('newAlbumModal').style.display = 'flex'; 
+        function openNewAlbumModal() {
+            document.getElementById('newAlbumModal').style.display = 'flex';
         }
-        function closeNewAlbumModal() { 
+        
+        function closeNewAlbumModal() {
             document.getElementById('newAlbumModal').style.display = 'none';
             document.getElementById('newAlbumTitle').value = '';
         }
@@ -858,13 +842,13 @@
             const artistSelect = document.getElementById('newAlbumArtistId');
             const artistName = artistSelect.options[artistSelect.selectedIndex]?.text || '';
             
-            if (!title) { 
-                showToast('Album title required', 'error'); 
-                return; 
+            if (!title) {
+                showToast('Album title required', 'error');
+                return;
             }
-            if (!artistName) { 
-                showToast('Please select an artist', 'error'); 
-                return; 
+            if (!artistName) {
+                showToast('Please select an artist', 'error');
+                return;
             }
             
             const modal = document.getElementById('newAlbumModal');
@@ -874,25 +858,32 @@
             saveBtn.textContent = 'Saving...';
             
             try {
+                // EXACT same format as working album creation
+                const albumData = {
+                    title: title,
+                    artist: artistName,  // Just the artist name, no ID
+                    release_date: null,
+                    genre: null,
+                    description: null,
+                    is_featured: false
+                };
+                
                 const res = await fetch(`${API_BASE}/admin/albums`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        title, 
-                        artist: artistName, 
-                        release_date: null, 
-                        genre: null, 
-                        description: null, 
-                        is_featured: false 
-                    })
+                    body: JSON.stringify(albumData)
                 });
                 
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Failed to create album');
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to create album');
+                }
                 
                 await loadAlbums();
                 closeNewAlbumModal();
                 showToast('Album created successfully', 'success');
+                
             } catch (error) {
                 showToast(error.message, 'error');
             } finally {
@@ -901,10 +892,11 @@
             }
         }
         
-        function openNewPlaylistModal() { 
-            document.getElementById('newPlaylistModal').style.display = 'flex'; 
+        function openNewPlaylistModal() {
+            document.getElementById('newPlaylistModal').style.display = 'flex';
         }
-        function closeNewPlaylistModal() { 
+        
+        function closeNewPlaylistModal() {
             document.getElementById('newPlaylistModal').style.display = 'none';
             document.getElementById('newPlaylistName').value = '';
             document.getElementById('newPlaylistDescription').value = '';
@@ -914,9 +906,9 @@
             const name = document.getElementById('newPlaylistName').value.trim();
             const description = document.getElementById('newPlaylistDescription').value.trim();
             
-            if (!name) { 
-                showToast('Playlist name required', 'error'); 
-                return; 
+            if (!name) {
+                showToast('Playlist name required', 'error');
+                return;
             }
             
             const modal = document.getElementById('newPlaylistModal');
@@ -926,21 +918,28 @@
             saveBtn.textContent = 'Saving...';
             
             try {
+                // EXACT same format as working playlist creation
+                const playlistData = {
+                    name: name,
+                    description: description || null
+                };
+                
                 const res = await fetch(`${API_BASE}/admin/playlists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name, 
-                        description: description || null 
-                    })
+                    body: JSON.stringify(playlistData)
                 });
                 
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Failed to create playlist');
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to create playlist');
+                }
                 
                 await loadPlaylists();
                 closeNewPlaylistModal();
                 showToast('Playlist created successfully', 'success');
+                
             } catch (error) {
                 showToast(error.message, 'error');
             } finally {
@@ -949,7 +948,7 @@
             }
         }
         
-        // Toast
+        // Toast notification
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.style.cssText = `
@@ -974,14 +973,10 @@
             e.preventDefault();
             
             const formData = new FormData();
-            const artistSelect = document.getElementById('artistId');
-            const artistName = artistSelect.options[artistSelect.selectedIndex]?.text || '';
-            
-            // Add all fields
-            formData.append('file', selectedMP3File);
+            formData.append('mp3', selectedMP3File);
             if (selectedCoverFile) formData.append('cover', selectedCoverFile);
+            
             formData.append('artist_id', document.getElementById('artistId').value);
-            formData.append('artist_name', artistName);
             formData.append('title', document.getElementById('title').value);
             formData.append('description', document.getElementById('description').value);
             formData.append('genre', document.getElementById('genre').value);
@@ -998,7 +993,7 @@
             });
             formData.append('playlists', JSON.stringify(playlists));
             
-            // Show progress
+            // Show progress bar
             const progressBar = document.getElementById('progressBar');
             const progressFill = document.getElementById('progressFill');
             progressBar.style.display = 'block';
@@ -1008,37 +1003,28 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
             
             try {
-                const res = await fetch(`${API_BASE}/admin/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
+                // TODO: Upload endpoint
+                // const res = await fetch(`${API_BASE}/admin/upload`, {
+                //     method: 'POST',
+                //     body: formData
+                // });
                 
-                const data = await res.json();
+                // Simulate progress for now
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    progressFill.style.width = progress + '%';
+                    if (progress >= 100) clearInterval(interval);
+                }, 300);
                 
-                if (!res.ok) {
-                    throw new Error(data.error || 'Upload failed');
-                }
-                
-                progressFill.style.width = '100%';
-                showToast('Upload successful!', 'success');
-                
-                // Build success page params
-                const params = new URLSearchParams({
-                    title: document.getElementById('title').value,
-                    artist: artistName,
-                    genre: document.getElementById('genre').value || '',
-                    year: document.getElementById('releaseDate').value ? document.getElementById('releaseDate').value.split('-')[0] : '',
-                    duration: durationMs,
-                    filename: document.getElementById('previewText').textContent,
-                    album: document.getElementById('albumId').options[document.getElementById('albumId').selectedIndex]?.text?.split(' - ')[0] || '',
-                    track: document.getElementById('trackNumber').value || '',
-                    playlists: playlists.join(','),
-                    cover: selectedCoverFile ? 'yes' : ''
-                });
-                
+                // Simulate success
                 setTimeout(() => {
-                    window.location.href = `/admin/upload-success.html?${params.toString()}`;
-                }, 1000);
+                    clearInterval(interval);
+                    progressFill.style.width = '100%';
+                    
+                    // Redirect to success page
+                    window.location.href = '/admin/upload-success.html';
+                }, 3000);
                 
             } catch (error) {
                 showToast('Upload failed: ' + error.message, 'error');
@@ -1058,20 +1044,8 @@
         
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            return true;
+            if (!isLoggedIn) window.location.href = '/admin/login.html';
+            return isLoggedIn;
         }
         
         // Close modals with Escape key
@@ -1093,7 +1067,12 @@
         
         // Animation style
         const style = document.createElement('style');
-        style.textContent = `@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
         document.head.appendChild(style);
     </script>
 </body>
