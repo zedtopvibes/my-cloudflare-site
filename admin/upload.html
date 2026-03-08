@@ -188,12 +188,6 @@
             gap: 15px;
         }
         
-        .form-row-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-        }
-        
         .file-input-wrapper {
             position: relative;
         }
@@ -254,15 +248,6 @@
         .playlist-checkbox input[type="checkbox"] {
             width: 16px;
             height: 16px;
-        }
-        
-        .duration-preview {
-            background: var(--gray-100);
-            padding: 8px 12px;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            color: var(--gray-700);
-            display: inline-block;
         }
         
         .filename-preview {
@@ -383,7 +368,6 @@
         
         @media (max-width: 640px) {
             .form-row,
-            .form-row-3,
             .playlists-group {
                 grid-template-columns: 1fr;
             }
@@ -422,7 +406,7 @@
                 <div class="form-group">
                     <label><i class="fas fa-tag"></i> Custom Filename (optional)</label>
                     <input type="text" id="customFilename" placeholder="Leave empty for auto: Artist - Title.mp3">
-                    <div class="hint">Auto-generated as: Artist - Title (ZEDTOPVIBES).mp3</div>
+                    <div class="hint">Auto-generated as: Artist - Title (Zedtopvibes.Com).mp3</div>
                 </div>
                 
                 <!-- Artist -->
@@ -506,7 +490,7 @@
                 
                 <!-- Filename Preview -->
                 <div id="filenamePreview" class="filename-preview">
-                    <strong>Preview:</strong> <span id="previewText">Artist - Title (ZEDTOPVIBES).mp3</span>
+                    <strong>Preview:</strong> <span id="previewText">Artist - Title (Zedtopvibes.Com).mp3</span>
                 </div>
                 
                 <!-- MP3 File -->
@@ -528,7 +512,7 @@
                     <div class="hint">PNG, JPG, WEBP (max 2MB)</div>
                 </div>
                 
-                <!-- Duration (hidden, will be set by JS) -->
+                <!-- Duration (hidden) -->
                 <input type="hidden" id="duration" value="">
                 
                 <!-- Progress Bar -->
@@ -586,6 +570,7 @@
 
     <script>
         const API_BASE = '/api';
+        const SITENAME = 'Zedtopvibes.Com';
         let audioContext = null;
         let selectedMP3File = null;
         let selectedCoverFile = null;
@@ -665,17 +650,17 @@
         function updateFilenamePreview() {
             const artistSelect = document.getElementById('artistId');
             const title = document.getElementById('title').value || 'Title';
-            const artist = artistSelect.options[artistSelect.selectedIndex]?.text?.split(' - ')[0] || 'Artist';
+            const artist = artistSelect.options[artistSelect.selectedIndex]?.text || 'Artist';
             const custom = document.getElementById('customFilename').value;
             
             let preview;
             if (custom) {
                 preview = custom.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
-                preview = `${preview} (ZEDTOPVIBES).mp3`;
+                preview = `${preview} (${SITENAME}).mp3`;
             } else {
                 const cleanArtist = artist.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
                 const cleanTitle = title.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
-                preview = `${cleanArtist} - ${cleanTitle} (ZEDTOPVIBES).mp3`;
+                preview = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
             }
             
             document.getElementById('previewText').textContent = preview;
@@ -770,7 +755,7 @@
         });
         document.getElementById('customFilename').addEventListener('input', updateFilenamePreview);
         
-        // Modal functions
+        // Modal Functions
         function openNewArtistModal() {
             document.getElementById('newArtistModal').style.display = 'flex';
         }
@@ -795,7 +780,6 @@
             saveBtn.textContent = 'Saving...';
             
             try {
-                // EXACT same format as working artist creation
                 const artistData = {
                     name: name,
                     country: null,
@@ -858,10 +842,9 @@
             saveBtn.textContent = 'Saving...';
             
             try {
-                // EXACT same format as working album creation
                 const albumData = {
                     title: title,
-                    artist: artistName,  // Just the artist name, no ID
+                    artist: artistName,
                     release_date: null,
                     genre: null,
                     description: null,
@@ -918,7 +901,6 @@
             saveBtn.textContent = 'Saving...';
             
             try {
-                // EXACT same format as working playlist creation
                 const playlistData = {
                     name: name,
                     description: description || null
@@ -1003,28 +985,36 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
             
             try {
-                // TODO: Upload endpoint
-                // const res = await fetch(`${API_BASE}/admin/upload`, {
-                //     method: 'POST',
-                //     body: formData
-                // });
+                // TODO: Replace with actual upload endpoint
+                const res = await fetch(`${API_BASE}/admin/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
                 
-                // Simulate progress for now
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += 10;
-                    progressFill.style.width = progress + '%';
-                    if (progress >= 100) clearInterval(interval);
-                }, 300);
+                const data = await res.json();
                 
-                // Simulate success
-                setTimeout(() => {
-                    clearInterval(interval);
-                    progressFill.style.width = '100%';
-                    
-                    // Redirect to success page
-                    window.location.href = '/admin/upload-success.html';
-                }, 3000);
+                if (!res.ok) {
+                    throw new Error(data.error || 'Upload failed');
+                }
+                
+                progressFill.style.width = '100%';
+                
+                // Build query string for success page
+                const params = new URLSearchParams({
+                    title: data.title || document.getElementById('title').value,
+                    artist: data.artist || document.getElementById('artistId').options[document.getElementById('artistId').selectedIndex]?.text || '',
+                    album: data.album || document.getElementById('albumId').options[document.getElementById('albumId').selectedIndex]?.text?.split(' - ')[0] || '',
+                    genre: data.genre || document.getElementById('genre').value || '',
+                    year: data.year || (document.getElementById('releaseDate').value ? document.getElementById('releaseDate').value.split('-')[0] : ''),
+                    track: data.track || document.getElementById('trackNumber').value || '',
+                    duration: data.duration || durationMs,
+                    filename: data.filename || document.getElementById('previewText').textContent,
+                    cover: data.cover_url || '',
+                    playlists: playlists.join(',')
+                });
+                
+                // Redirect to success page
+                window.location.href = `/admin/upload-success.html?${params.toString()}`;
                 
             } catch (error) {
                 showToast('Upload failed: ' + error.message, 'error');
