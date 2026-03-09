@@ -428,7 +428,7 @@
             display: flex;
         }
         
-        /* Floating suggestions styling */
+        /* Artist search results styling */
         .suggestions-container {
             position: absolute;
             top: 100%;
@@ -525,9 +525,9 @@
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="/admin/upload" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
                 <a href="/admin/tracks" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
-                <a href="/admin/albums" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="/admin/artists" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="/admin/playlists" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
             </div>
         </div>
         
@@ -563,7 +563,7 @@
                                 <input type="text" id="title" placeholder="e.g. Midnight Waves" required>
                             </div>
                             
-                            <!-- SPACE-SAVING: Floating Suggestions Artist Selection -->
+                            <!-- Space-saving artist selection -->
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Artist *</label>
                                 <div style="position: relative;">
@@ -580,7 +580,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Selected artist badge (appears when artist selected) -->
+                                <!-- Selected artist badge -->
                                 <div id="selectedArtistBadge" class="selected-artist-badge" style="display: none;">
                                     <i class="fas fa-check-circle"></i> <span id="selectedArtistName"></span>
                                     <button type="button" onclick="clearArtistSelection()" style="background: none; border: none; color: var(--primary-blue); margin-left: 5px; cursor: pointer;">
@@ -591,6 +591,20 @@
                                 <div class="form-hint">
                                     <a href="#" onclick="showNewArtistModal()" style="color: var(--primary-blue);">
                                         <i class="fas fa-plus-circle"></i> Add New Artist
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- NEW: Album Selection (Single Only) -->
+                            <div class="form-group">
+                                <label><i class="fas fa-compact-disc"></i> Album (Optional)</label>
+                                <select id="albumSelect" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                    <option value="">None (Single Release)</option>
+                                    <!-- Albums will be loaded here -->
+                                </select>
+                                <div class="form-hint">
+                                    <a href="#" onclick="showNewAlbumModal()" style="color: var(--primary-blue);">
+                                        <i class="fas fa-plus-circle"></i> Create New Album
                                     </a>
                                 </div>
                             </div>
@@ -687,87 +701,134 @@
         </div>
     </div>
 
-    <!-- Enhanced New Artist Modal -->
+    <!-- New Artist Modal -->
     <div id="newArtistModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
         <div style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
             
-            <!-- Modal Header -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--light-gray); padding-bottom: 15px;">
-                <h3 style="color: var(--primary-blue); font-size: 1.4rem; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-microphone-alt" style="background: var(--primary-blue); color: white; padding: 8px; border-radius: 50%; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;"></i>
+                <h3 style="color: var(--primary-blue); font-size: 1.4rem;">
+                    <i class="fas fa-microphone-alt" style="margin-right: 10px;"></i>
                     Add New Artist
                 </h3>
-                <button onclick="hideNewArtistModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; padding: 5px;">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button onclick="hideNewArtistModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
             </div>
 
-            <!-- Artist Form -->
             <div style="margin-bottom: 20px;">
-                <!-- Image Upload Section -->
                 <div style="text-align: center; margin-bottom: 25px;">
-                    <div id="modalCurrentImage" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; overflow: hidden; border: 3px solid var(--light-gray);">
+                    <div id="modalCurrentImage" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; overflow: hidden;">
                         <i class="fas fa-user"></i>
                     </div>
                     
-                    <div style="position: relative; display: inline-block;">
-                        <button type="button" onclick="document.getElementById('modalArtistImage').click()" style="background: var(--primary-blue); color: white; padding: 8px 20px; border: none; border-radius: 30px; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-camera"></i> Upload Photo
-                        </button>
-                        <input type="file" id="modalArtistImage" accept="image/*" style="display: none;" onchange="previewModalImage(this)">
+                    <button type="button" onclick="document.getElementById('modalArtistImage').click()" class="btn btn-secondary">
+                        <i class="fas fa-camera"></i> Upload Photo
+                    </button>
+                    <input type="file" id="modalArtistImage" accept="image/*" style="display: none;" onchange="previewModalImage(this)">
+                    
+                    <div id="modalImagePreview" style="display: none; margin-top: 10px;"></div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Artist Name *</label>
+                    <input type="text" id="newArtistName" placeholder="e.g. Slap Dee" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Country</label>
+                    <input type="text" id="newArtistCountry" placeholder="e.g. Zambia" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Bio</label>
+                    <textarea id="newArtistBio" rows="3" placeholder="Artist biography..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;"></textarea>
+                </div>
+                
+                <div style="background: var(--light-gray); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 20px;">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="newArtistFeatured"> Featured Artist
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="newArtistLegend"> Zambian Legend
+                        </label>
+                    </div>
+                </div>
+
+                <div id="artistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 20px;"></div>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="hideNewArtistModal()" class="btn btn-secondary">Cancel</button>
+                <button onclick="saveNewArtist()" class="btn btn-primary">Save Artist</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Album Creation Modal -->
+    <div id="newAlbumModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+        <div style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--light-gray); padding-bottom: 15px;">
+                <h3 style="color: var(--primary-blue); font-size: 1.4rem;">
+                    <i class="fas fa-compact-disc" style="margin-right: 10px;"></i>
+                    Create New Album
+                </h3>
+                <button onclick="hideNewAlbumModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <!-- Album Cover Upload -->
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div id="modalAlbumCover" style="width: 120px; height: 120px; margin: 0 auto 15px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                        <i class="fas fa-compact-disc"></i>
                     </div>
                     
-                    <div id="modalImagePreview" style="display: none; margin-top: 10px;">
-                        <!-- Preview will appear here -->
-                    </div>
+                    <button type="button" onclick="document.getElementById('modalAlbumCoverInput').click()" class="btn btn-secondary">
+                        <i class="fas fa-camera"></i> Upload Cover
+                    </button>
+                    <input type="file" id="modalAlbumCoverInput" accept="image/*" style="display: none;" onchange="previewAlbumCover(this)">
+                    
+                    <div id="albumImagePreview" style="display: none; margin-top: 10px;"></div>
                 </div>
 
                 <!-- Form Fields -->
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: #333;">
-                        <i class="fas fa-user" style="color: var(--primary-blue); margin-right: 5px;"></i> Artist Name *
-                    </label>
-                    <input type="text" id="newArtistName" placeholder="e.g. Slap Dee" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Album Title *</label>
+                    <input type="text" id="newAlbumTitle" placeholder="e.g. Midnight Waves" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
                 </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: #333;">
-                        <i class="fas fa-map-marker-alt" style="color: var(--primary-blue); margin-right: 5px;"></i> Country
-                    </label>
-                    <input type="text" id="newArtistCountry" placeholder="e.g. Zambia" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Artist *</label>
+                    <input type="text" id="newAlbumArtist" placeholder="e.g. Slap Dee" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
                 </div>
-                
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: #333;">
-                        <i class="fas fa-align-left" style="color: var(--primary-blue); margin-right: 5px;"></i> Bio
-                    </label>
-                    <textarea id="newArtistBio" rows="3" placeholder="Artist biography..." style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; resize: vertical;"></textarea>
-                </div>
-                
-                <!-- Checkboxes -->
-                <div style="background: var(--light-gray); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem;">
-                            <input type="checkbox" id="newArtistFeatured" style="width: 16px; height: 16px;"> Featured Artist
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem;">
-                            <input type="checkbox" id="newArtistLegend" style="width: 16px; height: 16px;"> Zambian Legend
-                        </label>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Release Date</label>
+                        <input type="date" id="newAlbumDate" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Genre</label>
+                        <input type="text" id="newAlbumGenre" placeholder="e.g. Hip-Hop" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
                     </div>
                 </div>
 
-                <!-- Status Message -->
-                <div id="artistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; background: #f8d7da; color: #721c24;"></div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Description</label>
+                    <textarea id="newAlbumDescription" rows="3" placeholder="Album description..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;"></textarea>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="newAlbumFeatured"> Featured Album
+                    </label>
+                </div>
+
+                <div id="albumModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 20px; background: #f8d7da; color: #721c24;"></div>
             </div>
 
-            <!-- Modal Footer -->
-            <div style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 20px;">
-                <button onclick="hideNewArtistModal()" class="btn btn-secondary" style="padding: 10px 20px;">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-                <button onclick="saveNewArtist()" class="btn btn-primary" style="padding: 10px 25px;">
-                    <i class="fas fa-save"></i> Save Artist
-                </button>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="hideNewAlbumModal()" class="btn btn-secondary">Cancel</button>
+                <button onclick="saveNewAlbum()" class="btn btn-primary">Create Album</button>
             </div>
         </div>
     </div>
@@ -885,7 +946,7 @@
             artworkPreview.classList.remove('has-image');
         };
 
-        // ==================== SPACE-SAVING ARTIST SELECTION ====================
+        // ==================== ARTIST SELECTION ====================
         let allArtists = [];
         let artistTimeout;
         let selectedArtist = '';
@@ -893,10 +954,7 @@
         async function loadArtists() {
             try {
                 const response = await fetch(`${API_BASE}/admin/artists`);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 
                 allArtists = await response.json();
                 allArtists.sort((a, b) => a.name.localeCompare(b.name));
@@ -923,22 +981,17 @@
                     
                     clearTimeout(artistTimeout);
                     artistTimeout = setTimeout(() => {
-                        // Search in name and country
                         const matches = allArtists.filter(artist => 
                             artist.name.toLowerCase().includes(search) ||
                             (artist.country && artist.country.toLowerCase().includes(search))
-                        ).slice(0, 8); // Limit to 8 results
+                        ).slice(0, 8);
                         
                         if (matches.length > 0) {
-                            displaySuggestions(matches);
+                            displayArtistSuggestions(matches);
                         } else {
                             document.getElementById('artistSuggestions').innerHTML = `
-                                <div style="padding: 15px; text-align: center; color: #999;">
-                                    <i class="fas fa-microphone-slash"></i>
-                                    <p style="margin: 5px 0;">No artists found</p>
-                                    <a href="#" onclick="showNewArtistModal(); return false;" style="color: var(--primary-blue);">
-                                        <i class="fas fa-plus-circle"></i> Add new artist
-                                    </a>
+                                <div style="padding: 15px; text-align: center;">
+                                    No artists found. <a href="#" onclick="showNewArtistModal(); return false;">Add new?</a>
                                 </div>
                             `;
                             document.getElementById('artistSuggestions').style.display = 'block';
@@ -946,48 +999,30 @@
                     }, 300);
                 });
 
-                // Close suggestions when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!e.target.closest('#artistInput') && !e.target.closest('#artistSuggestions')) {
                         document.getElementById('artistSuggestions').style.display = 'none';
                     }
                 });
-
-                // Handle keyboard navigation (optional enhancement)
-                artistInput.addEventListener('keydown', handleSuggestionKeyboard);
                 
             } catch (error) {
                 console.error('Error loading artists:', error);
             }
         }
 
-        function displaySuggestions(artists) {
+        function displayArtistSuggestions(artists) {
             let html = '';
             artists.forEach(artist => {
-                const isSelected = (selectedArtist === artist.name);
                 html += `
-                    <div class="suggestion-item ${isSelected ? 'selected' : ''}" onclick="selectArtist('${artist.name.replace(/'/g, "\\'")}')">
-                        <div class="suggestion-icon">
-                            <i class="fas fa-user-circle"></i>
-                        </div>
+                    <div class="suggestion-item" onclick="selectArtist('${artist.name.replace(/'/g, "\\'")}')">
+                        <div class="suggestion-icon"><i class="fas fa-user-circle"></i></div>
                         <div class="suggestion-info">
                             <div class="suggestion-name">${escapeHtml(artist.name)}</div>
-                            ${artist.country ? `<div class="suggestion-meta"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(artist.country)}</div>` : ''}
+                            ${artist.country ? `<div class="suggestion-meta">${escapeHtml(artist.country)}</div>` : ''}
                         </div>
-                        ${artist.track_count ? `<div style="font-size: 0.8rem; color: #999;">${artist.track_count} tracks</div>` : ''}
                     </div>
                 `;
             });
-            
-            // Add "Add new" option at the bottom
-            html += `
-                <div style="padding: 10px; text-align: center; border-top: 1px solid #eee; background: #f9f9f9;">
-                    <a href="#" onclick="showNewArtistModal(); return false;" style="color: var(--primary-blue); text-decoration: none;">
-                        <i class="fas fa-plus-circle"></i> Add new artist
-                    </a>
-                </div>
-            `;
-            
             document.getElementById('artistSuggestions').innerHTML = html;
             document.getElementById('artistSuggestions').style.display = 'block';
         }
@@ -998,7 +1033,6 @@
             document.getElementById('artistSelect').value = artistName;
             document.getElementById('artistSuggestions').style.display = 'none';
             
-            // Show selected badge
             document.getElementById('selectedArtistName').textContent = artistName;
             document.getElementById('selectedArtistBadge').style.display = 'inline-flex';
         };
@@ -1008,77 +1042,147 @@
             document.getElementById('artistInput').value = '';
             document.getElementById('artistSelect').value = '';
             document.getElementById('selectedArtistBadge').style.display = 'none';
-            document.getElementById('artistSuggestions').style.display = 'none';
         };
 
-        // Optional: Keyboard navigation
-        function handleSuggestionKeyboard(e) {
-            const suggestions = document.getElementById('artistSuggestions');
-            if (suggestions.style.display !== 'block') return;
-            
-            const items = suggestions.querySelectorAll('.suggestion-item');
-            if (items.length === 0) return;
-            
-            // Find currently selected index
-            let currentIndex = -1;
-            items.forEach((item, index) => {
-                if (item.classList.contains('selected')) currentIndex = index;
-            });
-            
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                currentIndex = (currentIndex + 1) % items.length;
-                updateSelection(items, currentIndex);
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                currentIndex = (currentIndex - 1 + items.length) % items.length;
-                updateSelection(items, currentIndex);
-            } else if (e.key === 'Enter' && currentIndex >= 0) {
-                e.preventDefault();
-                items[currentIndex].click();
+        // ==================== ALBUMS LOADING ====================
+        async function loadAlbums() {
+            try {
+                const response = await fetch(`${API_BASE}/albums`);
+                if (!response.ok) throw new Error('Failed to load albums');
+                
+                const albums = await response.json();
+                const select = document.getElementById('albumSelect');
+                
+                select.innerHTML = '<option value="">None (Single Release)</option>';
+                
+                albums.sort((a, b) => a.title.localeCompare(b.title));
+                albums.forEach(album => {
+                    const option = document.createElement('option');
+                    option.value = album.id;
+                    option.textContent = `${album.title} - ${album.artist}`;
+                    select.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error('Error loading albums:', error);
             }
         }
 
-        function updateSelection(items, index) {
-            items.forEach(item => item.classList.remove('selected'));
-            items[index].classList.add('selected');
-            items[index].scrollIntoView({ block: 'nearest' });
-        }
+        // ==================== ALBUM CREATION ====================
+        let albumCoverFile = null;
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        window.showNewAlbumModal = () => {
+            document.getElementById('newAlbumModal').style.display = 'flex';
+            // Reset form
+            document.getElementById('newAlbumTitle').value = '';
+            document.getElementById('newAlbumArtist').value = '';
+            document.getElementById('newAlbumDate').value = '';
+            document.getElementById('newAlbumGenre').value = '';
+            document.getElementById('newAlbumDescription').value = '';
+            document.getElementById('newAlbumFeatured').checked = false;
+            document.getElementById('albumModalStatus').style.display = 'none';
+            document.getElementById('modalAlbumCover').innerHTML = '<i class="fas fa-compact-disc"></i>';
+            document.getElementById('albumImagePreview').style.display = 'none';
+            albumCoverFile = null;
+        };
 
-        // ==================== MODAL IMAGE PREVIEW ====================
+        window.hideNewAlbumModal = () => {
+            document.getElementById('newAlbumModal').style.display = 'none';
+        };
+
+        window.previewAlbumCover = (input) => {
+            if (input.files && input.files[0]) {
+                albumCoverFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('modalAlbumCover').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.saveNewAlbum = async () => {
+            const title = document.getElementById('newAlbumTitle').value.trim();
+            const artist = document.getElementById('newAlbumArtist').value.trim();
+            const statusEl = document.getElementById('albumModalStatus');
+            
+            if (!title || !artist) {
+                statusEl.textContent = 'Title and artist are required';
+                statusEl.style.display = 'block';
+                return;
+            }
+            
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            saveBtn.disabled = true;
+            statusEl.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: title,
+                        artist: artist,
+                        release_date: document.getElementById('newAlbumDate').value || null,
+                        genre: document.getElementById('newAlbumGenre').value || null,
+                        description: document.getElementById('newAlbumDescription').value || null,
+                        is_featured: document.getElementById('newAlbumFeatured').checked
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create album');
+                }
+                
+                // Upload cover if selected
+                if (albumCoverFile) {
+                    const coverData = new FormData();
+                    coverData.append('cover', albumCoverFile);
+                    await fetch(`${API_BASE}/admin/albums/${data.id}/cover`, {
+                        method: 'POST',
+                        body: coverData
+                    }).catch(e => console.warn('Cover upload failed'));
+                }
+                
+                // Refresh albums dropdown
+                await loadAlbums();
+                
+                // Select the new album
+                document.getElementById('albumSelect').value = data.id;
+                
+                // Close modal and show success
+                hideNewAlbumModal();
+                showStatus('success', `Album "${title}" created!`);
+                
+            } catch (error) {
+                statusEl.textContent = error.message;
+                statusEl.style.display = 'block';
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        };
+
+        // ==================== ARTIST MODAL FUNCTIONS ====================
         let modalArtistImageFile = null;
 
         window.previewModalImage = (input) => {
             if (input.files && input.files[0]) {
                 modalArtistImageFile = input.files[0];
                 const reader = new FileReader();
-                
                 reader.onload = function(e) {
-                    // Hide the default icon
-                    document.getElementById('modalCurrentImage').innerHTML = '';
-                    
-                    // Show preview
-                    const preview = document.getElementById('modalImagePreview');
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 100px; max-height: 100px; border-radius: 8px; border: 2px solid var(--primary-blue);">`;
-                    preview.style.display = 'block';
+                    document.getElementById('modalCurrentImage').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
                 };
-                
                 reader.readAsDataURL(input.files[0]);
             }
         };
 
-        // ==================== NEW ARTIST MODAL ====================
         window.showNewArtistModal = () => {
             document.getElementById('newArtistModal').style.display = 'flex';
-            // Hide suggestions
-            document.getElementById('artistSuggestions').style.display = 'none';
             // Reset form
             document.getElementById('newArtistName').value = '';
             document.getElementById('newArtistCountry').value = '';
@@ -1087,7 +1191,6 @@
             document.getElementById('newArtistLegend').checked = false;
             document.getElementById('artistModalStatus').style.display = 'none';
             document.getElementById('modalCurrentImage').innerHTML = '<i class="fas fa-user"></i>';
-            document.getElementById('modalImagePreview').style.display = 'none';
             modalArtistImageFile = null;
         };
         
@@ -1106,8 +1209,6 @@
             if (!name) {
                 statusEl.textContent = 'Please enter artist name';
                 statusEl.style.display = 'block';
-                statusEl.style.background = '#f8d7da';
-                statusEl.style.color = '#721c24';
                 return;
             }
             
@@ -1118,7 +1219,6 @@
             statusEl.style.display = 'none';
             
             try {
-                // First save artist data
                 const response = await fetch(`${API_BASE}/admin/artists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1137,39 +1237,23 @@
                     throw new Error(data.error || 'Failed to save artist');
                 }
 
-                const artistId = data.id;
-
-                // Upload photo if selected
                 if (modalArtistImageFile) {
                     const photoData = new FormData();
                     photoData.append('photo', modalArtistImageFile);
-                    
-                    const photoRes = await fetch(`${API_BASE}/admin/artists/${artistId}/photo`, {
+                    await fetch(`${API_BASE}/admin/artists/${data.id}/photo`, {
                         method: 'POST',
                         body: photoData
-                    });
-                    
-                    if (!photoRes.ok) {
-                        console.warn('Artist saved but photo upload failed');
-                    }
+                    }).catch(e => console.warn('Photo upload failed'));
                 }
 
-                // Reload artists list
                 await loadArtists();
-                
-                // Close modal and show success
                 hideNewArtistModal();
-                showStatus('success', `Artist "${name}" added successfully!`);
-                
-                // Select the newly added artist
+                showStatus('success', `Artist "${name}" added!`);
                 selectArtist(name);
                 
             } catch (error) {
-                console.error('Error adding artist:', error);
                 statusEl.textContent = error.message;
                 statusEl.style.display = 'block';
-                statusEl.style.background = '#f8d7da';
-                statusEl.style.color = '#721c24';
             } finally {
                 saveBtn.innerHTML = originalText;
                 saveBtn.disabled = false;
@@ -1199,7 +1283,6 @@
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Validate
             if (!selectedFile) {
                 showStatus('error', 'Please select an MP3 file');
                 return;
@@ -1208,18 +1291,11 @@
             const title = document.getElementById('title').value.trim();
             const artistName = document.getElementById('artistSelect').value;
 
-            if (!title) {
-                showStatus('error', 'Please enter a title');
-                document.getElementById('title').focus();
+            if (!title || !artistName) {
+                showStatus('error', 'Title and artist are required');
                 return;
             }
 
-            if (!artistName) {
-                showStatus('error', 'Please select an artist');
-                return;
-            }
-
-            // Show progress
             const progressDiv = document.getElementById('uploadProgress');
             const progressFill = document.getElementById('progressFill');
             const progressText = document.getElementById('progressText');
@@ -1228,11 +1304,11 @@
             showStatus('info', 'Uploading track...');
 
             try {
-                // Create form data
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 formData.append('title', title);
                 formData.append('artist', artistName);
+                formData.append('album_id', document.getElementById('albumSelect').value || '');
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', document.getElementById('duration').value);
@@ -1246,7 +1322,6 @@
                     formData.append('artwork', artworkFile);
                 }
 
-                // Simulate progress
                 let progress = 0;
                 const interval = setInterval(() => {
                     progress += 10;
@@ -1256,7 +1331,6 @@
                     }
                 }, 300);
 
-                // Send to upload endpoint
                 const response = await fetch(`${API_BASE}/upload`, {
                     method: 'POST',
                     body: formData
@@ -1264,18 +1338,12 @@
 
                 clearInterval(interval);
 
-                if (!response.ok) {
-                    throw new Error('Upload failed');
-                }
+                if (!response.ok) throw new Error('Upload failed');
 
-                const result = await response.json();
-                
-                // Success
                 progressFill.style.width = '100%';
                 progressText.textContent = '100%';
                 showStatus('success', 'Track uploaded successfully!');
                 
-                // Reset form after delay
                 setTimeout(() => {
                     resetForm();
                     progressDiv.style.display = 'none';
@@ -1306,6 +1374,7 @@
             document.getElementById('releaseDate').value = '';
             document.getElementById('description').value = '';
             document.getElementById('bpm').value = '';
+            document.getElementById('albumSelect').value = '';
             clearArtistSelection();
             document.getElementById('explicit').checked = false;
             document.getElementById('featured').checked = false;
@@ -1338,10 +1407,18 @@
             }
         }
 
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // ==================== INITIALIZE ====================
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
                 loadArtists();
+                loadAlbums(); // Load albums dropdown
             }
         });
     </script>
