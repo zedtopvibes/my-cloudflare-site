@@ -428,7 +428,7 @@
             display: flex;
         }
         
-        /* Artist search results styling */
+        /* Suggestions container - shared for both artist and album */
         .suggestions-container {
             position: absolute;
             top: 100%;
@@ -483,7 +483,7 @@
             color: #666;
         }
         
-        .selected-artist-badge {
+        .selected-badge {
             display: inline-flex;
             align-items: center;
             gap: 5px;
@@ -563,7 +563,7 @@
                                 <input type="text" id="title" placeholder="e.g. Midnight Waves" required>
                             </div>
                             
-                            <!-- Space-saving artist selection -->
+                            <!-- Artist Selection with Real-Time Search -->
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Artist *</label>
                                 <div style="position: relative;">
@@ -575,13 +575,11 @@
                                     </select>
                                     
                                     <!-- Floating suggestions -->
-                                    <div id="artistSuggestions" class="suggestions-container">
-                                        <!-- Suggestions will appear here -->
-                                    </div>
+                                    <div id="artistSuggestions" class="suggestions-container"></div>
                                 </div>
                                 
                                 <!-- Selected artist badge -->
-                                <div id="selectedArtistBadge" class="selected-artist-badge" style="display: none;">
+                                <div id="selectedArtistBadge" class="selected-badge" style="display: none;">
                                     <i class="fas fa-check-circle"></i> <span id="selectedArtistName"></span>
                                     <button type="button" onclick="clearArtistSelection()" style="background: none; border: none; color: var(--primary-blue); margin-left: 5px; cursor: pointer;">
                                         <i class="fas fa-times"></i>
@@ -595,13 +593,29 @@
                                 </div>
                             </div>
 
-                            <!-- NEW: Album Selection (Single Only) -->
+                            <!-- Album Selection with Real-Time Search (Matches Artist Style) -->
                             <div class="form-group">
                                 <label><i class="fas fa-compact-disc"></i> Album (Optional)</label>
-                                <select id="albumSelect" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
-                                    <option value="">None (Single Release)</option>
-                                    <!-- Albums will be loaded here -->
-                                </select>
+                                <div style="position: relative;">
+                                    <input type="text" id="albumSearchInput" placeholder="Search or type album name..." autocomplete="off" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                    
+                                    <!-- Hidden select for form submission -->
+                                    <select id="albumSelect" style="display: none;">
+                                        <option value="">None (Single Release)</option>
+                                    </select>
+                                    
+                                    <!-- Floating suggestions for albums -->
+                                    <div id="albumSuggestions" class="suggestions-container"></div>
+                                </div>
+                                
+                                <!-- Selected album badge -->
+                                <div id="selectedAlbumBadge" class="selected-badge" style="display: none;">
+                                    <i class="fas fa-check-circle"></i> <span id="selectedAlbumName"></span>
+                                    <button type="button" onclick="clearAlbumSelection()" style="background: none; border: none; color: var(--primary-blue); margin-left: 5px; cursor: pointer;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                
                                 <div class="form-hint">
                                     <a href="#" onclick="showNewAlbumModal()" style="color: var(--primary-blue);">
                                         <i class="fas fa-plus-circle"></i> Create New Album
@@ -763,7 +777,7 @@
         </div>
     </div>
 
-    <!-- NEW: Album Creation Modal -->
+    <!-- Album Creation Modal -->
     <div id="newAlbumModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
         <div style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
             
@@ -946,7 +960,7 @@
             artworkPreview.classList.remove('has-image');
         };
 
-        // ==================== ARTIST SELECTION ====================
+        // ==================== ARTIST SELECTION (REAL-TIME SEARCH) ====================
         let allArtists = [];
         let artistTimeout;
         let selectedArtist = '';
@@ -999,6 +1013,7 @@
                     }, 300);
                 });
 
+                // Close suggestions when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!e.target.closest('#artistInput') && !e.target.closest('#artistSuggestions')) {
                         document.getElementById('artistSuggestions').style.display = 'none';
@@ -1044,23 +1059,63 @@
             document.getElementById('selectedArtistBadge').style.display = 'none';
         };
 
-        // ==================== ALBUMS LOADING ====================
+        // ==================== ALBUM SELECTION (REAL-TIME SEARCH) ====================
+        let allAlbums = [];
+        let albumTimeout;
+
         async function loadAlbums() {
             try {
                 const response = await fetch(`${API_BASE}/albums`);
                 if (!response.ok) throw new Error('Failed to load albums');
                 
-                const albums = await response.json();
+                allAlbums = await response.json();
+                allAlbums.sort((a, b) => a.title.localeCompare(b.title));
+                
+                // Populate hidden select
                 const select = document.getElementById('albumSelect');
-                
                 select.innerHTML = '<option value="">None (Single Release)</option>';
-                
-                albums.sort((a, b) => a.title.localeCompare(b.title));
-                albums.forEach(album => {
+                allAlbums.forEach(album => {
                     const option = document.createElement('option');
                     option.value = album.id;
                     option.textContent = `${album.title} - ${album.artist}`;
                     select.appendChild(option);
+                });
+                
+                // Setup search listener
+                const albumSearch = document.getElementById('albumSearchInput');
+                albumSearch.addEventListener('input', function(e) {
+                    const search = e.target.value.toLowerCase();
+                    
+                    if (search.length < 1) {
+                        document.getElementById('albumSuggestions').style.display = 'none';
+                        return;
+                    }
+                    
+                    clearTimeout(albumTimeout);
+                    albumTimeout = setTimeout(() => {
+                        const matches = allAlbums.filter(album => 
+                            album.title.toLowerCase().includes(search) ||
+                            album.artist.toLowerCase().includes(search)
+                        ).slice(0, 8);
+                        
+                        if (matches.length > 0) {
+                            displayAlbumSuggestions(matches);
+                        } else {
+                            document.getElementById('albumSuggestions').innerHTML = `
+                                <div style="padding: 15px; text-align: center;">
+                                    No albums found. <a href="#" onclick="showNewAlbumModal(); return false;">Create new?</a>
+                                </div>
+                            `;
+                            document.getElementById('albumSuggestions').style.display = 'block';
+                        }
+                    }, 300);
+                });
+
+                // Close suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#albumSearchInput') && !e.target.closest('#albumSuggestions')) {
+                        document.getElementById('albumSuggestions').style.display = 'none';
+                    }
                 });
                 
             } catch (error) {
@@ -1068,103 +1123,36 @@
             }
         }
 
-        // ==================== ALBUM CREATION ====================
-        let albumCoverFile = null;
+        function displayAlbumSuggestions(albums) {
+            let html = '';
+            albums.forEach(album => {
+                html += `
+                    <div class="suggestion-item" onclick="selectAlbum('${album.id}', '${escapeHtml(album.title)} - ${escapeHtml(album.artist)}')">
+                        <div class="suggestion-icon"><i class="fas fa-compact-disc"></i></div>
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(album.title)}</div>
+                            <div class="suggestion-meta">${escapeHtml(album.artist)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('albumSuggestions').innerHTML = html;
+            document.getElementById('albumSuggestions').style.display = 'block';
+        }
 
-        window.showNewAlbumModal = () => {
-            document.getElementById('newAlbumModal').style.display = 'flex';
-            // Reset form
-            document.getElementById('newAlbumTitle').value = '';
-            document.getElementById('newAlbumArtist').value = '';
-            document.getElementById('newAlbumDate').value = '';
-            document.getElementById('newAlbumGenre').value = '';
-            document.getElementById('newAlbumDescription').value = '';
-            document.getElementById('newAlbumFeatured').checked = false;
-            document.getElementById('albumModalStatus').style.display = 'none';
-            document.getElementById('modalAlbumCover').innerHTML = '<i class="fas fa-compact-disc"></i>';
-            document.getElementById('albumImagePreview').style.display = 'none';
-            albumCoverFile = null;
+        window.selectAlbum = (albumId, displayName) => {
+            document.getElementById('albumSearchInput').value = displayName;
+            document.getElementById('albumSelect').value = albumId;
+            document.getElementById('albumSuggestions').style.display = 'none';
+            
+            document.getElementById('selectedAlbumName').textContent = displayName;
+            document.getElementById('selectedAlbumBadge').style.display = 'inline-flex';
         };
 
-        window.hideNewAlbumModal = () => {
-            document.getElementById('newAlbumModal').style.display = 'none';
-        };
-
-        window.previewAlbumCover = (input) => {
-            if (input.files && input.files[0]) {
-                albumCoverFile = input.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('modalAlbumCover').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        };
-
-        window.saveNewAlbum = async () => {
-            const title = document.getElementById('newAlbumTitle').value.trim();
-            const artist = document.getElementById('newAlbumArtist').value.trim();
-            const statusEl = document.getElementById('albumModalStatus');
-            
-            if (!title || !artist) {
-                statusEl.textContent = 'Title and artist are required';
-                statusEl.style.display = 'block';
-                return;
-            }
-            
-            const saveBtn = event.target;
-            const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
-            saveBtn.disabled = true;
-            statusEl.style.display = 'none';
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/albums`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title: title,
-                        artist: artist,
-                        release_date: document.getElementById('newAlbumDate').value || null,
-                        genre: document.getElementById('newAlbumGenre').value || null,
-                        description: document.getElementById('newAlbumDescription').value || null,
-                        is_featured: document.getElementById('newAlbumFeatured').checked
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to create album');
-                }
-                
-                // Upload cover if selected
-                if (albumCoverFile) {
-                    const coverData = new FormData();
-                    coverData.append('cover', albumCoverFile);
-                    await fetch(`${API_BASE}/admin/albums/${data.id}/cover`, {
-                        method: 'POST',
-                        body: coverData
-                    }).catch(e => console.warn('Cover upload failed'));
-                }
-                
-                // Refresh albums dropdown
-                await loadAlbums();
-                
-                // Select the new album
-                document.getElementById('albumSelect').value = data.id;
-                
-                // Close modal and show success
-                hideNewAlbumModal();
-                showStatus('success', `Album "${title}" created!`);
-                
-            } catch (error) {
-                statusEl.textContent = error.message;
-                statusEl.style.display = 'block';
-            } finally {
-                saveBtn.innerHTML = originalText;
-                saveBtn.disabled = false;
-            }
+        window.clearAlbumSelection = () => {
+            document.getElementById('albumSearchInput').value = '';
+            document.getElementById('albumSelect').value = '';
+            document.getElementById('selectedAlbumBadge').style.display = 'none';
         };
 
         // ==================== ARTIST MODAL FUNCTIONS ====================
@@ -1250,6 +1238,106 @@
                 hideNewArtistModal();
                 showStatus('success', `Artist "${name}" added!`);
                 selectArtist(name);
+                
+            } catch (error) {
+                statusEl.textContent = error.message;
+                statusEl.style.display = 'block';
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        };
+
+        // ==================== ALBUM CREATION FUNCTIONS ====================
+        let albumCoverFile = null;
+
+        window.showNewAlbumModal = () => {
+            document.getElementById('newAlbumModal').style.display = 'flex';
+            // Reset form
+            document.getElementById('newAlbumTitle').value = '';
+            document.getElementById('newAlbumArtist').value = '';
+            document.getElementById('newAlbumDate').value = '';
+            document.getElementById('newAlbumGenre').value = '';
+            document.getElementById('newAlbumDescription').value = '';
+            document.getElementById('newAlbumFeatured').checked = false;
+            document.getElementById('albumModalStatus').style.display = 'none';
+            document.getElementById('modalAlbumCover').innerHTML = '<i class="fas fa-compact-disc"></i>';
+            document.getElementById('albumImagePreview').style.display = 'none';
+            albumCoverFile = null;
+        };
+
+        window.hideNewAlbumModal = () => {
+            document.getElementById('newAlbumModal').style.display = 'none';
+        };
+
+        window.previewAlbumCover = (input) => {
+            if (input.files && input.files[0]) {
+                albumCoverFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('modalAlbumCover').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.saveNewAlbum = async () => {
+            const title = document.getElementById('newAlbumTitle').value.trim();
+            const artist = document.getElementById('newAlbumArtist').value.trim();
+            const statusEl = document.getElementById('albumModalStatus');
+            
+            if (!title || !artist) {
+                statusEl.textContent = 'Title and artist are required';
+                statusEl.style.display = 'block';
+                return;
+            }
+            
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            saveBtn.disabled = true;
+            statusEl.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: title,
+                        artist: artist,
+                        release_date: document.getElementById('newAlbumDate').value || null,
+                        genre: document.getElementById('newAlbumGenre').value || null,
+                        description: document.getElementById('newAlbumDescription').value || null,
+                        is_featured: document.getElementById('newAlbumFeatured').checked
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create album');
+                }
+                
+                // Upload cover if selected
+                if (albumCoverFile) {
+                    const coverData = new FormData();
+                    coverData.append('cover', albumCoverFile);
+                    await fetch(`${API_BASE}/admin/albums/${data.id}/cover`, {
+                        method: 'POST',
+                        body: coverData
+                    }).catch(e => console.warn('Cover upload failed'));
+                }
+                
+                // Refresh albums dropdown
+                await loadAlbums();
+                
+                // Select the new album
+                const displayName = `${data.title} - ${data.artist}`;
+                selectAlbum(data.id, displayName);
+                
+                // Close modal and show success
+                hideNewAlbumModal();
+                showStatus('success', `Album "${title}" created!`);
                 
             } catch (error) {
                 statusEl.textContent = error.message;
@@ -1374,8 +1462,8 @@
             document.getElementById('releaseDate').value = '';
             document.getElementById('description').value = '';
             document.getElementById('bpm').value = '';
-            document.getElementById('albumSelect').value = '';
             clearArtistSelection();
+            clearAlbumSelection();
             document.getElementById('explicit').checked = false;
             document.getElementById('featured').checked = false;
             document.getElementById('editorPick').checked = false;
@@ -1418,7 +1506,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
                 loadArtists();
-                loadAlbums(); // Load albums dropdown
+                loadAlbums();
             }
         });
     </script>
