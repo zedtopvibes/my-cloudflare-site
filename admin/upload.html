@@ -600,34 +600,88 @@
         </div>
     </div>
 
-    <!-- New Artist Modal (FIXED) -->
+    <!-- Enhanced New Artist Modal -->
     <div id="newArtistModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
-        <div style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px;">
-            <h3 style="margin-bottom: 20px; color: var(--primary-blue);">Add New Artist</h3>
+        <div style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
             
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Artist Name *</label>
-                <input type="text" id="newArtistName" placeholder="e.g. New Artist" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+            <!-- Modal Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--light-gray); padding-bottom: 15px;">
+                <h3 style="color: var(--primary-blue); font-size: 1.4rem; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-microphone-alt" style="background: var(--primary-blue); color: white; padding: 8px; border-radius: 50%; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;"></i>
+                    Add New Artist
+                </h3>
+                <button onclick="hideNewArtistModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; padding: 5px;">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Country</label>
-                <select id="newArtistCountry" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-                    <option value="">Select Country</option>
-                    <option value="Zambia">Zambia</option>
-                    <option value="USA">USA</option>
-                    <option value="UK">UK</option>
-                    <option value="Nigeria">Nigeria</option>
-                    <option value="South Africa">South Africa</option>
-                    <option value="Other">Other</option>
-                </select>
+
+            <!-- Artist Form -->
+            <div style="margin-bottom: 20px;">
+                <!-- Image Upload Section -->
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div id="modalCurrentImage" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; overflow: hidden; border: 3px solid var(--light-gray);">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    
+                    <div style="position: relative; display: inline-block;">
+                        <button type="button" onclick="document.getElementById('modalArtistImage').click()" style="background: var(--primary-blue); color: white; padding: 8px 20px; border: none; border-radius: 30px; cursor: pointer; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-camera"></i> Upload Photo
+                        </button>
+                        <input type="file" id="modalArtistImage" accept="image/*" style="display: none;" onchange="previewModalImage(this)">
+                    </div>
+                    
+                    <div id="modalImagePreview" style="display: none; margin-top: 10px;">
+                        <!-- Preview will appear here -->
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: #333;">
+                        <i class="fas fa-user" style="color: var(--primary-blue); margin-right: 5px;"></i> Artist Name *
+                    </label>
+                    <input type="text" id="newArtistName" placeholder="e.g. Slap Dee" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: #333;">
+                        <i class="fas fa-map-marker-alt" style="color: var(--primary-blue); margin-right: 5px;"></i> Country
+                    </label>
+                    <input type="text" id="newArtistCountry" placeholder="e.g. Zambia" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: #333;">
+                        <i class="fas fa-align-left" style="color: var(--primary-blue); margin-right: 5px;"></i> Bio
+                    </label>
+                    <textarea id="newArtistBio" rows="3" placeholder="Artist biography..." style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; resize: vertical;"></textarea>
+                </div>
+                
+                <!-- Checkboxes -->
+                <div style="background: var(--light-gray); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem;">
+                            <input type="checkbox" id="newArtistFeatured" style="width: 16px; height: 16px;"> Featured Artist
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.95rem;">
+                            <input type="checkbox" id="newArtistLegend" style="width: 16px; height: 16px;"> Zambian Legend
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Status Message -->
+                <div id="artistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; background: #f8d7da; color: #721c24;"></div>
             </div>
-            
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button onclick="hideNewArtistModal()" class="btn btn-secondary">Cancel</button>
-                <button onclick="saveNewArtist()" class="btn btn-primary">Save Artist</button>
+
+            <!-- Modal Footer -->
+            <div style="display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid #eee; padding-top: 20px;">
+                <button onclick="hideNewArtistModal()" class="btn btn-secondary" style="padding: 10px 20px;">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button onclick="saveNewArtist()" class="btn btn-primary" style="padding: 10px 25px;">
+                    <i class="fas fa-save"></i> Save Artist
+                </button>
             </div>
-            <div id="artistModalStatus" style="margin-top: 10px; font-size: 0.9rem; color: var(--error); display: none;"></div>
         </div>
     </div>
 
@@ -769,7 +823,7 @@
                     // Show artist with stats
                     let displayText = artist.name;
                     if (artist.track_count > 0) {
-                        displayText += ` (${artist.track_count} tracks, ${artist.plays?.total?.toLocaleString() || 0} plays)`;
+                        displayText += ` (${artist.track_count} tracks)`;
                     }
                     
                     option.textContent = displayText;
@@ -783,12 +837,41 @@
             }
         }
 
-        // ==================== NEW ARTIST MODAL (FIXED) ====================
+        // ==================== MODAL IMAGE PREVIEW ====================
+        let modalArtistImageFile = null;
+
+        window.previewModalImage = (input) => {
+            if (input.files && input.files[0]) {
+                modalArtistImageFile = input.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Hide the default icon
+                    document.getElementById('modalCurrentImage').innerHTML = '';
+                    
+                    // Show preview
+                    const preview = document.getElementById('modalImagePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 100px; max-height: 100px; border-radius: 8px; border: 2px solid var(--primary-blue);">`;
+                    preview.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        // ==================== NEW ARTIST MODAL ====================
         window.showNewArtistModal = () => {
             document.getElementById('newArtistModal').style.display = 'flex';
+            // Reset form
             document.getElementById('newArtistName').value = '';
             document.getElementById('newArtistCountry').value = '';
+            document.getElementById('newArtistBio').value = '';
+            document.getElementById('newArtistFeatured').checked = false;
+            document.getElementById('newArtistLegend').checked = false;
             document.getElementById('artistModalStatus').style.display = 'none';
+            document.getElementById('modalCurrentImage').innerHTML = '<i class="fas fa-user"></i>';
+            document.getElementById('modalImagePreview').style.display = 'none';
+            modalArtistImageFile = null;
         };
         
         window.hideNewArtistModal = () => {
@@ -798,39 +881,60 @@
         window.saveNewArtist = async () => {
             const name = document.getElementById('newArtistName').value.trim();
             const country = document.getElementById('newArtistCountry').value;
+            const bio = document.getElementById('newArtistBio').value.trim();
+            const is_featured = document.getElementById('newArtistFeatured').checked;
+            const is_zambian_legend = document.getElementById('newArtistLegend').checked;
             const statusEl = document.getElementById('artistModalStatus');
             
             if (!name) {
                 statusEl.textContent = 'Please enter artist name';
                 statusEl.style.display = 'block';
+                statusEl.style.background = '#f8d7da';
+                statusEl.style.color = '#721c24';
                 return;
             }
             
             const saveBtn = event.target;
-            const originalText = saveBtn.textContent;
-            saveBtn.textContent = 'Saving...';
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             saveBtn.disabled = true;
             statusEl.style.display = 'none';
             
             try {
-                // FIX: Send all required fields with default values
+                // First save artist data
                 const response = await fetch(`${API_BASE}/admin/artists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         name: name,
                         country: country || null,
-                        bio: null,
-                        is_featured: false,
-                        is_zambian_legend: false
+                        bio: bio || null,
+                        is_featured: is_featured,
+                        is_zambian_legend: is_zambian_legend
                     })
                 });
 
-                // FIX: Parse response to get actual error message
                 const data = await response.json();
                 
                 if (!response.ok) {
                     throw new Error(data.error || 'Failed to save artist');
+                }
+
+                const artistId = data.id;
+
+                // Upload photo if selected
+                if (modalArtistImageFile) {
+                    const photoData = new FormData();
+                    photoData.append('photo', modalArtistImageFile);
+                    
+                    const photoRes = await fetch(`${API_BASE}/admin/artists/${artistId}/photo`, {
+                        method: 'POST',
+                        body: photoData
+                    });
+                    
+                    if (!photoRes.ok) {
+                        console.warn('Artist saved but photo upload failed');
+                    }
                 }
 
                 // Reload artists list
@@ -852,8 +956,10 @@
                 console.error('Error adding artist:', error);
                 statusEl.textContent = error.message;
                 statusEl.style.display = 'block';
+                statusEl.style.background = '#f8d7da';
+                statusEl.style.color = '#721c24';
             } finally {
-                saveBtn.textContent = originalText;
+                saveBtn.innerHTML = originalText;
                 saveBtn.disabled = false;
             }
         };
@@ -914,7 +1020,7 @@
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 formData.append('title', title);
-                formData.append('artist', artistName); // Send artist name
+                formData.append('artist', artistName);
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', document.getElementById('duration').value);
@@ -1028,4 +1134,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
