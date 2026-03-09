@@ -428,6 +428,51 @@
             display: flex;
         }
         
+        /* Artist search results styling */
+        .artist-result-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .artist-result-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .artist-result-item.selected {
+            background: #e3f2fd;
+            border-left: 3px solid var(--primary-blue);
+        }
+        
+        .artist-icon {
+            color: var(--primary-blue);
+            width: 24px;
+            text-align: center;
+        }
+        
+        .artist-info {
+            flex: 1;
+        }
+        
+        .artist-name {
+            font-weight: 600;
+        }
+        
+        .artist-meta {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .artist-stats {
+            font-size: 0.8rem;
+            color: #999;
+            margin-left: auto;
+        }
+        
         @media (max-width: 768px) {
             .upload-grid {
                 grid-template-columns: 1fr;
@@ -496,11 +541,32 @@
                                 <input type="text" id="title" placeholder="e.g. Midnight Waves" required>
                             </div>
                             
+                            <!-- NEW: Searchable Artist Selection -->
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Artist *</label>
-                                <select id="artistSelect" required>
-                                    <option value="">Loading artists...</option>
+                                
+                                <!-- Search box -->
+                                <div style="position: relative; margin-bottom: 10px;">
+                                    <input type="text" id="artistSearch" placeholder="Search artists by name, country..." autocomplete="off" style="width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                                    <button type="button" onclick="clearArtistSearch()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; display: none;" id="clearArtistSearchBtn">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Hidden select for form submission -->
+                                <select id="artistSelect" required style="display: none;">
+                                    <option value="">Select Artist</option>
                                 </select>
+                                
+                                <!-- Search results container -->
+                                <div id="artistResults" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; background: white; margin-bottom: 10px;">
+                                    <div style="padding: 20px; text-align: center; color: #999;">
+                                        <i class="fas fa-search" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
+                                        <p>Start typing to search artists...</p>
+                                    </div>
+                                </div>
+                                
                                 <div class="form-hint">
                                     <a href="#" onclick="showNewArtistModal()" style="color: var(--primary-blue);">
                                         <i class="fas fa-plus-circle"></i> Add New Artist
@@ -798,10 +864,11 @@
             artworkPreview.classList.remove('has-image');
         };
 
-        // ==================== ARTIST LOADING ====================
+        // ==================== SEARCHABLE ARTIST SELECTION ====================
+        let allArtists = [];
+        let selectedArtistName = '';
+
         async function loadArtists() {
-            const select = document.getElementById('artistSelect');
-            
             try {
                 const response = await fetch(`${API_BASE}/admin/artists`);
                 
@@ -809,32 +876,122 @@
                     throw new Error(`HTTP ${response.status}`);
                 }
                 
-                const artists = await response.json();
+                allArtists = await response.json();
+                allArtists.sort((a, b) => a.name.localeCompare(b.name));
                 
+                // Populate hidden select
+                const select = document.getElementById('artistSelect');
                 select.innerHTML = '<option value="">Select Artist</option>';
-                
-                // Sort artists alphabetically
-                artists.sort((a, b) => a.name.localeCompare(b.name));
-                
-                artists.forEach(artist => {
+                allArtists.forEach(artist => {
                     const option = document.createElement('option');
-                    option.value = artist.name; // Use name as value
-                    
-                    // Show artist with stats
-                    let displayText = artist.name;
-                    if (artist.track_count > 0) {
-                        displayText += ` (${artist.track_count} tracks)`;
-                    }
-                    
-                    option.textContent = displayText;
+                    option.value = artist.name;
+                    option.textContent = artist.name;
                     select.appendChild(option);
+                });
+                
+                // Setup search listener
+                const searchInput = document.getElementById('artistSearch');
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const clearBtn = document.getElementById('clearArtistSearchBtn');
+                    
+                    if (searchTerm.length > 0) {
+                        clearBtn.style.display = 'block';
+                        
+                        // Filter artists by name or country
+                        const filtered = allArtists.filter(artist => 
+                            artist.name.toLowerCase().includes(searchTerm) ||
+                            (artist.country && artist.country.toLowerCase().includes(searchTerm))
+                        );
+                        
+                        displayArtistResults(filtered);
+                    } else {
+                        clearBtn.style.display = 'none';
+                        document.getElementById('artistResults').innerHTML = `
+                            <div style="padding: 20px; text-align: center; color: #999;">
+                                <i class="fas fa-search" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
+                                <p>Start typing to search artists...</p>
+                            </div>
+                        `;
+                    }
                 });
                 
             } catch (error) {
                 console.error('Error loading artists:', error);
-                select.innerHTML = '<option value="">Error loading artists</option>';
-                showStatus('error', 'Failed to load artists. Please refresh.');
+                document.getElementById('artistResults').innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--error);">
+                        <i class="fas fa-exclamation-circle" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
+                        <p>Failed to load artists. Please refresh.</p>
+                    </div>
+                `;
             }
+        }
+
+        function displayArtistResults(artists) {
+            const container = document.getElementById('artistResults');
+            
+            if (artists.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 30px; text-align: center; color: #999;">
+                        <i class="fas fa-microphone-slash" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>No artists found</p>
+                        <a href="#" onclick="showNewArtistModal(); return false;" style="color: var(--primary-blue); text-decoration: none;">
+                            <i class="fas fa-plus-circle"></i> Add new artist
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            artists.forEach(artist => {
+                const isSelected = (selectedArtistName === artist.name);
+                html += `
+                    <div class="artist-result-item ${isSelected ? 'selected' : ''}" onclick="selectArtist('${artist.name.replace(/'/g, "\\'")}')">
+                        <div class="artist-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="artist-info">
+                            <div class="artist-name">${escapeHtml(artist.name)}</div>
+                            ${artist.country ? `<div class="artist-meta"><i class="fas fa-map-marker-alt" style="font-size: 0.7rem;"></i> ${escapeHtml(artist.country)}</div>` : ''}
+                        </div>
+                        ${artist.track_count ? `<div class="artist-stats">${artist.track_count} tracks</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        window.selectArtist = (artistName) => {
+            selectedArtistName = artistName;
+            document.getElementById('artistSearch').value = artistName;
+            document.getElementById('artistSelect').value = artistName;
+            document.getElementById('clearArtistSearchBtn').style.display = 'block';
+            
+            // Refresh results to show selection
+            displayArtistResults(allArtists);
+        };
+
+        window.clearArtistSearch = () => {
+            document.getElementById('artistSearch').value = '';
+            document.getElementById('clearArtistSearchBtn').style.display = 'none';
+            selectedArtistName = '';
+            document.getElementById('artistSelect').value = '';
+            
+            document.getElementById('artistResults').innerHTML = `
+                <div style="padding: 20px; text-align: center; color: #999;">
+                    <i class="fas fa-search" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
+                    <p>Start typing to search artists...</p>
+                </div>
+            `;
+        };
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // ==================== MODAL IMAGE PREVIEW ====================
@@ -945,12 +1102,7 @@
                 showStatus('success', `Artist "${name}" added successfully!`);
                 
                 // Select the newly added artist
-                const select = document.getElementById('artistSelect');
-                Array.from(select.options).forEach(option => {
-                    if (option.textContent.startsWith(name)) {
-                        select.value = option.value;
-                    }
-                });
+                selectArtist(name);
                 
             } catch (error) {
                 console.error('Error adding artist:', error);
@@ -1094,7 +1246,7 @@
             document.getElementById('releaseDate').value = '';
             document.getElementById('description').value = '';
             document.getElementById('bpm').value = '';
-            document.getElementById('artistSelect').value = '';
+            clearArtistSearch();
             document.getElementById('explicit').checked = false;
             document.getElementById('featured').checked = false;
             document.getElementById('editorPick').checked = false;
