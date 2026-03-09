@@ -777,7 +777,7 @@
         </div>
     </div>
 
-    <!-- Album Creation Modal (with Artist Selection) - FIXED: No slug generation -->
+    <!-- Album Creation Modal (with Artist Selection) -->
     <div id="newAlbumModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
         <div style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
             
@@ -1351,7 +1351,7 @@
             }
         };
 
-        // ==================== ALBUM CREATION FUNCTIONS (FIXED) ====================
+        // ==================== ALBUM CREATION FUNCTIONS ====================
         let albumCoverFile = null;
 
         window.showNewAlbumModal = () => {
@@ -1411,7 +1411,6 @@
             statusEl.style.display = 'none';
             
             try {
-                // Send ONLY the fields your working page sends - NO SLUG!
                 const response = await fetch(`${API_BASE}/admin/albums`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1480,7 +1479,7 @@
             return true;
         }
 
-        // ==================== FORM SUBMISSION ====================
+        // ==================== FORM SUBMISSION (FIXED) ====================
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1509,7 +1508,7 @@
                 formData.append('file', selectedFile);
                 formData.append('title', title);
                 formData.append('artist', artistName);
-                formData.append('album_id', document.getElementById('albumSelect').value || '');
+                // Don't append album_id here - we'll use the proper endpoint after upload
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', document.getElementById('duration').value);
@@ -1532,6 +1531,7 @@
                     }
                 }, 300);
 
+                // Upload the track first
                 const response = await fetch(`${API_BASE}/upload`, {
                     method: 'POST',
                     body: formData
@@ -1540,6 +1540,23 @@
                 clearInterval(interval);
 
                 if (!response.ok) throw new Error('Upload failed');
+
+                const result = await response.json();
+                const trackId = result.id;
+
+                // If an album was selected, add the track to the album using the SAME endpoint as album management
+                const albumId = document.getElementById('albumSelect').value;
+                if (albumId) {
+                    const albumResponse = await fetch(`${API_BASE}/admin/albums/${albumId}/tracks`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ track_id: trackId })
+                    });
+
+                    if (!albumResponse.ok) {
+                        console.warn('Track uploaded but failed to add to album');
+                    }
+                }
 
                 progressFill.style.width = '100%';
                 progressText.textContent = '100%';
