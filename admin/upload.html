@@ -565,49 +565,72 @@
                             </div>
                         </div>
                         
+                        <!-- Custom Filename -->
                         <div class="form-group">
-                            <label><i class="fas fa-align-left"></i> Description</label>
-                            <textarea id="description" rows="3" placeholder="Tell us about this track..."></textarea>
+                            <label><i class="fas fa-tag"></i> Custom Filename (optional)</label>
+                            <input type="text" id="customFilename" placeholder="e.g. My-Song-Title">
+                            <div class="form-hint">Leave empty for auto: Artist - Title (Zedtopvibes.Com).mp3</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-clock"></i> Duration (seconds)</label>
+                                <input type="number" id="duration" placeholder="Auto-detected" readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-music"></i> BPM</label>
+                                <input type="number" id="bpm" placeholder="e.g. 120">
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Artwork & Options -->
+                    <!-- Artwork & Description -->
                     <div class="form-section">
                         <h3 style="margin-bottom: 20px; color: var(--primary-blue);">
-                            <i class="fas fa-paint-brush"></i> Artwork & Options
+                            <i class="fas fa-paint-brush"></i> Artwork & Description
                         </h3>
                         
                         <div class="form-group">
-                            <label><i class="fas fa-image"></i> Cover Artwork</label>
+                            <label><i class="fas fa-image"></i> Artwork</label>
                             <input type="file" id="artworkInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
                             <div id="artworkPreview" class="artwork-preview" onclick="document.getElementById('artworkInput').click()">
                                 <span>Click to upload artwork</span>
                             </div>
-                            <div class="form-hint">JPG, PNG, WEBP (max 2MB) - For website display only</div>
+                            <div class="form-hint">JPG, PNG, WEBP (max 2MB)</div>
                         </div>
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label><i class="fas fa-list-ol"></i> BPM</label>
-                                <input type="number" id="bpm" placeholder="e.g. 120">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label><i class="fas fa-explicit"></i> Explicit</label>
-                                <select id="explicit">
-                                    <option value="0">No</option>
-                                    <option value="1">Yes</option>
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-align-left"></i> Description</label>
+                            <textarea id="description" rows="4" placeholder="Tell us about this track..."></textarea>
                         </div>
                         
                         <h3 style="margin: 20px 0 15px; color: var(--primary-blue);">
-                            <i class="fas fa-link"></i> Associations (Optional)
+                            <i class="fas fa-check-circle"></i> Options
+                        </h3>
+                        
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="explicit"> Explicit
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="featured"> Featured
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="editorPick"> Editor's Pick
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Album & Playlists Section -->
+                    <div class="form-section" style="grid-column: 1/-1; margin-top: 20px;">
+                        <h3 style="margin-bottom: 20px; color: var(--primary-blue);">
+                            <i class="fas fa-link"></i> Add to Album & Playlists
                         </h3>
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label><i class="fas fa-compact-disc"></i> Album</label>
+                                <label><i class="fas fa-compact-disc"></i> Album (optional)</label>
                                 <select id="albumSelect">
                                     <option value="">None (Single)</option>
                                 </select>
@@ -620,7 +643,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label><i class="fas fa-list"></i> Add to Playlists</label>
+                            <label><i class="fas fa-list"></i> Add to Playlists (optional)</label>
                             <div id="playlistsContainer" style="max-height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; padding: 10px;">
                                 <!-- Playlists will load here -->
                             </div>
@@ -670,7 +693,15 @@
             
             <div style="margin-bottom: 15px;">
                 <label style="display: block; margin-bottom: 5px; font-weight: 600;">Country</label>
-                <input type="text" id="newArtistCountry" placeholder="e.g. Zambia" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                <select id="newArtistCountry" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="">Select Country</option>
+                    <option value="Zambia">Zambia</option>
+                    <option value="USA">USA</option>
+                    <option value="UK">UK</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Other">Other</option>
+                </select>
             </div>
             
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
@@ -749,6 +780,7 @@
             fileInfo.style.display = 'none';
             uploadArea.style.display = 'flex';
             submitBtn.disabled = true;
+            document.getElementById('duration').value = '';
         };
 
         function formatFileSize(bytes) {
@@ -760,7 +792,7 @@
         function getAudioDuration(file) {
             const audio = new Audio(URL.createObjectURL(file));
             audio.addEventListener('loadedmetadata', () => {
-                durationMs = Math.round(audio.duration);
+                document.getElementById('duration').value = Math.round(audio.duration);
                 URL.revokeObjectURL(audio.src);
             });
         }
@@ -962,7 +994,17 @@
                 formData.append('artist', artistName);
                 formData.append('description', document.getElementById('description').value);
                 formData.append('genre', document.getElementById('genre').value);
-                formData.append('duration', durationMs);
+                formData.append('release_date', document.getElementById('releaseDate').value);
+                formData.append('duration', document.getElementById('duration').value);
+                formData.append('bpm', document.getElementById('bpm').value || '0');
+                formData.append('explicit', document.getElementById('explicit').checked ? '1' : '0');
+                formData.append('featured', document.getElementById('featured').checked ? '1' : '0');
+                formData.append('editor_pick', document.getElementById('editorPick').checked ? '1' : '0');
+                formData.append('customFilename', document.getElementById('customFilename').value);
+                
+                if (artworkFile) {
+                    formData.append('artwork', artworkFile);
+                }
 
                 const uploadRes = await fetch(`${API_BASE}/admin/upload`, {
                     method: 'POST',
@@ -976,20 +1018,9 @@
                 }
 
                 const trackId = uploadData.id;
-                loadingSubtext.textContent = 'Processing additional data...';
+                loadingSubtext.textContent = 'Adding to albums & playlists...';
 
-                // STEP 2: Handle artwork upload (if any)
-                if (artworkFile) {
-                    const artworkFormData = new FormData();
-                    artworkFormData.append('artwork', artworkFile);
-                    
-                    await fetch(`${API_BASE}/admin/tracks/${trackId}/artwork`, {
-                        method: 'POST',
-                        body: artworkFormData
-                    }).catch(err => console.warn('Artwork upload failed:', err));
-                }
-
-                // STEP 3: Link to album (if selected)
+                // STEP 2: Handle album (if selected)
                 const albumId = document.getElementById('albumSelect').value;
                 const trackNumber = document.getElementById('trackNumber').value;
                 
@@ -1004,7 +1035,7 @@
                     }).catch(err => console.warn('Album linking failed:', err));
                 }
 
-                // STEP 4: Link to playlists (if any)
+                // STEP 3: Handle playlists (if any)
                 const selectedPlaylists = [];
                 document.querySelectorAll('#playlistsContainer input:checked').forEach(cb => {
                     selectedPlaylists.push(cb.value);
@@ -1022,15 +1053,8 @@
                 loadingText.textContent = 'Success!';
                 loadingSubtext.textContent = 'Redirecting...';
                 
-                // Build success URL
-                const params = new URLSearchParams({
-                    id: trackId,
-                    title: title,
-                    artist: artistName
-                });
-                
                 setTimeout(() => {
-                    window.location.href = `/admin/upload-success.html?${params.toString()}`;
+                    window.location.href = `/admin/upload-success.html?id=${trackId}&title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artistName)}`;
                 }, 1000);
 
             } catch (error) {
@@ -1055,8 +1079,10 @@
             document.getElementById('releaseDate').value = '';
             document.getElementById('description').value = '';
             document.getElementById('bpm').value = '';
-            document.getElementById('explicit').value = '0';
-            document.getElementById('artistSelect').value = '';
+            document.getElementById('explicit').checked = false;
+            document.getElementById('featured').checked = false;
+            document.getElementById('editorPick').checked = false;
+            document.getElementById('customFilename').value = '';
             document.getElementById('albumSelect').value = '';
             document.getElementById('trackNumber').value = '';
             document.querySelectorAll('#playlistsContainer input').forEach(cb => cb.checked = false);
