@@ -513,6 +513,7 @@
             padding: 8px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
+            transition: background 0.2s;
         }
         
         .playlist-item:hover {
@@ -536,6 +537,7 @@
             color: white;
             font-size: 1rem;
             flex-shrink: 0;
+            overflow: hidden;
         }
         
         .playlist-cover-small img {
@@ -692,7 +694,7 @@
                                 </div>
                             </div>
 
-                            <!-- NEW: Playlists Section (Multiple Selection) -->
+                            <!-- Playlists Section (Multiple Selection) -->
                             <div class="form-group">
                                 <label><i class="fas fa-list"></i> Add to Playlists (Optional - Select Multiple)</label>
                                 
@@ -719,7 +721,7 @@
                                 </div>
                                 
                                 <div class="form-hint">
-                                    <a href="#" onclick="showNewPlaylistModal()" style="color: var(--primary-blue);">
+                                    <a href="#" onclick="showNewPlaylistModal(); return false;" style="color: var(--primary-blue);">
                                         <i class="fas fa-plus-circle"></i> Create New Playlist
                                     </a>
                                 </div>
@@ -823,11 +825,11 @@
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="color: var(--primary-blue);"><i class="fas fa-microphone-alt"></i> Add New Artist</h3>
-                <button onclick="hideNewArtistModal()" style="background: none; border: none; font-size: 1.5rem;">✕</button>
+                <button onclick="hideNewArtistModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
             </div>
 
             <div style="text-align: center; margin-bottom: 20px;">
-                <div id="modalArtistImage" style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 10px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                <div id="modalArtistImage" style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 10px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; overflow: hidden;">
                     <i class="fas fa-user"></i>
                 </div>
                 <button type="button" onclick="document.getElementById('modalArtistImageInput').click()" class="btn btn-secondary">
@@ -862,7 +864,7 @@
                 </div>
             </div>
 
-            <div id="artistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px;"></div>
+            <div id="artistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px; background: #f8d7da; color: #721c24;"></div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="hideNewArtistModal()" class="btn btn-secondary">Cancel</button>
@@ -877,11 +879,11 @@
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="color: var(--primary-blue);"><i class="fas fa-compact-disc"></i> Create New Album</h3>
-                <button onclick="hideNewAlbumModal()" style="background: none; border: none; font-size: 1.5rem;">✕</button>
+                <button onclick="hideNewAlbumModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
             </div>
 
             <div style="text-align: center; margin-bottom: 20px;">
-                <div id="modalAlbumCover" style="width: 120px; height: 120px; margin: 0 auto 10px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                <div id="modalAlbumCover" style="width: 120px; height: 120px; margin: 0 auto 10px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; overflow: hidden;">
                     <i class="fas fa-compact-disc"></i>
                 </div>
                 <button type="button" onclick="document.getElementById('modalAlbumCoverInput').click()" class="btn btn-secondary">
@@ -930,7 +932,7 @@
                 </label>
             </div>
 
-            <div id="albumModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px;"></div>
+            <div id="albumModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px; background: #f8d7da; color: #721c24;"></div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="hideNewAlbumModal()" class="btn btn-secondary">Cancel</button>
@@ -939,17 +941,17 @@
         </div>
     </div>
 
-    <!-- NEW: Playlist Creation Modal -->
+    <!-- Playlist Creation Modal (FIXED) -->
     <div id="newPlaylistModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
         <div style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px;">
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="color: var(--primary-blue);"><i class="fas fa-list"></i> Create New Playlist</h3>
-                <button onclick="hideNewPlaylistModal()" style="background: none; border: none; font-size: 1.5rem;">✕</button>
+                <button onclick="hideNewPlaylistModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
             </div>
 
             <div style="text-align: center; margin-bottom: 20px;">
-                <div id="modalPlaylistCover" style="width: 120px; height: 120px; margin: 0 auto 10px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                <div id="modalPlaylistCover" style="width: 120px; height: 120px; margin: 0 auto 10px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; overflow: hidden;">
                     <i class="fas fa-list"></i>
                 </div>
                 <button type="button" onclick="document.getElementById('modalPlaylistCoverInput').click()" class="btn btn-secondary">
@@ -968,7 +970,7 @@
                 <textarea id="newPlaylistDescription" rows="3" placeholder="What's this playlist about?" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;"></textarea>
             </div>
 
-            <div id="playlistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px;"></div>
+            <div id="playlistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px; background: #f8d7da; color: #721c24;"></div>
 
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="hideNewPlaylistModal()" class="btn btn-secondary">Cancel</button>
@@ -1301,7 +1303,7 @@
             document.getElementById('selectedAlbumBadge').style.display = 'none';
         };
 
-        // ==================== PLAYLISTS ====================
+        // ==================== PLAYLISTS (FIXED) ====================
         let allPlaylists = [];
         let playlistSearchTimeout;
 
@@ -1335,16 +1337,20 @@
                 
             } catch (error) {
                 console.error('Error loading playlists:', error);
-                document.getElementById('playlistsContainer').innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: var(--error);">
-                        <i class="fas fa-exclamation-circle"></i> Failed to load playlists
-                    </div>
-                `;
+                const container = document.getElementById('playlistsContainer');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: var(--error);">
+                            <i class="fas fa-exclamation-circle"></i> Failed to load playlists
+                        </div>
+                    `;
+                }
             }
         }
 
         function renderPlaylistCheckboxes(searchTerm = '') {
             const container = document.getElementById('playlistsContainer');
+            if (!container) return;
             
             let filtered = allPlaylists;
             if (searchTerm) {
@@ -1368,8 +1374,8 @@
             }
             
             container.innerHTML = filtered.map(playlist => `
-                <label class="playlist-item">
-                    <input type="checkbox" class="playlist-checkbox" value="${playlist.id}" onchange="updatePlaylistCount()">
+                <label class="playlist-item" style="display: flex; align-items: center; gap: 10px; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer;">
+                    <input type="checkbox" class="playlist-checkbox" value="${playlist.id}" onchange="updatePlaylistCount()" style="width: 18px; height: 18px;">
                     <div class="playlist-cover-small">
                         ${playlist.cover_url 
                             ? `<img src="${playlist.cover_url}" alt="">`
@@ -1378,7 +1384,7 @@
                     </div>
                     <div class="playlist-info">
                         <div class="playlist-name">${escapeHtml(playlist.name)}</div>
-                        ${playlist.description ? `<div class="playlist-desc">${escapeHtml(playlist.description.substring(0, 50)}${playlist.description.length > 50 ? '...' : ''}</div>` : ''}
+                        ${playlist.description ? `<div class="playlist-desc">${escapeHtml(playlist.description.substring(0, 50))}${playlist.description.length > 50 ? '...' : ''}</div>` : ''}
                     </div>
                     <span class="playlist-track-count">${playlist.track_count || 0} tracks</span>
                 </label>
@@ -1388,17 +1394,21 @@
         function updatePlaylistCount() {
             const checked = document.querySelectorAll('#playlistsContainer input:checked').length;
             const badge = document.getElementById('selectedPlaylistsBadge');
-            if (checked > 0) {
-                document.getElementById('selectedPlaylistsCount').textContent = checked;
-                badge.style.display = 'inline-flex';
-            } else {
-                badge.style.display = 'none';
+            if (badge) {
+                if (checked > 0) {
+                    document.getElementById('selectedPlaylistsCount').textContent = checked;
+                    badge.style.display = 'inline-flex';
+                } else {
+                    badge.style.display = 'none';
+                }
             }
         }
 
         window.clearPlaylistSearch = () => {
-            document.getElementById('playlistSearch').value = '';
-            document.getElementById('clearPlaylistSearchBtn').style.display = 'none';
+            const searchInput = document.getElementById('playlistSearch');
+            const clearBtn = document.getElementById('clearPlaylistSearchBtn');
+            if (searchInput) searchInput.value = '';
+            if (clearBtn) clearBtn.style.display = 'none';
             renderPlaylistCheckboxes();
         };
 
@@ -1407,6 +1417,127 @@
                 cb.checked = false;
             });
             updatePlaylistCount();
+        };
+
+        // ==================== PLAYLIST MODAL FUNCTIONS (FIXED) ====================
+        let playlistCoverFile = null;
+
+        window.showNewPlaylistModal = function() {
+            console.log('Opening playlist modal');
+            const modal = document.getElementById('newPlaylistModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                // Reset form
+                document.getElementById('newPlaylistName').value = '';
+                document.getElementById('newPlaylistDescription').value = '';
+                
+                const statusEl = document.getElementById('playlistModalStatus');
+                if (statusEl) statusEl.style.display = 'none';
+                
+                const coverDiv = document.getElementById('modalPlaylistCover');
+                if (coverDiv) coverDiv.innerHTML = '<i class="fas fa-list"></i>';
+                
+                playlistCoverFile = null;
+                
+                // Reset file input
+                const fileInput = document.getElementById('modalPlaylistCoverInput');
+                if (fileInput) fileInput.value = '';
+            } else {
+                console.error('Playlist modal not found!');
+            }
+        };
+
+        window.hideNewPlaylistModal = function() {
+            const modal = document.getElementById('newPlaylistModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        window.previewPlaylistCover = function(input) {
+            if (input.files && input.files[0]) {
+                playlistCoverFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const coverDiv = document.getElementById('modalPlaylistCover');
+                    if (coverDiv) {
+                        coverDiv.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.saveNewPlaylist = async function() {
+            const name = document.getElementById('newPlaylistName').value.trim();
+            const description = document.getElementById('newPlaylistDescription').value.trim();
+            const statusEl = document.getElementById('playlistModalStatus');
+            
+            if (!name) {
+                statusEl.textContent = 'Playlist name is required';
+                statusEl.style.display = 'block';
+                statusEl.style.background = '#f8d7da';
+                statusEl.style.color = '#721c24';
+                return;
+            }
+            
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            saveBtn.disabled = true;
+            statusEl.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: name,
+                        description: description || null
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create playlist');
+                }
+
+                // Upload cover if selected
+                if (playlistCoverFile) {
+                    const coverData = new FormData();
+                    coverData.append('cover', playlistCoverFile);
+                    await fetch(`${API_BASE}/admin/playlists/${data.id}/cover`, {
+                        method: 'POST',
+                        body: coverData
+                    }).catch(e => console.warn('Cover upload failed'));
+                }
+
+                // Refresh playlists
+                await loadPlaylists();
+                
+                // Auto-check the newly created playlist
+                setTimeout(() => {
+                    const checkbox = document.querySelector(`#playlistsContainer input[value="${data.id}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        updatePlaylistCount();
+                    }
+                }, 500);
+                
+                hideNewPlaylistModal();
+                showStatus('success', `Playlist "${name}" created!`);
+                
+            } catch (error) {
+                console.error('Error creating playlist:', error);
+                statusEl.textContent = error.message;
+                statusEl.style.display = 'block';
+                statusEl.style.background = '#f8d7da';
+                statusEl.style.color = '#721c24';
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
         };
 
         // ==================== ALBUM MODAL ARTIST SELECTION ====================
@@ -1488,7 +1619,10 @@
                 modalArtistImageFile = input.files[0];
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('modalArtistImage').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    const imgDiv = document.getElementById('modalArtistImage');
+                    if (imgDiv) {
+                        imgDiv.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                    }
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -1496,13 +1630,17 @@
 
         window.showNewArtistModal = () => {
             document.getElementById('newArtistModal').style.display = 'flex';
+            // Reset form
             document.getElementById('newArtistName').value = '';
             document.getElementById('newArtistCountry').value = '';
             document.getElementById('newArtistBio').value = '';
             document.getElementById('newArtistFeatured').checked = false;
             document.getElementById('newArtistLegend').checked = false;
             document.getElementById('artistModalStatus').style.display = 'none';
-            document.getElementById('modalArtistImage').innerHTML = '<i class="fas fa-user"></i>';
+            
+            const imgDiv = document.getElementById('modalArtistImage');
+            if (imgDiv) imgDiv.innerHTML = '<i class="fas fa-user"></i>';
+            
             modalArtistImageFile = null;
         };
         
@@ -1577,6 +1715,7 @@
 
         window.showNewAlbumModal = () => {
             document.getElementById('newAlbumModal').style.display = 'flex';
+            // Reset form
             document.getElementById('newAlbumTitle').value = '';
             document.getElementById('albumArtistSearch').value = '';
             document.getElementById('newAlbumDate').value = '';
@@ -1584,7 +1723,10 @@
             document.getElementById('newAlbumDescription').value = '';
             document.getElementById('newAlbumFeatured').checked = false;
             document.getElementById('albumModalStatus').style.display = 'none';
-            document.getElementById('modalAlbumCover').innerHTML = '<i class="fas fa-compact-disc"></i>';
+            
+            const coverDiv = document.getElementById('modalAlbumCover');
+            if (coverDiv) coverDiv.innerHTML = '<i class="fas fa-compact-disc"></i>';
+            
             document.getElementById('selectedAlbumArtistBadge').style.display = 'none';
             document.getElementById('albumArtistSelect').value = '';
             selectedAlbumArtist = '';
@@ -1600,7 +1742,10 @@
                 albumCoverFile = input.files[0];
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('modalAlbumCover').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
+                    const coverDiv = document.getElementById('modalAlbumCover');
+                    if (coverDiv) {
+                        coverDiv.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
+                    }
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -1675,98 +1820,6 @@
             }
         };
 
-        // ==================== PLAYLIST MODAL FUNCTIONS ====================
-        let playlistCoverFile = null;
-
-        window.showNewPlaylistModal = () => {
-            document.getElementById('newPlaylistModal').style.display = 'flex';
-            document.getElementById('newPlaylistName').value = '';
-            document.getElementById('newPlaylistDescription').value = '';
-            document.getElementById('playlistModalStatus').style.display = 'none';
-            document.getElementById('modalPlaylistCover').innerHTML = '<i class="fas fa-list"></i>';
-            playlistCoverFile = null;
-        };
-
-        window.hideNewPlaylistModal = () => {
-            document.getElementById('newPlaylistModal').style.display = 'none';
-        };
-
-        window.previewPlaylistCover = (input) => {
-            if (input.files && input.files[0]) {
-                playlistCoverFile = input.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('modalPlaylistCover').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        };
-
-        window.saveNewPlaylist = async () => {
-            const name = document.getElementById('newPlaylistName').value.trim();
-            const description = document.getElementById('newPlaylistDescription').value.trim();
-            const statusEl = document.getElementById('playlistModalStatus');
-            
-            if (!name) {
-                statusEl.textContent = 'Playlist name is required';
-                statusEl.style.display = 'block';
-                return;
-            }
-            
-            const saveBtn = event.target;
-            const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
-            saveBtn.disabled = true;
-            statusEl.style.display = 'none';
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/playlists`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name: name,
-                        description: description || null
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to create playlist');
-                }
-
-                if (playlistCoverFile) {
-                    const coverData = new FormData();
-                    coverData.append('cover', playlistCoverFile);
-                    await fetch(`${API_BASE}/admin/playlists/${data.id}/cover`, {
-                        method: 'POST',
-                        body: coverData
-                    }).catch(e => console.warn('Cover upload failed'));
-                }
-
-                await loadPlaylists();
-                
-                // Auto-check the newly created playlist
-                setTimeout(() => {
-                    const checkbox = document.querySelector(`#playlistsContainer input[value="${data.id}"]`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                        updatePlaylistCount();
-                    }
-                }, 500);
-                
-                hideNewPlaylistModal();
-                showStatus('success', `Playlist "${name}" created!`);
-                
-            } catch (error) {
-                statusEl.textContent = error.message;
-                statusEl.style.display = 'block';
-            } finally {
-                saveBtn.innerHTML = originalText;
-                saveBtn.disabled = false;
-            }
-        };
-
         // ==================== CHECK AUTH ====================
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
@@ -1821,7 +1874,6 @@
                 formData.append('file', selectedFile);
                 formData.append('title', title);
                 formData.append('artist', artistName);
-                // Don't append album_id here - we'll use the proper endpoint after upload
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', document.getElementById('duration').value);
@@ -1928,6 +1980,8 @@
         // ==================== STATUS MESSAGES ====================
         function showStatus(type, message) {
             const statusEl = document.getElementById('statusMessage');
+            if (!statusEl) return;
+            
             const icon = statusEl.querySelector('i');
             const span = statusEl.querySelector('span');
             
@@ -1940,8 +1994,8 @@
                 info: 'fa-info-circle'
             };
             
-            icon.className = `fas ${icons[type]}`;
-            span.textContent = message;
+            if (icon) icon.className = `fas ${icons[type]}`;
+            if (span) span.textContent = message;
             statusEl.style.display = 'flex';
             
             if (type !== 'info') {
@@ -1956,18 +2010,6 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
         }
 
         // ==================== INITIALIZE ====================
