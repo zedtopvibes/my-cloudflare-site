@@ -777,7 +777,7 @@
         </div>
     </div>
 
-    <!-- Album Creation Modal (with Artist Selection) -->
+    <!-- Album Creation Modal (with Artist Selection) - FIXED: No slug generation -->
     <div id="newAlbumModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
         <div style="background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
             
@@ -810,7 +810,7 @@
                     <input type="text" id="newAlbumTitle" placeholder="e.g. Midnight Waves" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
                 </div>
 
-                <!-- Artist Selection with Search (NEW) -->
+                <!-- Artist Selection with Search -->
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 600;">Artist *</label>
                     <div style="position: relative;">
@@ -1351,7 +1351,7 @@
             }
         };
 
-        // ==================== ALBUM CREATION FUNCTIONS ====================
+        // ==================== ALBUM CREATION FUNCTIONS (FIXED) ====================
         let albumCoverFile = null;
 
         window.showNewAlbumModal = () => {
@@ -1387,16 +1387,6 @@
             }
         };
 
-        function generateSlug(text) {
-            return text
-                .toLowerCase()
-                .replace(/\s+/g, '-')           // Replace spaces with -
-                .replace(/[^\w\-]+/g, '')        // Remove all non-word chars
-                .replace(/\-\-+/g, '-')           // Replace multiple - with single -
-                .replace(/^-+/, '')                // Trim - from start
-                .replace(/-+$/, '');               // Trim - from end
-        }
-
         window.saveNewAlbum = async () => {
             const title = document.getElementById('newAlbumTitle').value.trim();
             const artist = selectedAlbumArtist; // Use selected artist from badge
@@ -1414,9 +1404,6 @@
                 return;
             }
             
-            // Generate slug from title
-            let slug = generateSlug(title);
-            
             const saveBtn = event.target;
             const originalText = saveBtn.innerHTML;
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
@@ -1424,14 +1411,13 @@
             statusEl.style.display = 'none';
             
             try {
-                // First attempt with title slug
-                let response = await fetch(`${API_BASE}/admin/albums`, {
+                // Send ONLY the fields your working page sends - NO SLUG!
+                const response = await fetch(`${API_BASE}/admin/albums`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: title,
                         artist: artist,
-                        slug: slug,
                         release_date: document.getElementById('newAlbumDate').value || null,
                         genre: document.getElementById('newAlbumGenre').value || null,
                         description: document.getElementById('newAlbumDescription').value || null,
@@ -1439,28 +1425,7 @@
                     })
                 });
                 
-                let data = await response.json();
-                
-                // If slug exists, try with artist appended
-                if (!response.ok && data.error && data.error.includes('UNIQUE constraint')) {
-                    slug = `${generateSlug(title)}-${generateSlug(artist)}`;
-                    
-                    response = await fetch(`${API_BASE}/admin/albums`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            title: title,
-                            artist: artist,
-                            slug: slug,
-                            release_date: document.getElementById('newAlbumDate').value || null,
-                            genre: document.getElementById('newAlbumGenre').value || null,
-                            description: document.getElementById('newAlbumDescription').value || null,
-                            is_featured: document.getElementById('newAlbumFeatured').checked
-                        })
-                    });
-                    
-                    data = await response.json();
-                }
+                const data = await response.json();
                 
                 if (!response.ok) {
                     throw new Error(data.error || 'Failed to create album');
