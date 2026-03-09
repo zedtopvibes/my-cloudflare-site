@@ -428,49 +428,71 @@
             display: flex;
         }
         
-        /* Artist search results styling */
-        .artist-result-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
+        /* Floating suggestions styling */
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .suggestion-item {
+            padding: 10px 15px;
             cursor: pointer;
-            transition: background 0.2s;
+            border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: background 0.2s;
         }
         
-        .artist-result-item:hover {
+        .suggestion-item:hover {
             background: #f5f5f5;
         }
         
-        .artist-result-item.selected {
+        .suggestion-item.selected {
             background: #e3f2fd;
             border-left: 3px solid var(--primary-blue);
         }
         
-        .artist-icon {
+        .suggestion-icon {
             color: var(--primary-blue);
             width: 24px;
             text-align: center;
         }
         
-        .artist-info {
+        .suggestion-info {
             flex: 1;
         }
         
-        .artist-name {
-            font-weight: 600;
+        .suggestion-name {
+            font-weight: 500;
         }
         
-        .artist-meta {
+        .suggestion-meta {
             font-size: 0.8rem;
             color: #666;
         }
         
-        .artist-stats {
-            font-size: 0.8rem;
-            color: #999;
-            margin-left: auto;
+        .selected-artist-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 5px;
         }
         
         @media (max-width: 768px) {
@@ -541,30 +563,29 @@
                                 <input type="text" id="title" placeholder="e.g. Midnight Waves" required>
                             </div>
                             
-                            <!-- NEW: Searchable Artist Selection -->
+                            <!-- SPACE-SAVING: Floating Suggestions Artist Selection -->
                             <div class="form-group">
                                 <label><i class="fas fa-user"></i> Artist *</label>
-                                
-                                <!-- Search box -->
-                                <div style="position: relative; margin-bottom: 10px;">
-                                    <input type="text" id="artistSearch" placeholder="Search artists by name, country..." autocomplete="off" style="width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
-                                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
-                                    <button type="button" onclick="clearArtistSearch()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; display: none;" id="clearArtistSearchBtn">
-                                        <i class="fas fa-times-circle"></i>
-                                    </button>
+                                <div style="position: relative;">
+                                    <input type="text" id="artistInput" placeholder="Type artist name..." autocomplete="off" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                    
+                                    <!-- Hidden select for form submission -->
+                                    <select id="artistSelect" required style="display: none;">
+                                        <option value="">Select Artist</option>
+                                    </select>
+                                    
+                                    <!-- Floating suggestions -->
+                                    <div id="artistSuggestions" class="suggestions-container">
+                                        <!-- Suggestions will appear here -->
+                                    </div>
                                 </div>
                                 
-                                <!-- Hidden select for form submission -->
-                                <select id="artistSelect" required style="display: none;">
-                                    <option value="">Select Artist</option>
-                                </select>
-                                
-                                <!-- Search results container -->
-                                <div id="artistResults" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; background: white; margin-bottom: 10px;">
-                                    <div style="padding: 20px; text-align: center; color: #999;">
-                                        <i class="fas fa-search" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
-                                        <p>Start typing to search artists...</p>
-                                    </div>
+                                <!-- Selected artist badge (appears when artist selected) -->
+                                <div id="selectedArtistBadge" class="selected-artist-badge" style="display: none;">
+                                    <i class="fas fa-check-circle"></i> <span id="selectedArtistName"></span>
+                                    <button type="button" onclick="clearArtistSelection()" style="background: none; border: none; color: var(--primary-blue); margin-left: 5px; cursor: pointer;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                                 
                                 <div class="form-hint">
@@ -864,9 +885,10 @@
             artworkPreview.classList.remove('has-image');
         };
 
-        // ==================== SEARCHABLE ARTIST SELECTION ====================
+        // ==================== SPACE-SAVING ARTIST SELECTION ====================
         let allArtists = [];
-        let selectedArtistName = '';
+        let artistTimeout;
+        let selectedArtist = '';
 
         async function loadArtists() {
             try {
@@ -890,102 +912,138 @@
                 });
                 
                 // Setup search listener
-                const searchInput = document.getElementById('artistSearch');
-                searchInput.addEventListener('input', function(e) {
-                    const searchTerm = e.target.value.toLowerCase();
-                    const clearBtn = document.getElementById('clearArtistSearchBtn');
+                const artistInput = document.getElementById('artistInput');
+                artistInput.addEventListener('input', function(e) {
+                    const search = e.target.value.toLowerCase();
                     
-                    if (searchTerm.length > 0) {
-                        clearBtn.style.display = 'block';
+                    if (search.length < 2) {
+                        document.getElementById('artistSuggestions').style.display = 'none';
+                        return;
+                    }
+                    
+                    clearTimeout(artistTimeout);
+                    artistTimeout = setTimeout(() => {
+                        // Search in name and country
+                        const matches = allArtists.filter(artist => 
+                            artist.name.toLowerCase().includes(search) ||
+                            (artist.country && artist.country.toLowerCase().includes(search))
+                        ).slice(0, 8); // Limit to 8 results
                         
-                        // Filter artists by name or country
-                        const filtered = allArtists.filter(artist => 
-                            artist.name.toLowerCase().includes(searchTerm) ||
-                            (artist.country && artist.country.toLowerCase().includes(searchTerm))
-                        );
-                        
-                        displayArtistResults(filtered);
-                    } else {
-                        clearBtn.style.display = 'none';
-                        document.getElementById('artistResults').innerHTML = `
-                            <div style="padding: 20px; text-align: center; color: #999;">
-                                <i class="fas fa-search" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
-                                <p>Start typing to search artists...</p>
-                            </div>
-                        `;
+                        if (matches.length > 0) {
+                            displaySuggestions(matches);
+                        } else {
+                            document.getElementById('artistSuggestions').innerHTML = `
+                                <div style="padding: 15px; text-align: center; color: #999;">
+                                    <i class="fas fa-microphone-slash"></i>
+                                    <p style="margin: 5px 0;">No artists found</p>
+                                    <a href="#" onclick="showNewArtistModal(); return false;" style="color: var(--primary-blue);">
+                                        <i class="fas fa-plus-circle"></i> Add new artist
+                                    </a>
+                                </div>
+                            `;
+                            document.getElementById('artistSuggestions').style.display = 'block';
+                        }
+                    }, 300);
+                });
+
+                // Close suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#artistInput') && !e.target.closest('#artistSuggestions')) {
+                        document.getElementById('artistSuggestions').style.display = 'none';
                     }
                 });
+
+                // Handle keyboard navigation (optional enhancement)
+                artistInput.addEventListener('keydown', handleSuggestionKeyboard);
                 
             } catch (error) {
                 console.error('Error loading artists:', error);
-                document.getElementById('artistResults').innerHTML = `
-                    <div style="padding: 20px; text-align: center; color: var(--error);">
-                        <i class="fas fa-exclamation-circle" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
-                        <p>Failed to load artists. Please refresh.</p>
-                    </div>
-                `;
             }
         }
 
-        function displayArtistResults(artists) {
-            const container = document.getElementById('artistResults');
-            
-            if (artists.length === 0) {
-                container.innerHTML = `
-                    <div style="padding: 30px; text-align: center; color: #999;">
-                        <i class="fas fa-microphone-slash" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                        <p>No artists found</p>
-                        <a href="#" onclick="showNewArtistModal(); return false;" style="color: var(--primary-blue); text-decoration: none;">
-                            <i class="fas fa-plus-circle"></i> Add new artist
-                        </a>
-                    </div>
-                `;
-                return;
-            }
-            
+        function displaySuggestions(artists) {
             let html = '';
             artists.forEach(artist => {
-                const isSelected = (selectedArtistName === artist.name);
+                const isSelected = (selectedArtist === artist.name);
                 html += `
-                    <div class="artist-result-item ${isSelected ? 'selected' : ''}" onclick="selectArtist('${artist.name.replace(/'/g, "\\'")}')">
-                        <div class="artist-icon">
+                    <div class="suggestion-item ${isSelected ? 'selected' : ''}" onclick="selectArtist('${artist.name.replace(/'/g, "\\'")}')">
+                        <div class="suggestion-icon">
                             <i class="fas fa-user-circle"></i>
                         </div>
-                        <div class="artist-info">
-                            <div class="artist-name">${escapeHtml(artist.name)}</div>
-                            ${artist.country ? `<div class="artist-meta"><i class="fas fa-map-marker-alt" style="font-size: 0.7rem;"></i> ${escapeHtml(artist.country)}</div>` : ''}
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(artist.name)}</div>
+                            ${artist.country ? `<div class="suggestion-meta"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(artist.country)}</div>` : ''}
                         </div>
-                        ${artist.track_count ? `<div class="artist-stats">${artist.track_count} tracks</div>` : ''}
+                        ${artist.track_count ? `<div style="font-size: 0.8rem; color: #999;">${artist.track_count} tracks</div>` : ''}
                     </div>
                 `;
             });
             
-            container.innerHTML = html;
+            // Add "Add new" option at the bottom
+            html += `
+                <div style="padding: 10px; text-align: center; border-top: 1px solid #eee; background: #f9f9f9;">
+                    <a href="#" onclick="showNewArtistModal(); return false;" style="color: var(--primary-blue); text-decoration: none;">
+                        <i class="fas fa-plus-circle"></i> Add new artist
+                    </a>
+                </div>
+            `;
+            
+            document.getElementById('artistSuggestions').innerHTML = html;
+            document.getElementById('artistSuggestions').style.display = 'block';
         }
 
         window.selectArtist = (artistName) => {
-            selectedArtistName = artistName;
-            document.getElementById('artistSearch').value = artistName;
+            selectedArtist = artistName;
+            document.getElementById('artistInput').value = artistName;
             document.getElementById('artistSelect').value = artistName;
-            document.getElementById('clearArtistSearchBtn').style.display = 'block';
+            document.getElementById('artistSuggestions').style.display = 'none';
             
-            // Refresh results to show selection
-            displayArtistResults(allArtists);
+            // Show selected badge
+            document.getElementById('selectedArtistName').textContent = artistName;
+            document.getElementById('selectedArtistBadge').style.display = 'inline-flex';
         };
 
-        window.clearArtistSearch = () => {
-            document.getElementById('artistSearch').value = '';
-            document.getElementById('clearArtistSearchBtn').style.display = 'none';
-            selectedArtistName = '';
+        window.clearArtistSelection = () => {
+            selectedArtist = '';
+            document.getElementById('artistInput').value = '';
             document.getElementById('artistSelect').value = '';
-            
-            document.getElementById('artistResults').innerHTML = `
-                <div style="padding: 20px; text-align: center; color: #999;">
-                    <i class="fas fa-search" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
-                    <p>Start typing to search artists...</p>
-                </div>
-            `;
+            document.getElementById('selectedArtistBadge').style.display = 'none';
+            document.getElementById('artistSuggestions').style.display = 'none';
         };
+
+        // Optional: Keyboard navigation
+        function handleSuggestionKeyboard(e) {
+            const suggestions = document.getElementById('artistSuggestions');
+            if (suggestions.style.display !== 'block') return;
+            
+            const items = suggestions.querySelectorAll('.suggestion-item');
+            if (items.length === 0) return;
+            
+            // Find currently selected index
+            let currentIndex = -1;
+            items.forEach((item, index) => {
+                if (item.classList.contains('selected')) currentIndex = index;
+            });
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                currentIndex = (currentIndex + 1) % items.length;
+                updateSelection(items, currentIndex);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                currentIndex = (currentIndex - 1 + items.length) % items.length;
+                updateSelection(items, currentIndex);
+            } else if (e.key === 'Enter' && currentIndex >= 0) {
+                e.preventDefault();
+                items[currentIndex].click();
+            }
+        }
+
+        function updateSelection(items, index) {
+            items.forEach(item => item.classList.remove('selected'));
+            items[index].classList.add('selected');
+            items[index].scrollIntoView({ block: 'nearest' });
+        }
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -1019,6 +1077,8 @@
         // ==================== NEW ARTIST MODAL ====================
         window.showNewArtistModal = () => {
             document.getElementById('newArtistModal').style.display = 'flex';
+            // Hide suggestions
+            document.getElementById('artistSuggestions').style.display = 'none';
             // Reset form
             document.getElementById('newArtistName').value = '';
             document.getElementById('newArtistCountry').value = '';
@@ -1246,7 +1306,7 @@
             document.getElementById('releaseDate').value = '';
             document.getElementById('description').value = '';
             document.getElementById('bpm').value = '';
-            clearArtistSearch();
+            clearArtistSelection();
             document.getElementById('explicit').checked = false;
             document.getElementById('featured').checked = false;
             document.getElementById('editorPick').checked = false;
