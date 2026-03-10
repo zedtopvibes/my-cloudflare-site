@@ -2,21 +2,11 @@
  * ENHANCED UPLOAD ENDPOINT
  * Original upload.js + ID3 tagging + watermark
  * 
- * Features:
- * - Complete ID3v2.3 tags
- * - 25MB file limit (increased from 15MB)
- * - Watermark image embedding
- * - Audio duration detection
- * - Custom filename support
- * - Track number and year fields
+ * Still handles: file, title, artist, description, genre, duration
+ * NEW: ID3 tags, watermark, track_number, year (from release_date), custom_filename
  * 
- * @version 2.0.0
- * @author Zedtopvibes.Com
+ * Your other endpoints still handle: bpm, flags, album_id, playlist_ids
  */
-
-const SITENAME = "Zedtopvibes.Com";
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
-const MAX_COVER_SIZE = 1024 * 1024; // 1MB for watermark
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -42,17 +32,17 @@ export async function onRequest(context) {
     // ==================== PARSE FORM DATA ====================
     const formData = await request.formData();
     const file = formData.get('file');
-    const title = sanitizeInput(formData.get('title') || 'Untitled Track');
-    const artist = sanitizeInput(formData.get('artist') || 'Various Artists');
-    const description = sanitizeInput(formData.get('description') || '');
-    const genre = sanitizeGenre(formData.get('genre') || 'Music');
-    const duration = sanitizeDuration(formData.get('duration') || '');
+    const title = formData.get('title');
+    const artist = formData.get('artist');
+    const description = formData.get('description') || '';
+    const genre = formData.get('genre') || 'unknown';
+    const duration = parseInt(formData.get('duration')) || 0;
     
-    // ID3 fields
-    const album = sanitizeInput(formData.get('album') || 'Zedtopvibes Compilation');
+    // NEW FIELDS for ID3
+    const album = formData.get('album') || '';
     const releaseDate = formData.get('release_date') || '';
-    const trackNumber = sanitizeTrack(formData.get('track_number') || '1');
-    const customFilename = sanitizeInput(formData.get('custom_filename') || '');
+    const trackNumber = formData.get('track_number') || '1';
+    const customFilename = formData.get('custom_filename') || '';
 
     // Validate required fields
     if (!file || !title || !artist) {
@@ -61,82 +51,68 @@ export async function onRequest(context) {
       }), { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
     }
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
+    // Check if it's an audio file
+    if (!file.type.startsWith('audio/')) {
       return new Response(JSON.stringify({ 
-        error: `File too large (max ${MAX_FILE_SIZE / 1024 / 1024}MB)` 
-      }), { status: 413, headers: { 'Content-Type': 'application/json', ...headers } });
-    }
-
-    // Validate file type
-    const isValidType = file.type.includes('audio/mpeg') || 
-                       file.type.includes('audio/mp3') || 
-                       file.name.toLowerCase().endsWith('.mp3');
-    
-    if (!isValidType) {
-      return new Response(JSON.stringify({ 
-        error: 'File must be an MP3 audio file' 
-      }), { status: 415, headers: { 'Content-Type': 'application/json', ...headers } });
+        error: 'File must be an audio file' 
+      }), { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
     }
 
     // ==================== PROCESS MP3 FILE ====================
-    // Branded metadata
-    const taggedTitle = `${title} (${SITENAME})`;
-    const taggedArtist = `${artist} | ${SITENAME}`;
-    const taggedComment = `🎵 Discover your next favorite track at ${SITENAME}`;
-
-    // Extract year from release date
-    const year = releaseDate ? releaseDate.split('-')[0] : new Date().getFullYear().toString();
-
     // Read file buffer
     const fileBuffer = await file.arrayBuffer();
     
     // Strip existing ID3 tags
     const cleanBuffer = stripExistingID3(fileBuffer);
     
-    // Get and validate watermark
+    // Get watermark from R2
     let coverBuffer = null;
     try {
       const watermark = await env.AUDIO.get('watermark.jpg');
       if (watermark) {
         coverBuffer = await watermark.arrayBuffer();
-        if (coverBuffer.byteLength < 100 || coverBuffer.byteLength > MAX_COVER_SIZE) {
-          console.warn('Invalid watermark size, skipping');
-          coverBuffer = null;
-        }
       }
     } catch (err) {
-      console.warn('Watermark not found:', err.message);
+      console.warn('Watermark not found, continuing without it');
     }
 
-    // Create complete ID3 tags
+    // Extract year from release date
+    const year = releaseDate ? releaseDate.split('-')[0] : new Date().getFullYear().toString();
+
+    // Create ID3 tags
     const taggedMp3 = createCompleteID3Tags(cleanBuffer, {
-      artist: taggedArtist,
-      title: taggedTitle,
+      artist: `${artist} | Zedtopvibes.Com`,
+      title: `${title} (Zedtopvibes.Com)`,
       album: album,
       year: year,
       genre: genre,
       track: trackNumber,
-      comment: taggedComment,
-      duration: duration.toString(),
-      encoder: `${SITENAME} Uploader v2.0`,
-      publisher: SITENAME,
-      copyright: `${new Date().getFullYear()} ${SITENAME}`,
-      cover: coverBuffer
+      comment: `🎵 Discover your next favorite track at Zedtopvibes.Com`,
+      encoder: 'Zedtopvibes Uploader',
+      publisher: 'Zedtopvibes.Com',
+      copyright: `${new Date().getFullYear()} Zedtopvibes.Com`,
+      cover: coverBuffer,
+      duration: duration.toString()
     });
 
     // ==================== GENERATE FILENAME ====================
     let filename;
     if (customFilename && customFilename.trim() !== '') {
-      const cleanCustom = cleanWithSpaces(customFilename).substring(0, 100);
-      filename = `${cleanCustom} (${SITENAME}).mp3`;
+      // Clean custom filename
+      const cleanCustom = customFilename
+        .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .substring(0, 100);
+      filename = `${cleanCustom} (Zedtopvibes.Com).mp3`;
     } else {
-      const cleanArtist = cleanWithSpaces(artist).substring(0, 30);
-      const cleanTitle = cleanWithSpaces(title).substring(0, 50);
-      filename = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
+      // Auto-generate filename
+      const cleanArtist = artist.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 30);
+      const cleanTitle = title.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 50);
+      filename = `${cleanArtist} - ${cleanTitle} (Zedtopvibes.Com).mp3`;
     }
 
-    // Generate timestamp-based key for R2 (avoids collisions)
+    // Also keep timestamp version for R2 key (to avoid collisions)
     const timestamp = Date.now();
     const safeFilename = filename.replace(/[^a-zA-Z0-9.\-]/g, '_');
     const r2Key = `audio/${timestamp}-${safeFilename}`;
@@ -145,22 +121,20 @@ export async function onRequest(context) {
     await env.AUDIO.put(r2Key, taggedMp3, {
       httpMetadata: {
         contentType: 'audio/mpeg',
-        contentDisposition: `attachment; filename="${filename}"`,
+        contentDisposition: `inline; filename="${filename}"`,
       },
       customMetadata: {
-        uploader: SITENAME,
-        uploadDate: new Date().toISOString(),
-        originalTitle: title,
-        originalArtist: artist,
-        originalAlbum: album,
-        genre: genre,
-        year: year,
+        title,
+        artist,
+        album,
+        genre,
+        year,
         track: trackNumber,
-        version: '2.0.0'
+        uploadedAt: new Date().toISOString(),
       },
     });
 
-    // ==================== INSERT INTO D1 ====================
+    // ==================== INSERT INTO D1 (BASIC INFO ONLY) ====================
     const result = await env.DB.prepare(`
       INSERT INTO tracks (
         title, artist, description, r2_key, filename, genre, duration
@@ -178,25 +152,13 @@ export async function onRequest(context) {
 
     const trackId = result.results[0]?.id;
 
-    // Generate download URL
-    const downloadUrl = `/download/${encodeURIComponent(filename)}`;
-
     // ==================== RETURN SUCCESS ====================
     return new Response(JSON.stringify({ 
       success: true, 
       id: trackId,
-      filename,
-      url: downloadUrl,
-      size: file.size,
-      duration: duration,
-      metadata: {
-        title: taggedTitle,
-        artist: taggedArtist,
-        album: album,
-        year: year,
-        genre: genre,
-        track: trackNumber
-      }
+      filename: filename,
+      r2Key: r2Key,
+      message: 'Track uploaded successfully with ID3 tags'
     }), { 
       status: 200, 
       headers: { 'Content-Type': 'application/json', ...headers } 
@@ -205,7 +167,6 @@ export async function onRequest(context) {
   } catch (error) {
     console.error('Upload error:', error);
     return new Response(JSON.stringify({ 
-      success: false, 
       error: error.message || 'Upload failed' 
     }), { 
       status: 500, 
@@ -215,50 +176,19 @@ export async function onRequest(context) {
 }
 
 /**
- * Input Sanitization Functions
- */
-function sanitizeInput(str) {
-  if (!str) return '';
-  return str.replace(/<[^>]*>/g, '').trim().substring(0, 200);
-}
-
-function sanitizeGenre(genre) {
-  const supported = ['Podcast', 'Music', 'Hip-Hop', 'Rock', 'Pop', 'Electronic', 'Jazz', 'Classical', 'Audiobook', 'Other'];
-  return supported.includes(genre) ? genre : 'Music';
-}
-
-function sanitizeTrack(track) {
-  const trackStr = track.replace(/[^0-9/\-]/g, '').trim();
-  return trackStr || '1';
-}
-
-function sanitizeDuration(duration) {
-  const d = parseInt(duration);
-  return !isNaN(d) && d > 0 ? d : 0;
-}
-
-/**
- * Clean filename - keep alphanumeric, spaces, dashes, underscores
- */
-function cleanWithSpaces(str) {
-  if (!str) return '';
-  return str
-    .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-/**
  * Strip existing ID3 tags from MP3 file
  */
 function stripExistingID3(buffer) {
   const view = new Uint8Array(buffer);
   
+  // Check for ID3 header
   if (view.length > 10 && view[0] === 0x49 && view[1] === 0x44 && view[2] === 0x33) {
+    // Calculate tag size
     const size = (view[6] * 0x200000) + (view[7] * 0x4000) + (view[8] * 0x80) + view[9];
     const tagSize = 10 + size;
     
     if (tagSize <= view.length && tagSize > 0) {
+      // Return buffer without ID3 tag
       return buffer.slice(tagSize);
     }
   }
@@ -273,7 +203,7 @@ function createCompleteID3Tags(audioBuffer, metadata) {
   const audioBytes = new Uint8Array(audioBuffer);
   const frames = [];
 
-  // Core identification
+  // Core identification frames
   if (metadata.artist) frames.push(createTextFrame('TPE1', metadata.artist));
   if (metadata.title) frames.push(createTextFrame('TIT2', metadata.title));
   if (metadata.album) frames.push(createTextFrame('TALB', metadata.album));
@@ -282,10 +212,9 @@ function createCompleteID3Tags(audioBuffer, metadata) {
   if (metadata.track) frames.push(createTextFrame('TRCK', metadata.track));
   if (metadata.duration) frames.push(createTextFrame('TLEN', metadata.duration));
   
-  if (metadata.artist) {
-    frames.push(createTextFrame('TPE2', metadata.artist));
-    frames.push(createTextFrame('TSOP', metadata.artist));
-  }
+  // Additional frames
+  if (metadata.artist) frames.push(createTextFrame('TPE2', metadata.artist)); // Album artist
+  if (metadata.artist) frames.push(createTextFrame('TSOP', metadata.artist)); // Sort order
   
   if (metadata.encoder) frames.push(createTextFrame('TENC', metadata.encoder));
   if (metadata.publisher) frames.push(createTextFrame('TPUB', metadata.publisher));
@@ -295,24 +224,29 @@ function createCompleteID3Tags(audioBuffer, metadata) {
     frames.push(createCommentFrame(metadata.comment));
   }
   
+  // Add cover art if available
   if (metadata.cover && metadata.cover.byteLength > 0) {
     frames.push(createAPICFrame(metadata.cover));
   }
   
+  // Private frame for app data
   const privateData = JSON.stringify({
-    uploader: SITENAME,
-    version: '2.0.0',
+    uploader: 'Zedtopvibes.Com',
+    version: '1.0.0',
     timestamp: Date.now()
   });
   frames.push(createPrivateFrame('ZEDT', privateData));
 
+  // Calculate total frames size
   const framesSize = frames.reduce((acc, f) => acc + f.length, 0);
   const PADDING_SIZE = 2048;
   
+  // Create ID3 header
   const header = new Uint8Array(10);
-  header.set([0x49, 0x44, 0x33, 0x03, 0x00, 0x00], 0);
+  header.set([0x49, 0x44, 0x33, 0x03, 0x00, 0x00], 0); // ID3v2.3.0
   header.set(encodeSynchsafe(framesSize + PADDING_SIZE), 6);
 
+  // Create final buffer
   const final = new Uint8Array(10 + framesSize + PADDING_SIZE + audioBytes.length);
   final.set(header, 0);
   
@@ -341,9 +275,9 @@ function createTextFrame(frameId, value) {
   frame[6] = (size >> 8) & 0xFF;
   frame[7] = size & 0xFF;
   
-  frame[8] = 0;
+  frame[8] = 0; // Flags
   frame[9] = 0;
-  frame[10] = 0x03;
+  frame[10] = 0x03; // Text encoding: UTF-8
   frame.set(textBytes, 11);
   
   return frame;
@@ -369,7 +303,7 @@ function createCommentFrame(comment) {
   frame[9] = 0;
   
   let pos = 10;
-  frame[pos++] = 0x03;
+  frame[pos++] = 0x03; // Encoding
   frame.set(lang, pos);
   pos += 3;
   frame.set(description, pos);
@@ -424,11 +358,11 @@ function createAPICFrame(coverBuffer) {
   frame[9] = 0;
   
   let pos = 10;
-  frame[pos++] = 0x00;
+  frame[pos++] = 0x00; // Text encoding
   frame.set(mimeBytes, pos);
   pos += mimeBytes.length;
-  frame[pos++] = 0;
-  frame[pos++] = 0x03;
+  frame[pos++] = 0; // Null separator
+  frame[pos++] = 0x03; // Picture type: cover (front)
   frame.set(description, pos);
   pos += description.length;
   frame.set(coverBytes, pos);
