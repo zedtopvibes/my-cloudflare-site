@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Keep your existing styles - they're fine */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
@@ -613,76 +612,16 @@
             border-radius: 20px;
             font-size: 0.85rem;
             margin-top: 5px;
+            margin-right: 5px;
         }
         
-        /* Playlists container */
-        .playlists-container {
-            max-height: 250px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            background: var(--white);
-            margin-bottom: 10px;
-        }
-        
-        .playlist-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            border-bottom: 1px solid #eee;
+        .selected-badge button {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            margin-left: 5px;
             cursor: pointer;
-        }
-        
-        .playlist-item:hover {
-            background: #f5f5f5;
-        }
-        
-        .playlist-checkbox {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        
-        .playlist-cover-small {
-            width: 35px;
-            height: 35px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1rem;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        
-        .playlist-cover-small img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-        
-        .playlist-info {
-            flex: 1;
-        }
-        
-        .playlist-name {
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-        
-        .playlist-desc {
-            font-size: 0.75rem;
-            color: #666;
-        }
-        
-        .playlist-track-count {
-            font-size: 0.8rem;
-            color: #999;
+            font-size: 0.85rem;
         }
         
         @media (max-width: 768px) {
@@ -813,31 +752,20 @@
                                 </div>
                             </div>
 
-                            <!-- Playlists Section (Multiple Selection) -->
+                            <!-- Playlists Section (Multiple Selection - Like Artist Style) -->
                             <div class="form-group">
                                 <label><i class="fas fa-list"></i> Add to Playlists (Optional - Select Multiple)</label>
                                 
                                 <!-- Search box for playlists -->
-                                <div style="position: relative; margin-bottom: 10px;">
-                                    <input type="text" id="playlistSearch" placeholder="Search playlists..." style="width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #ddd; border-radius: 8px;">
-                                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999;"></i>
-                                    <button type="button" onclick="clearPlaylistSearch()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; display: none;" id="clearPlaylistSearchBtn">
-                                        <i class="fas fa-times-circle"></i>
-                                    </button>
+                                <div style="position: relative;">
+                                    <input type="text" id="playlistSearch" placeholder="Search playlists..." autocomplete="off" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                    
+                                    <!-- Floating suggestions for playlists -->
+                                    <div id="playlistSuggestions" class="suggestions-container"></div>
                                 </div>
                                 
-                                <!-- Playlists checkboxes container -->
-                                <div id="playlistsContainer" class="playlists-container">
-                                    <!-- Playlists will be loaded here -->
-                                </div>
-                                
-                                <!-- Selected count badge -->
-                                <div id="selectedPlaylistsBadge" class="selected-badge" style="display: none;">
-                                    <i class="fas fa-check-circle"></i> <span id="selectedPlaylistsCount">0</span> playlists selected
-                                    <button type="button" onclick="clearAllPlaylists()" style="background: none; border: none; color: var(--primary-blue); margin-left: 5px; cursor: pointer;">
-                                        <i class="fas fa-times"></i> Clear all
-                                    </button>
-                                </div>
+                                <!-- Selected playlists badges container -->
+                                <div id="selectedPlaylistsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
                                 
                                 <div class="form-hint">
                                     <a href="#" onclick="showModal('playlistModal')" style="color: var(--primary-blue);">
@@ -1439,13 +1367,9 @@
                 // Refresh playlists
                 await loadPlaylists();
                 
-                // Auto-check the newly created playlist
+                // Auto-select the newly created playlist
                 setTimeout(() => {
-                    const checkbox = document.querySelector(`#playlistsContainer input[value="${data.id}"]`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                        updatePlaylistCount();
-                    }
+                    togglePlaylist(data.id, data.name);
                 }, 500);
                 
                 hideModal('playlistModal');
@@ -1659,9 +1583,10 @@
             document.getElementById('selectedAlbumBadge').style.display = 'none';
         };
 
-        // ==================== PLAYLISTS ====================
+        // ==================== PLAYLISTS (New Search Style - Like Artists) ====================
         let allPlaylists = [];
         let playlistSearchTimeout;
+        let selectedPlaylists = new Set(); // Store selected playlist IDs
 
         async function loadPlaylists() {
             try {
@@ -1669,112 +1594,118 @@
                 if (!response.ok) throw new Error('Failed to load playlists');
                 
                 allPlaylists = await response.json();
-                renderPlaylistCheckboxes();
                 
-                // Setup search
+                // Setup search listener
                 const searchInput = document.getElementById('playlistSearch');
-                const clearBtn = document.getElementById('clearPlaylistSearchBtn');
-                
                 if (searchInput) {
                     searchInput.addEventListener('input', function(e) {
-                        const search = e.target.value;
-                        if (search.length > 0) {
-                            if (clearBtn) clearBtn.style.display = 'block';
-                        } else {
-                            if (clearBtn) clearBtn.style.display = 'none';
+                        const search = e.target.value.toLowerCase();
+                        
+                        if (search.length < 1) {
+                            document.getElementById('playlistSuggestions').style.display = 'none';
+                            return;
                         }
                         
                         clearTimeout(playlistSearchTimeout);
                         playlistSearchTimeout = setTimeout(() => {
-                            renderPlaylistCheckboxes(search);
+                            const matches = allPlaylists.filter(playlist => 
+                                playlist.name.toLowerCase().includes(search) ||
+                                (playlist.description && playlist.description.toLowerCase().includes(search))
+                            ).slice(0, 8);
+                            
+                            if (matches.length > 0) {
+                                displayPlaylistSuggestions(matches);
+                            } else {
+                                document.getElementById('playlistSuggestions').innerHTML = `
+                                    <div style="padding: 15px; text-align: center;">
+                                        No playlists found. <a href="#" onclick="showModal('playlistModal'); return false;">Create new?</a>
+                                    </div>
+                                `;
+                                document.getElementById('playlistSuggestions').style.display = 'block';
+                            }
                         }, 300);
                     });
                 }
+
+                // Close suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#playlistSearch') && !e.target.closest('#playlistSuggestions')) {
+                        document.getElementById('playlistSuggestions').style.display = 'none';
+                    }
+                });
                 
             } catch (error) {
                 console.error('Error loading playlists:', error);
-                const container = document.getElementById('playlistsContainer');
-                if (container) {
-                    container.innerHTML = `
-                        <div style="text-align: center; padding: 20px; color: var(--error);">
-                            <i class="fas fa-exclamation-circle"></i> Failed to load playlists
-                        </div>
-                    `;
-                }
             }
         }
 
-        function renderPlaylistCheckboxes(searchTerm = '') {
-            const container = document.getElementById('playlistsContainer');
-            if (!container) return;
-            
-            let filtered = allPlaylists;
-            if (searchTerm) {
-                filtered = allPlaylists.filter(p => 
-                    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    (p.description && p.description.toLowerCase().includes(searchTerm.toLowerCase()))
-                );
-            }
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 20px; color: #999;">
-                        <i class="fas fa-list"></i>
-                        <p style="margin-top: 10px;">${searchTerm ? 'No playlists found' : 'No playlists yet'}</p>
-                        <a href="#" onclick="showModal('playlistModal'); return false;" style="color: var(--primary-blue);">
-                            Create your first playlist
-                        </a>
+        function displayPlaylistSuggestions(playlists) {
+            let html = '';
+            playlists.forEach(playlist => {
+                const isSelected = selectedPlaylists.has(playlist.id);
+                html += `
+                    <div class="suggestion-item ${isSelected ? 'selected' : ''}" onclick="togglePlaylist(${playlist.id}, '${escapeHtml(playlist.name)}')">
+                        <div class="suggestion-icon"><i class="fas fa-list"></i></div>
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(playlist.name)}</div>
+                            ${playlist.description ? `<div class="suggestion-meta">${escapeHtml(playlist.description.substring(0, 50))}${playlist.description.length > 50 ? '...' : ''}</div>` : ''}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #999;">
+                            ${playlist.track_count || 0} tracks
+                        </div>
                     </div>
                 `;
-                return;
-            }
-            
-            container.innerHTML = filtered.map(playlist => `
-                <label class="playlist-item" style="display: flex; align-items: center; gap: 10px; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer;">
-                    <input type="checkbox" class="playlist-checkbox" value="${playlist.id}" onchange="updatePlaylistCount()" style="width: 18px; height: 18px;">
-                    <div class="playlist-cover-small">
-                        ${playlist.cover_url 
-                            ? `<img src="${playlist.cover_url}" alt="" style="width:100%; height:100%; object-fit:cover; border-radius:6px;">`
-                            : '<i class="fas fa-list"></i>'
-                        }
-                    </div>
-                    <div class="playlist-info">
-                        <div class="playlist-name">${escapeHtml(playlist.name)}</div>
-                        ${playlist.description ? `<div class="playlist-desc">${escapeHtml(playlist.description.substring(0, 50))}${playlist.description.length > 50 ? '...' : ''}</div>` : ''}
-                    </div>
-                    <span class="playlist-track-count">${playlist.track_count || 0} tracks</span>
-                </label>
-            `).join('');
+            });
+            document.getElementById('playlistSuggestions').innerHTML = html;
+            document.getElementById('playlistSuggestions').style.display = 'block';
         }
 
-        function updatePlaylistCount() {
-            const checked = document.querySelectorAll('#playlistsContainer input:checked').length;
-            const badge = document.getElementById('selectedPlaylistsBadge');
-            const countSpan = document.getElementById('selectedPlaylistsCount');
-            
-            if (badge && countSpan) {
-                if (checked > 0) {
-                    countSpan.textContent = checked;
-                    badge.style.display = 'inline-flex';
-                } else {
-                    badge.style.display = 'none';
-                }
+        window.togglePlaylist = (playlistId, playlistName) => {
+            if (selectedPlaylists.has(playlistId)) {
+                selectedPlaylists.delete(playlistId);
+                removePlaylistBadge(playlistId);
+            } else {
+                selectedPlaylists.add(playlistId);
+                addPlaylistBadge(playlistId, playlistName);
             }
-        }
-
-        window.clearPlaylistSearch = function() {
+            
+            // Refresh suggestions to show selection state
             const searchInput = document.getElementById('playlistSearch');
-            const clearBtn = document.getElementById('clearPlaylistSearchBtn');
-            if (searchInput) searchInput.value = '';
-            if (clearBtn) clearBtn.style.display = 'none';
-            renderPlaylistCheckboxes();
+            if (searchInput.value.length >= 1) {
+                const matches = allPlaylists.filter(playlist => 
+                    playlist.name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+                    (playlist.description && playlist.description.toLowerCase().includes(searchInput.value.toLowerCase()))
+                ).slice(0, 8);
+                displayPlaylistSuggestions(matches);
+            }
+            
+            // Clear search input
+            searchInput.value = '';
+            document.getElementById('playlistSuggestions').style.display = 'none';
         };
 
-        window.clearAllPlaylists = function() {
-            document.querySelectorAll('#playlistsContainer input:checked').forEach(cb => {
-                cb.checked = false;
-            });
-            updatePlaylistCount();
+        function addPlaylistBadge(playlistId, playlistName) {
+            const container = document.getElementById('selectedPlaylistsContainer');
+            const badge = document.createElement('div');
+            badge.className = 'selected-badge';
+            badge.id = `playlist-badge-${playlistId}`;
+            badge.innerHTML = `
+                <i class="fas fa-check-circle"></i> ${escapeHtml(playlistName)}
+                <button type="button" onclick="removePlaylist(${playlistId})" style="background: none; border: none; color: var(--primary-blue); margin-left: 5px; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(badge);
+        }
+
+        function removePlaylistBadge(playlistId) {
+            const badge = document.getElementById(`playlist-badge-${playlistId}`);
+            if (badge) badge.remove();
+        }
+
+        window.removePlaylist = (playlistId) => {
+            selectedPlaylists.delete(playlistId);
+            removePlaylistBadge(playlistId);
         };
 
         // ==================== CHECK AUTH ====================
@@ -1812,12 +1743,6 @@
                 showStatus('error', 'Title and artist are required');
                 return;
             }
-
-            // Get selected playlists
-            const selectedPlaylists = [];
-            document.querySelectorAll('#playlistsContainer input:checked').forEach(cb => {
-                selectedPlaylists.push(cb.value);
-            });
 
             const progressDiv = document.getElementById('uploadProgress');
             const progressFill = document.getElementById('progressFill');
@@ -1877,7 +1802,7 @@
                 }
 
                 // Add track to selected playlists
-                if (selectedPlaylists.length > 0) {
+                if (selectedPlaylists.size > 0) {
                     for (const playlistId of selectedPlaylists) {
                         await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, {
                             method: 'POST',
@@ -1892,7 +1817,7 @@
                 
                 let successMessage = 'Track uploaded successfully!';
                 if (albumId) successMessage += ' Added to album.';
-                if (selectedPlaylists.length > 0) successMessage += ` Added to ${selectedPlaylists.length} playlist${selectedPlaylists.length > 1 ? 's' : ''}.`;
+                if (selectedPlaylists.size > 0) successMessage += ` Added to ${selectedPlaylists.size} playlist${selectedPlaylists.size > 1 ? 's' : ''}.`;
                 
                 showStatus('success', successMessage);
                 
@@ -1928,7 +1853,11 @@
             document.getElementById('bpm').value = '';
             clearArtistSelection();
             clearAlbumSelection();
-            clearAllPlaylists();
+            
+            // Clear selected playlists
+            selectedPlaylists.clear();
+            document.getElementById('selectedPlaylistsContainer').innerHTML = '';
+            
             document.getElementById('explicit').checked = false;
             document.getElementById('featured').checked = false;
             document.getElementById('editorPick').checked = false;
