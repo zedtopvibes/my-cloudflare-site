@@ -137,27 +137,24 @@
             border-top: 2px solid #eee;
         }
         
-        .simple-upload {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(31, 111, 159, 0.2);
+        .compact-upload {
+            margin-bottom: 0;
         }
         
-        .upload-label {
+        .compact-upload label {
             display: block;
             font-size: 0.9rem;
             font-weight: 600;
             color: #444;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
         
-        .upload-label i {
+        .compact-upload label i {
             color: var(--primary-blue);
             margin-right: 5px;
         }
         
-        .simple-file-input {
+        .compact-file-input {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #ddd;
@@ -165,51 +162,56 @@
             font-size: 0.95rem;
             background: white;
             cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
         }
         
-        .simple-file-input:hover {
+        .compact-file-input:hover {
             border-color: var(--primary-blue);
         }
         
-        .simple-file-info {
-            margin-top: 10px;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
+        .compact-file-info {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: var(--light-gray);
+            border-radius: 6px;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        
-        .simple-file-info i {
-            color: var(--primary-blue);
-            font-size: 1.2rem;
-        }
-        
-        .simple-file-details {
-            flex: 1;
             font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .simple-file-name {
-            font-weight: 600;
-            margin-bottom: 2px;
+        .compact-file-info i {
+            color: var(--primary-blue);
+            font-size: 1rem;
         }
         
-        .simple-file-size {
+        .compact-file-details {
+            flex: 1;
+            font-size: 0.85rem;
+        }
+        
+        .compact-file-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .compact-file-size {
             color: #666;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            margin-left: 5px;
         }
         
-        .remove-simple-file {
+        .remove-compact-file {
             color: #999;
             cursor: pointer;
-            padding: 5px;
+            padding: 4px;
             border-radius: 50%;
             transition: all 0.3s;
+            font-size: 0.85rem;
         }
         
-        .remove-simple-file:hover {
+        .remove-compact-file:hover {
             color: var(--error);
             background: rgba(220, 53, 69, 0.1);
         }
@@ -780,33 +782,31 @@
                             </div>
                         </div>
 
-                        <!-- Bottom uploads section - moved to bottom before button -->
+                        <!-- Bottom uploads section - compact fields matching other inputs -->
                         <div class="bottom-uploads">
-                            <div class="simple-upload">
-                                <label class="upload-label"><i class="fas fa-image"></i> Artwork (Optional)</label>
-                                <input type="file" id="artworkInput" accept="image/jpeg,image/png,image/webp" class="simple-file-input">
-                                <div class="form-hint">JPG, PNG, WEBP (max 2MB)</div>
-                                <div id="artworkInfo" class="simple-file-info" style="display: none;">
+                            <div class="compact-upload">
+                                <label><i class="fas fa-image"></i> Artwork (Optional)</label>
+                                <input type="file" id="artworkInput" accept="image/jpeg,image/png,image/webp" class="compact-file-input">
+                                <div id="artworkInfo" class="compact-file-info" style="display: none;">
                                     <i class="fas fa-image"></i>
-                                    <div class="simple-file-details">
-                                        <div id="artworkName" class="simple-file-name"></div>
-                                        <div id="artworkSize" class="simple-file-size"></div>
+                                    <div class="compact-file-details">
+                                        <span id="artworkName" class="compact-file-name"></span>
+                                        <span id="artworkSize" class="compact-file-size"></span>
                                     </div>
-                                    <div class="remove-simple-file" onclick="clearArtworkFile()"><i class="fas fa-times"></i></div>
+                                    <div class="remove-compact-file" onclick="clearArtworkFile()"><i class="fas fa-times"></i></div>
                                 </div>
                             </div>
 
-                            <div class="simple-upload">
-                                <label class="upload-label"><i class="fas fa-music"></i> MP3 File *</label>
-                                <input type="file" id="fileInput" accept="audio/mpeg" class="simple-file-input" required>
-                                <div class="form-hint">MP3 files only, max 25MB</div>
-                                <div id="fileInfo" class="simple-file-info" style="display: none;">
+                            <div class="compact-upload">
+                                <label><i class="fas fa-music"></i> MP3 File *</label>
+                                <input type="file" id="fileInput" accept="audio/mpeg" class="compact-file-input" required>
+                                <div id="fileInfo" class="compact-file-info" style="display: none;">
                                     <i class="fas fa-music"></i>
-                                    <div class="simple-file-details">
-                                        <div id="fileName" class="simple-file-name"></div>
-                                        <div id="fileSize" class="simple-file-size"></div>
+                                    <div class="compact-file-details">
+                                        <span id="fileName" class="compact-file-name"></span>
+                                        <span id="fileSize" class="compact-file-size"></span>
                                     </div>
-                                    <div class="remove-simple-file" onclick="clearSelectedFile()"><i class="fas fa-times"></i></div>
+                                    <div class="remove-compact-file" onclick="clearSelectedFile()"><i class="fas fa-times"></i></div>
                                 </div>
                             </div>
                         </div>
