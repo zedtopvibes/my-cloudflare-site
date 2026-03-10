@@ -339,14 +339,17 @@
             display: flex;
         }
         
+        .progress-container {
+            margin: 15px 0;
+            display: none;
+        }
+        
         .progress-bar {
             width: 100%;
-            height: 4px;
+            height: 8px;
             background: var(--light-gray);
-            border-radius: 2px;
-            margin: 10px 0;
+            border-radius: 4px;
             overflow: hidden;
-            display: none;
         }
         
         .progress-fill {
@@ -354,6 +357,13 @@
             background: var(--primary-blue);
             width: 0%;
             transition: width 0.3s;
+        }
+        
+        .progress-text {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
         }
         
         /* Modal Styles */
@@ -494,7 +504,7 @@
                         </div>
                     </div>
 
-                    <!-- Row 3: ID3 Specific Fields (NEW) -->
+                    <!-- Row 3: ID3 Specific Fields -->
                     <div class="form-group">
                         <label><i class="fas fa-list-ol"></i> Track Number</label>
                         <input type="number" id="trackNumber" placeholder="e.g. 1" min="1" value="1">
@@ -576,11 +586,12 @@
                         </div>
                     </div>
 
-                    <!-- Progress Bar -->
-                    <div class="full-width">
-                        <div class="progress-bar" id="progressBar">
+                    <!-- Progress Bar with Percentage -->
+                    <div class="full-width progress-container" id="progressContainer">
+                        <div class="progress-bar">
                             <div class="progress-fill" id="progressFill"></div>
                         </div>
+                        <div class="progress-text" id="progressText">0%</div>
                     </div>
 
                     <!-- Status Message -->
@@ -750,7 +761,7 @@
             artworkFile = e.target.files[0];
         });
 
-        // ==================== FORM SUBMISSION ====================
+        // ==================== FORM SUBMISSION WITH REAL PROGRESS ====================
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -767,21 +778,14 @@
                 return;
             }
 
-            // Show progress
-            const progressBar = document.getElementById('progressBar');
+            // Show progress container
+            const progressContainer = document.getElementById('progressContainer');
             const progressFill = document.getElementById('progressFill');
-            progressBar.style.display = 'block';
+            const progressText = document.getElementById('progressText');
+            progressContainer.style.display = 'block';
             progressFill.style.width = '0%';
+            progressText.textContent = '0%';
             submitBtn.disabled = true;
-
-            // Simulate progress
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                if (progress <= 90) {
-                    progressFill.style.width = progress + '%';
-                }
-            }, 500);
 
             try {
                 // Create FormData
@@ -800,32 +804,66 @@
                 formData.append('track_number', document.getElementById('trackNumber').value || '1');
                 formData.append('custom_filename', document.getElementById('customFilename').value.trim());
 
-                // Send to enhanced upload endpoint
-                const response = await fetch(`${API_BASE}/upload`, {
-                    method: 'POST',
-                    body: formData
+                // Use XMLHttpRequest for upload progress
+                const xhr = new XMLHttpRequest();
+                
+                // Progress event
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progressFill.style.width = percentComplete + '%';
+                        progressText.textContent = percentComplete + '%';
+                    }
                 });
 
-                clearInterval(interval);
+                // Create a promise to handle the async request
+                const uploadPromise = new Promise((resolve, reject) => {
+                    xhr.open('POST', `${API_BASE}/upload`, true);
+                    
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            try {
+                                const result = JSON.parse(xhr.responseText);
+                                resolve(result);
+                            } catch (e) {
+                                reject(new Error('Invalid response from server'));
+                            }
+                        } else {
+                            try {
+                                const error = JSON.parse(xhr.responseText);
+                                reject(new Error(error.error || 'Upload failed'));
+                            } catch (e) {
+                                reject(new Error(`Upload failed with status ${xhr.status}`));
+                            }
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        reject(new Error('Network error - please check your connection'));
+                    };
+                    
+                    xhr.send(formData);
+                });
+
+                // Wait for upload to complete
+                const result = await uploadPromise;
+                
+                // Complete progress
                 progressFill.style.width = '100%';
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error || 'Upload failed');
-                }
+                progressText.textContent = '100%';
 
                 showStatus('success', `✅ Upload complete! Track ID: ${result.id}`);
                 
                 setTimeout(() => {
                     resetForm();
-                    progressBar.style.display = 'none';
+                    progressContainer.style.display = 'none';
                     progressFill.style.width = '0%';
+                    progressText.textContent = '0%';
                 }, 2000);
 
             } catch (error) {
-                clearInterval(interval);
-                progressBar.style.display = 'none';
+                console.error('Upload error:', error);
+                progressContainer.style.display = 'none';
                 showStatus('error', error.message);
                 submitBtn.disabled = false;
             }
@@ -1277,7 +1315,6 @@
             document.getElementById('uploadForm').reset();
             document.getElementById('fileInfo').textContent = '';
             document.getElementById('duration').value = '';
-            document.getElementById('progressBar').style.display = 'none';
             selectedFile = null;
             artworkFile = null;
             submitBtn.disabled = true;
