@@ -8,7 +8,7 @@ export async function onRequest(context) {
     'Access-Control-Allow-Headers': 'Content-Type',
   };
 
-  // Handle OPTIONS request
+  // Handle OPTIONS request (CORS preflight)
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
@@ -27,12 +27,9 @@ export async function onRequest(context) {
     const description = formData.get('description') || '';
     const genre = formData.get('genre') || 'unknown';
     const duration = parseInt(formData.get('duration')) || 0;
-    
-    // NEW: Get filename from form (sent from ID3 worker)
-    const filename = formData.get('filename'); // ← ONLY CHANGE HERE
 
     // Validate required fields
-    if (!file || !title || !artist || !filename) { // ← Added filename validation
+    if (!file || !title || !artist) {
       return new Response(JSON.stringify({ 
         error: 'Missing required fields' 
       }), { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
@@ -45,11 +42,10 @@ export async function onRequest(context) {
       }), { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
     }
 
-    // REMOVED: Filename generation code
-    // const timestamp = Date.now();
-    // const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    // const filename = `${timestamp}-${safeTitle}.mp3`;
-    
+    // Generate unique filename
+    const timestamp = Date.now();
+    const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const filename = `${timestamp}-${safeTitle}.mp3`;
     const r2Key = `audio/${filename}`;
 
     // Upload to R2
