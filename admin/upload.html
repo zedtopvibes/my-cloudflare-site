@@ -1183,7 +1183,7 @@
         // Load settings from D1 when page loads
         async function loadSettingsFromD1() {
             try {
-                const response = await fetch(`${API_BASE}/user/preferences`);
+                const response = await fetch(`${API_BASE}/admin/preferences`);
                 if (!response.ok) throw new Error('Failed to load settings');
                 
                 const settings = await response.json();
@@ -1225,7 +1225,7 @@
             applyFieldVisibility();
             
             try {
-                const response = await fetch(`${API_BASE}/user/preferences`, {
+                const response = await fetch(`${API_BASE}/admin/preferences`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
