@@ -397,7 +397,7 @@
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 20px; /* FIX 4: Consistent 20px spacing */
         }
         
         .form-group label {
@@ -405,7 +405,7 @@
             font-size: 0.9rem;
             font-weight: 600;
             color: #444;
-            margin-bottom: 6px;
+            margin-bottom: 8px; /* FIX 4: 8px between label and field */
         }
         
         .form-group label i {
@@ -436,7 +436,8 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 15px; /* FIX 4: 15px between fields in same row */
+            margin-bottom: 0;
         }
         
         .form-hint {
@@ -468,32 +469,266 @@
             border-left: 3px solid var(--primary-blue);
         }
         
-        .upload-progress {
-            grid-column: 1 / -1;
-            margin: 20px 0;
+        /* FIX 2: Duration display */
+        .duration-display {
+            margin-top: 8px;
+            padding: 10px 15px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .duration-display i {
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+        
+        .duration-display span {
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        
+        /* FIX 3 & 5: Full-screen overlay */
+        .overlay {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
         
-        .progress-bar {
+        .overlay.active {
+            display: flex;
+        }
+        
+        .overlay-content {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
             width: 100%;
-            height: 8px;
-            background: var(--light-gray);
-            border-radius: 4px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Upload Progress Overlay */
+        .upload-progress-overlay {
+            text-align: center;
+        }
+        
+        .upload-progress-overlay h2 {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .upload-progress-overlay .progress-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .upload-progress-overlay .progress-circle svg {
+            width: 120px;
+            height: 120px;
+            transform: rotate(-90deg);
+        }
+        
+        .upload-progress-overlay .progress-circle circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+        
+        .upload-progress-overlay .progress-circle .bg-circle {
+            stroke: #e0e0e0;
+        }
+        
+        .upload-progress-overlay .progress-circle .progress-circle-fill {
+            stroke: var(--primary-blue);
+            stroke-dasharray: 314;
+            stroke-dashoffset: 314;
+            transition: stroke-dashoffset 0.3s;
+        }
+        
+        .upload-progress-overlay .progress-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .upload-progress-overlay .file-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .upload-progress-overlay .file-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .upload-progress-overlay .file-info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .upload-progress-overlay .file-info-item i {
+            color: var(--primary-blue);
+            width: 24px;
+            font-size: 1.1rem;
+        }
+        
+        .upload-progress-overlay .status-message {
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            color: var(--primary-blue);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Success Overlay */
+        .success-overlay {
+            text-align: center;
+        }
+        
+        .success-overlay .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .success-overlay h2 {
+            color: var(--success);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        
+        .success-overlay .artwork-thumbnail {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
         }
         
-        .progress-fill {
+        .success-overlay .artwork-thumbnail img {
+            width: 100%;
             height: 100%;
-            background: var(--primary-blue);
-            width: 0%;
-            transition: width 0.3s;
+            object-fit: cover;
         }
         
-        .progress-text {
-            text-align: right;
+        .success-overlay .song-details {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .success-overlay .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .success-overlay .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .success-overlay .detail-item i {
+            color: var(--primary-blue);
+            width: 24px;
+            font-size: 1.1rem;
+        }
+        
+        .success-overlay .playlist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.85rem;
-            color: #666;
-            margin-top: 5px;
+            margin: 2px;
+        }
+        
+        .overlay-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .overlay-actions .btn {
+            flex: 1;
         }
         
         .form-actions {
@@ -545,6 +780,15 @@
         
         .btn-secondary:hover {
             background: #e0e0e0;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
         }
         
         .status-message {
@@ -829,6 +1073,7 @@
             
             .form-row {
                 grid-template-columns: 1fr;
+                gap: 20px; /* FIX 4: Mobile spacing */
             }
             
             .skeleton-row {
@@ -849,6 +1094,14 @@
             
             .skeleton-button {
                 width: 100%;
+            }
+            
+            .overlay-content {
+                padding: 20px;
+            }
+            
+            .overlay-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -970,10 +1223,10 @@
                                 </div>
                                 
                                 <!-- Custom Filename Field - ID3 ONLY (not saved to database) -->
-                                <div class="form-group" style="margin-bottom: 20px; position: relative; z-index: 20;">
+                                <div class="form-group">
                                     <label><i class="fas fa-tag"></i> Custom Filename <span style="font-weight: normal; color: #999; font-size: 0.8rem; margin-left: 5px;">(ID3 only)</span></label>
-                                    <input type="text" id="customFilename" placeholder="e.g. my-awesome-song" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif;">
-                                    <div class="form-hint" style="font-size: 0.8rem; color: #999; margin-top: 4px;">Leave empty to auto-generate from Artist - Title</div>
+                                    <input type="text" id="customFilename" placeholder="e.g. my-awesome-song">
+                                    <div class="form-hint">Leave empty to auto-generate from Artist - Title</div>
                                 </div>
                                 
                                 <!-- Filename Preview -->
@@ -1022,12 +1275,12 @@
                                             <button type="button" onclick="clearAlbumSelection()"><i class="fas fa-times"></i></button>
                                         </div>
                                         
-                                        <!-- Track Number Field - ID3 ONLY (appears when album is selected) -->
-                                        <div id="trackNumberContainer" class="track-number-container" style="display: none;">
+                                        <!-- FIX 1: Removed style="display: none;" from container -->
+                                        <div id="trackNumberContainer" class="track-number-container">
                                             <label style="display: block; font-size: 0.9rem; font-weight: 600; color: #444; margin-bottom: 6px;">
                                                 <i class="fas fa-hashtag"></i> Track Number <span style="font-weight: normal; color: #999; font-size: 0.8rem;">(ID3 only)</span>
                                             </label>
-                                            <input type="number" id="trackNumber" min="1" value="1" placeholder="e.g. 1" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                            <input type="number" id="trackNumber" min="1" value="1" placeholder="e.g. 1">
                                             <div class="form-hint" style="margin-top: 5px;">Position of this track in the album (for ID3 tag)</div>
                                         </div>
                                         
@@ -1073,14 +1326,13 @@
                                 </div>
                                 
                                 <div class="form-row">
-                                    <div class="form-group">
-                                        <label><i class="fas fa-clock"></i> Duration</label>
-                                        <input type="number" id="duration" placeholder="Auto-detected" readonly>
-                                    </div>
-                                    
                                     <div class="form-group hideable-section" id="bpmSection">
                                         <label><i class="fas fa-music"></i> BPM</label>
                                         <input type="number" id="bpm" placeholder="e.g. 120">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <!-- Empty for spacing -->
                                     </div>
                                 </div>
                             </div>
@@ -1140,13 +1392,16 @@
                                         </div>
                                         <div class="remove-compact-file" onclick="clearSelectedFile()"><i class="fas fa-times"></i></div>
                                     </div>
+                                    
+                                    <!-- FIX 2: Duration display -->
+                                    <div id="durationDisplay" class="duration-display" style="display: none;">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Duration detected:</span> <span id="durationValue">0:00</span>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div id="uploadProgress" class="upload-progress">
-                                <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
-                                <div id="progressText" class="progress-text">0%</div>
-                            </div>
+                            <!-- FIX 3 & 5: Removed inline progress - now in overlay -->
                             
                             <div id="statusMessage" class="status-message">
                                 <i class="fas fa-info-circle"></i> <span></span>
@@ -1163,6 +1418,95 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIX 3: Upload Progress Overlay -->
+    <div id="uploadProgressOverlay" class="overlay">
+        <div class="overlay-content upload-progress-overlay">
+            <h2>
+                <i class="fas fa-cloud-upload-alt"></i> UPLOADING
+            </h2>
+            
+            <div class="progress-circle">
+                <svg viewBox="0 0 120 120">
+                    <circle class="bg-circle" cx="60" cy="60" r="50"></circle>
+                    <circle class="progress-circle-fill" cx="60" cy="60" r="50" style="stroke-dashoffset: 314;"></circle>
+                </svg>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+            </div>
+            
+            <div class="file-info">
+                <div class="file-info-item">
+                    <i class="fas fa-music"></i>
+                    <span id="progressFileName">Loading...</span>
+                </div>
+                <div class="file-info-item">
+                    <i class="fas fa-weight-hanging"></i>
+                    <span id="progressFileSize">0 MB</span>
+                </div>
+                <div class="file-info-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="progressDuration">0:00</span>
+                </div>
+            </div>
+            
+            <div class="status-message" id="progressStatus">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>Processing file...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIX 5: Success Overlay -->
+    <div id="successOverlay" class="overlay">
+        <div class="overlay-content success-overlay">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h2>UPLOAD COMPLETE!</h2>
+            
+            <div id="successArtwork" class="artwork-thumbnail">
+                <i class="fas fa-music"></i>
+            </div>
+            
+            <div class="song-details">
+                <div class="detail-item">
+                    <i class="fas fa-heading"></i>
+                    <span id="successTitle">Song Title</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-user"></i>
+                    <span id="successArtist">Artist Name</span>
+                </div>
+                <div class="detail-item" id="successAlbumRow" style="display: none;">
+                    <i class="fas fa-compact-disc"></i>
+                    <span id="successAlbum">Album Name</span>
+                    <span id="successTrackNumber"></span>
+                </div>
+                <div class="detail-item" id="successPlaylistsRow" style="display: none;">
+                    <i class="fas fa-list"></i>
+                    <div id="successPlaylists"></div>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-tag"></i>
+                    <span id="successFilename">filename.mp3</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                    <span>ID3 branding added ✓</span>
+                </div>
+            </div>
+            
+            <div class="overlay-actions">
+                <button class="btn btn-secondary" onclick="closeSuccessOverlay()">
+                    <i class="fas fa-times"></i> Close
+                </button>
+                <button class="btn btn-success" onclick="resetAndClose()">
+                    <i class="fas fa-upload"></i> Upload Another
+                </button>
             </div>
         </div>
     </div>
@@ -1367,6 +1711,7 @@
         let selectedFile = null;
         let artworkFile = null;
         let durationMs = 0;
+        let durationSeconds = 0;
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files[0]) {
@@ -1393,8 +1738,10 @@
             selectedFile = null;
             fileInput.value = '';
             fileInfo.style.display = 'none';
-            document.getElementById('duration').value = '';
+            document.getElementById('durationDisplay').style.display = 'none';
+            document.getElementById('durationValue').textContent = '0:00';
             durationMs = 0;
+            durationSeconds = 0;
         };
 
         // ==================== FILENAME PREVIEW ====================
@@ -1455,12 +1802,20 @@
             artworkName.textContent = file.name;
             artworkSize.textContent = formatFileSize(file.size);
             artworkInfo.style.display = 'flex';
+            
+            // Preview for success overlay
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                window.artworkDataUrl = e.target.result;
+            };
+            reader.readAsDataURL(file);
         });
 
         window.clearArtworkFile = () => {
             artworkFile = null;
             artworkInput.value = '';
             artworkInfo.style.display = 'none';
+            window.artworkDataUrl = null;
         };
 
         function formatFileSize(bytes) {
@@ -1469,11 +1824,24 @@
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
 
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
         function getAudioDuration(file) {
             const audio = new Audio(URL.createObjectURL(file));
             audio.addEventListener('loadedmetadata', () => {
+                durationSeconds = audio.duration;
                 durationMs = Math.round(audio.duration * 1000);
-                document.getElementById('duration').value = Math.round(audio.duration);
+                
+                // FIX 2: Show duration display
+                const durationDisplay = document.getElementById('durationDisplay');
+                const durationValue = document.getElementById('durationValue');
+                durationValue.textContent = formatDuration(durationSeconds);
+                durationDisplay.style.display = 'flex';
+                
                 URL.revokeObjectURL(audio.src);
             });
         }
@@ -1977,7 +2345,7 @@
             // Store album title for ID3
             window.selectedAlbumTitle = albumTitle;
             
-            // Show track number field when album is selected
+            // FIX 1: Show track number field when album is selected
             document.getElementById('trackNumberContainer').style.display = 'block';
         };
 
@@ -1988,7 +2356,7 @@
             document.getElementById('selectedAlbumId').textContent = '';
             window.selectedAlbumTitle = null;
             
-            // Hide track number field when album is cleared
+            // FIX 1: Hide track number field when album is cleared
             document.getElementById('trackNumberContainer').style.display = 'none';
             document.getElementById('trackNumber').value = '1';
         };
@@ -2124,6 +2492,105 @@
             return true;
         }
 
+        // ==================== OVERLAY FUNCTIONS ====================
+        function showUploadProgress() {
+            document.getElementById('uploadProgressOverlay').classList.add('active');
+            
+            // Update file info
+            if (selectedFile) {
+                document.getElementById('progressFileName').textContent = selectedFile.name;
+                document.getElementById('progressFileSize').textContent = formatFileSize(selectedFile.size);
+                document.getElementById('progressDuration').textContent = formatDuration(durationSeconds);
+            }
+        }
+
+        function updateProgress(percentage) {
+            const circle = document.querySelector('.progress-circle-fill');
+            const perimeter = 314; // 2 * π * r (r=50)
+            const offset = perimeter - (perimeter * percentage / 100);
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progressPercentage').textContent = percentage + '%';
+            
+            // Update status message based on progress
+            const statusEl = document.getElementById('progressStatus').querySelector('span');
+            if (percentage < 30) {
+                statusEl.textContent = 'Processing file...';
+            } else if (percentage < 60) {
+                statusEl.textContent = 'Adding ID3 branding...';
+            } else if (percentage < 90) {
+                statusEl.textContent = 'Uploading to cloud...';
+            } else {
+                statusEl.textContent = 'Finalizing...';
+            }
+        }
+
+        function hideUploadProgress() {
+            document.getElementById('uploadProgressOverlay').classList.remove('active');
+            // Reset progress
+            const circle = document.querySelector('.progress-circle-fill');
+            circle.style.strokeDashoffset = 314;
+            document.getElementById('progressPercentage').textContent = '0%';
+        }
+
+        function showSuccessOverlay(result) {
+            const overlay = document.getElementById('successOverlay');
+            
+            // Set basic info
+            document.getElementById('successTitle').textContent = document.getElementById('title').value.trim();
+            document.getElementById('successArtist').textContent = document.getElementById('artistSelect').value;
+            document.getElementById('successFilename').textContent = result.filename;
+            
+            // Set artwork
+            const artworkDiv = document.getElementById('successArtwork');
+            if (window.artworkDataUrl) {
+                artworkDiv.innerHTML = `<img src="${window.artworkDataUrl}" alt="Artwork">`;
+            } else {
+                artworkDiv.innerHTML = '<i class="fas fa-music"></i>';
+            }
+            
+            // Show album info if selected
+            const albumId = document.getElementById('albumSelect').value;
+            if (albumId) {
+                document.getElementById('successAlbumRow').style.display = 'flex';
+                document.getElementById('successAlbum').textContent = window.selectedAlbumTitle || '';
+                const trackNum = document.getElementById('trackNumber').value;
+                if (trackNum) {
+                    document.getElementById('successTrackNumber').textContent = `(Track ${trackNum})`;
+                }
+            } else {
+                document.getElementById('successAlbumRow').style.display = 'none';
+            }
+            
+            // Show playlists if any
+            if (selectedPlaylists.size > 0) {
+                document.getElementById('successPlaylistsRow').style.display = 'flex';
+                const playlistsDiv = document.getElementById('successPlaylists');
+                playlistsDiv.innerHTML = '';
+                selectedPlaylists.forEach(playlistId => {
+                    const playlist = allPlaylists.find(p => p.id == playlistId);
+                    if (playlist) {
+                        const badge = document.createElement('span');
+                        badge.className = 'playlist-badge';
+                        badge.innerHTML = `<i class="fas fa-list"></i> ${escapeHtml(playlist.name)}`;
+                        playlistsDiv.appendChild(badge);
+                    }
+                });
+            } else {
+                document.getElementById('successPlaylistsRow').style.display = 'none';
+            }
+            
+            overlay.classList.add('active');
+        }
+
+        window.closeSuccessOverlay = () => {
+            document.getElementById('successOverlay').classList.remove('active');
+        };
+
+        window.resetAndClose = () => {
+            closeSuccessOverlay();
+            resetForm();
+        };
+
         // ==================== FORM SUBMISSION ====================
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -2141,12 +2608,9 @@
                 return;
             }
 
-            const progressDiv = document.getElementById('uploadProgress');
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-            progressDiv.style.display = 'block';
+            // FIX 3: Show full-screen progress overlay
+            showUploadProgress();
             submitBtn.disabled = true;
-            showStatus('info', 'Uploading track...');
 
             try {
                 const formData = new FormData();
@@ -2186,12 +2650,11 @@
 
                 let progress = 0;
                 const interval = setInterval(() => {
-                    progress += 10;
-                    if (progress <= 90) {
-                        progressFill.style.width = progress + '%';
-                        progressText.textContent = progress + '%';
+                    progress += 5;
+                    if (progress <= 95) {
+                        updateProgress(progress);
                     }
-                }, 300);
+                }, 500);
 
                 const response = await fetch(`${API_BASE}/upload`, {
                     method: 'POST',
@@ -2234,27 +2697,18 @@
                     }
                 }
 
-                progressFill.style.width = '100%';
-                progressText.textContent = '100%';
+                updateProgress(100);
                 
-                let successMessage = 'Track uploaded successfully with ID3 branding!';
-                if (albumId && document.getElementById('trackNumber').value) {
-                    successMessage += ` Added as track #${document.getElementById('trackNumber').value} to album.`;
-                } else if (albumId) {
-                    successMessage += ' Added to album.';
-                }
-                if (selectedPlaylists.size > 0) {
-                    successMessage += ` Added to ${selectedPlaylists.size} playlist${selectedPlaylists.size > 1 ? 's' : ''}.`;
-                }
-                
-                showStatus('success', successMessage);
-                
-                setTimeout(resetForm, 2000);
+                // FIX 3: Hide progress overlay
+                setTimeout(() => {
+                    hideUploadProgress();
+                    // FIX 5: Show success overlay
+                    showSuccessOverlay(result);
+                }, 500);
                 
             } catch (error) {
                 console.error('Upload error:', error);
-                progressFill.style.width = '0%';
-                progressText.textContent = '0%';
+                hideUploadProgress();
                 showStatus('error', error.message || 'Upload failed');
                 submitBtn.disabled = false;
             }
@@ -2288,7 +2742,10 @@
             document.getElementById('progressText').textContent = '0%';
             
             window.selectedAlbumTitle = null;
+            window.artworkDataUrl = null;
             updateFilenamePreview();
+            
+            submitBtn.disabled = false;
         };
 
         // ==================== STATUS MESSAGES ====================
