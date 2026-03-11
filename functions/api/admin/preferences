@@ -1,24 +1,32 @@
+// GET - Load settings
 export async function onRequest(context) {
     const { request, env } = context;
     const userId = request.headers.get('X-User-ID') || 'default_admin';
     
-    // Handle GET request
     if (request.method === 'GET') {
         try {
             const { results } = await env.DB.prepare(
-                "SELECT preference_key, preference_value FROM user_preferences WHERE user_id = ?"
+                "SELECT show_albums, show_playlists, show_bpm, show_options FROM user_preferences WHERE user_id = ?"
             ).bind(userId).all();
             
-            const settings = {};
-            results.forEach(row => {
-                settings[row.preference_key] = row.preference_value === 'true';
-            });
+            // If no row exists, return defaults
+            if (results.length === 0) {
+                return new Response(JSON.stringify({
+                    showAlbums: true,
+                    showPlaylists: true,
+                    showBPM: true,
+                    showOptions: true
+                }), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
             
+            const row = results[0];
             return new Response(JSON.stringify({
-                showAlbums: settings.showAlbums ?? true,
-                showPlaylists: settings.showPlaylists ?? true,
-                showBPM: settings.showBPM ?? true,
-                showOptions: settings.showOptions ?? true
+                showAlbums: row.show_albums === 1,
+                showPlaylists: row.show_playlists === 1,
+                showBPM: row.show_bpm === 1,
+                showOptions: row.show_options === 1
             }), {
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -27,21 +35,29 @@ export async function onRequest(context) {
         }
     }
     
-    // Handle POST request
+    // POST - Save settings (updates the SAME row)
     if (request.method === 'POST') {
         try {
             const settings = await request.json();
-            const stmt = env.DB.prepare(
-                "INSERT OR REPLACE INTO user_preferences (user_id, preference_key, preference_value, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)"
-            );
             
-            const keys = ['showAlbums', 'showPlaylists', 'showBPM', 'showOptions'];
+            // Convert booleans to integers
+            const showAlbums = settings.showAlbums ? 1 : 0;
+            const showPlaylists = settings.showPlaylists ? 1 : 0;
+            const showBPM = settings.showBPM ? 1 : 0;
+            const showOptions = settings.showOptions ? 1 : 0;
             
-            for (const key of keys) {
-                if (settings[key] !== undefined) {
-                    await stmt.bind(userId, key, settings[key].toString()).run();
-                }
-            }
+            // Insert or replace the single row
+            await env.DB.prepare(
+                `INSERT INTO user_preferences 
+                (user_id, show_albums, show_playlists, show_bpm, show_options, updated_at) 
+                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(user_id) DO UPDATE SET 
+                    show_albums = excluded.show_albums,
+                    show_playlists = excluded.show_playlists,
+                    show_bpm = excluded.show_bpm,
+                    show_options = excluded.show_options,
+                    updated_at = CURRENT_TIMESTAMP`
+            ).bind(userId, showAlbums, showPlaylists, showBPM, showOptions).run();
             
             return new Response(JSON.stringify({ success: true }), {
                 headers: { 'Content-Type': 'application/json' }
@@ -51,6 +67,5 @@ export async function onRequest(context) {
         }
     }
     
-    // Handle other methods
     return new Response('Method not allowed', { status: 405 });
 }
