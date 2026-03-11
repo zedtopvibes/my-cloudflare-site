@@ -127,6 +127,33 @@
             grid-column: span 1;
         }
         
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h3 {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+        
+        .settings-btn {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .settings-btn:hover {
+            background: rgba(31, 111, 159, 0.1);
+        }
+        
         .bottom-uploads {
             grid-column: 1 / -1;
             display: grid;
@@ -509,6 +536,32 @@
             margin-top: 20px;
         }
         
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .settings-item span {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+        
+        .settings-item span i {
+            color: var(--primary-blue);
+            width: 24px;
+        }
+        
+        .settings-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
         /* Suggestions container */
         .suggestions-container {
             position: absolute;
@@ -585,6 +638,10 @@
             cursor: pointer;
             font-size: 0.85rem;
         }
+
+        .hideable-section {
+            transition: all 0.2s ease;
+        }
         
         @media (max-width: 768px) {
             .upload-grid {
@@ -631,9 +688,12 @@
                 <form id="uploadForm" enctype="multipart/form-data">
                     <div class="upload-grid">
                         <div class="form-section">
-                            <h3 style="margin-bottom: 20px; color: var(--primary-blue);">
-                                <i class="fas fa-info-circle"></i> Basic Information
-                            </h3>
+                            <div class="section-header">
+                                <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                                <button type="button" class="settings-btn" onclick="showSettingsModal()">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                            </div>
                             
                             <div class="form-group">
                                 <label><i class="fas fa-heading"></i> Song Title *</label>
@@ -670,55 +730,59 @@
                                 </div>
                             </div>
 
-                            <!-- Album Selection with Real-Time Search -->
-                            <div class="form-group">
-                                <label><i class="fas fa-compact-disc"></i> Album (Optional - Select One)</label>
-                                <div style="position: relative;">
-                                    <input type="text" id="albumSearchInput" placeholder="Search or type album name..." autocomplete="off" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                            <!-- Album Selection (Hideable) -->
+                            <div id="albumSection" class="hideable-section">
+                                <div class="form-group">
+                                    <label><i class="fas fa-compact-disc"></i> Album (Optional - Select One)</label>
+                                    <div style="position: relative;">
+                                        <input type="text" id="albumSearchInput" placeholder="Search or type album name..." autocomplete="off" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                        
+                                        <!-- Hidden select for form submission -->
+                                        <select id="albumSelect" style="display: none;">
+                                            <option value="">None (Single Release)</option>
+                                        </select>
+                                        
+                                        <!-- Floating suggestions for albums -->
+                                        <div id="albumSuggestions" class="suggestions-container"></div>
+                                    </div>
                                     
-                                    <!-- Hidden select for form submission -->
-                                    <select id="albumSelect" style="display: none;">
-                                        <option value="">None (Single Release)</option>
-                                    </select>
+                                    <!-- Selected album badge -->
+                                    <div id="selectedAlbumBadge" class="selected-badge" style="display: none;">
+                                        <i class="fas fa-check-circle"></i> <span id="selectedAlbumName"></span>
+                                        <button type="button" onclick="clearAlbumSelection()" style="background: none; border: none; color: var(--primary-blue); margin-left: 5px; cursor: pointer;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
                                     
-                                    <!-- Floating suggestions for albums -->
-                                    <div id="albumSuggestions" class="suggestions-container"></div>
-                                </div>
-                                
-                                <!-- Selected album badge -->
-                                <div id="selectedAlbumBadge" class="selected-badge" style="display: none;">
-                                    <i class="fas fa-check-circle"></i> <span id="selectedAlbumName"></span>
-                                    <button type="button" onclick="clearAlbumSelection()" style="background: none; border: none; color: var(--primary-blue); margin-left: 5px; cursor: pointer;">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                                
-                                <div class="form-hint">
-                                    <a href="#" onclick="showModal('albumModal')" style="color: var(--primary-blue);">
-                                        <i class="fas fa-plus-circle"></i> Create New Album
-                                    </a>
+                                    <div class="form-hint">
+                                        <a href="#" onclick="showModal('albumModal')" style="color: var(--primary-blue);">
+                                            <i class="fas fa-plus-circle"></i> Create New Album
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Playlists Section (Multiple Selection - Like Artist Style) -->
-                            <div class="form-group">
-                                <label><i class="fas fa-list"></i> Add to Playlists (Optional - Select Multiple)</label>
-                                
-                                <!-- Search box for playlists -->
-                                <div style="position: relative;">
-                                    <input type="text" id="playlistSearch" placeholder="Search playlists..." autocomplete="off" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                            <!-- Playlists Section (Hideable) -->
+                            <div id="playlistSection" class="hideable-section">
+                                <div class="form-group">
+                                    <label><i class="fas fa-list"></i> Add to Playlists (Optional - Select Multiple)</label>
                                     
-                                    <!-- Floating suggestions for playlists -->
-                                    <div id="playlistSuggestions" class="suggestions-container"></div>
-                                </div>
-                                
-                                <!-- Selected playlists badges container -->
-                                <div id="selectedPlaylistsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
-                                
-                                <div class="form-hint">
-                                    <a href="#" onclick="showModal('playlistModal')" style="color: var(--primary-blue);">
-                                        <i class="fas fa-plus-circle"></i> Create New Playlist
-                                    </a>
+                                    <!-- Search box for playlists -->
+                                    <div style="position: relative;">
+                                        <input type="text" id="playlistSearch" placeholder="Search playlists..." autocomplete="off" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                        
+                                        <!-- Floating suggestions for playlists -->
+                                        <div id="playlistSuggestions" class="suggestions-container"></div>
+                                    </div>
+                                    
+                                    <!-- Selected playlists badges container -->
+                                    <div id="selectedPlaylistsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
+                                    
+                                    <div class="form-hint">
+                                        <a href="#" onclick="showModal('playlistModal')" style="color: var(--primary-blue);">
+                                            <i class="fas fa-plus-circle"></i> Create New Playlist
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -748,7 +812,7 @@
                                     <input type="number" id="duration" placeholder="Auto-detected" readonly>
                                 </div>
                                 
-                                <div class="form-group">
+                                <div class="form-group" id="bpmSection">
                                     <label><i class="fas fa-music"></i> BPM</label>
                                     <input type="number" id="bpm" placeholder="e.g. 120">
                                 </div>
@@ -757,7 +821,7 @@
                         
                         <div class="form-section">
                             <h3 style="margin-bottom: 20px; color: var(--primary-blue);">
-                                <i class="fas fa-paint-brush"></i> Description & Options
+                                <i class="fas fa-paint-brush"></i> Description
                             </h3>
                             
                             <div class="form-group">
@@ -765,24 +829,26 @@
                                 <textarea id="description" rows="6" placeholder="Tell us about this track..."></textarea>
                             </div>
                             
-                            <h3 style="margin: 20px 0 15px; color: var(--primary-blue);">
-                                <i class="fas fa-check-circle"></i> Options
-                            </h3>
-                            
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="explicit"> Explicit
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="featured"> Featured
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="editorPick"> Editor's Pick
-                                </label>
+                            <div id="optionsSection">
+                                <h3 style="margin: 20px 0 15px; color: var(--primary-blue);">
+                                    <i class="fas fa-check-circle"></i> Options
+                                </h3>
+                                
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="explicit"> Explicit
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="featured"> Featured
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="editorPick"> Editor's Pick
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Bottom uploads section - compact fields matching other inputs -->
+                        <!-- Bottom uploads section -->
                         <div class="bottom-uploads">
                             <div class="compact-upload">
                                 <label><i class="fas fa-image"></i> Artwork (Optional)</label>
@@ -830,6 +896,46 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Field Visibility</h3>
+                <button class="close-btn" onclick="hideSettingsModal()">✕</button>
+            </div>
+
+            <div style="padding: 10px 0;">
+                <p style="color: #666; margin-bottom: 15px; font-size: 0.9rem;">
+                    Uncheck to hide fields you don't use
+                </p>
+
+                <div class="settings-item">
+                    <span><i class="fas fa-compact-disc"></i> Albums</span>
+                    <input type="checkbox" id="showAlbums" checked onchange="saveSettingsToD1()">
+                </div>
+
+                <div class="settings-item">
+                    <span><i class="fas fa-list"></i> Playlists</span>
+                    <input type="checkbox" id="showPlaylists" checked onchange="saveSettingsToD1()">
+                </div>
+
+                <div class="settings-item">
+                    <span><i class="fas fa-music"></i> BPM</span>
+                    <input type="checkbox" id="showBPM" checked onchange="saveSettingsToD1()">
+                </div>
+
+                <div class="settings-item">
+                    <span><i class="fas fa-check-circle"></i> Options (Explicit, Featured, Editor)</span>
+                    <input type="checkbox" id="showOptions" checked onchange="saveSettingsToD1()">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="hideSettingsModal()" class="btn btn-primary">Done</button>
             </div>
         </div>
     </div>
@@ -1072,6 +1178,89 @@
             });
         }
 
+        // ==================== D1 SETTINGS PERSISTENCE ====================
+        
+        // Load settings from D1 when page loads
+        async function loadSettingsFromD1() {
+            try {
+                const response = await fetch(`${API_BASE}/user/preferences`);
+                if (!response.ok) throw new Error('Failed to load settings');
+                
+                const settings = await response.json();
+                
+                // Apply settings to checkboxes
+                if (settings.showAlbums !== undefined) {
+                    document.getElementById('showAlbums').checked = settings.showAlbums === 'true' || settings.showAlbums === true;
+                }
+                if (settings.showPlaylists !== undefined) {
+                    document.getElementById('showPlaylists').checked = settings.showPlaylists === 'true' || settings.showPlaylists === true;
+                }
+                if (settings.showBPM !== undefined) {
+                    document.getElementById('showBPM').checked = settings.showBPM === 'true' || settings.showBPM === true;
+                }
+                if (settings.showOptions !== undefined) {
+                    document.getElementById('showOptions').checked = settings.showOptions === 'true' || settings.showOptions === true;
+                }
+                
+                // Apply visibility based on loaded settings
+                applyFieldVisibility();
+                
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                // If error loading, use defaults (all visible)
+                applyFieldVisibility();
+            }
+        }
+
+        // Save settings to D1
+        window.saveSettingsToD1 = async () => {
+            const settings = {
+                showAlbums: document.getElementById('showAlbums').checked,
+                showPlaylists: document.getElementById('showPlaylists').checked,
+                showBPM: document.getElementById('showBPM').checked,
+                showOptions: document.getElementById('showOptions').checked
+            };
+            
+            // Apply visibility immediately
+            applyFieldVisibility();
+            
+            try {
+                const response = await fetch(`${API_BASE}/user/preferences`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+                
+                if (!response.ok) {
+                    console.error('Failed to save settings to D1');
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+            }
+        };
+
+        // Apply visibility based on checkbox states
+        function applyFieldVisibility() {
+            const showAlbums = document.getElementById('showAlbums').checked;
+            const showPlaylists = document.getElementById('showPlaylists').checked;
+            const showBPM = document.getElementById('showBPM').checked;
+            const showOptions = document.getElementById('showOptions').checked;
+
+            document.getElementById('albumSection').style.display = showAlbums ? 'block' : 'none';
+            document.getElementById('playlistSection').style.display = showPlaylists ? 'block' : 'none';
+            document.getElementById('bpmSection').style.display = showBPM ? 'block' : 'none';
+            document.getElementById('optionsSection').style.display = showOptions ? 'block' : 'none';
+        }
+
+        // ==================== SETTINGS MODAL ====================
+        window.showSettingsModal = () => {
+            document.getElementById('settingsModal').style.display = 'flex';
+        };
+
+        window.hideSettingsModal = () => {
+            document.getElementById('settingsModal').style.display = 'none';
+        };
+
         // ==================== MODAL FUNCTIONS ====================
         window.showModal = (modalId) => {
             document.getElementById(modalId).style.display = 'flex';
@@ -1079,7 +1268,6 @@
 
         window.hideModal = (modalId) => {
             document.getElementById(modalId).style.display = 'none';
-            // Reset form
             if (modalId === 'artistModal') resetArtistForm();
             if (modalId === 'albumModal') resetAlbumForm();
             if (modalId === 'playlistModal') resetPlaylistForm();
@@ -1149,7 +1337,6 @@
                     throw new Error(data.error || 'Failed to save artist');
                 }
 
-                // Upload photo if selected
                 artistImageFile = document.getElementById('artistImageInput').files[0];
                 if (artistImageFile) {
                     const photoData = new FormData();
@@ -1160,7 +1347,6 @@
                     }).catch(e => console.warn('Photo upload failed'));
                 }
 
-                // Reload artists
                 await loadArtists();
                 
                 hideModal('artistModal');
@@ -1227,7 +1413,6 @@
                     throw new Error(data.error || 'Failed to create album');
                 }
                 
-                // Upload cover if selected
                 albumImageFile = document.getElementById('albumImageInput').files[0];
                 if (albumImageFile) {
                     const coverData = new FormData();
@@ -1240,7 +1425,6 @@
                 
                 await loadAlbums();
                 
-                // Select the new album
                 const displayName = `${data.title} - ${data.artist}`;
                 selectAlbum(data.id, displayName);
                 
@@ -1300,7 +1484,6 @@
                     throw new Error(data.error || 'Failed to create playlist');
                 }
 
-                // Upload cover if selected
                 playlistImageFile = document.getElementById('playlistImageInput').files[0];
                 if (playlistImageFile) {
                     const coverData = new FormData();
@@ -1311,10 +1494,8 @@
                     }).catch(e => console.warn('Cover upload failed'));
                 }
 
-                // Refresh playlists
                 await loadPlaylists();
                 
-                // Auto-select the newly created playlist
                 setTimeout(() => {
                     togglePlaylist(data.id, data.name);
                 }, 500);
@@ -1344,7 +1525,6 @@
                 allArtists = await response.json();
                 allArtists.sort((a, b) => a.name.localeCompare(b.name));
                 
-                // Populate hidden select
                 const select = document.getElementById('artistSelect');
                 select.innerHTML = '<option value="">Select Artist</option>';
                 allArtists.forEach(artist => {
@@ -1354,7 +1534,6 @@
                     select.appendChild(option);
                 });
                 
-                // Setup search listener
                 const artistInput = document.getElementById('artistInput');
                 if (artistInput) {
                     artistInput.addEventListener('input', function(e) {
@@ -1386,7 +1565,6 @@
                     });
                 }
 
-                // Close suggestions when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!e.target.closest('#artistInput') && !e.target.closest('#artistSuggestions')) {
                         document.getElementById('artistSuggestions').style.display = 'none';
@@ -1444,7 +1622,6 @@
                 allAlbums = await response.json();
                 allAlbums.sort((a, b) => a.title.localeCompare(b.title));
                 
-                // Populate hidden select
                 const select = document.getElementById('albumSelect');
                 select.innerHTML = '<option value="">None (Single Release)</option>';
                 allAlbums.forEach(album => {
@@ -1454,7 +1631,6 @@
                     select.appendChild(option);
                 });
                 
-                // Setup search listener
                 const albumSearch = document.getElementById('albumSearchInput');
                 if (albumSearch) {
                     albumSearch.addEventListener('input', function(e) {
@@ -1486,7 +1662,6 @@
                     });
                 }
 
-                // Close suggestions when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!e.target.closest('#albumSearchInput') && !e.target.closest('#albumSuggestions')) {
                         document.getElementById('albumSuggestions').style.display = 'none';
@@ -1530,10 +1705,10 @@
             document.getElementById('selectedAlbumBadge').style.display = 'none';
         };
 
-        // ==================== PLAYLISTS (New Search Style - Like Artists) ====================
+        // ==================== PLAYLISTS ====================
         let allPlaylists = [];
         let playlistSearchTimeout;
-        let selectedPlaylists = new Set(); // Store selected playlist IDs
+        let selectedPlaylists = new Set();
 
         async function loadPlaylists() {
             try {
@@ -1542,7 +1717,6 @@
                 
                 allPlaylists = await response.json();
                 
-                // Setup search listener
                 const searchInput = document.getElementById('playlistSearch');
                 if (searchInput) {
                     searchInput.addEventListener('input', function(e) {
@@ -1574,7 +1748,6 @@
                     });
                 }
 
-                // Close suggestions when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!e.target.closest('#playlistSearch') && !e.target.closest('#playlistSuggestions')) {
                         document.getElementById('playlistSuggestions').style.display = 'none';
@@ -1616,7 +1789,6 @@
                 addPlaylistBadge(playlistId, playlistName);
             }
             
-            // Refresh suggestions to show selection state
             const searchInput = document.getElementById('playlistSearch');
             if (searchInput.value.length >= 1) {
                 const matches = allPlaylists.filter(playlist => 
@@ -1626,7 +1798,6 @@
                 displayPlaylistSuggestions(matches);
             }
             
-            // Clear search input
             searchInput.value = '';
             document.getElementById('playlistSuggestions').style.display = 'none';
         };
@@ -1725,7 +1896,6 @@
                     }
                 }, 300);
 
-                // Upload the track first
                 const response = await fetch(`${API_BASE}/upload`, {
                     method: 'POST',
                     body: formData
@@ -1738,7 +1908,6 @@
                 const result = await response.json();
                 const trackId = result.id;
 
-                // If an album was selected, add the track to the album
                 const albumId = document.getElementById('albumSelect').value;
                 if (albumId) {
                     await fetch(`${API_BASE}/admin/albums/${albumId}/tracks`, {
@@ -1748,7 +1917,6 @@
                     }).catch(e => console.warn('Failed to add to album'));
                 }
 
-                // Add track to selected playlists
                 if (selectedPlaylists.size > 0) {
                     for (const playlistId of selectedPlaylists) {
                         await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, {
@@ -1796,7 +1964,6 @@
             clearArtistSelection();
             clearAlbumSelection();
             
-            // Clear selected playlists
             selectedPlaylists.clear();
             document.getElementById('selectedPlaylistsContainer').innerHTML = '';
             
@@ -1843,11 +2010,14 @@
         // ==================== INITIALIZE ====================
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
+                // Load all data
                 loadArtists();
                 loadAlbums();
                 loadPlaylists();
                 
-                // Make submit button enabled by default if file is selected
+                // Load saved visibility settings from D1
+                loadSettingsFromD1();
+                
                 if (selectedFile) {
                     submitBtn.disabled = false;
                 }
