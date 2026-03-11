@@ -1188,19 +1188,11 @@
                 
                 const settings = await response.json();
                 
-                // Apply settings to checkboxes
-                if (settings.showAlbums !== undefined) {
-                    document.getElementById('showAlbums').checked = settings.showAlbums === 'true' || settings.showAlbums === true;
-                }
-                if (settings.showPlaylists !== undefined) {
-                    document.getElementById('showPlaylists').checked = settings.showPlaylists === 'true' || settings.showPlaylists === true;
-                }
-                if (settings.showBPM !== undefined) {
-                    document.getElementById('showBPM').checked = settings.showBPM === 'true' || settings.showBPM === true;
-                }
-                if (settings.showOptions !== undefined) {
-                    document.getElementById('showOptions').checked = settings.showOptions === 'true' || settings.showOptions === true;
-                }
+                // Set checkbox states based on D1 settings
+                document.getElementById('showAlbums').checked = settings.showAlbums;
+                document.getElementById('showPlaylists').checked = settings.showPlaylists;
+                document.getElementById('showBPM').checked = settings.showBPM;
+                document.getElementById('showOptions').checked = settings.showOptions;
                 
                 // Apply visibility based on loaded settings
                 applyFieldVisibility();
@@ -1208,6 +1200,10 @@
             } catch (error) {
                 console.error('Error loading settings:', error);
                 // If error loading, use defaults (all visible)
+                document.getElementById('showAlbums').checked = true;
+                document.getElementById('showPlaylists').checked = true;
+                document.getElementById('showBPM').checked = true;
+                document.getElementById('showOptions').checked = true;
                 applyFieldVisibility();
             }
         }
