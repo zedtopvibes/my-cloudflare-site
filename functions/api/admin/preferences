@@ -1,35 +1,56 @@
 export async function onRequest(context) {
     const { request, env } = context;
-    
-    // Get user ID from header or use default
     const userId = request.headers.get('X-User-ID') || 'default_admin';
     
-    try {
-        // Query D1 for user preferences
-        const { results } = await env.DB.prepare(
-            "SELECT preference_key, preference_value FROM user_preferences WHERE user_id = ?"
-        ).bind(userId).all();
-        
-        // Convert to object
-        const settings = {};
-        results.forEach(row => {
-            settings[row.preference_key] = row.preference_value === 'true';
-        });
-        
-        // Return settings (with defaults if empty)
-        return new Response(JSON.stringify({
-            showAlbums: settings.showAlbums ?? true,
-            showPlaylists: settings.showPlaylists ?? true,
-            showBPM: settings.showBPM ?? true,
-            showOptions: settings.showOptions ?? true
-        }), {
-            headers: { 'Content-Type': 'application/json' }
-        });
-        
-    } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
+    // Handle GET request
+    if (request.method === 'GET') {
+        try {
+            const { results } = await env.DB.prepare(
+                "SELECT preference_key, preference_value FROM user_preferences WHERE user_id = ?"
+            ).bind(userId).all();
+            
+            const settings = {};
+            results.forEach(row => {
+                settings[row.preference_key] = row.preference_value === 'true';
+            });
+            
+            return new Response(JSON.stringify({
+                showAlbums: settings.showAlbums ?? true,
+                showPlaylists: settings.showPlaylists ?? true,
+                showBPM: settings.showBPM ?? true,
+                showOptions: settings.showOptions ?? true
+            }), {
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (error) {
+            return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+        }
     }
+    
+    // Handle POST request
+    if (request.method === 'POST') {
+        try {
+            const settings = await request.json();
+            const stmt = env.DB.prepare(
+                "INSERT OR REPLACE INTO user_preferences (user_id, preference_key, preference_value, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)"
+            );
+            
+            const keys = ['showAlbums', 'showPlaylists', 'showBPM', 'showOptions'];
+            
+            for (const key of keys) {
+                if (settings[key] !== undefined) {
+                    await stmt.bind(userId, key, settings[key].toString()).run();
+                }
+            }
+            
+            return new Response(JSON.stringify({ success: true }), {
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (error) {
+            return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+        }
+    }
+    
+    // Handle other methods
+    return new Response('Method not allowed', { status: 405 });
 }
