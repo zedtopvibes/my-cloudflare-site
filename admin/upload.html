@@ -460,6 +460,14 @@
             font-size: 0.95rem;
         }
         
+        .track-number-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-blue);
+        }
+        
         .upload-progress {
             grid-column: 1 / -1;
             margin: 20px 0;
@@ -941,6 +949,13 @@
                 <!-- Real Form -->
                 <div id="realForm" class="real-form">
                     <form id="uploadForm" enctype="multipart/form-data">
+                        <!-- Custom Filename Field - First field at the top -->
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label><i class="fas fa-tag"></i> Custom Filename (Optional)</label>
+                            <input type="text" id="customFilename" placeholder="e.g. my-awesome-song" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                            <div class="form-hint">This is just a label, not saved to database</div>
+                        </div>
+
                         <div class="upload-grid">
                             <div class="form-section">
                                 <div class="section-header">
@@ -989,6 +1004,16 @@
                                             <i class="fas fa-check-circle"></i> <span id="selectedAlbumName"></span>
                                             <button type="button" onclick="clearAlbumSelection()"><i class="fas fa-times"></i></button>
                                         </div>
+                                        
+                                        <!-- Track Number Field (appears when album is selected) -->
+                                        <div id="trackNumberContainer" class="track-number-container" style="display: none;">
+                                            <label style="display: block; font-size: 0.9rem; font-weight: 600; color: #444; margin-bottom: 6px;">
+                                                <i class="fas fa-hashtag"></i> Track Number
+                                            </label>
+                                            <input type="number" id="trackNumber" min="1" placeholder="e.g. 1" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                            <div class="form-hint" style="margin-top: 5px;">Position of this track in the album</div>
+                                        </div>
+                                        
                                         <div class="form-hint">
                                             <a href="#" onclick="showModal('albumModal')"><i class="fas fa-plus-circle"></i> Create New Album</a>
                                         </div>
@@ -1767,7 +1792,12 @@
                     if (matches.length > 0) {
                         displayArtistSuggestions(matches);
                     } else {
-                        document.getElementById('artistSuggestions').style.display = 'none';
+                        document.getElementById('artistSuggestions').innerHTML = `
+                            <div style="padding: 15px; text-align: center;">
+                                No artists found. <a href="#" onclick="showModal('artistModal'); return false;">Add new?</a>
+                            </div>
+                        `;
+                        document.getElementById('artistSuggestions').style.display = 'block';
                     }
                 }, 300);
             });
@@ -1777,9 +1807,12 @@
             let html = '';
             artists.forEach(artist => {
                 html += `
-                    <div class="suggestion-item" onclick="selectArtist('${artist.name}')">
-                        <i class="fas fa-user-circle suggestion-icon"></i>
-                        <span>${artist.name}</span>
+                    <div class="suggestion-item" onclick="selectArtist('${artist.name.replace(/'/g, "\\'")}')">
+                        <div class="suggestion-icon"><i class="fas fa-user-circle"></i></div>
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(artist.name)}</div>
+                            ${artist.country ? `<div class="suggestion-meta">${escapeHtml(artist.country)}</div>` : ''}
+                        </div>
                     </div>
                 `;
             });
@@ -1788,6 +1821,7 @@
         }
 
         window.selectArtist = (artistName) => {
+            selectedArtist = artistName;
             document.getElementById('artistInput').value = artistName;
             document.getElementById('artistSelect').value = artistName;
             document.getElementById('artistSuggestions').style.display = 'none';
@@ -1796,6 +1830,7 @@
         };
 
         window.clearArtistSelection = () => {
+            selectedArtist = '';
             document.getElementById('artistInput').value = '';
             document.getElementById('artistSelect').value = '';
             document.getElementById('selectedArtistBadge').style.display = 'none';
@@ -1848,7 +1883,12 @@
                     if (matches.length > 0) {
                         displayAlbumSuggestions(matches);
                     } else {
-                        document.getElementById('albumSuggestions').style.display = 'none';
+                        document.getElementById('albumSuggestions').innerHTML = `
+                            <div style="padding: 15px; text-align: center;">
+                                No albums found. <a href="#" onclick="showModal('albumModal'); return false;">Create new?</a>
+                            </div>
+                        `;
+                        document.getElementById('albumSuggestions').style.display = 'block';
                     }
                 }, 300);
             });
@@ -1858,9 +1898,12 @@
             let html = '';
             albums.forEach(album => {
                 html += `
-                    <div class="suggestion-item" onclick="selectAlbum('${album.id}', '${album.title} - ${album.artist}')">
-                        <i class="fas fa-compact-disc suggestion-icon"></i>
-                        <span>${album.title} - ${album.artist}</span>
+                    <div class="suggestion-item" onclick="selectAlbum('${album.id}', '${escapeHtml(album.title)} - ${escapeHtml(album.artist)}')">
+                        <div class="suggestion-icon"><i class="fas fa-compact-disc"></i></div>
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(album.title)}</div>
+                            <div class="suggestion-meta">${escapeHtml(album.artist)}</div>
+                        </div>
                     </div>
                 `;
             });
@@ -1874,12 +1917,19 @@
             document.getElementById('albumSuggestions').style.display = 'none';
             document.getElementById('selectedAlbumName').textContent = displayName;
             document.getElementById('selectedAlbumBadge').style.display = 'inline-flex';
+            
+            // Show track number field when album is selected
+            document.getElementById('trackNumberContainer').style.display = 'block';
         };
 
         window.clearAlbumSelection = () => {
             document.getElementById('albumSearchInput').value = '';
             document.getElementById('albumSelect').value = '';
             document.getElementById('selectedAlbumBadge').style.display = 'none';
+            
+            // Hide track number field when album is cleared
+            document.getElementById('trackNumberContainer').style.display = 'none';
+            document.getElementById('trackNumber').value = '';
         };
 
         // ==================== PLAYLISTS ====================
@@ -1914,13 +1964,19 @@
                 clearTimeout(playlistSearchTimeout);
                 playlistSearchTimeout = setTimeout(() => {
                     const matches = allPlaylists.filter(playlist => 
-                        playlist.name.toLowerCase().includes(search)
+                        playlist.name.toLowerCase().includes(search) ||
+                        (playlist.description && playlist.description.toLowerCase().includes(search))
                     ).slice(0, 8);
                     
                     if (matches.length > 0) {
                         displayPlaylistSuggestions(matches);
                     } else {
-                        document.getElementById('playlistSuggestions').style.display = 'none';
+                        document.getElementById('playlistSuggestions').innerHTML = `
+                            <div style="padding: 15px; text-align: center;">
+                                No playlists found. <a href="#" onclick="showModal('playlistModal'); return false;">Create new?</a>
+                            </div>
+                        `;
+                        document.getElementById('playlistSuggestions').style.display = 'block';
                     }
                 }, 300);
             });
@@ -1931,9 +1987,12 @@
             playlists.forEach(playlist => {
                 const isSelected = selectedPlaylists.has(playlist.id);
                 html += `
-                    <div class="suggestion-item ${isSelected ? 'selected' : ''}" onclick="togglePlaylist(${playlist.id}, '${playlist.name}')">
-                        <i class="fas fa-list suggestion-icon"></i>
-                        <span>${playlist.name}</span>
+                    <div class="suggestion-item ${isSelected ? 'selected' : ''}" onclick="togglePlaylist(${playlist.id}, '${escapeHtml(playlist.name)}')">
+                        <div class="suggestion-icon"><i class="fas fa-list"></i></div>
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(playlist.name)}</div>
+                            ${playlist.description ? `<div class="suggestion-meta">${escapeHtml(playlist.description.substring(0, 50))}${playlist.description.length > 50 ? '...' : ''}</div>` : ''}
+                        </div>
                     </div>
                 `;
             });
@@ -1950,7 +2009,16 @@
                 addPlaylistBadge(playlistId, playlistName);
             }
             
-            document.getElementById('playlistSearch').value = '';
+            const searchInput = document.getElementById('playlistSearch');
+            if (searchInput.value.length >= 1) {
+                const matches = allPlaylists.filter(playlist => 
+                    playlist.name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
+                    (playlist.description && playlist.description.toLowerCase().includes(searchInput.value.toLowerCase()))
+                ).slice(0, 8);
+                displayPlaylistSuggestions(matches);
+            }
+            
+            searchInput.value = '';
             document.getElementById('playlistSuggestions').style.display = 'none';
         };
 
@@ -1960,7 +2028,7 @@
             badge.className = 'selected-badge';
             badge.id = `playlist-badge-${playlistId}`;
             badge.innerHTML = `
-                <i class="fas fa-check-circle"></i> ${playlistName}
+                <i class="fas fa-check-circle"></i> ${escapeHtml(playlistName)}
                 <button type="button" onclick="removePlaylist(${playlistId})"><i class="fas fa-times"></i></button>
             `;
             container.appendChild(badge);
@@ -2060,10 +2128,16 @@
 
                 const albumId = document.getElementById('albumSelect').value;
                 if (albumId) {
+                    const body = { track_id: trackId };
+                    const trackNumber = document.getElementById('trackNumber').value;
+                    if (trackNumber) {
+                        body.track_number = parseInt(trackNumber);
+                    }
+                    
                     await fetch(`${API_BASE}/admin/albums/${albumId}/tracks`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ track_id: trackId })
+                        body: JSON.stringify(body)
                     }).catch(e => console.warn('Failed to add to album'));
                 }
 
@@ -2079,7 +2153,18 @@
 
                 progressFill.style.width = '100%';
                 progressText.textContent = '100%';
-                showStatus('success', 'Track uploaded successfully!');
+                
+                let successMessage = 'Track uploaded successfully!';
+                if (albumId && document.getElementById('trackNumber').value) {
+                    successMessage += ` Added as track #${document.getElementById('trackNumber').value} to album.`;
+                } else if (albumId) {
+                    successMessage += ' Added to album.';
+                }
+                if (selectedPlaylists.size > 0) {
+                    successMessage += ` Added to ${selectedPlaylists.size} playlist${selectedPlaylists.size > 1 ? 's' : ''}.`;
+                }
+                
+                showStatus('success', successMessage);
                 
                 setTimeout(resetForm, 2000);
                 
@@ -2111,6 +2196,10 @@
             document.getElementById('featured').checked = false;
             document.getElementById('editorPick').checked = false;
             
+            document.getElementById('trackNumberContainer').style.display = 'none';
+            document.getElementById('trackNumber').value = '';
+            document.getElementById('customFilename').value = ''; // Clear custom filename
+            
             document.getElementById('uploadProgress').style.display = 'none';
             document.getElementById('progressFill').style.width = '0%';
             document.getElementById('progressText').textContent = '0%';
@@ -2121,9 +2210,20 @@
             const statusEl = document.getElementById('statusMessage');
             if (!statusEl) return;
             
+            const icon = statusEl.querySelector('i');
+            const span = statusEl.querySelector('span');
+            
             statusEl.className = 'status-message';
             statusEl.classList.add(`status-${type}`);
-            statusEl.querySelector('span').textContent = message;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle'
+            };
+            
+            if (icon) icon.className = `fas ${icons[type]}`;
+            if (span) span.textContent = message;
             statusEl.style.display = 'flex';
             
             if (type !== 'info') {
@@ -2133,8 +2233,20 @@
             }
         }
 
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // ==================== INITIALIZE ====================
         document.addEventListener('DOMContentLoaded', async () => {
+            // Immediately hide all hideable sections to prevent flash
+            document.querySelectorAll('.hideable-section').forEach(el => {
+                el.style.display = 'none';
+            });
+            
             if (!checkAuth()) return;
             
             try {
