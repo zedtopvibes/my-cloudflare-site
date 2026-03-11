@@ -562,6 +562,11 @@
             cursor: pointer;
         }
         
+        /* Hide sections by default to prevent flash */
+        .hideable-section {
+            display: none;
+        }
+        
         /* Suggestions container */
         .suggestions-container {
             position: absolute;
@@ -637,10 +642,6 @@
             margin-left: 5px;
             cursor: pointer;
             font-size: 0.85rem;
-        }
-
-        .hideable-section {
-            transition: all 0.2s ease;
         }
         
         @media (max-width: 768px) {
@@ -1197,6 +1198,11 @@
                 // Apply visibility based on loaded settings
                 applyFieldVisibility();
                 
+                // Make all sections visible now that settings are applied
+                document.querySelectorAll('.hideable-section').forEach(el => {
+                    el.style.display = 'block';
+                });
+                
             } catch (error) {
                 console.error('Error loading settings:', error);
                 // If error loading, use defaults (all visible)
@@ -1205,6 +1211,11 @@
                 document.getElementById('showBPM').checked = true;
                 document.getElementById('showOptions').checked = true;
                 applyFieldVisibility();
+                
+                // Make all sections visible
+                document.querySelectorAll('.hideable-section').forEach(el => {
+                    el.style.display = 'block';
+                });
             }
         }
 
