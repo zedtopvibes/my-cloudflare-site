@@ -800,6 +800,16 @@
             font-size: 0.85rem;
         }
         
+        .filename-preview {
+            background: #ebf4ff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 10px 0 20px;
+            font-family: monospace;
+            font-size: 14px;
+            border: 1px dashed var(--primary-blue);
+        }
+        
         @media (max-width: 768px) {
             .upload-grid {
                 grid-template-columns: 1fr;
@@ -958,12 +968,18 @@
                                         <i class="fas fa-cog"></i>
                                     </button>
                                 </div>
-   <!-- Custom Filename Field - Now matching other fields -->
-<div class="form-group" style="margin-bottom: 20px; position: relative; z-index: 20;">
-    <label><i class="fas fa-tag"></i> Custom Filename (Optional)</label>
-    <input type="text" id="customFilename" placeholder="e.g. my awesome song" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif;">
-    <div class="form-hint" style="font-size: 0.8rem; color: #999; margin-top: 4px;">This is just a label, not saved to database</div>
-</div>
+                                
+                                <!-- Custom Filename Field - ID3 ONLY (not saved to database) -->
+                                <div class="form-group" style="margin-bottom: 20px; position: relative; z-index: 20;">
+                                    <label><i class="fas fa-tag"></i> Custom Filename <span style="font-weight: normal; color: #999; font-size: 0.8rem; margin-left: 5px;">(ID3 only)</span></label>
+                                    <input type="text" id="customFilename" placeholder="e.g. my-awesome-song" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; font-family: 'Montserrat', sans-serif;">
+                                    <div class="form-hint" style="font-size: 0.8rem; color: #999; margin-top: 4px;">Leave empty to auto-generate from Artist - Title</div>
+                                </div>
+                                
+                                <!-- Filename Preview -->
+                                <div id="filenamePreview" class="filename-preview">
+                                    <strong>Filename Preview:</strong> <span id="previewText">Artist - Title (Zedtopvibes.Com).mp3</span>
+                                </div>
                                 
                                 <div class="form-group">
                                     <label><i class="fas fa-heading"></i> Song Title *</label>
@@ -1002,16 +1018,17 @@
                                         </div>
                                         <div id="selectedAlbumBadge" class="selected-badge" style="display: none;">
                                             <i class="fas fa-check-circle"></i> <span id="selectedAlbumName"></span>
+                                            <span id="selectedAlbumId" style="display: none;"></span>
                                             <button type="button" onclick="clearAlbumSelection()"><i class="fas fa-times"></i></button>
                                         </div>
                                         
-                                        <!-- Track Number Field (appears when album is selected) -->
+                                        <!-- Track Number Field - ID3 ONLY (appears when album is selected) -->
                                         <div id="trackNumberContainer" class="track-number-container" style="display: none;">
                                             <label style="display: block; font-size: 0.9rem; font-weight: 600; color: #444; margin-bottom: 6px;">
-                                                <i class="fas fa-hashtag"></i> Track Number
+                                                <i class="fas fa-hashtag"></i> Track Number <span style="font-weight: normal; color: #999; font-size: 0.8rem;">(ID3 only)</span>
                                             </label>
-                                            <input type="number" id="trackNumber" min="1" placeholder="e.g. 1" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
-                                            <div class="form-hint" style="margin-top: 5px;">Position of this track in the album</div>
+                                            <input type="number" id="trackNumber" min="1" value="1" placeholder="e.g. 1" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem;">
+                                            <div class="form-hint" style="margin-top: 5px;">Position of this track in the album (for ID3 tag)</div>
                                         </div>
                                         
                                         <div class="form-hint">
@@ -1339,6 +1356,7 @@
 
     <script>
         const API_BASE = '/api';
+        const SITENAME = "Zedtopvibes.Com";
         
         // ==================== FILE UPLOAD HANDLING ====================
         const fileInput = document.getElementById('fileInput');
@@ -1348,6 +1366,7 @@
         const submitBtn = document.getElementById('submitBtn');
         let selectedFile = null;
         let artworkFile = null;
+        let durationMs = 0;
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files[0]) {
@@ -1375,7 +1394,37 @@
             fileInput.value = '';
             fileInfo.style.display = 'none';
             document.getElementById('duration').value = '';
+            durationMs = 0;
         };
+
+        // ==================== FILENAME PREVIEW ====================
+        function updateFilenamePreview() {
+            const artist = document.getElementById('artistSelect').value || 'Artist';
+            const title = document.getElementById('title').value.trim() || 'Title';
+            const customFilename = document.getElementById('customFilename').value.trim();
+            
+            let preview;
+            if (customFilename) {
+                // Sanitize custom filename
+                const cleanCustom = customFilename
+                    .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+                preview = `${cleanCustom} (${SITENAME}).mp3`;
+            } else {
+                const cleanArtist = artist
+                    .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim() || 'Artist';
+                const cleanTitle = title
+                    .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim() || 'Title';
+                preview = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
+            }
+            
+            document.getElementById('previewText').textContent = preview;
+        }
 
         // ==================== ARTWORK HANDLING ====================
         const artworkInput = document.getElementById('artworkInput');
@@ -1423,6 +1472,7 @@
         function getAudioDuration(file) {
             const audio = new Audio(URL.createObjectURL(file));
             audio.addEventListener('loadedmetadata', () => {
+                durationMs = Math.round(audio.duration * 1000);
                 document.getElementById('duration').value = Math.round(audio.duration);
                 URL.revokeObjectURL(audio.src);
             });
@@ -1659,7 +1709,7 @@
                 await loadAlbums();
                 
                 const displayName = `${data.title} - ${data.artist}`;
-                selectAlbum(data.id, displayName);
+                selectAlbum(data.id, data.title, displayName);
                 
                 hideModal('albumModal');
                 showStatus('success', `Album "${title}" created!`);
@@ -1767,6 +1817,9 @@
                 
                 setupArtistSearch();
                 
+                // Update preview when artists load
+                updateFilenamePreview();
+                
             } catch (error) {
                 console.error('Error loading artists:', error);
             }
@@ -1807,7 +1860,7 @@
             let html = '';
             artists.forEach(artist => {
                 html += `
-                    <div class="suggestion-item" onclick="selectArtist('${artist.name.replace(/'/g, "\\'")}')">
+                    <div class="suggestion-item" onclick="selectArtist('${escapeHtml(artist.name.replace(/'/g, "\\'"))}')">
                         <div class="suggestion-icon"><i class="fas fa-user-circle"></i></div>
                         <div class="suggestion-info">
                             <div class="suggestion-name">${escapeHtml(artist.name)}</div>
@@ -1827,6 +1880,7 @@
             document.getElementById('artistSuggestions').style.display = 'none';
             document.getElementById('selectedArtistName').textContent = artistName;
             document.getElementById('selectedArtistBadge').style.display = 'inline-flex';
+            updateFilenamePreview();
         };
 
         window.clearArtistSelection = () => {
@@ -1834,6 +1888,7 @@
             document.getElementById('artistInput').value = '';
             document.getElementById('artistSelect').value = '';
             document.getElementById('selectedArtistBadge').style.display = 'none';
+            updateFilenamePreview();
         };
 
         // ==================== ALBUM SELECTION ====================
@@ -1898,7 +1953,7 @@
             let html = '';
             albums.forEach(album => {
                 html += `
-                    <div class="suggestion-item" onclick="selectAlbum('${album.id}', '${escapeHtml(album.title)} - ${escapeHtml(album.artist)}')">
+                    <div class="suggestion-item" onclick="selectAlbum('${album.id}', '${escapeHtml(album.title)}', '${escapeHtml(album.title)} - ${escapeHtml(album.artist)}')">
                         <div class="suggestion-icon"><i class="fas fa-compact-disc"></i></div>
                         <div class="suggestion-info">
                             <div class="suggestion-name">${escapeHtml(album.title)}</div>
@@ -1911,12 +1966,16 @@
             document.getElementById('albumSuggestions').style.display = 'block';
         }
 
-        window.selectAlbum = (albumId, displayName) => {
+        window.selectAlbum = (albumId, albumTitle, displayName) => {
             document.getElementById('albumSearchInput').value = displayName;
             document.getElementById('albumSelect').value = albumId;
             document.getElementById('albumSuggestions').style.display = 'none';
             document.getElementById('selectedAlbumName').textContent = displayName;
+            document.getElementById('selectedAlbumId').textContent = albumId;
             document.getElementById('selectedAlbumBadge').style.display = 'inline-flex';
+            
+            // Store album title for ID3
+            window.selectedAlbumTitle = albumTitle;
             
             // Show track number field when album is selected
             document.getElementById('trackNumberContainer').style.display = 'block';
@@ -1926,10 +1985,12 @@
             document.getElementById('albumSearchInput').value = '';
             document.getElementById('albumSelect').value = '';
             document.getElementById('selectedAlbumBadge').style.display = 'none';
+            document.getElementById('selectedAlbumId').textContent = '';
+            window.selectedAlbumTitle = null;
             
             // Hide track number field when album is cleared
             document.getElementById('trackNumberContainer').style.display = 'none';
-            document.getElementById('trackNumber').value = '';
+            document.getElementById('trackNumber').value = '1';
         };
 
         // ==================== PLAYLISTS ====================
@@ -2089,12 +2150,14 @@
 
             try {
                 const formData = new FormData();
+                
+                // Standard fields (go to D1)
                 formData.append('file', selectedFile);
                 formData.append('title', title);
                 formData.append('artist', artistName);
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
-                formData.append('duration', document.getElementById('duration').value);
+                formData.append('duration', durationMs);
                 formData.append('description', document.getElementById('description').value);
                 formData.append('bpm', document.getElementById('bpm').value || '0');
                 formData.append('explicit', document.getElementById('explicit').checked ? '1' : '0');
@@ -2103,6 +2166,22 @@
                 
                 if (artworkFile) {
                     formData.append('artwork', artworkFile);
+                }
+
+                // ID3-ONLY fields (not saved to D1)
+                formData.append('customFilename', document.getElementById('customFilename').value.trim());
+                
+                // Album info for ID3
+                const albumId = document.getElementById('albumSelect').value;
+                if (albumId) {
+                    formData.append('album_id', albumId);
+                    if (window.selectedAlbumTitle) {
+                        formData.append('album_title', window.selectedAlbumTitle);
+                    }
+                    const trackNumber = document.getElementById('trackNumber').value;
+                    if (trackNumber) {
+                        formData.append('trackNumber', trackNumber);
+                    }
                 }
 
                 let progress = 0;
@@ -2121,12 +2200,15 @@
 
                 clearInterval(interval);
 
-                if (!response.ok) throw new Error('Upload failed');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Upload failed');
+                }
 
                 const result = await response.json();
                 const trackId = result.id;
 
-                const albumId = document.getElementById('albumSelect').value;
+                // Album association (existing functionality)
                 if (albumId) {
                     const body = { track_id: trackId };
                     const trackNumber = document.getElementById('trackNumber').value;
@@ -2141,6 +2223,7 @@
                     }).catch(e => console.warn('Failed to add to album'));
                 }
 
+                // Playlist associations (existing functionality)
                 if (selectedPlaylists.size > 0) {
                     for (const playlistId of selectedPlaylists) {
                         await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, {
@@ -2154,7 +2237,7 @@
                 progressFill.style.width = '100%';
                 progressText.textContent = '100%';
                 
-                let successMessage = 'Track uploaded successfully!';
+                let successMessage = 'Track uploaded successfully with ID3 branding!';
                 if (albumId && document.getElementById('trackNumber').value) {
                     successMessage += ` Added as track #${document.getElementById('trackNumber').value} to album.`;
                 } else if (albumId) {
@@ -2197,12 +2280,15 @@
             document.getElementById('editorPick').checked = false;
             
             document.getElementById('trackNumberContainer').style.display = 'none';
-            document.getElementById('trackNumber').value = '';
-            document.getElementById('customFilename').value = ''; // Clear custom filename
+            document.getElementById('trackNumber').value = '1';
+            document.getElementById('customFilename').value = '';
             
             document.getElementById('uploadProgress').style.display = 'none';
             document.getElementById('progressFill').style.width = '0%';
             document.getElementById('progressText').textContent = '0%';
+            
+            window.selectedAlbumTitle = null;
+            updateFilenamePreview();
         };
 
         // ==================== STATUS MESSAGES ====================
@@ -2258,9 +2344,16 @@
                     loadSettingsFromD1()
                 ]);
                 
+                // Set up event listeners for filename preview
+                document.getElementById('title').addEventListener('input', updateFilenamePreview);
+                document.getElementById('customFilename').addEventListener('input', updateFilenamePreview);
+                
                 // Hide skeleton and show real form
                 document.getElementById('skeletonLoader').classList.add('hidden');
                 document.getElementById('realForm').classList.add('visible');
+                
+                // Initial preview
+                updateFilenamePreview();
                 
             } catch (error) {
                 console.error('Error loading initial data:', error);
