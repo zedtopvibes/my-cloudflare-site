@@ -38,7 +38,7 @@ export async function onRequest(context) {
     const artist = formData.get('artist');
     const description = formData.get('description') || '';
     const genre = formData.get('genre') || 'unknown';
-    const duration = parseInt(formData.get('duration')) || 0;
+    const duration = parseInt(formData.get('duration')) || 0; // This is in milliseconds now
     const releaseDate = formData.get('release_date') || '';
     const bpm = formData.get('bpm') || '0';
     const explicit = formData.get('explicit') === '1';
@@ -95,23 +95,26 @@ export async function onRequest(context) {
     // Determine album name for ID3 tag
     let id3Album = albumTitle || 'Zedtopvibes Compilation';
 
+    // Create branded artist name (FIX 1: Add | SITENAME)
+    const brandedArtist = `${artist} | ${SITENAME}`;
+
     // Create branded comment
     const brandedComment = `🎵 Discover your next favorite track at ${SITENAME}`;
 
-    // Create complete ID3 tags (using artist and title as-is, no branding added to these fields)
+    // Create complete ID3 tags
     const taggedMp3 = createCompleteID3Tags(cleanBuffer, {
-      artist: artist,                    // Keep original artist name
-      title: title,                      // Keep original title
-      album: id3Album,                    // Album name or default
-      year: releaseDate,                  // Full release date
-      genre: genre,                        // Genre
-      track: trackNumber,                  // Track number
-      comment: brandedComment,              // Branded comment
-      duration: duration.toString(),        // Duration in ms
-      encoder: `${SITENAME} Uploader`,      // Encoder info
-      publisher: SITENAME,                  // Publisher
+      artist: brandedArtist,              // NOW WITH BRANDING: "Artist | Zedtopvibes.Com"
+      title: title,                        // Keep original title
+      album: id3Album,                      // Album name or default
+      year: releaseDate,                    // Full release date
+      genre: genre,                          // Genre
+      track: trackNumber,                    // Track number
+      comment: brandedComment,                // Branded comment
+      duration: duration.toString(),          // Duration in ms (FIX 2: Now using correct value)
+      encoder: `${SITENAME} Uploader`,        // Encoder info
+      publisher: SITENAME,                    // Publisher
       copyright: `${new Date().getFullYear()} ${SITENAME}`, // Copyright
-      cover: coverBuffer                    // Watermark image
+      cover: coverBuffer                      // Watermark image
     });
 
     // Generate filename for R2
@@ -170,7 +173,7 @@ export async function onRequest(context) {
       filename,  // Using the branded filename
       filename, 
       genre, 
-      duration
+      Math.round(duration / 1000) // Convert ms to seconds for database (if needed)
     ).run();
 
     const trackId = result.results[0]?.id;
