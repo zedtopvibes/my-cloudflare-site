@@ -109,8 +109,8 @@
             text-decoration: underline;
         }
         
-        /* Tracklist number styling */
-        .track-number-badge {
+        /* Track number styling - matches .roundthumb exactly */
+        .track-number {
             width: 80px;
             height: 80px;
             background: #ff5500;
@@ -123,6 +123,7 @@
             font-size: 24px;
         }
         
+        /* Responsive - matches .roundthumb sizing */
         @media (max-width: 768px) {
             .album-header {
                 flex-direction: column;
@@ -143,10 +144,10 @@
                 justify-content: center;
             }
             
-            .track-number-badge {
-                width: 60px;
-                height: 60px;
-                font-size: 18px;
+            .track-number {
+                width: 70px;
+                height: 70px;
+                font-size: 20px;
             }
         }
         
@@ -165,7 +166,15 @@
                 font-size: 20px;
             }
             
-            .track-number-badge {
+            .track-number {
+                width: 60px;
+                height: 60px;
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .track-number {
                 width: 50px;
                 height: 50px;
                 font-size: 16px;
@@ -328,7 +337,7 @@
             return match ? match[1] : null;
         }
         
-        // Render tracklist using .music-item cards
+        // Render tracklist using SAME .music-item structure as recommended albums
         function renderTracklist(tracks) {
             const container = document.getElementById('tracklist-container');
             if (!container) return;
@@ -342,7 +351,7 @@
                 <a href="/song/${track.slug || track.id}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <div class="track-number-badge">
+                            <div class="track-number">
                                 ${String(track.track_number || index + 1).padStart(2, '0')}
                             </div>
                         </div>
