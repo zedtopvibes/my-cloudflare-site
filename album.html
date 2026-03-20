@@ -27,6 +27,7 @@
             background: #fff;
             border-radius: 12px;
             margin: 20px;
+            margin-bottom: 30px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             border: 1px solid #e8e8e8;
         }
@@ -109,7 +110,12 @@
             text-decoration: underline;
         }
         
-        /* Ensure roundthumb for track numbers matches album thumbnails */
+        /* Section spacing */
+        .section-spacing {
+            margin-top: 40px;
+        }
+        
+        /* Track number styling */
         .roundthumb.track-number {
             background: #ff5500;
             display: flex;
@@ -202,6 +208,12 @@
             color: #ff2121;
             font-size: 14px;
         }
+        
+        /* Hide pagination if not needed */
+        .page-navi {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -247,6 +259,11 @@
         </div>
     </div>
 
+    <!-- ===== PAGINATION FOR TRACKLIST ===== -->
+    <div class="page-navi" align="center">
+        <!-- Pagination buttons will be added by JavaScript -->
+    </div>
+
     <!-- ===== RECOMMENDED ALBUMS SECTION ===== -->
     <div class="section-header section-spacing">
         <h2 class="section-title">
@@ -269,6 +286,11 @@
         // API Base - using main site
         const API_BASE = 'https://zedtopvibes.pages.dev/api';
         const IMAGE_BASE = 'https://zedtopvibes.pages.dev';
+        
+        // Pagination variables
+        let currentTrackPage = 1;
+        let tracksPerPage = 8;
+        let allTracks = [];
         
         // Helper functions
         function formatDuration(seconds) {
@@ -326,35 +348,121 @@
             return match ? match[1] : null;
         }
         
-        // Render tracklist using SAME structure as recommended albums
+        // Render tracklist with pagination
         function renderTracklist(tracks) {
             const container = document.getElementById('tracklist-container');
             if (!container) return;
             
             if (!tracks || tracks.length === 0) {
                 container.innerHTML = '<div class="error-message">No tracks found for this album</div>';
+                const paginationDiv = document.querySelector('.page-navi');
+                if (paginationDiv) paginationDiv.style.display = 'none';
                 return;
             }
             
-            container.innerHTML = tracks.map((track, index) => `
-                <a href="/song/${track.slug || track.id}" class="music-item">
-                    <div class="item-container">
-                        <div class="item-thumb">
-                            <div class="roundthumb track-number" style="background: #ff5500; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                                ${String(track.track_number || index + 1).padStart(2, '0')}
+            // Store all tracks globally
+            allTracks = tracks;
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(allTracks.length / tracksPerPage);
+            const start = (currentTrackPage - 1) * tracksPerPage;
+            const end = start + tracksPerPage;
+            const paginatedTracks = allTracks.slice(start, end);
+            
+            // Render tracks for current page
+            container.innerHTML = paginatedTracks.map((track, index) => {
+                const actualIndex = start + index;
+                return `
+                    <a href="/song/${track.slug || track.id}" class="music-item">
+                        <div class="item-container">
+                            <div class="item-thumb">
+                                <div class="roundthumb track-number" style="background: #ff5500; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                    ${String(actualIndex + 1).padStart(2, '0')}
+                                </div>
+                            </div>
+                            <div class="item-data">
+                                <span class="track-title"><b>${escapeHtml(track.title)}</b></span>
+                                <div class="artist-name">${escapeHtml(track.artist || 'Unknown Artist')}</div>
+                                <span class="item-meta">
+                                    <b style="color:#ff0000">${formatDuration(track.duration)}</b>
+                                </span>
                             </div>
                         </div>
-                        <div class="item-data">
-                            <span class="track-title"><b>${escapeHtml(track.title)}</b></span>
-                            <div class="artist-name">${escapeHtml(track.artist || 'Unknown Artist')}</div>
-                            <span class="item-meta">
-                                <b style="color:#ff0000">${formatDuration(track.duration)}</b>
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
+                    </a>
+                `;
+            }).join('');
+            
+            // Update pagination buttons
+            updatePaginationButtons(totalPages);
         }
+        
+        // Update pagination HTML
+        function updatePaginationButtons(totalPages) {
+            const paginationContainer = document.querySelector('.page-navi');
+            if (!paginationContainer) return;
+            
+            if (totalPages <= 1) {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+            
+            paginationContainer.style.display = 'block';
+            
+            let html = '';
+            
+            // Page 1 button
+            if (currentTrackPage === 1) {
+                html += `<span aria-current="page" class="page-numbers current">1</span>`;
+            } else {
+                html += `<a class="page-numbers" href="#" onclick="loadTracklistPage(1); return false;">1</a>`;
+            }
+            
+            // Show ellipsis if needed
+            if (currentTrackPage > 3) {
+                html += `<span class="page-numbers dots">…</span>`;
+            }
+            
+            // Pages around current
+            for (let i = Math.max(2, currentTrackPage - 1); i <= Math.min(totalPages - 1, currentTrackPage + 1); i++) {
+                if (i === currentTrackPage) {
+                    html += `<span aria-current="page" class="page-numbers current">${i}</span>`;
+                } else {
+                    html += `<a class="page-numbers" href="#" onclick="loadTracklistPage(${i}); return false;">${i}</a>`;
+                }
+            }
+            
+            // Show ellipsis if needed
+            if (currentTrackPage < totalPages - 2) {
+                html += `<span class="page-numbers dots">…</span>`;
+            }
+            
+            // Last page button
+            if (totalPages > 1) {
+                if (currentTrackPage === totalPages) {
+                    html += `<span aria-current="page" class="page-numbers current">${totalPages}</span>`;
+                } else {
+                    html += `<a class="page-numbers" href="#" onclick="loadTracklistPage(${totalPages}); return false;">${totalPages}</a>`;
+                }
+            }
+            
+            // Next button
+            if (currentTrackPage < totalPages) {
+                html += `<a class="next page-numbers" href="#" onclick="loadTracklistPage(${currentTrackPage + 1}); return false;">Next »</a>`;
+            }
+            
+            paginationContainer.innerHTML = html;
+        }
+        
+        // Load tracklist page
+        window.loadTracklistPage = function(page) {
+            currentTrackPage = page;
+            renderTracklist(allTracks);
+            // Scroll to tracklist section
+            const tracklistSection = document.querySelector('.section-header');
+            if (tracklistSection) {
+                tracklistSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
         
         // Load recommended albums
         async function loadRecommendedAlbums(currentAlbumId, currentArtist) {
@@ -419,6 +527,7 @@
                 document.getElementById('album-description').textContent = 'No album slug provided in URL.';
                 document.getElementById('tracklist-container').innerHTML = '<div class="error-message">Invalid album link</div>';
                 document.getElementById('recommended-container').innerHTML = '';
+                document.querySelector('.page-navi').style.display = 'none';
                 return;
             }
             
@@ -432,26 +541,35 @@
                 
                 const album = await response.json();
                 
+                // Show header now that we have data
                 document.getElementById('album-header').style.display = 'flex';
+                
+                // Populate album header
                 document.getElementById('album-title').textContent = album.title || 'Untitled';
                 document.getElementById('album-artist').textContent = album.artist || 'Unknown Artist';
                 document.getElementById('album-artist').setAttribute('data-artist', album.artist || '');
                 document.getElementById('breadcrumb-title').textContent = album.title || 'Album Details';
                 
+                // Release date
                 const releaseYear = album.release_date ? new Date(album.release_date).getFullYear() : 'TBA';
                 document.getElementById('album-release').textContent = releaseYear;
                 
+                // Track count
                 const trackCount = album.tracks?.length || album.stats?.track_count || 0;
                 document.getElementById('album-tracks-count').textContent = trackCount;
                 
+                // Duration
                 const totalDuration = calculateTotalDuration(album.tracks || []);
                 document.getElementById('album-duration').textContent = totalDuration;
                 
+                // Plays
                 const totalPlays = album.stats?.total_plays || album.plays || 0;
                 document.getElementById('album-plays').textContent = formatNumber(totalPlays);
                 
+                // Description
                 document.getElementById('album-description').textContent = album.description || 'No description available.';
                 
+                // Album cover
                 const coverImg = document.getElementById('album-cover');
                 if (album.cover_url) {
                     const coverUrl = album.cover_url.startsWith('/') ? `${IMAGE_BASE}${album.cover_url}` : album.cover_url;
@@ -460,7 +578,11 @@
                     coverImg.src = '/images/default-album.jpg';
                 }
                 
+                // Reset pagination and render tracklist
+                currentTrackPage = 1;
                 renderTracklist(album.tracks || []);
+                
+                // Load recommended albums
                 await loadRecommendedAlbums(album.id, album.artist);
                 
             } catch (error) {
@@ -470,6 +592,7 @@
                 document.getElementById('tracklist-container').innerHTML = '<div class="error-message">Failed to load album. The album may not exist.</div>';
                 document.getElementById('recommended-container').innerHTML = '';
                 document.getElementById('album-header').style.display = 'flex';
+                document.querySelector('.page-navi').style.display = 'none';
             }
         }
         
