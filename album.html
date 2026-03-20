@@ -109,12 +109,9 @@
             text-decoration: underline;
         }
         
-        /* Track number styling - matches .roundthumb exactly */
-        .track-number {
-            width: 80px;
-            height: 80px;
+        /* Ensure roundthumb for track numbers matches album thumbnails */
+        .roundthumb.track-number {
             background: #ff5500;
-            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -123,7 +120,6 @@
             font-size: 24px;
         }
         
-        /* Responsive - matches .roundthumb sizing */
         @media (max-width: 768px) {
             .album-header {
                 flex-direction: column;
@@ -144,9 +140,7 @@
                 justify-content: center;
             }
             
-            .track-number {
-                width: 70px;
-                height: 70px;
+            .roundthumb.track-number {
                 font-size: 20px;
             }
         }
@@ -166,17 +160,13 @@
                 font-size: 20px;
             }
             
-            .track-number {
-                width: 60px;
-                height: 60px;
+            .roundthumb.track-number {
                 font-size: 18px;
             }
         }
         
         @media (max-width: 360px) {
-            .track-number {
-                width: 50px;
-                height: 50px;
+            .roundthumb.track-number {
                 font-size: 16px;
             }
         }
@@ -331,13 +321,12 @@
         // Get album slug from URL path (clean URL: /album/neon-dreams)
         function getAlbumSlug() {
             const path = window.location.pathname;
-            // Remove trailing slash if exists
             const cleanPath = path.replace(/\/$/, '');
             const match = cleanPath.match(/\/album\/([^\/]+)/);
             return match ? match[1] : null;
         }
         
-        // Render tracklist using SAME .music-item structure as recommended albums
+        // Render tracklist using SAME structure as recommended albums
         function renderTracklist(tracks) {
             const container = document.getElementById('tracklist-container');
             if (!container) return;
@@ -351,7 +340,7 @@
                 <a href="/song/${track.slug || track.id}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <div class="track-number">
+                            <div class="roundthumb track-number" style="background: #ff5500; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                                 ${String(track.track_number || index + 1).padStart(2, '0')}
                             </div>
                         </div>
@@ -377,10 +366,8 @@
                 const albums = await response.json();
                 const albumList = Array.isArray(albums) ? albums : (albums.results || []);
                 
-                // Filter out current album
                 let recommendations = albumList.filter(album => album.id != currentAlbumId);
                 
-                // Prioritize same artist
                 if (currentArtist) {
                     const sameArtist = recommendations.filter(album => album.artist === currentArtist);
                     if (sameArtist.length > 0) {
@@ -436,7 +423,6 @@
             }
             
             try {
-                // CORRECT API ENDPOINT - matches your worker
                 const apiUrl = `${API_BASE}/album/by-slug/${albumSlug}`;
                 const response = await fetch(apiUrl);
                 
@@ -446,35 +432,26 @@
                 
                 const album = await response.json();
                 
-                // Show header now that we have data
                 document.getElementById('album-header').style.display = 'flex';
-                
-                // Populate album header
                 document.getElementById('album-title').textContent = album.title || 'Untitled';
                 document.getElementById('album-artist').textContent = album.artist || 'Unknown Artist';
                 document.getElementById('album-artist').setAttribute('data-artist', album.artist || '');
                 document.getElementById('breadcrumb-title').textContent = album.title || 'Album Details';
                 
-                // Release date
                 const releaseYear = album.release_date ? new Date(album.release_date).getFullYear() : 'TBA';
                 document.getElementById('album-release').textContent = releaseYear;
                 
-                // Track count
                 const trackCount = album.tracks?.length || album.stats?.track_count || 0;
                 document.getElementById('album-tracks-count').textContent = trackCount;
                 
-                // Duration
                 const totalDuration = calculateTotalDuration(album.tracks || []);
                 document.getElementById('album-duration').textContent = totalDuration;
                 
-                // Plays
                 const totalPlays = album.stats?.total_plays || album.plays || 0;
                 document.getElementById('album-plays').textContent = formatNumber(totalPlays);
                 
-                // Description
                 document.getElementById('album-description').textContent = album.description || 'No description available.';
                 
-                // Album cover
                 const coverImg = document.getElementById('album-cover');
                 if (album.cover_url) {
                     const coverUrl = album.cover_url.startsWith('/') ? `${IMAGE_BASE}${album.cover_url}` : album.cover_url;
@@ -483,10 +460,7 @@
                     coverImg.src = '/images/default-album.jpg';
                 }
                 
-                // Render tracklist
                 renderTracklist(album.tracks || []);
-                
-                // Load recommended albums
                 await loadRecommendedAlbums(album.id, album.artist);
                 
             } catch (error) {
