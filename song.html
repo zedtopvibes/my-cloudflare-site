@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/css/style.css">
     
     <style>
-        /* Song page styles - matches album page */
+        /* Song page styles */
         .song-header {
             display: flex;
             gap: 30px;
@@ -86,10 +86,6 @@
             color: white;
         }
         
-        .album-badge-link:hover i {
-            color: white;
-        }
-        
         .single-badge {
             display: inline-flex;
             align-items: center;
@@ -100,10 +96,6 @@
             font-size: 13px;
             color: white;
             font-weight: 500;
-        }
-        
-        .single-badge i {
-            font-size: 12px;
         }
         
         .song-meta {
@@ -135,7 +127,7 @@
             border-top: 1px solid #eee;
         }
         
-        /* Action Buttons - 3 buttons only */
+        /* Action Buttons */
         .song-actions {
             display: flex;
             gap: 15px;
@@ -157,16 +149,8 @@
             font-family: inherit;
         }
         
-        .action-btn i {
-            font-size: 14px;
-        }
-        
         .action-btn:hover {
             transform: translateY(-2px);
-        }
-        
-        .action-btn:active {
-            transform: translateY(0);
         }
         
         .play-btn {
@@ -191,6 +175,64 @@
             box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
         }
         
+        /* Floating Player Bar */
+        .floating-player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 20px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-top: 3px solid #ff4b2b;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .player-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .player-artist {
+            font-size: 12px;
+            color: #ff4b2b;
+            cursor: pointer;
+        }
+        
+        .player-artist:hover {
+            text-decoration: underline;
+        }
+        
+        .player-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .player-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: white;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+        
+        .player-btn:hover {
+            color: #ff4b2b;
+        }
+        
         /* Share Dropdown */
         .share-dropdown {
             position: relative;
@@ -201,11 +243,6 @@
             background: #6c757d;
             color: white;
             box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
-        }
-        
-        .share-main-btn:hover {
-            background: #5a6268;
-            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
         }
         
         .share-dropdown-content {
@@ -337,9 +374,16 @@
                 justify-content: center;
             }
             
-            .share-dropdown-content {
-                left: 50%;
-                transform: translateX(-50%);
+            .floating-player {
+                padding: 8px 15px;
+            }
+            
+            .player-title {
+                font-size: 12px;
+            }
+            
+            .player-btn {
+                font-size: 16px;
             }
         }
         
@@ -430,17 +474,38 @@
 
     <div id="footer-placeholder"></div>
 
+    <!-- Floating Player Bar -->
+    <div id="floatingPlayer" class="floating-player">
+        <div class="player-info">
+            <span class="player-title" id="player-title">-</span>
+            <span class="player-artist" id="player-artist" onclick="goToArtistFromPlayer()">-</span>
+        </div>
+        <div class="player-controls">
+            <button class="player-btn" id="playerPlayPause" onclick="togglePlayPause()">⏸️</button>
+            <button class="player-btn" onclick="closePlayer()">✕</button>
+        </div>
+    </div>
+
     <script>
         const API_BASE = 'https://zedtopvibes.pages.dev/api';
         const IMAGE_BASE = 'https://zedtopvibes.pages.dev';
         
         let currentSong = null;
+        let audioPlayer = null;
+        let isPlaying = false;
         
         function formatDuration(seconds) {
             if (!seconds) return '0:00';
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
         }
         
         function escapeHtml(str) {
@@ -454,7 +519,6 @@
             return match ? match[1] : null;
         }
         
-        // FIXED: Get song image from artwork_url
         function getSongImageUrl(song) {
             if (song.artwork_url && song.artwork_url !== 'null' && song.artwork_url !== '') {
                 return song.artwork_url.startsWith('/') ? `${IMAGE_BASE}${song.artwork_url}` : song.artwork_url;
@@ -462,45 +526,121 @@
             return '/images/default-song.jpg';
         }
         
-        window.toggleShareDropdown = function() {
-            const dropdown = document.getElementById('shareDropdown');
-            if (dropdown) dropdown.classList.toggle('show');
-        };
-        
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('shareDropdown');
-            if (dropdown && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-        
-        window.playSong = function() {
-            if (currentSong && currentSong.r2_key) {
+        // Play Song - shows floating bar and starts playback
+        async function playSong() {
+            if (!currentSong) return;
+            
+            try {
+                // If already playing the same song, just show player
+                if (audioPlayer && currentSong.id === currentSong.id) {
+                    document.getElementById('floatingPlayer').style.display = 'flex';
+                    return;
+                }
+                
+                // Stop any existing playback
+                if (audioPlayer) {
+                    audioPlayer.pause();
+                }
+                
+                // Build audio URL
                 const audioUrl = `https://zedtopvibes.pages.dev/${currentSong.r2_key}`;
-                const audio = new Audio(audioUrl);
-                audio.play().catch(e => console.log('Playback failed:', e));
-                alert(`🎵 Now playing: ${currentSong.title}`);
-            } else {
-                alert('Audio file not available');
+                
+                // Create new audio element
+                audioPlayer = new Audio(audioUrl);
+                
+                // Increment play count in background
+                fetch(`${API_BASE}/tracks/${currentSong.id}/play`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(err => console.error('Play count error:', err));
+                
+                // Start playing
+                await audioPlayer.play();
+                isPlaying = true;
+                
+                // Update floating bar
+                document.getElementById('player-title').textContent = currentSong.title;
+                document.getElementById('player-artist').textContent = currentSong.artist;
+                document.getElementById('player-artist').setAttribute('data-artist', currentSong.artist);
+                document.getElementById('playerPlayPause').innerHTML = '⏸️';
+                document.getElementById('floatingPlayer').style.display = 'flex';
+                
+                // Handle song end
+                audioPlayer.onended = () => {
+                    isPlaying = false;
+                    document.getElementById('playerPlayPause').innerHTML = '▶️';
+                };
+                
+                // Handle errors
+                audioPlayer.onerror = () => {
+                    console.error('Playback error');
+                    alert('Unable to play this song');
+                    closePlayer();
+                };
+                
+            } catch (error) {
+                console.error('Playback error:', error);
+                alert('Unable to play this song');
             }
-        };
+        }
         
-        window.downloadSong = function() {
-            if (currentSong && currentSong.r2_key) {
-                const audioUrl = `https://zedtopvibes.pages.dev/${currentSong.r2_key}`;
-                const link = document.createElement('a');
-                link.href = audioUrl;
-                link.download = currentSong.filename || `${currentSong.title} - ${currentSong.artist}.mp3`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
+        // Toggle play/pause
+        function togglePlayPause() {
+            if (!audioPlayer) return;
+            
+            if (isPlaying) {
+                audioPlayer.pause();
+                document.getElementById('playerPlayPause').innerHTML = '▶️';
+                isPlaying = false;
             } else {
+                audioPlayer.play();
+                document.getElementById('playerPlayPause').innerHTML = '⏸️';
+                isPlaying = true;
+            }
+        }
+        
+        // Close player and stop playback
+        function closePlayer() {
+            if (audioPlayer) {
+                audioPlayer.pause();
+                audioPlayer = null;
+            }
+            isPlaying = false;
+            document.getElementById('floatingPlayer').style.display = 'none';
+        }
+        
+        // Download Song
+        function downloadSong() {
+            if (!currentSong || !currentSong.r2_key) {
                 alert('Download not available');
+                return;
             }
-        };
+            
+            const audioUrl = `https://zedtopvibes.pages.dev/${currentSong.r2_key}`;
+            const link = document.createElement('a');
+            link.href = audioUrl;
+            link.download = currentSong.filename || `${currentSong.title} - ${currentSong.artist}.mp3`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Increment download count in background
+            fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).catch(err => console.error('Download count error:', err));
+        }
         
-        function renderRelatedSongs(songs, currentSongId, artistName) {
+        // Go to artist from player
+        function goToArtistFromPlayer() {
+            const artistName = document.getElementById('player-artist').textContent;
+            if (artistName && artistName !== '-') {
+                const slug = artistName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+                window.location.href = `/artist/${slug}`;
+            }
+        }
+        
+        function renderRelatedSongs(songs, currentSongId) {
             const container = document.getElementById('related-songs-container');
             if (!container) return;
             
@@ -533,6 +673,7 @@
             `).join('');
         }
         
+        // Share functions
         function getShareText() {
             const title = document.getElementById('song-title')?.textContent || 'Song';
             const artist = document.getElementById('song-artist')?.textContent || 'Artist';
@@ -564,6 +705,19 @@
             document.getElementById('shareDropdown')?.classList.remove('show');
         };
         
+        window.toggleShareDropdown = function() {
+            const dropdown = document.getElementById('shareDropdown');
+            if (dropdown) dropdown.classList.toggle('show');
+        };
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('shareDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+        
         async function loadSongDetails() {
             const slug = getSongSlug();
             
@@ -573,7 +727,6 @@
             }
             
             try {
-                // Use the working endpoint from your main site
                 const response = await fetch(`${API_BASE}/tracks?slug=${slug}`);
                 
                 if (!response.ok) {
@@ -581,7 +734,6 @@
                 }
                 
                 const data = await response.json();
-                // Handle both array and object responses
                 const song = Array.isArray(data) ? data[0] : (data.results ? data.results[0] : data);
                 
                 if (!song) {
@@ -598,7 +750,6 @@
                 document.getElementById('breadcrumb-title').textContent = song.title || 'Song';
                 document.getElementById('artist-name-placeholder').textContent = song.artist || 'Artist';
                 
-                // Description
                 if (song.description) {
                     document.getElementById('song-description').innerHTML = `<i class="fas fa-align-left" style="margin-right: 8px; color: #ff4b2b;"></i> ${escapeHtml(song.description)}`;
                     document.getElementById('song-description').style.display = 'block';
@@ -606,7 +757,7 @@
                     document.getElementById('song-description').style.display = 'none';
                 }
                 
-                // Album info (if song belongs to album)
+                // Album info
                 if (song.album_id && song.album_name) {
                     document.getElementById('song-album-info').innerHTML = `
                         <a href="/album/${song.album_slug}" class="album-badge-link">
@@ -617,17 +768,17 @@
                     document.getElementById('song-album-info').innerHTML = `<span class="single-badge"><i class="fas fa-star"></i> Single</span>`;
                 }
                 
-                // FIXED: Song artwork using artwork_url
+                // Song artwork
                 const coverImg = document.getElementById('song-cover');
                 coverImg.src = getSongImageUrl(song);
                 
-                // Fetch related songs by same artist
+                // Fetch related songs
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracks = await tracksRes.json();
                 const trackList = Array.isArray(allTracks) ? allTracks : (allTracks.results || []);
                 const artistSongs = trackList.filter(t => t.artist === song.artist);
                 
-                renderRelatedSongs(artistSongs, song.id, song.artist);
+                renderRelatedSongs(artistSongs, song.id);
                 
             } catch (error) {
                 console.error('Error loading song:', error);
@@ -650,6 +801,7 @@
             }
         }
         
+        // Artist click handler
         document.addEventListener('click', function(e) {
             const artistLink = e.target.closest('#song-artist');
             if (artistLink) {
@@ -661,6 +813,18 @@
                 }
             }
         });
+        
+        // Make functions global
+        window.playSong = playSong;
+        window.downloadSong = downloadSong;
+        window.togglePlayPause = togglePlayPause;
+        window.closePlayer = closePlayer;
+        window.goToArtistFromPlayer = goToArtistFromPlayer;
+        window.shareTelegram = shareTelegram;
+        window.shareFacebook = shareFacebook;
+        window.shareWhatsApp = shareWhatsApp;
+        window.copyLink = copyLink;
+        window.toggleShareDropdown = toggleShareDropdown;
         
         document.addEventListener('DOMContentLoaded', async () => {
             await loadHeaderAndFooter();
