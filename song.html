@@ -2,283 +2,906 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Songs - Admin | ZEDTOPVIBES</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zedtopvibes • Song Details</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --primary-blue: #1f6f9f;
-            --primary-light: #2f8ed0;
-            --primary-lighter: #70c8ff;
-            --primary-dark: #1f4c73;
-            --dark: #1a1a1a;
-            --gray: #666;
-            --light-gray: #f0f2f5;
-            --white: #ffffff;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--light-gray);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
             min-height: 100vh;
-            color: #333;
+            display: flex;
+            flex-direction: column;
         }
-        
-        .admin-container {
+
+        /* Navigation */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 10px;
-        }
-        
-        .admin-header {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .header-top {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
         }
-        
-        .header-top h1 {
-            color: var(--primary-blue);
-            font-size: 1.3rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--light-gray);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            margin-left: auto;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .user-info i {
-            color: var(--primary-blue);
-        }
-        
-        .user-info span {
-            font-weight: 600;
-        }
-        
-        .logout-btn {
-            color: #666;
-            transition: color 0.3s;
-            padding: 8px;
-            background: none;
-            border: none;
-            font-size: 1rem;
+
+        .hamburger {
+            font-size: 24px;
             cursor: pointer;
+            width: 40px;
+            color: #333;
         }
-        
-        .logout-btn:hover {
-            color: var(--primary-blue);
+
+        .site-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ff5500, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        .admin-tabs {
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            padding: 5px 0;
-        }
-        
-        .admin-tabs::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .tab-btn {
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.3s;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+
+        .site-title a {
             text-decoration: none;
         }
-        
-        .tab-btn:hover {
-            background: #f0f0f0;
-            color: var(--primary-blue);
+
+        .right-spacer {
+            width: 40px;
         }
-        
-        .tab-btn.active {
-            background: var(--primary-blue);
-            color: white;
+
+        /* MAIN LAYOUT CONTAINER */
+        .main-content-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-        
-        .admin-content {
-            background: var(--white);
+
+        /* LEFT SIDEBAR */
+        .left-sidebar {
+            background: #ffffff;
             border-radius: 12px;
-            padding: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-            min-height: 500px;
+            border: 1px solid #e8e8e8;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-        
-        .content-header {
+
+        /* RIGHT SIDEBAR */
+        .right-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-block {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e8e8e8;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        /* SECTION HEADER */
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
+            padding: 14px 18px;
+            background: #fff;
+            border-bottom: 1px solid #f0f0f0;
         }
-        
-        .content-header h2 {
-            font-size: 1.3rem;
-            color: var(--primary-dark);
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .view-all {
+            color: #ff5500;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border: 1px solid #ff5500;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .view-all:hover {
+            background: #ff5500;
+            color: white;
+        }
+
+        /* BREADCRUMBS */
+        .breadcrumbs {
+            padding: 12px 18px;
+            background: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .breadcrumbs a {
+            color: #ff5500;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* SONG HEADER */
+        .song-header {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 25px;
+            padding: 25px;
+            border-bottom: 1px solid #e8e8e8;
         }
-        
-        .content-header h2 i {
-            color: var(--primary-blue);
-        }
-        
-        .btn {
-            display: inline-flex;
+
+        .album-art {
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffd6b3, #ffb38c);
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 48px;
+            color: #ff5500;
+            box-shadow: 0 4px 12px rgba(255,85,0,0.2);
+        }
+
+        .song-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .song-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 8px;
+        }
+
+        .song-artist {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .song-meta {
+            display: flex;
+            gap: 25px;
+            color: #888;
+            font-size: 0.95rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .meta-item strong {
+            color: #ff5500;
             font-weight: 600;
+        }
+
+        /* COMPACT PLAYER BAR */
+        .compact-actions {
+            padding: 15px 25px;
+            background: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: #333;
+            font-size: 1.2rem;
             cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s;
         }
-        
-        .btn-primary {
-            background: var(--primary-blue);
+
+        .control-btn:hover {
+            background: #ff5500;
             color: white;
+            transform: scale(1.05);
         }
-        
-        .btn-primary:hover {
-            background: var(--primary-light);
+
+        .play-btn {
+            width: 55px;
+            height: 55px;
+            background: #ff5500;
+            color: white;
+            font-size: 1.4rem;
         }
-        
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
+
+        .play-btn:hover {
+            background: #ff7000;
+            box-shadow: 0 0 15px rgba(255,85,0,0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background: white;
+            color: #555;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            background: #ff5500;
+            color: white;
+            border-color: #ff5500;
+        }
+
+        .download-btn {
+            background: #ff5500;
+            color: white;
+            border-color: #ff5500;
+        }
+
+        /* DESCRIPTION */
+        .description {
+            padding: 25px;
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* SECTION SPACER */
+        .section-spacer {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+            margin: 0 25px;
+        }
+
+        /* POST LIST STYLING */
+        .post-list {
+            padding: 5px 0;
+        }
+
+        .post-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+        }
+
+        .post-item:last-child {
+            border-bottom: none;
+        }
+
+        .post-item:hover {
+            background: #fff9f5;
+        }
+
+        .post-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            margin-right: 15px;
+            background: linear-gradient(135deg, #ffd6b3, #ffb38c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #ff5500;
+        }
+
+        .post-content {
+            flex: 1;
+        }
+
+        .post-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 3px;
+        }
+
+        .post-artist {
+            font-size: 13px;
             color: #666;
         }
-        
-        .empty-state i {
-            font-size: 5rem;
-            color: var(--primary-blue);
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
-        
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: var(--primary-dark);
-        }
-        
-        .empty-state p {
-            font-size: 1rem;
+
+        .post-stats {
+            font-size: 12px;
             color: #999;
-            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            margin-top: 3px;
         }
-        
+
+        /* QUICK INFO */
+        .quick-info {
+            padding: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            color: #222;
+            font-weight: 500;
+        }
+
+        /* GENRE TAGS */
+        .genre-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #f5f5f5;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #666;
+            margin: 2px;
+        }
+
+        /* Now Playing Bar */
+        .now-playing-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            padding: 10px 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .now-playing-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .now-playing-title {
+            font-weight: 600;
+            color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .now-playing-artist {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .now-playing-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .now-playing-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #555;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .now-playing-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .now-playing-play {
+            background: #ff5500;
+            color: white;
+        }
+
+        .now-playing-play:hover {
+            background: #ff7000;
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        /* TABLET & DESKTOP */
         @media (min-width: 768px) {
-            .admin-container { padding: 20px; }
-            .admin-header { padding: 20px 25px; }
-            .header-top h1 { font-size: 1.5rem; }
+            .main-content-container {
+                flex-direction: row;
+            }
+            
+            .left-sidebar {
+                flex: 3;
+            }
+            
+            .right-sidebar {
+                flex: 1;
+                min-width: 300px;
+            }
         }
-        
-        @media (max-width: 480px) {
-            .admin-header { padding: 12px; }
-            .header-top h1 { font-size: 1.1rem; }
-            .user-info { padding: 5px 10px; font-size: 0.8rem; }
-            .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
-            .content-header { flex-direction: column; align-items: stretch; }
-            .btn { width: 100%; }
+
+        /* MOBILE */
+        @media (max-width: 600px) {
+            .song-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .song-meta {
+                justify-content: center;
+            }
+            
+            .compact-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                margin-left: 0;
+                justify-content: center;
+            }
+            
+            .album-art {
+                width: 120px;
+                height: 120px;
+                font-size: 40px;
+            }
+            
+            .song-title {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Header -->
-        <div class="admin-header">
-            <div class="header-top">
-                <h1><i class="fas fa-cog"></i> Songs</h1>
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Admin</span>
-                    <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Navigation Tabs -->
-            <div class="admin-tabs">
-                <a href="index.html" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="songs.html" class="tab-btn active"><i class="fas fa-music"></i> Songs</a>
-                <a href="albums.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
-            </div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="hamburger">☰</div>
+            <div class="site-title"><a href="/">ZEDTOPVIBES</a></div>
+            <div class="right-spacer"></div>
         </div>
-        
-        <!-- Main Content -->
-        <div class="admin-content">
-            <div class="content-header">
-                <h2><i class="fas fa-music"></i> Songs Management</h2>
-                <a href="upload.html" class="btn btn-primary">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload New
-                </a> 
-            </div>
-            
-            <div class="empty-state">
-                <i class="fas fa-music"></i>
-                <h3>No Songs Yet</h3>
-                <p>Songs you upload will appear here</p>
-                <a href="upload.html" class="btn btn-primary">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload Your First Song
-                </a>
-            </div>
+    </nav>
+
+    <!-- MAIN LAYOUT CONTAINER -->
+    <div class="main-content-container" id="content">
+        <div class="loading">Loading track details...</div>
+    </div>
+
+    <!-- Now Playing Bar -->
+    <div id="nowPlayingBar" class="now-playing-bar">
+        <div class="now-playing-info">
+            <div id="nowPlayingTitle" class="now-playing-title">Not playing</div>
+            <div id="nowPlayingArtist" class="now-playing-artist"></div>
+        </div>
+        <div class="now-playing-controls">
+            <button class="now-playing-btn" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+            <button class="now-playing-btn" onclick="closePlayer()">✕</button>
         </div>
     </div>
 
     <script>
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
+        // API Base URL
+        const API_BASE = '/api';
+        
+        // Get track ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackId = urlParams.get('id');
+
+        // Audio player
+        let audioPlayer = null;
+        let currentTrack = null;
+        let isPlaying = false;
+
+        // Helper functions
+        function formatNumber(num) {
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num;
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '?:??';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function getEmojiForGenre(genre) {
+            const emojis = {
+                'electronic': '🎵',
+                'synthwave': '🎸',
+                'hiphop': '🎤',
+                'lofi': '🌅',
+                'ambient': '✨',
+                'default': '🎵'
+            };
+            return emojis[genre] || emojis.default;
+        }
+
+        // Load track data
+        async function loadTrackDetails() {
+            if (!trackId) {
+                document.getElementById('content').innerHTML = '<div class="loading">No track specified</div>';
+                return;
+            }
+
+            try {
+                // Fetch track details
+                const response = await fetch(`${API_BASE}/tracks/${trackId}`);
+                if (!response.ok) {
+                    throw new Error('Track not found');
+                }
+                const track = await response.json();
+                currentTrack = track;
+
+                // Increment view count
+                fetch(`${API_BASE}/tracks/${trackId}/view`, { method: 'POST' });
+
+                // Fetch all tracks for "More from Artist" and "Similar Songs"
+                const allTracksResponse = await fetch(`${API_BASE}/tracks`);
+                const allTracks = await allTracksResponse.json();
+
+                // Filter tracks by same artist
+                const artistTracks = allTracks.filter(t => t.artist === track.artist && t.id !== track.id);
+                
+                // Filter similar songs (same genre, different artist)
+                const similarTracks = allTracks.filter(t => 
+                    t.genre === track.genre && 
+                    t.artist !== track.artist && 
+                    t.id !== track.id
+                ).slice(0, 3);
+
+                // Render the page
+                renderPage(track, artistTracks, similarTracks);
+
+            } catch (error) {
+                console.error('Error loading track:', error);
+                document.getElementById('content').innerHTML = '<div class="loading">Error loading track details</div>';
             }
         }
+
+        // Render the page with data
+        function renderPage(track, artistTracks, similarTracks) {
+            const content = document.getElementById('content');
+            
+            content.innerHTML = `
+                <!-- LEFT SIDEBAR - SONG DETAIL -->
+                <aside class="left-sidebar">
+                    <!-- Breadcrumbs -->
+                    <div class="breadcrumbs">
+                        <a href="/">Home</a> / 
+                        <a href="#">${track.genre || 'Music'}</a> / 
+                        <span>${track.title}</span>
+                    </div>
+                    
+                    <!-- Song Header -->
+                    <div class="song-header">
+                        <div class="album-art">${getEmojiForGenre(track.genre)}</div>
+                        <div class="song-info">
+                            <h1 class="song-title">${track.title}</h1>
+                            <div class="song-artist">${track.artist}</div>
+                            <div class="song-meta">
+                                <div class="meta-item">📅 <strong>${new Date(track.uploaded_at).getFullYear()}</strong></div>
+                                <div class="meta-item">⏱️ <strong>${formatDuration(track.duration)}</strong></div>
+                                <div class="meta-item">👁️ <strong>${formatNumber(track.views)}</strong> views</div>
+                                <div class="meta-item">▶️ <strong>${formatNumber(track.plays)}</strong> plays</div>
+                                <div class="meta-item">⬇️ <strong>${formatNumber(track.downloads)}</strong> downloads</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Compact Player Bar -->
+                    <div class="compact-actions">
+                        <div class="player-controls">
+                            <button class="control-btn" onclick="playPrevious()">⏮</button>
+                            <button class="control-btn play-btn" onclick="playCurrentTrack()">▶</button>
+                            <button class="control-btn" onclick="playNext()">⏭</button>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="likeTrack(${track.id})">❤️ Like</button>
+                            <button class="action-btn" onclick="addToPlaylist(${track.id})">➕ Playlist</button>
+                            <button class="action-btn download-btn" onclick="downloadTrack(${track.id}, '${track.r2_key}')">⬇️ Download</button>
+                            <button class="action-btn" onclick="shareTrack(${track.id})">↗️ Share</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="description">
+                        <p>${track.description || 'No description available.'}</p>
+                    </div>
+                    
+                    <!-- Section Spacer -->
+                    <div class="section-spacer"></div>
+                    
+                    <!-- More from Artist Section -->
+                    <div class="playlist-main-section">
+                        <div class="section-header">
+                            <h2 class="section-title">More from ${track.artist}</h2>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="post-list" id="artistTracksList">
+                            ${artistTracks.length > 0 ? artistTracks.map(t => `
+                                <div class="post-item" onclick="goToTrack(${t.id})">
+                                    <div class="post-image">${getEmojiForGenre(t.genre)}</div>
+                                    <div class="post-content">
+                                        <div class="post-title">${t.title}</div>
+                                        <div class="post-artist">${t.artist}</div>
+                                        <div class="post-stats">▶️ ${formatNumber(t.plays)} plays</div>
+                                    </div>
+                                </div>
+                            `).join('') : '<div class="loading">No other tracks by this artist</div>'}
+                        </div>
+                    </div>
+                </aside>
+                
+                <!-- RIGHT SIDEBAR -->
+                <div class="right-sidebar">
+                    <!-- Section 1: Albums by Artist (placeholder for now) -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Albums by Artist</h2>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="post-list">
+                            <div class="post-item">
+                                <div class="post-image">💿</div>
+                                <div class="post-content">
+                                    <div class="post-title">Singles</div>
+                                    <div class="post-artist">${track.artist}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Section 2: Similar Songs -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Similar Songs</h2>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="post-list">
+                            ${similarTracks.length > 0 ? similarTracks.map(t => `
+                                <div class="post-item" onclick="goToTrack(${t.id})">
+                                    <div class="post-image">${getEmojiForGenre(t.genre)}</div>
+                                    <div class="post-content">
+                                        <div class="post-title">${t.title}</div>
+                                        <div class="post-artist">${t.artist}</div>
+                                    </div>
+                                </div>
+                            `).join('') : '<div class="loading">No similar tracks found</div>'}
+                        </div>
+                    </section>
+                    
+                    <!-- Section 3: Quick Info -->
+                    <section class="section-block">
+                        <div class="section-header">
+                            <h2 class="section-title">Quick Info</h2>
+                        </div>
+                        <div class="quick-info">
+                            <div class="info-row">
+                                <span class="info-label">Genre</span>
+                                <span class="info-value">
+                                    <span class="genre-tag">#${track.genre || 'unknown'}</span>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Release Date</span>
+                                <span class="info-value">${new Date(track.uploaded_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Duration</span>
+                                <span class="info-value">${formatDuration(track.duration)}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Track ID</span>
+                                <span class="info-value">#${track.id}</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        // Audio playback functions
+        function playCurrentTrack() {
+            if (!currentTrack) return;
+            playTrack(currentTrack.id, currentTrack.r2_key, currentTrack.title, currentTrack.artist);
+        }
+
+        async function playTrack(id, r2Key, title, artist) {
+            try {
+                // Increment play count
+                await fetch(`${API_BASE}/tracks/${id}/play`, { method: 'POST' });
+                
+                // Create audio URL
+                const audioUrl = `${API_BASE}/stream/${r2Key}`;
+                
+                // Stop current playback if any
+                if (audioPlayer) {
+                    audioPlayer.pause();
+                }
+                
+                // Create new audio player
+                audioPlayer = new Audio(audioUrl);
+                audioPlayer.play();
+                isPlaying = true;
+                
+                // Update now playing bar
+                document.getElementById('nowPlayingTitle').textContent = title;
+                document.getElementById('nowPlayingArtist').textContent = artist;
+                document.getElementById('playPauseBtn').textContent = '⏸️';
+                document.getElementById('nowPlayingBar').style.display = 'flex';
+                
+                // Handle playback end
+                audioPlayer.onended = () => {
+                    isPlaying = false;
+                    document.getElementById('playPauseBtn').textContent = '▶️';
+                };
+                
+            } catch (error) {
+                console.error('Playback error:', error);
+                alert('Error playing track. Make sure the audio file exists in R2.');
+            }
+        }
+
+        function togglePlay() {
+            if (!audioPlayer) return;
+            
+            if (isPlaying) {
+                audioPlayer.pause();
+                document.getElementById('playPauseBtn').textContent = '▶️';
+            } else {
+                audioPlayer.play();
+                document.getElementById('playPauseBtn').textContent = '⏸️';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function closePlayer() {
+            if (audioPlayer) {
+                audioPlayer.pause();
+                audioPlayer = null;
+            }
+            document.getElementById('nowPlayingBar').style.display = 'none';
+            isPlaying = false;
+        }
+
+        async function downloadTrack(id, r2Key) {
+            try {
+                // Increment download count
+                await fetch(`${API_BASE}/tracks/${id}/download`, { method: 'POST' });
+                
+                // Trigger download
+                const audioUrl = `${API_BASE}/stream/${r2Key}`;
+                const a = document.createElement('a');
+                a.href = audioUrl;
+                a.download = currentTrack?.filename || 'track.mp3';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                alert('Download started!');
+            } catch (error) {
+                alert('Download failed: ' + error.message);
+            }
+        }
+
+        function playPrevious() {
+            alert('Previous track - would navigate to previous song in playlist');
+        }
+
+        function playNext() {
+            alert('Next track - would navigate to next song in playlist');
+        }
+
+        function likeTrack(id) {
+            alert('Like feature coming soon! ❤️');
+        }
+
+        function addToPlaylist(id) {
+            alert('Playlists coming soon! 📋');
+        }
+
+        function shareTrack(id) {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url);
+            alert('Link copied to clipboard! 🔗');
+        }
+
+        function goToTrack(id) {
+            window.location.href = `/song.html?id=${id}`;
+        }
+
+        // Hamburger menu
+        document.querySelector('.hamburger').addEventListener('click', function() {
+            window.location.href = '/';
+        });
+
+        // Load track details when page loads
+        loadTrackDetails();
     </script>
 </body>
 </html>
