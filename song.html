@@ -126,10 +126,75 @@
             width: 16px;
         }
         
+        .song-description {
+            color: #555;
+            line-height: 1.6;
+            margin-top: 12px;
+            margin-bottom: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Action Buttons */
+        .song-actions {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        
+        .action-btn i {
+            font-size: 14px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .action-btn:active {
+            transform: translateY(0);
+        }
+        
+        .play-btn {
+            background: #ff4b2b;
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 75, 43, 0.3);
+        }
+        
+        .play-btn:hover {
+            background: #ff6a4b;
+            box-shadow: 0 4px 12px rgba(255, 75, 43, 0.4);
+        }
+        
+        .download-btn {
+            background: #28a745;
+            color: white;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+        
+        .download-btn:hover {
+            background: #34ce57;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+        
         .share-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
         
@@ -232,6 +297,10 @@
                 justify-content: center;
             }
             
+            .song-actions {
+                justify-content: center;
+            }
+            
             .share-buttons {
                 justify-content: center;
             }
@@ -249,6 +318,11 @@
             
             .song-title {
                 font-size: 20px;
+            }
+            
+            .action-btn {
+                padding: 8px 18px;
+                font-size: 13px;
             }
             
             .share-btn {
@@ -283,6 +357,20 @@
                 <span class="song-stats"><i class="fas fa-clock"></i> <span id="song-duration">---</span></span>
             </div>
             
+            <div class="song-description" id="song-description">
+                <!-- Song description will appear here -->
+            </div>
+            
+            <!-- PLAY & DOWNLOAD BUTTONS -->
+            <div class="song-actions">
+                <button class="action-btn play-btn" id="play-btn" onclick="playSong()">
+                    <i class="fas fa-play"></i> Play
+                </button>
+                <button class="action-btn download-btn" id="download-btn" onclick="downloadSong()">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+            
             <div class="share-buttons">
                 <button class="share-btn telegram" onclick="shareTelegram()"><i class="fab fa-telegram"></i> Telegram</button>
                 <button class="share-btn facebook" onclick="shareFacebook()"><i class="fab fa-facebook"></i> Facebook</button>
@@ -311,6 +399,8 @@
         const API_BASE = 'https://zedtopvibes.pages.dev/api';
         const IMAGE_BASE = 'https://zedtopvibes.pages.dev';
         
+        let currentSong = null;
+        
         function formatDuration(seconds) {
             if (!seconds) return '0:00';
             const mins = Math.floor(seconds / 60);
@@ -329,11 +419,40 @@
             return match ? match[1] : null;
         }
         
+        // Play function
+        window.playSong = function() {
+            if (currentSong && currentSong.audio_url) {
+                // Create audio element or redirect to audio player
+                const audio = new Audio(currentSong.audio_url);
+                audio.play().catch(e => console.log('Playback failed:', e));
+                alert(`🎵 Now playing: ${currentSong.title}`);
+            } else {
+                alert('Audio file not available');
+            }
+        };
+        
+        // Download function
+        window.downloadSong = function() {
+            if (currentSong && currentSong.audio_url) {
+                // Create temporary link to trigger download
+                const link = document.createElement('a');
+                link.href = currentSong.audio_url;
+                link.download = `${currentSong.title} - ${currentSong.artist}.mp3`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Track download (optional)
+                fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
+            } else {
+                alert('Download not available');
+            }
+        };
+        
         function renderRelatedSongs(songs, currentSongId, artistName) {
             const container = document.getElementById('related-songs-container');
             if (!container) return;
             
-            // Filter out current song and limit to 4
             const related = songs.filter(s => s.id !== currentSongId).slice(0, 4);
             
             if (!related || related.length === 0) {
@@ -401,35 +520,41 @@
             }
             
             try {
-                // Fetch song by slug
                 const response = await fetch(`${API_BASE}/song/by-slug/${slug}`);
                 
                 if (!response.ok) {
                     throw new Error('Song not found');
                 }
                 
-                const song = await response.json();
-                console.log('Song data:', song);
+                currentSong = await response.json();
+                console.log('Song data:', currentSong);
                 
                 document.getElementById('song-header').style.display = 'flex';
-                document.getElementById('song-title').textContent = song.title || 'Untitled';
-                document.getElementById('song-artist').textContent = song.artist || 'Unknown Artist';
-                document.getElementById('song-artist').setAttribute('data-artist', song.artist || '');
-                document.getElementById('song-duration').textContent = formatDuration(song.duration);
-                document.getElementById('breadcrumb-title').textContent = song.title || 'Song';
-                document.getElementById('artist-name-placeholder').textContent = song.artist || 'Artist';
+                document.getElementById('song-title').textContent = currentSong.title || 'Untitled';
+                document.getElementById('song-artist').textContent = currentSong.artist || 'Unknown Artist';
+                document.getElementById('song-artist').setAttribute('data-artist', currentSong.artist || '');
+                document.getElementById('song-duration').textContent = formatDuration(currentSong.duration);
+                document.getElementById('breadcrumb-title').textContent = currentSong.title || 'Song';
+                document.getElementById('artist-name-placeholder').textContent = currentSong.artist || 'Artist';
+                
+                // Song description
+                const descriptionText = currentSong.description || currentSong.lyrics || '';
+                if (descriptionText) {
+                    document.getElementById('song-description').innerHTML = `<i class="fas fa-align-left" style="margin-right: 8px; color: #ff4b2b;"></i> ${escapeHtml(descriptionText)}`;
+                    document.getElementById('song-description').style.display = 'block';
+                } else {
+                    document.getElementById('song-description').style.display = 'none';
+                }
                 
                 // Handle album/single info
                 const albumInfoDiv = document.getElementById('song-album-info');
-                if (song.album_id && song.album_name) {
-                    // Song belongs to an album
+                if (currentSong.album_id && currentSong.album_name) {
                     albumInfoDiv.innerHTML = `
-                        <a href="/album/${song.album_slug}" class="album-badge-link">
-                            <i class="fas fa-compact-disc"></i> From: ${escapeHtml(song.album_name)}
+                        <a href="/album/${currentSong.album_slug}" class="album-badge-link">
+                            <i class="fas fa-compact-disc"></i> From: ${escapeHtml(currentSong.album_name)}
                         </a>
                     `;
                 } else {
-                    // Single (no album)
                     albumInfoDiv.innerHTML = `
                         <span class="single-badge">
                             <i class="fas fa-star"></i> Single
@@ -439,13 +564,13 @@
                 
                 // Song artwork
                 const coverImg = document.getElementById('song-cover');
-                if (song.artwork_url || song.cover_url) {
-                    const imgUrl = (song.artwork_url || song.cover_url).startsWith('/') 
-                        ? `${IMAGE_BASE}${song.artwork_url || song.cover_url}` 
-                        : (song.artwork_url || song.cover_url);
+                if (currentSong.artwork_url || currentSong.cover_url) {
+                    const imgUrl = (currentSong.artwork_url || currentSong.cover_url).startsWith('/') 
+                        ? `${IMAGE_BASE}${currentSong.artwork_url || currentSong.cover_url}` 
+                        : (currentSong.artwork_url || currentSong.cover_url);
                     coverImg.src = imgUrl;
-                } else if (song.album_cover_url) {
-                    const imgUrl = song.album_cover_url.startsWith('/') ? `${IMAGE_BASE}${song.album_cover_url}` : song.album_cover_url;
+                } else if (currentSong.album_cover_url) {
+                    const imgUrl = currentSong.album_cover_url.startsWith('/') ? `${IMAGE_BASE}${currentSong.album_cover_url}` : currentSong.album_cover_url;
                     coverImg.src = imgUrl;
                 }
                 
@@ -453,9 +578,9 @@
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracks = await tracksRes.json();
                 const trackList = Array.isArray(allTracks) ? allTracks : (allTracks.results || []);
-                const artistSongs = trackList.filter(t => t.artist === song.artist);
+                const artistSongs = trackList.filter(t => t.artist === currentSong.artist);
                 
-                renderRelatedSongs(artistSongs, song.id, song.artist);
+                renderRelatedSongs(artistSongs, currentSong.id, currentSong.artist);
                 
             } catch (error) {
                 console.error('Error loading song:', error);
