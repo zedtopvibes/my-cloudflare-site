@@ -501,13 +501,6 @@
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
         
-        function formatNumber(num) {
-            if (!num) return '0';
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
-        }
-        
         function escapeHtml(str) {
             if (!str) return '';
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -526,13 +519,16 @@
             return '/images/default-song.jpg';
         }
         
-        // Play Song - shows floating bar and starts playback
+        // Play Song - uses stream endpoint (same as old version)
         async function playSong() {
             if (!currentSong) return;
             
             try {
-                // If already playing the same song, just show player
-                if (audioPlayer && currentSong.id === currentSong.id) {
+                // Build audio URL using stream endpoint
+                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
+                
+                // If already playing, just show player
+                if (audioPlayer && isPlaying) {
                     document.getElementById('floatingPlayer').style.display = 'flex';
                     return;
                 }
@@ -542,17 +538,14 @@
                     audioPlayer.pause();
                 }
                 
-                // Build audio URL
-                const audioUrl = `https://zedtopvibes.pages.dev/${currentSong.r2_key}`;
-                
-                // Create new audio element
-                audioPlayer = new Audio(audioUrl);
-                
-                // Increment play count in background
-                fetch(`${API_BASE}/tracks/${currentSong.id}/play`, { 
+                // Increment play count (same as old version)
+                await fetch(`${API_BASE}/tracks/${currentSong.id}/play`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 }).catch(err => console.error('Play count error:', err));
+                
+                // Create new audio element
+                audioPlayer = new Audio(audioUrl);
                 
                 // Start playing
                 await audioPlayer.play();
@@ -609,22 +602,19 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
-        // Download Song
+        // Download Song - uses stream endpoint (same as old version)
         function downloadSong() {
             if (!currentSong || !currentSong.r2_key) {
                 alert('Download not available');
                 return;
             }
             
-            const audioUrl = `https://zedtopvibes.pages.dev/${currentSong.r2_key}`;
-            const link = document.createElement('a');
-            link.href = audioUrl;
-            link.download = currentSong.filename || `${currentSong.title} - ${currentSong.artist}.mp3`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
             
-            // Increment download count in background
+            // Open in new tab to trigger download (same as old version)
+            window.open(audioUrl, '_blank');
+            
+            // Increment download count
             fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
