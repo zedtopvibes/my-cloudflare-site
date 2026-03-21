@@ -456,6 +456,14 @@
             return match ? match[1] : null;
         }
         
+        // Get song image from artwork_url
+        function getSongImageUrl(song) {
+            if (song.artwork_url && song.artwork_url !== 'null' && song.artwork_url !== '') {
+                return song.artwork_url.startsWith('/') ? `${IMAGE_BASE}${song.artwork_url}` : song.artwork_url;
+            }
+            return '/images/default-song.jpg';
+        }
+        
         // Toggle share dropdown
         window.toggleShareDropdown = function() {
             const dropdown = document.getElementById('shareDropdown');
@@ -474,8 +482,10 @@
         
         // Play function
         window.playSong = function() {
-            if (currentSong && currentSong.audio_url) {
-                const audio = new Audio(currentSong.audio_url);
+            if (currentSong && currentSong.r2_key) {
+                // Build audio URL from R2 key
+                const audioUrl = `https://zedtopvibes.pages.dev/${currentSong.r2_key}`;
+                const audio = new Audio(audioUrl);
                 audio.play().catch(e => console.log('Playback failed:', e));
                 alert(`🎵 Now playing: ${currentSong.title}`);
             } else {
@@ -485,14 +495,16 @@
         
         // Download function
         window.downloadSong = function() {
-            if (currentSong && currentSong.audio_url) {
+            if (currentSong && currentSong.r2_key) {
+                const audioUrl = `https://zedtopvibes.pages.dev/${currentSong.r2_key}`;
                 const link = document.createElement('a');
-                link.href = currentSong.audio_url;
-                link.download = `${currentSong.title} - ${currentSong.artist}.mp3`;
+                link.href = audioUrl;
+                link.download = currentSong.filename || `${currentSong.title} - ${currentSong.artist}.mp3`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
                 
+                // Track download count
                 fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
             } else {
                 alert('Download not available');
@@ -514,7 +526,7 @@
                 <a href="/song/${song.slug || song.id}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <img src="${song.artwork_url || song.cover_url || '/images/default-song.jpg'}" 
+                            <img src="${getSongImageUrl(song)}" 
                                  width="80" height="80" 
                                  class="roundthumb" 
                                  alt="${escapeHtml(song.title)}"
@@ -574,13 +586,26 @@
             }
             
             try {
-                const response = await fetch(`${API_BASE}/song/by-slug/${slug}`);
+                // Try to fetch song by slug
+                let song = null;
+                let response = await fetch(`${API_BASE}/tracks/by-slug/${slug}`);
                 
                 if (!response.ok) {
+                    // Try alternative endpoint
+                    response = await fetch(`${API_BASE}/tracks?slug=${slug}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        song = data.results ? data.results[0] : data[0];
+                    }
+                } else {
+                    song = await response.json();
+                }
+                
+                if (!song) {
                     throw new Error('Song not found');
                 }
                 
-                currentSong = await response.json();
+                currentSong = song;
                 console.log('Song data:', currentSong);
                 
                 document.getElementById('song-header').style.display = 'flex';
@@ -591,7 +616,8 @@
                 document.getElementById('breadcrumb-title').textContent = currentSong.title || 'Song';
                 document.getElementById('artist-name-placeholder').textContent = currentSong.artist || 'Artist';
                 
-                const descriptionText = currentSong.description || currentSong.lyrics || '';
+                // Song description
+                const descriptionText = currentSong.description || '';
                 if (descriptionText) {
                     document.getElementById('song-description').innerHTML = `<i class="fas fa-align-left" style="margin-right: 8px; color: #ff4b2b;"></i> ${escapeHtml(descriptionText)}`;
                     document.getElementById('song-description').style.display = 'block';
@@ -599,32 +625,33 @@
                     document.getElementById('song-description').style.display = 'none';
                 }
                 
-                const albumInfoDiv = document.getElementById('song-album-info');
-                if (currentSong.album_id && currentSong.album_name) {
-                    albumInfoDiv.innerHTML = `
-                        <a href="/album/${currentSong.album_slug}" class="album-badge-link">
-                            <i class="fas fa-compact-disc"></i> From: ${escapeHtml(currentSong.album_name)}
-                        </a>
-                    `;
+                // Album info - if song belongs to an album (check if album_id exists)
+                if (currentSong.album_id) {
+                    try {
+                        const albumRes = await fetch(`${API_BASE}/albums/${currentSong.album_id}`);
+                        if (albumRes.ok) {
+                            const album = await albumRes.json();
+                            const albumInfoDiv = document.getElementById('song-album-info');
+                            albumInfoDiv.innerHTML = `
+                                <a href="/album/${album.slug}" class="album-badge-link">
+                                    <i class="fas fa-compact-disc"></i> From: ${escapeHtml(album.title)}
+                                </a>
+                            `;
+                        } else {
+                            document.getElementById('song-album-info').innerHTML = `<span class="single-badge"><i class="fas fa-star"></i> Single</span>`;
+                        }
+                    } catch (e) {
+                        document.getElementById('song-album-info').innerHTML = `<span class="single-badge"><i class="fas fa-star"></i> Single</span>`;
+                    }
                 } else {
-                    albumInfoDiv.innerHTML = `
-                        <span class="single-badge">
-                            <i class="fas fa-star"></i> Single
-                        </span>
-                    `;
+                    document.getElementById('song-album-info').innerHTML = `<span class="single-badge"><i class="fas fa-star"></i> Single</span>`;
                 }
                 
+                // Song artwork - using artwork_url from tracks table
                 const coverImg = document.getElementById('song-cover');
-                if (currentSong.artwork_url || currentSong.cover_url) {
-                    const imgUrl = (currentSong.artwork_url || currentSong.cover_url).startsWith('/') 
-                        ? `${IMAGE_BASE}${currentSong.artwork_url || currentSong.cover_url}` 
-                        : (currentSong.artwork_url || currentSong.cover_url);
-                    coverImg.src = imgUrl;
-                } else if (currentSong.album_cover_url) {
-                    const imgUrl = currentSong.album_cover_url.startsWith('/') ? `${IMAGE_BASE}${currentSong.album_cover_url}` : currentSong.album_cover_url;
-                    coverImg.src = imgUrl;
-                }
+                coverImg.src = getSongImageUrl(currentSong);
                 
+                // Fetch related songs (other songs by same artist)
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracks = await tracksRes.json();
                 const trackList = Array.isArray(allTracks) ? allTracks : (allTracks.results || []);
@@ -656,6 +683,7 @@
             }
         }
         
+        // Artist click handler
         document.addEventListener('click', function(e) {
             const artistLink = e.target.closest('#song-artist');
             if (artistLink) {
