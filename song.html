@@ -135,7 +135,7 @@
             border-top: 1px solid #eee;
         }
         
-        /* Action Buttons */
+        /* Action Buttons - 3 buttons only */
         .song-actions {
             display: flex;
             gap: 15px;
@@ -191,42 +191,68 @@
             box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
         }
         
-        .share-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+        /* Share Dropdown - replaces separate share buttons */
+        .share-dropdown {
+            position: relative;
+            display: inline-block;
         }
         
-        .share-btn {
-            border: none;
+        .share-main-btn {
+            background: #6c757d;
             color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+        }
+        
+        .share-main-btn:hover {
+            background: #5a6268;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+        }
+        
+        .share-dropdown-content {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            z-index: 100;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .share-dropdown-content button {
+            width: 100%;
+            text-align: left;
+            padding: 12px 16px;
+            border: none;
+            background: white;
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: background 0.2s;
             font-family: inherit;
         }
         
-        .share-btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.05);
+        .share-dropdown-content button:hover {
+            background: #f8f9fa;
         }
         
-        .share-btn:active {
-            transform: translateY(0);
+        .share-dropdown-content button i {
+            width: 20px;
+            font-size: 16px;
         }
         
-        .telegram { background: #0088cc; }
-        .facebook { background: #1877f2; }
-        .whatsapp { background: #25D366; }
-        .copy { background: #6c757d; }
+        .share-dropdown.show .share-dropdown-content {
+            display: block;
+        }
         
+        /* Close dropdown when clicking outside */
         .breadcrumb {
             padding: 15px 20px 5px 20px;
             font-size: 14px;
@@ -301,8 +327,9 @@
                 justify-content: center;
             }
             
-            .share-buttons {
-                justify-content: center;
+            .share-dropdown-content {
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
         
@@ -323,11 +350,6 @@
             .action-btn {
                 padding: 8px 18px;
                 font-size: 13px;
-            }
-            
-            .share-btn {
-                padding: 6px 12px;
-                font-size: 12px;
             }
         }
     </style>
@@ -361,7 +383,7 @@
                 <!-- Song description will appear here -->
             </div>
             
-            <!-- PLAY & DOWNLOAD BUTTONS -->
+            <!-- ONLY 3 BUTTONS: Play + Download + Share (with dropdown) -->
             <div class="song-actions">
                 <button class="action-btn play-btn" id="play-btn" onclick="playSong()">
                     <i class="fas fa-play"></i> Play
@@ -369,13 +391,17 @@
                 <button class="action-btn download-btn" id="download-btn" onclick="downloadSong()">
                     <i class="fas fa-download"></i> Download
                 </button>
-            </div>
-            
-            <div class="share-buttons">
-                <button class="share-btn telegram" onclick="shareTelegram()"><i class="fab fa-telegram"></i> Telegram</button>
-                <button class="share-btn facebook" onclick="shareFacebook()"><i class="fab fa-facebook"></i> Facebook</button>
-                <button class="share-btn whatsapp" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-                <button class="share-btn copy" onclick="copyLink()"><i class="fas fa-link"></i> Copy Link</button>
+                <div class="share-dropdown" id="shareDropdown">
+                    <button class="action-btn share-main-btn" onclick="toggleShareDropdown()">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                    <div class="share-dropdown-content">
+                        <button onclick="shareTelegram()"><i class="fab fa-telegram"></i> Telegram</button>
+                        <button onclick="shareFacebook()"><i class="fab fa-facebook"></i> Facebook</button>
+                        <button onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                        <button onclick="copyLink()"><i class="fas fa-link"></i> Copy Link</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -419,10 +445,25 @@
             return match ? match[1] : null;
         }
         
+        // Toggle share dropdown
+        window.toggleShareDropdown = function() {
+            const dropdown = document.getElementById('shareDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        };
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('shareDropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+        
         // Play function
         window.playSong = function() {
             if (currentSong && currentSong.audio_url) {
-                // Create audio element or redirect to audio player
                 const audio = new Audio(currentSong.audio_url);
                 audio.play().catch(e => console.log('Playback failed:', e));
                 alert(`🎵 Now playing: ${currentSong.title}`);
@@ -434,7 +475,6 @@
         // Download function
         window.downloadSong = function() {
             if (currentSong && currentSong.audio_url) {
-                // Create temporary link to trigger download
                 const link = document.createElement('a');
                 link.href = currentSong.audio_url;
                 link.download = `${currentSong.title} - ${currentSong.artist}.mp3`;
@@ -442,7 +482,6 @@
                 link.click();
                 document.body.removeChild(link);
                 
-                // Track download (optional)
                 fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
             } else {
                 alert('Download not available');
@@ -490,23 +529,27 @@
         
         window.shareTelegram = function() {
             window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(getShareText())}`, '_blank');
+            document.getElementById('shareDropdown')?.classList.remove('show');
         };
         
         window.shareFacebook = function() {
             window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+            document.getElementById('shareDropdown')?.classList.remove('show');
         };
         
         window.shareWhatsApp = function() {
             window.open(`https://wa.me/?text=${encodeURIComponent(getShareText() + ' ' + window.location.href)}`, '_blank');
+            document.getElementById('shareDropdown')?.classList.remove('show');
         };
         
         window.copyLink = function() {
             navigator.clipboard.writeText(window.location.href).then(() => {
-                const btn = document.querySelector('.share-btn.copy');
+                const btn = document.querySelector('.share-dropdown-content button:last-child');
                 const original = btn.innerHTML;
                 btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 setTimeout(() => btn.innerHTML = original, 2000);
             });
+            document.getElementById('shareDropdown')?.classList.remove('show');
         };
         
         async function loadSongDetails() {
@@ -537,7 +580,6 @@
                 document.getElementById('breadcrumb-title').textContent = currentSong.title || 'Song';
                 document.getElementById('artist-name-placeholder').textContent = currentSong.artist || 'Artist';
                 
-                // Song description
                 const descriptionText = currentSong.description || currentSong.lyrics || '';
                 if (descriptionText) {
                     document.getElementById('song-description').innerHTML = `<i class="fas fa-align-left" style="margin-right: 8px; color: #ff4b2b;"></i> ${escapeHtml(descriptionText)}`;
@@ -546,7 +588,6 @@
                     document.getElementById('song-description').style.display = 'none';
                 }
                 
-                // Handle album/single info
                 const albumInfoDiv = document.getElementById('song-album-info');
                 if (currentSong.album_id && currentSong.album_name) {
                     albumInfoDiv.innerHTML = `
@@ -562,7 +603,6 @@
                     `;
                 }
                 
-                // Song artwork
                 const coverImg = document.getElementById('song-cover');
                 if (currentSong.artwork_url || currentSong.cover_url) {
                     const imgUrl = (currentSong.artwork_url || currentSong.cover_url).startsWith('/') 
@@ -574,7 +614,6 @@
                     coverImg.src = imgUrl;
                 }
                 
-                // Fetch related songs (other songs by same artist)
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracks = await tracksRes.json();
                 const trackList = Array.isArray(allTracks) ? allTracks : (allTracks.results || []);
@@ -606,7 +645,6 @@
             }
         }
         
-        // Artist click handler
         document.addEventListener('click', function(e) {
             const artistLink = e.target.closest('#song-artist');
             if (artistLink) {
