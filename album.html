@@ -95,6 +95,43 @@
             margin-top: 12px;
         }
         
+        /* Share buttons styling */
+        .share-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+        
+        .share-btn:active {
+            transform: translateY(0);
+        }
+        
+        .telegram { background: #0088cc; }
+        .facebook { background: #1877f2; }
+        .whatsapp { background: #25D366; }
+        .copy { background: #6c757d; }
+        
         .breadcrumb {
             padding: 15px 20px 5px 20px;
             font-size: 14px;
@@ -126,6 +163,55 @@
             font-size: 24px;
         }
         
+        /* Pagination styles - reduced spacing */
+        .page-navi {
+            padding: 2px 6px;
+            margin: 5px 0;
+            text-align: center;
+            clear: both;
+        }
+        
+        .page-numbers, a.page-numbers {
+            background: #424242;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #555;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            line-height: normal;
+            margin: 0 1px;
+        }
+        
+        a.page-numbers:hover {
+            background: #ff4b2b;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .page-numbers.current {
+            background: #ff4b2b;
+            color: #fff;
+            border-color: #ff4b2b;
+        }
+        
+        .page-numbers.dots {
+            background: transparent;
+            border: none;
+            color: #ff4b2b;
+            font-weight: 600;
+            box-shadow: none;
+            padding: 6px 2px;
+        }
+        
+        .next.page-numbers, .prev.page-numbers {
+            font-weight: 600;
+        }
+        
         @media (max-width: 768px) {
             .album-header {
                 flex-direction: column;
@@ -149,6 +235,15 @@
             .roundthumb.track-number {
                 font-size: 20px;
             }
+            
+            .share-buttons {
+                justify-content: center;
+            }
+            
+            .page-navi {
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -168,6 +263,21 @@
             
             .roundthumb.track-number {
                 font-size: 18px;
+            }
+            
+            .share-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .page-navi {
+                margin-top: 6px;
+                margin-bottom: 6px;
+            }
+            
+            .page-numbers, a.page-numbers {
+                padding: 4px 10px;
+                font-size: 12px;
             }
         }
         
@@ -208,12 +318,6 @@
             color: #ff2121;
             font-size: 14px;
         }
-        
-        /* Hide pagination if not needed */
-        .page-navi {
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
     </style>
 </head>
 <body>
@@ -242,6 +346,22 @@
                 <span class="album-stats"><i class="fas fa-headphones"></i> <span id="album-plays">---</span> plays</span>
             </div>
             <p class="album-description" id="album-description">Loading album description...</p>
+            
+            <!-- ===== SHARE BUTTONS ===== -->
+            <div class="share-buttons">
+                <button class="share-btn telegram" onclick="shareTelegram()">
+                    <i class="fab fa-telegram"></i> Telegram
+                </button>
+                <button class="share-btn facebook" onclick="shareFacebook()">
+                    <i class="fab fa-facebook"></i> Facebook
+                </button>
+                <button class="share-btn whatsapp" onclick="shareWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+                <button class="share-btn copy" onclick="copyLink()">
+                    <i class="fas fa-link"></i> Copy Link
+                </button>
+            </div>
         </div>
     </div>
 
@@ -464,6 +584,48 @@
             }
         };
         
+        // ===== SHARE FUNCTIONS =====
+        function getCurrentPageUrl() {
+            return window.location.href;
+        }
+        
+        function getShareText() {
+            const albumTitle = document.getElementById('album-title')?.textContent || 'Album';
+            const artistName = document.getElementById('album-artist')?.textContent || 'Artist';
+            return `🎵 Check out "${albumTitle}" by ${artistName} on Zedtopvibes!`;
+        }
+        
+        window.shareTelegram = function() {
+            const url = getCurrentPageUrl();
+            const text = getShareText();
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+        };
+        
+        window.shareFacebook = function() {
+            const url = getCurrentPageUrl();
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
+        };
+        
+        window.shareWhatsApp = function() {
+            const url = getCurrentPageUrl();
+            const text = getShareText();
+            window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank', 'noopener,noreferrer');
+        };
+        
+        window.copyLink = function() {
+            const url = getCurrentPageUrl();
+            navigator.clipboard.writeText(url).then(() => {
+                const copyBtn = document.querySelector('.share-btn.copy');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                }, 2000);
+            }).catch(() => {
+                alert('Failed to copy link. Please copy manually: ' + url);
+            });
+        };
+        
         // Load recommended albums
         async function loadRecommendedAlbums(currentAlbumId, currentArtist) {
             const container = document.getElementById('recommended-container');
@@ -527,7 +689,8 @@
                 document.getElementById('album-description').textContent = 'No album slug provided in URL.';
                 document.getElementById('tracklist-container').innerHTML = '<div class="error-message">Invalid album link</div>';
                 document.getElementById('recommended-container').innerHTML = '';
-                document.querySelector('.page-navi').style.display = 'none';
+                const paginationDiv = document.querySelector('.page-navi');
+                if (paginationDiv) paginationDiv.style.display = 'none';
                 return;
             }
             
@@ -592,7 +755,8 @@
                 document.getElementById('tracklist-container').innerHTML = '<div class="error-message">Failed to load album. The album may not exist.</div>';
                 document.getElementById('recommended-container').innerHTML = '';
                 document.getElementById('album-header').style.display = 'flex';
-                document.querySelector('.page-navi').style.display = 'none';
+                const paginationDiv = document.querySelector('.page-navi');
+                if (paginationDiv) paginationDiv.style.display = 'none';
             }
         }
         
