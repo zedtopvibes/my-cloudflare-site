@@ -191,7 +191,7 @@
             box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
         }
         
-        /* Share Dropdown - replaces separate share buttons */
+        /* Share Dropdown - FIXED VISIBILITY */
         .share-dropdown {
             position: relative;
             display: inline-block;
@@ -213,12 +213,12 @@
             position: absolute;
             bottom: 100%;
             left: 0;
-            background-color: white;
+            background-color: #ffffff;
             min-width: 180px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
             border-radius: 12px;
-            z-index: 100;
-            margin-bottom: 10px;
+            z-index: 1000;
+            margin-bottom: 12px;
             overflow: hidden;
             border: 1px solid #e8e8e8;
         }
@@ -228,7 +228,7 @@
             text-align: left;
             padding: 12px 16px;
             border: none;
-            background: white;
+            background: #ffffff;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -237,22 +237,33 @@
             font-weight: 500;
             transition: background 0.2s;
             font-family: inherit;
-        }
-        
-        .share-dropdown-content button:hover {
-            background: #f8f9fa;
+            color: #333;
         }
         
         .share-dropdown-content button i {
             width: 20px;
             font-size: 16px;
+            color: #ff4b2b;
+        }
+        
+        .share-dropdown-content button:hover {
+            background: #f5f5f5;
         }
         
         .share-dropdown.show .share-dropdown-content {
             display: block;
         }
         
-        /* Close dropdown when clicking outside */
+        /* Arrow indicator for dropdown */
+        .share-main-btn i:last-child {
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        
+        .share-dropdown.show .share-main-btn i:last-child {
+            transform: rotate(180deg);
+        }
+        
         .breadcrumb {
             padding: 15px 20px 5px 20px;
             font-size: 14px;
@@ -393,7 +404,7 @@
                 </button>
                 <div class="share-dropdown" id="shareDropdown">
                     <button class="action-btn share-main-btn" onclick="toggleShareDropdown()">
-                        <i class="fas fa-share-alt"></i> Share
+                        <i class="fas fa-share-alt"></i> Share <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="share-dropdown-content">
                         <button onclick="shareTelegram()"><i class="fab fa-telegram"></i> Telegram</button>
