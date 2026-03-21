@@ -152,7 +152,7 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
         
-        function getArtistSlug() {
+        function getArtistName() {
             const path = window.location.pathname;
             const match = path.match(/\/artist\/([^\/]+)/);
             return match ? match[1] : null;
@@ -290,51 +290,46 @@
         };
         
         async function loadArtistDetails() {
-            const slug = getArtistSlug();
-            console.log('Artist slug:', slug);
+            const artistName = getArtistName();
+            console.log('Artist name:', artistName);
             
-            if (!slug) {
+            if (!artistName) {
                 document.getElementById('artist-name').textContent = 'Artist not specified';
-                document.getElementById('artist-bio').textContent = 'No artist slug provided in URL.';
+                document.getElementById('artist-bio').textContent = 'No artist name provided in URL.';
                 return;
             }
             
             try {
-                // First get all artists
-                const response = await fetch(`${API_BASE}/artists`);
-                const artists = await response.json();
-                const artistList = Array.isArray(artists) ? artists : (artists.results || []);
+                // Direct fetch using the artist name endpoint (works!)
+                const response = await fetch(`${API_BASE}/artist/${artistName}`);
                 
-                // Find the artist by slug
-                const artist = artistList.find(a => a.slug === slug);
-                
-                if (!artist) {
+                if (!response.ok) {
                     throw new Error('Artist not found');
                 }
                 
+                const artist = await response.json();
                 console.log('Artist found:', artist);
                 
                 document.getElementById('artist-header').style.display = 'flex';
                 document.getElementById('artist-name').textContent = artist.name || 'Unknown Artist';
-                document.getElementById('artist-total-tracks').textContent = artist.track_count || 0;
+                document.getElementById('artist-total-tracks').textContent = artist.total_tracks || 0;
                 document.getElementById('artist-total-plays').textContent = formatNumber(artist.total_plays || 0);
                 document.getElementById('artist-joined').textContent = artist.created_at ? new Date(artist.created_at).getFullYear() : 'Unknown';
                 document.getElementById('artist-bio').textContent = artist.bio || 'No bio available.';
                 document.getElementById('breadcrumb-title').textContent = artist.name || 'Artist';
                 
-                if (artist.image_url || artist.profile_image || artist.cover_url) {
-                    const imgUrl = artist.image_url || artist.profile_image || artist.cover_url;
-                    const finalUrl = imgUrl.startsWith('/') ? `${IMAGE_BASE}${imgUrl}` : imgUrl;
-                    document.getElementById('artist-cover').src = finalUrl;
+                if (artist.image_url) {
+                    const imgUrl = artist.image_url.startsWith('/') ? `${IMAGE_BASE}${artist.image_url}` : artist.image_url;
+                    document.getElementById('artist-cover').src = imgUrl;
                 }
                 
-                // Get all tracks and filter by artist
+                // Get all tracks and filter by artist name
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracksData = await tracksRes.json();
                 const trackList = Array.isArray(allTracksData) ? allTracksData : (allTracksData.results || []);
                 const artistTracks = trackList.filter(t => t.artist === artist.name);
                 
-                // Get all albums and filter by artist
+                // Get all albums and filter by artist name
                 const albumsRes = await fetch(`${API_BASE}/albums`);
                 const allAlbums = await albumsRes.json();
                 const albumList = Array.isArray(allAlbums) ? allAlbums : (allAlbums.results || []);
