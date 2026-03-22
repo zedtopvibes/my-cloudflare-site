@@ -1,89 +1,72 @@
 // =====================================================
-// ID3 BRANDING CONSTANTS (copied from ID3 worker)
+// ID3 BRANDING CONSTANTS
 // =====================================================
 const SITENAME = "Zedtopvibes.Com";
 const MAX_COVER_SIZE = 1024 * 1024; // 1MB max for watermark
-const SUPPORTED_GENRES = [
-  'Podcast', 'Music', 'Hip-Hop', 'Rock', 'Pop', 
-  'Electronic', 'Jazz', 'Classical', 'Audiobook', 'Other'
-];
 
 export async function onRequest(context) {
   const { request, env } = context;
   
-  // CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
 
-  // Handle OPTIONS request (CORS preflight)
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
 
-  // Only allow POST
   if (request.method !== 'POST') {
     return new Response('Method not allowed', { status: 405, headers });
   }
 
   try {
-    // Parse form data
     const formData = await request.formData();
     const file = formData.get('file');
     
-    // Get form fields (including new ID3-only fields)
     const title = formData.get('title');
     const artist = formData.get('artist');
     const description = formData.get('description') || '';
     const genre = formData.get('genre') || 'unknown';
-    const duration = parseInt(formData.get('duration')) || 0; // Already in milliseconds from frontend
+    const duration = parseInt(formData.get('duration')) || 0;
     const releaseDate = formData.get('release_date') || '';
     const bpm = formData.get('bpm') || '0';
     const explicit = formData.get('explicit') === '1';
     const featured = formData.get('featured') === '1';
     const editorPick = formData.get('editor_pick') === '1';
     
-    // ID3-ONLY FIELDS (not saved to D1)
     const customFilename = formData.get('customFilename') || '';
     const trackNumber = formData.get('trackNumber') || '1';
-    
-    // Get album info if selected
     const albumId = formData.get('album_id') || '';
     const albumTitle = formData.get('album_title') || '';
 
-    // Validate required fields
     if (!file || !title || !artist) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing required fields' 
-      }), { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), 
+        { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
     }
 
-    // Check if it's an audio file
     if (!file.type.startsWith('audio/')) {
-      return new Response(JSON.stringify({ 
-        error: 'File must be an audio file' 
-      }), { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
+      return new Response(JSON.stringify({ error: 'File must be an audio file' }), 
+        { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
     }
 
     // =====================================================
-    // UPLOAD ARTWORK TO R2 (FIXED PATH)
+    // UPLOAD ARTWORK TO R2 (MATCHES ALBUM PATH PATTERN)
     // =====================================================
     let artworkUrl = null;
     const artworkFile = formData.get('artwork');
 
     if (artworkFile && artworkFile.size > 0) {
       try {
-        // Validate image type
         if (!artworkFile.type.startsWith('image/')) {
           console.warn('Invalid artwork type:', artworkFile.type);
         } else {
-          // Fix extension (jpeg → jpg for consistency with album covers)
+          // Convert jpeg to jpg for consistency with album covers
           let artworkExt = artworkFile.type.split('/')[1] || 'jpg';
           if (artworkExt === 'jpeg') artworkExt = 'jpg';
           
-          // Generate safe filename
+          // Generate safe filename (same pattern as albums)
           const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
           const timestamp = Date.now();
           const artworkFilename = `artwork/${timestamp}-${safeTitle}.${artworkExt}`;
@@ -101,7 +84,6 @@ export async function onRequest(context) {
         }
       } catch (err) {
         console.error('Artwork upload failed:', err);
-        // Continue without artwork
       }
     }
 
@@ -109,56 +91,43 @@ export async function onRequest(context) {
     // ID3 BRANDING - PROCESS THE MP3 FILE
     // =====================================================
     
-    // Read file buffer
     const fileBuffer = await file.arrayBuffer();
-    
-    // Strip existing ID3 tags
     const cleanBuffer = stripExistingID3(fileBuffer);
     
-    // Get watermark from R2 bucket
     let coverBuffer = null;
     try {
       const watermark = await env.AUDIO.get('watermark.jpg');
       if (watermark) {
         coverBuffer = await watermark.arrayBuffer();
         if (coverBuffer.byteLength < 100 || coverBuffer.byteLength > MAX_COVER_SIZE) {
-          console.warn('Invalid watermark size, skipping');
           coverBuffer = null;
         }
       }
     } catch (err) {
-      console.warn('Watermark not found:', err.message);
+      console.warn('Watermark not found');
     }
 
-    // Determine album name for ID3 tag
     let id3Album = albumTitle || 'Zedtopvibes Compilation';
-
-    // Create branded artist name (ONLY FIX: Add | SITENAME)
     const brandedArtist = `${artist} | ${SITENAME}`;
-
-    // Create branded comment
     const brandedComment = `🎵 Discover your next favorite track at ${SITENAME}`;
 
-    // Create complete ID3 tags
     const taggedMp3 = createCompleteID3Tags(cleanBuffer, {
-      artist: brandedArtist,              // NOW WITH BRANDING: "Artist | Zedtopvibes.Com"
-      title: title,                        // Keep original title
-      album: id3Album,                      // Album name or default
-      year: releaseDate,                    // Full release date
-      genre: genre,                          // Genre
-      track: trackNumber,                    // Track number
-      comment: brandedComment,                // Branded comment
-      duration: duration.toString(),          // Duration in ms (unchanged)
-      encoder: `${SITENAME} Uploader`,        // Encoder info
-      publisher: SITENAME,                    // Publisher
-      copyright: `${new Date().getFullYear()} ${SITENAME}`, // Copyright
-      cover: coverBuffer                      // Watermark image
+      artist: brandedArtist,
+      title: title,
+      album: id3Album,
+      year: releaseDate,
+      genre: genre,
+      track: trackNumber,
+      comment: brandedComment,
+      duration: duration.toString(),
+      encoder: `${SITENAME} Uploader`,
+      publisher: SITENAME,
+      copyright: `${new Date().getFullYear()} ${SITENAME}`,
+      cover: coverBuffer
     });
 
-    // Generate filename for R2
     let filename;
     if (customFilename && customFilename.trim() !== '') {
-      // Sanitize custom filename
       const cleanCustom = customFilename
         .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
         .replace(/\s+/g, ' ')
@@ -166,7 +135,6 @@ export async function onRequest(context) {
         .substring(0, 100);
       filename = `${cleanCustom} (${SITENAME}).mp3`;
     } else {
-      // Auto-generate from artist and title
       const cleanArtist = artist
         .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
         .replace(/\s+/g, ' ')
@@ -180,7 +148,6 @@ export async function onRequest(context) {
       filename = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
     }
 
-    // Upload branded file to R2
     await env.AUDIO.put(filename, taggedMp3, {
       httpMetadata: {
         contentType: 'audio/mpeg',
@@ -196,10 +163,9 @@ export async function onRequest(context) {
     });
 
     // =====================================================
-    // D1 DATABASE OPERATIONS (UPDATED WITH artwork_url)
+    // D1 DATABASE OPERATIONS
     // =====================================================
     
-    // Insert into D1 with ALL fields including artwork_url
     const result = await env.DB.prepare(`
       INSERT INTO tracks (
         title, 
@@ -225,8 +191,8 @@ export async function onRequest(context) {
       filename, 
       filename, 
       genre, 
-      Math.round(duration / 1000), // Convert ms to seconds
-      artworkUrl,                   // ← ADDED: artwork URL with correct path
+      Math.round(duration / 1000),
+      artworkUrl,
       releaseDate || null,
       parseInt(bpm) || 0,
       explicit ? 1 : 0,
@@ -236,20 +202,17 @@ export async function onRequest(context) {
 
     const trackId = result.results[0]?.id;
 
-    // If album was selected, associate track with album
     if (albumId && trackId) {
       try {
         await env.DB.prepare(`
           INSERT INTO album_tracks (album_id, track_id, track_number)
           VALUES (?, ?, ?)
         `).bind(parseInt(albumId), trackId, parseInt(trackNumber) || 1).run();
-        console.log('Track added to album:', albumId);
       } catch (err) {
         console.error('Failed to add track to album:', err);
       }
     }
 
-    // Return success response with artwork URL
     return new Response(JSON.stringify({ 
       success: true, 
       id: trackId,
@@ -274,110 +237,77 @@ export async function onRequest(context) {
 }
 
 // =====================================================
-// ID3 HELPER FUNCTIONS (UNCHANGED FROM ID3 WORKER)
+// ID3 HELPER FUNCTIONS (unchanged)
 // =====================================================
 
-/**
- * Strip existing ID3 tags from MP3 file
- */
 function stripExistingID3(buffer) {
   const view = new Uint8Array(buffer);
-  
   if (view.length > 10 && view[0] === 0x49 && view[1] === 0x44 && view[2] === 0x33) {
     const size = (view[6] * 0x200000) + (view[7] * 0x4000) + (view[8] * 0x80) + view[9];
     const tagSize = 10 + size;
-    
     if (tagSize <= view.length && tagSize > 0) {
       return buffer.slice(tagSize);
     }
   }
-  
   return buffer;
 }
 
-/**
- * Create complete ID3v2.3 tags
- */
 function createCompleteID3Tags(audioBuffer, metadata) {
   const audioBytes = new Uint8Array(audioBuffer);
   const frames = [];
 
-  // Core identification
   if (metadata.artist) frames.push(createTextFrame('TPE1', metadata.artist));
   if (metadata.title) frames.push(createTextFrame('TIT2', metadata.title));
   if (metadata.album) frames.push(createTextFrame('TALB', metadata.album));
   if (metadata.year) frames.push(createTextFrame('TYER', metadata.year));
   if (metadata.genre) frames.push(createTextFrame('TCON', metadata.genre));
   if (metadata.track) frames.push(createTextFrame('TRCK', metadata.track));
-  
-  if (metadata.duration) {
-    frames.push(createTextFrame('TLEN', metadata.duration.toString()));
-  }
-  
+  if (metadata.duration) frames.push(createTextFrame('TLEN', metadata.duration.toString()));
   if (metadata.artist) {
     frames.push(createTextFrame('TPE2', metadata.artist));
     frames.push(createTextFrame('TSOP', metadata.artist));
   }
-  
   if (metadata.encoder) frames.push(createTextFrame('TENC', metadata.encoder));
   if (metadata.publisher) frames.push(createTextFrame('TPUB', metadata.publisher));
   if (metadata.copyright) frames.push(createTextFrame('TCOP', metadata.copyright));
+  if (metadata.comment) frames.push(createCommentFrame(metadata.comment));
+  if (metadata.cover && metadata.cover.byteLength > 0) frames.push(createAPICFrame(metadata.cover));
   
-  if (metadata.comment) {
-    frames.push(createCommentFrame(metadata.comment));
-  }
-  
-  if (metadata.cover && metadata.cover.byteLength > 0) {
-    frames.push(createAPICFrame(metadata.cover));
-  }
-  
-  const privateData = JSON.stringify({
-    uploader: SITENAME,
-    version: '2.0.0',
-    timestamp: Date.now()
-  });
+  const privateData = JSON.stringify({ uploader: SITENAME, version: '2.0.0', timestamp: Date.now() });
   frames.push(createPrivateFrame('XXXX', privateData));
 
   const framesSize = frames.reduce((acc, f) => acc + f.length, 0);
   const PADDING_SIZE = 2048;
-  
   const header = new Uint8Array(10);
   header.set([0x49, 0x44, 0x33, 0x03, 0x00, 0x00], 0);
   header.set(encodeSynchsafe(framesSize + PADDING_SIZE), 6);
 
   const final = new Uint8Array(10 + framesSize + PADDING_SIZE + audioBytes.length);
   final.set(header, 0);
-  
   let offset = 10;
   for (const f of frames) {
     final.set(f, offset);
     offset += f.length;
   }
-  
   offset += PADDING_SIZE;
   final.set(audioBytes, offset);
-  
   return final;
 }
 
 function createTextFrame(frameId, value) {
   const encoder = new TextEncoder();
   const textBytes = encoder.encode(value);
-  
   const frame = new Uint8Array(10 + 1 + textBytes.length);
   frame.set(encoder.encode(frameId), 0);
-  
   const size = 1 + textBytes.length;
   frame[4] = (size >> 24) & 0xFF;
   frame[5] = (size >> 16) & 0xFF;
   frame[6] = (size >> 8) & 0xFF;
   frame[7] = size & 0xFF;
-  
   frame[8] = 0;
   frame[9] = 0;
   frame[10] = 0x03;
   frame.set(textBytes, 11);
-  
   return frame;
 }
 
@@ -386,20 +316,15 @@ function createCommentFrame(comment) {
   const lang = encoder.encode('eng');
   const description = encoder.encode('\0');
   const textBytes = encoder.encode(comment);
-  
   const size = 1 + 3 + description.length + textBytes.length;
   const frame = new Uint8Array(10 + size);
-  
   frame.set(encoder.encode('COMM'), 0);
-  
   frame[4] = (size >> 24) & 0xFF;
   frame[5] = (size >> 16) & 0xFF;
   frame[6] = (size >> 8) & 0xFF;
   frame[7] = size & 0xFF;
-  
   frame[8] = 0;
   frame[9] = 0;
-  
   let pos = 10;
   frame[pos++] = 0x03;
   frame.set(lang, pos);
@@ -407,7 +332,6 @@ function createCommentFrame(comment) {
   frame.set(description, pos);
   pos += description.length;
   frame.set(textBytes, pos);
-  
   return frame;
 }
 
@@ -415,23 +339,17 @@ function createPrivateFrame(ownerId, data) {
   const encoder = new TextEncoder();
   const ownerBytes = encoder.encode(ownerId + '\0');
   const dataBytes = encoder.encode(data);
-  
   const size = ownerBytes.length + dataBytes.length;
   const frame = new Uint8Array(10 + size);
-  
   frame.set(encoder.encode('PRIV'), 0);
-  
   frame[4] = (size >> 24) & 0xFF;
   frame[5] = (size >> 16) & 0xFF;
   frame[6] = (size >> 8) & 0xFF;
   frame[7] = size & 0xFF;
-  
   frame[8] = 0;
   frame[9] = 0;
-  
   frame.set(ownerBytes, 10);
   frame.set(dataBytes, 10 + ownerBytes.length);
-  
   return frame;
 }
 
@@ -441,20 +359,15 @@ function createAPICFrame(coverBuffer) {
   const mime = "image/jpeg";
   const mimeBytes = encoder.encode(mime);
   const description = new Uint8Array([0]);
-  
   const frameDataSize = 1 + mimeBytes.length + 1 + 1 + description.length + coverBytes.length;
   const frame = new Uint8Array(10 + frameDataSize);
-  
   frame.set(encoder.encode('APIC'), 0);
-  
   frame[4] = (frameDataSize >> 24) & 0xFF;
   frame[5] = (frameDataSize >> 16) & 0xFF;
   frame[6] = (frameDataSize >> 8) & 0xFF;
   frame[7] = frameDataSize & 0xFF;
-  
   frame[8] = 0;
   frame[9] = 0;
-  
   let pos = 10;
   frame[pos++] = 0x00;
   frame.set(mimeBytes, pos);
@@ -464,7 +377,6 @@ function createAPICFrame(coverBuffer) {
   frame.set(description, pos);
   pos += description.length;
   frame.set(coverBytes, pos);
-  
   return frame;
 }
 
