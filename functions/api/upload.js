@@ -68,7 +68,7 @@ export async function onRequest(context) {
     }
 
     // =====================================================
-    // UPLOAD ARTWORK TO R2 (NEW)
+    // UPLOAD ARTWORK TO R2 (FIXED PATH)
     // =====================================================
     let artworkUrl = null;
     const artworkFile = formData.get('artwork');
@@ -79,8 +79,11 @@ export async function onRequest(context) {
         if (!artworkFile.type.startsWith('image/')) {
           console.warn('Invalid artwork type:', artworkFile.type);
         } else {
+          // Fix extension (jpeg → jpg for consistency with album covers)
+          let artworkExt = artworkFile.type.split('/')[1] || 'jpg';
+          if (artworkExt === 'jpeg') artworkExt = 'jpg';
+          
           // Generate safe filename
-          const artworkExt = artworkFile.type.split('/')[1] || 'jpg';
           const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
           const timestamp = Date.now();
           const artworkFilename = `artwork/${timestamp}-${safeTitle}.${artworkExt}`;
@@ -92,8 +95,9 @@ export async function onRequest(context) {
             }
           });
           
-          artworkUrl = `/${artworkFilename}`;
-          console.log('Artwork uploaded:', artworkUrl);
+          // FIX: Use same path pattern as album covers (/images/...)
+          artworkUrl = `/images/${artworkFilename}`;
+          console.log('Artwork uploaded to:', artworkUrl);
         }
       } catch (err) {
         console.error('Artwork upload failed:', err);
@@ -222,7 +226,7 @@ export async function onRequest(context) {
       filename, 
       genre, 
       Math.round(duration / 1000), // Convert ms to seconds
-      artworkUrl,                   // ← ADDED: artwork URL
+      artworkUrl,                   // ← ADDED: artwork URL with correct path
       releaseDate || null,
       parseInt(bpm) || 0,
       explicit ? 1 : 0,
