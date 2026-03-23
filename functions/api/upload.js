@@ -52,7 +52,7 @@ export async function onRequest(context) {
     }
 
     // =====================================================
-    // UPLOAD ARTWORK TO R2 (USING COVERS FOLDER - MATCHES API)
+    // UPLOAD ARTWORK TO R2 (COVERS FOLDER - MATCHES COVER API)
     // =====================================================
     let artworkUrl = null;
     const artworkFile = formData.get('artwork');
@@ -80,8 +80,8 @@ export async function onRequest(context) {
             }
           });
           
-          // Use the cover API endpoint (matches your existing cover API)
-          artworkUrl = `/api/covers/${timestamp}-${safeTitle}.${artworkExt}`;
+          // Use the cover API endpoint: /api/cover/{filename}
+          artworkUrl = `/api/cover/${timestamp}-${safeTitle}.${artworkExt}`;
           console.log('Track artwork uploaded to:', artworkUrl);
         }
       } catch (err) {
