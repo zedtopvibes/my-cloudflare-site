@@ -52,7 +52,7 @@ export async function onRequest(context) {
     }
 
     // =====================================================
-    // UPLOAD ARTWORK TO R2 (MATCHES ALBUM PATH PATTERN)
+    // UPLOAD ARTWORK TO R2 (TRACKS FOLDER)
     // =====================================================
     let artworkUrl = null;
     const artworkFile = formData.get('artwork');
@@ -62,14 +62,16 @@ export async function onRequest(context) {
         if (!artworkFile.type.startsWith('image/')) {
           console.warn('Invalid artwork type:', artworkFile.type);
         } else {
-          // Convert jpeg to jpg for consistency with album covers
+          // Convert jpeg to jpg for consistency
           let artworkExt = artworkFile.type.split('/')[1] || 'jpg';
           if (artworkExt === 'jpeg') artworkExt = 'jpg';
           
-          // Generate safe filename (same pattern as albums)
+          // Generate safe filename
           const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
           const timestamp = Date.now();
-          const artworkFilename = `artwork/${timestamp}-${safeTitle}.${artworkExt}`;
+          
+          // Store in tracks folder (separate from albums)
+          const artworkFilename = `tracks/${timestamp}-${safeTitle}.${artworkExt}`;
           
           // Upload to R2
           await env.AUDIO.put(artworkFilename, await artworkFile.arrayBuffer(), {
@@ -78,9 +80,8 @@ export async function onRequest(context) {
             }
           });
           
-          // FIX: Use same path pattern as album covers (/images/...)
           artworkUrl = `/images/${artworkFilename}`;
-          console.log('Artwork uploaded to:', artworkUrl);
+          console.log('Track artwork uploaded to:', artworkUrl);
         }
       } catch (err) {
         console.error('Artwork upload failed:', err);
