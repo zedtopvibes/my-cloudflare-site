@@ -52,7 +52,7 @@ export async function onRequest(context) {
     }
 
     // =====================================================
-    // UPLOAD ARTWORK TO R2 (TRACKS FOLDER)
+    // UPLOAD ARTWORK TO R2 (USING COVERS FOLDER - MATCHES API)
     // =====================================================
     let artworkUrl = null;
     const artworkFile = formData.get('artwork');
@@ -70,8 +70,8 @@ export async function onRequest(context) {
           const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
           const timestamp = Date.now();
           
-          // Store in tracks folder (separate from albums and playlists)
-          const artworkFilename = `tracks/${timestamp}-${safeTitle}.${artworkExt}`;
+          // Store in covers folder (same as album covers)
+          const artworkFilename = `covers/${timestamp}-${safeTitle}.${artworkExt}`;
           
           // Upload to R2
           await env.AUDIO.put(artworkFilename, await artworkFile.arrayBuffer(), {
@@ -80,7 +80,8 @@ export async function onRequest(context) {
             }
           });
           
-          artworkUrl = `/images/${artworkFilename}`;
+          // Use the cover API endpoint (matches your existing cover API)
+          artworkUrl = `/api/covers/${timestamp}-${safeTitle}.${artworkExt}`;
           console.log('Track artwork uploaded to:', artworkUrl);
         }
       } catch (err) {
