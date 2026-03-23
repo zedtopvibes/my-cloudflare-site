@@ -28,6 +28,10 @@
             /* Playlists - distinct blue-purple */
             --playlist-start: #5f3dc7;
             --playlist-end: #8a6de0;
+            
+            /* EPs - orange gradient */
+            --ep-start: #ff5722;
+            --ep-end: #ff8c00;
         }
         
         body {
@@ -202,7 +206,7 @@
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        /* Stats Grid - 2x2 on mobile, 4 on desktop */
+        /* Stats Grid - 2x2 on mobile, 5 on desktop */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -309,7 +313,7 @@
             color: white !important;
         }
         
-        /* New distinct color for Playlists - blue-purple */
+        /* Playlists - blue-purple */
         .stat-card.playlist-gradient {
             background: linear-gradient(135deg, #5f3dc7 0%, #8a6de0 100%);
             border: none;
@@ -318,6 +322,18 @@
         .stat-card.playlist-gradient h3,
         .stat-card.playlist-gradient .number,
         .stat-card.playlist-gradient .label {
+            color: white !important;
+        }
+        
+        /* EPs - orange gradient */
+        .stat-card.ep-gradient {
+            background: linear-gradient(135deg, #ff5722 0%, #ff8c00 100%);
+            border: none;
+        }
+        
+        .stat-card.ep-gradient h3,
+        .stat-card.ep-gradient .number,
+        .stat-card.ep-gradient .label {
             color: white !important;
         }
         
@@ -637,7 +653,7 @@
             }
             
             .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(5, 1fr);
                 gap: 15px;
             }
             
@@ -658,7 +674,7 @@
             }
             
             .quick-actions-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(5, 1fr);
                 gap: 10px;
             }
             
@@ -718,7 +734,7 @@
                 </div>
             </div>
             
-            <!-- Navigation Tabs -->
+            <!-- Navigation Tabs - UPDATED WITH EPS -->
             <div class="admin-tabs">
                 <a href="index.html" class="tab-btn active">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -732,17 +748,21 @@
                 <a href="albums.html" class="tab-btn">
                     <i class="fas fa-compact-disc"></i> Albums
                 </a>
+                <a href="eps.html" class="tab-btn">
+                    <i class="fas fa-play-circle"></i> EPs
+                </a>
                 <a href="artists.html" class="tab-btn">
                     <i class="fas fa-microphone"></i> Artists
                 </a>
                 <a href="playlists.html" class="tab-btn">
                     <i class="fas fa-list"></i> Playlists
                 </a>
-  <!-- ADD THIS LINE -->
-    <a href="analytics.html" class="tab-btn">
-        <i class="fas fa-chart-line"></i> Analytics
-    </a>
-<a href="media.html" class="tab-btn"><i class="fas fa-images"></i> Media</a>
+                <a href="analytics.html" class="tab-btn">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+                <a href="media.html" class="tab-btn">
+                    <i class="fas fa-images"></i> Media
+                </a>
             </div>
         </div>
         
@@ -767,6 +787,11 @@
                     <div class="number" id="totalAlbums">0</div>
                     <div class="label">albums</div>
                 </div>
+                <div class="stat-card ep-gradient">
+                    <h3>Total EPs</h3>
+                    <div class="number" id="totalEPs">0</div>
+                    <div class="label">eps</div>
+                </div>
                 <div class="stat-card teal-gradient">
                     <h3>Total Artists</h3>
                     <div class="number" id="totalArtists">0</div>
@@ -790,15 +815,19 @@
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>Upload Song</span>
                 </a>
-                <a href="#" class="quick-action-btn" onclick="alert('Create album feature coming soon!')">
+                <a href="albums.html" class="quick-action-btn">
                     <i class="fas fa-compact-disc"></i>
                     <span>New Album</span>
                 </a>
-                <a href="#" class="quick-action-btn" onclick="alert('Create artist feature coming soon!')">
+                <a href="eps.html" class="quick-action-btn">
+                    <i class="fas fa-play-circle"></i>
+                    <span>New EP</span>
+                </a>
+                <a href="artists.html" class="quick-action-btn">
                     <i class="fas fa-microphone"></i>
                     <span>New Artist</span>
                 </a>
-                <a href="#" class="quick-action-btn" onclick="alert('Create playlist feature coming soon!')">
+                <a href="playlists.html" class="quick-action-btn">
                     <i class="fas fa-list"></i>
                     <span>New Playlist</span>
                 </a>
@@ -835,6 +864,12 @@
                 <div class="mobile-card" onclick="window.location='albums.html'">
                     <div class="mobile-card-row">
                         <span class="mobile-card-label"><i class="fas fa-compact-disc"></i> Manage Albums</span>
+                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </div>
+                <div class="mobile-card" onclick="window.location='eps.html'">
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label"><i class="fas fa-play-circle"></i> Manage EPs</span>
                         <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
                     </div>
                 </div>
@@ -889,6 +924,7 @@
                 if (data) {
                     document.getElementById('totalSongs').textContent = data.songs || 0;
                     document.getElementById('totalAlbums').textContent = data.albums || 0;
+                    document.getElementById('totalEPs').textContent = data.eps || 0;
                     document.getElementById('totalArtists').textContent = data.artists || 0;
                     document.getElementById('totalPlaylists').textContent = data.playlists || 0;
                 }
