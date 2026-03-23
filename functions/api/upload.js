@@ -70,7 +70,7 @@ export async function onRequest(context) {
           const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
           const timestamp = Date.now();
           
-          // Store in tracks folder (separate from albums)
+          // Store in tracks folder (separate from albums and playlists)
           const artworkFilename = `tracks/${timestamp}-${safeTitle}.${artworkExt}`;
           
           // Upload to R2
@@ -238,7 +238,7 @@ export async function onRequest(context) {
 }
 
 // =====================================================
-// ID3 HELPER FUNCTIONS (unchanged)
+// ID3 HELPER FUNCTIONS
 // =====================================================
 
 function stripExistingID3(buffer) {
