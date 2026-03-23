@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit EP - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #ff5722;
+            --primary-light: #ff7a44;
+            --primary-soft: #fff0e8;
+            --secondary: #ff9800;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header h1 i {
+            color: var(--primary);
+        }
+        
+        .back-btn {
+            padding: 6px 14px;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            color: var(--gray-700);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .cover-section {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .cover-preview {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            overflow: hidden;
+            border: 3px solid var(--gray-200);
+        }
+        
+        .cover-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cover-upload-btn {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        #coverInput {
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+        
+        .form-group label i {
+            color: var(--primary);
+            margin-right: 6px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        /* Suggestions container - matching upload form style */
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            margin-top: 4px;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+        
+        .suggestion-item:hover {
+            background: var(--primary-soft);
+        }
+        
+        .suggestion-item.selected {
+            background: var(--primary-soft);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .suggestion-icon {
+            color: var(--primary);
+            width: 24px;
+            text-align: center;
+        }
+        
+        .suggestion-info {
+            flex: 1;
+        }
+        
+        .suggestion-name {
+            font-weight: 500;
+        }
+        
+        .suggestion-meta {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        
+        .selected-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-compact-disc"></i>
+                <span id="pageTitle">Create EP</span>
+            </h1>
+            <a href="/admin/eps/index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+        
+        <div class="form-card" id="formCard">
+            <div class="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <div>Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentCoverFile = null;
+        let allArtists = [];
+        let artistTimeout;
+        let selectedArtist = '';
+        
+        async function loadArtists() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists`);
+                if (!response.ok) throw new Error('Failed to load artists');
+                allArtists = await response.json();
+                allArtists.sort((a, b) => a.name.localeCompare(b.name));
+            } catch (error) {
+                console.error('Error loading artists:', error);
+            }
+        }
+        
+        async function loadEPForEdit() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const epId = urlParams.get('id');
+            
+            const pageTitle = document.getElementById('pageTitle');
+            const formCard = document.getElementById('formCard');
+            
+            // Load artists first
+            await loadArtists();
+            
+            if (!epId) {
+                pageTitle.textContent = 'Create EP';
+                renderForm(null);
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/eps/${epId}`);
+                if (!res.ok) throw new Error('EP not found');
+                const ep = await res.json();
+                
+                // Set selected artist
+                selectedArtist = ep.artist;
+                
+                pageTitle.textContent = `Edit: ${ep.title}`;
+                renderForm(ep);
+                
+            } catch (error) {
+                formCard.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 16px;"></i>
+                        <h3>Failed to load EP</h3>
+                        <p style="margin: 16px 0;">${error.message}</p>
+                        <a href="/admin/eps/index.html" class="btn btn-primary">Back to EPs</a>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderForm(ep) {
+            const isEditing = !!ep;
+            
+            document.getElementById('formCard').innerHTML = `
+                <form id="epForm">
+                    <input type="hidden" id="epId" value="${ep?.id || ''}">
+                    
+                    <div class="cover-section">
+                        <div class="cover-preview" id="coverPreview">
+                            ${ep?.cover_url 
+                                ? `<img src="${ep.cover_url}" alt="Cover">`
+                                : '<i class="fas fa-compact-disc"></i>'
+                            }
+                        </div>
+                        
+                        <div>
+                            <label for="coverInput" class="cover-upload-btn">
+                                <i class="fas fa-camera"></i>
+                                ${ep?.cover_url ? 'Change Cover' : 'Upload Cover'}
+                            </label>
+                            <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> EP Title *</label>
+                        <input type="text" id="epTitle" value="${escapeHtml(ep?.title || '')}" placeholder="e.g. Midnight Waves" required>
+                    </div>
+                    
+                    <!-- Artist Selection with Real-Time Search (matching upload form) -->
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Artist *</label>
+                        <div style="position: relative;">
+                            <input type="text" id="artistSearchInput" placeholder="Search or type artist name..." autocomplete="off" value="${escapeHtml(selectedArtist || '')}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md);">
+                            
+                            <!-- Hidden select for form submission -->
+                            <select id="artistSelect" style="display: none;">
+                                <option value="">Select Artist</option>
+                                ${allArtists.map(artist => 
+                                    `<option value="${escapeHtml(artist.name)}" ${artist.name === selectedArtist ? 'selected' : ''}>${escapeHtml(artist.name)}</option>`
+                                ).join('')}
+                            </select>
+                            
+                            <!-- Floating suggestions -->
+                            <div id="artistSuggestions" class="suggestions-container"></div>
+                        </div>
+                        
+                        <!-- Selected artist badge -->
+                        <div id="selectedArtistBadge" class="selected-badge" style="display: ${selectedArtist ? 'inline-flex' : 'none'};">
+                            <i class="fas fa-check-circle"></i> <span id="selectedArtistName">${escapeHtml(selectedArtist || '')}</span>
+                            <button type="button" onclick="clearArtistSelection()" style="background: none; border: none; color: var(--primary); margin-left: 5px; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="form-hint" style="font-size: 0.8rem; color: var(--gray-500); margin-top: 4px;">
+                            <a href="#" onclick="openNewArtistModal()" style="color: var(--primary);">
+                                <i class="fas fa-plus-circle"></i> Add New Artist
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Release Date</label>
+                            <input type="date" id="epReleaseDate" value="${ep?.release_date || ''}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Genre</label>
+                            <input type="text" id="epGenre" value="${escapeHtml(ep?.genre || '')}" placeholder="e.g. Hip-Hop">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> Description</label>
+                        <textarea id="epDescription" rows="3" placeholder="EP description...">${escapeHtml(ep?.description || '')}</textarea>
+                    </div>
+                    
+                    <div class="checkbox-label">
+                        <input type="checkbox" id="epFeatured" ${ep?.is_featured ? 'checked' : ''}>
+                        <i class="fas fa-star" style="color: var(--primary);"></i> Featured EP
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/eps/index.html'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            ${isEditing ? 'Update EP' : 'Create EP'}
+                        </button>
+                    </div>
+                </form>
+            `;
+            
+            // Setup search listener for artist input
+            setupArtistSearch();
+            
+            document.getElementById('epForm').addEventListener('submit', handleSubmit);
+        }
+        
+        function setupArtistSearch() {
+            const artistInput = document.getElementById('artistSearchInput');
+            if (!artistInput) return;
+            
+            artistInput.addEventListener('input', function(e) {
+                const search = e.target.value.toLowerCase();
+                
+                if (search.length < 2) {
+                    document.getElementById('artistSuggestions').style.display = 'none';
+                    return;
+                }
+                
+                clearTimeout(artistTimeout);
+                artistTimeout = setTimeout(() => {
+                    const matches = allArtists.filter(artist => 
+                        artist.name.toLowerCase().includes(search) ||
+                        (artist.country && artist.country.toLowerCase().includes(search))
+                    ).slice(0, 8);
+                    
+                    if (matches.length > 0) {
+                        displayArtistSuggestions(matches);
+                    } else {
+                        document.getElementById('artistSuggestions').innerHTML = `
+                            <div style="padding: 15px; text-align: center;">
+                                No artists found. <a href="#" onclick="openNewArtistModal(); return false;">Add new?</a>
+                            </div>
+                        `;
+                        document.getElementById('artistSuggestions').style.display = 'block';
+                    }
+                }, 300);
+            });
+            
+            // Close suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#artistSearchInput') && !e.target.closest('#artistSuggestions')) {
+                    document.getElementById('artistSuggestions').style.display = 'none';
+                }
+            });
+        }
+        
+        function displayArtistSuggestions(artists) {
+            let html = '';
+            artists.forEach(artist => {
+                html += `
+                    <div class="suggestion-item" onclick="selectArtist('${escapeHtml(artist.name)}')">
+                        <div class="suggestion-icon"><i class="fas fa-user-circle"></i></div>
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(artist.name)}</div>
+                            ${artist.country ? `<div class="suggestion-meta">${escapeHtml(artist.country)}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('artistSuggestions').innerHTML = html;
+            document.getElementById('artistSuggestions').style.display = 'block';
+        }
+        
+        window.selectArtist = (artistName) => {
+            selectedArtist = artistName;
+            document.getElementById('artistSearchInput').value = artistName;
+            document.getElementById('artistSelect').value = artistName;
+            document.getElementById('artistSuggestions').style.display = 'none';
+            
+            document.getElementById('selectedArtistName').textContent = artistName;
+            document.getElementById('selectedArtistBadge').style.display = 'inline-flex';
+        };
+        
+        window.clearArtistSelection = () => {
+            selectedArtist = '';
+            document.getElementById('artistSearchInput').value = '';
+            document.getElementById('artistSelect').value = '';
+            document.getElementById('selectedArtistBadge').style.display = 'none';
+        };
+        
+        function previewCover(input) {
+            if (input.files && input.files[0]) {
+                currentCoverFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('coverPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('epId').value;
+            const isEditing = !!id;
+            
+            // Use selectedArtist instead of text input
+            if (!selectedArtist) {
+                alert('Please select an artist');
+                return;
+            }
+            
+            const epData = {
+                title: document.getElementById('epTitle').value.trim(),
+                artist: selectedArtist, // Use selected artist
+                release_date: document.getElementById('epReleaseDate').value || null,
+                genre: document.getElementById('epGenre').value.trim() || null,
+                description: document.getElementById('epDescription').value.trim() || null,
+                is_featured: document.getElementById('epFeatured').checked
+            };
+            
+            if (!epData.title) {
+                alert('EP title is required');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            try {
+                let response;
+                
+                if (isEditing) {
+                    response = await fetch(`${API_BASE}/admin/eps/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(epData)
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/admin/eps`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(epData)
+                    });
+                }
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to save');
+                }
+                
+                const epId = data.id || id;
+                
+                // Upload cover if selected
+                if (currentCoverFile) {
+                    const coverData = new FormData();
+                    coverData.append('cover', currentCoverFile);
+                    
+                    const coverRes = await fetch(`${API_BASE}/admin/eps/${epId}/cover`, {
+                        method: 'POST',
+                        body: coverData
+                    });
+                    
+                    if (!coverRes.ok) {
+                        console.warn('Cover upload failed');
+                    }
+                }
+                
+                showToast(`EP ${isEditing ? 'updated' : 'created'}!`, 'success');
+                
+                setTimeout(() => {
+                    window.location.href = `/admin/eps/profile.html?id=${epId}`;
+                }, 1500);
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = isEditing ? 'Update EP' : 'Create EP';
+            }
+        }
+        
+        // New Artist Modal (simplified version)
+        function openNewArtistModal() {
+            const artistName = prompt('Enter new artist name:');
+            if (artistName && artistName.trim()) {
+                // Add to local list and select it
+                const newArtist = { name: artistName.trim(), country: '' };
+                allArtists.push(newArtist);
+                allArtists.sort((a, b) => a.name.localeCompare(b.name));
+                
+                // Update hidden select
+                const select = document.getElementById('artistSelect');
+                const option = document.createElement('option');
+                option.value = artistName.trim();
+                option.textContent = artistName.trim();
+                select.appendChild(option);
+                
+                // Select the new artist
+                selectArtist(artistName.trim());
+            }
+        }
+        
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 2000;
+                animation: slideIn 0.3s;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Check authentication
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            if (!isLoggedIn) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Initialize
+        if (checkAuth()) {
+            loadEPForEdit();
+        }
+        
+        // Add animation style
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
