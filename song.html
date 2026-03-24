@@ -53,50 +53,12 @@
             font-weight: 600;
             text-decoration: none;
             display: inline-block;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
             cursor: pointer;
         }
         
         .song-artist-link:hover {
             text-decoration: underline;
-        }
-        
-        /* Featured Artists Styles */
-        .featured-artists {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .featured-label {
-            font-size: 14px;
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .featured-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        
-        .featured-artist-link {
-            font-size: 14px;
-            color: #ff4b2b;
-            font-weight: 500;
-            text-decoration: none;
-            background: rgba(255, 75, 43, 0.1);
-            padding: 2px 10px;
-            border-radius: 20px;
-            transition: all 0.2s;
-        }
-        
-        .featured-artist-link:hover {
-            background: #ff4b2b;
-            color: white;
-            text-decoration: none;
         }
         
         .song-album-info {
@@ -219,7 +181,7 @@
             background: #34ce57;
         }
         
-        /* Floating Player Bar */
+        /* Floating Player Bar - Clean Design */
         .floating-player {
             position: fixed;
             bottom: 0;
@@ -433,10 +395,6 @@
                 justify-content: center;
             }
             
-            .featured-artists {
-                justify-content: center;
-            }
-            
             .song-actions {
                 justify-content: center;
             }
@@ -505,9 +463,6 @@
         <div class="song-info">
             <h1 class="song-title" id="song-title">Loading...</h1>
             <a class="song-artist-link" id="song-artist">Loading...</a>
-            
-            <!-- Featured Artists Container -->
-            <div id="featured-artists-container" class="featured-artists" style="display: none;"></div>
             
             <div class="song-album-info" id="song-album-info"></div>
             
@@ -607,51 +562,7 @@
             return '/images/default-song.jpg';
         }
         
-        // Display featured artists from the song object
-        function displayFeaturedArtists(song) {
-            const container = document.getElementById('featured-artists-container');
-            if (!container) return;
-            
-            // Check if song has featured_artists array or featured_artists_list string
-            let featuredArtists = [];
-            
-            if (song.featured_artists && Array.isArray(song.featured_artists) && song.featured_artists.length > 0) {
-                featuredArtists = song.featured_artists;
-            } else if (song.featured_artists_list && song.featured_artists_list !== '') {
-                // Parse comma-separated string into array
-                featuredArtists = song.featured_artists_list.split(',').map(a => a.trim()).filter(a => a);
-            }
-            
-            if (featuredArtists.length === 0) {
-                container.style.display = 'none';
-                return;
-            }
-            
-            const featuredHtml = featuredArtists.map(artist => {
-                const artistSlug = typeof artist === 'string' 
-                    ? artist.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
-                    : artist.artist_slug;
-                const artistName = typeof artist === 'string' ? artist : artist.artist_name;
-                
-                return `
-                    <a href="/artist/${artistSlug}" class="featured-artist-link">
-                        ${escapeHtml(artistName)}
-                    </a>
-                `;
-            }).join('');
-            
-            container.innerHTML = `
-                <span class="featured-label">Feat.</span>
-                <div class="featured-list">${featuredHtml}</div>
-            `;
-            container.style.display = 'flex';
-            
-            // Update page title with featured artists
-            const featuredNames = featuredArtists.map(a => typeof a === 'string' ? a : a.artist_name).join(', ');
-            document.title = `${currentSong.artist} (feat. ${featuredNames}) - ${currentSong.title} | Zedtopvibes`;
-        }
-        
-        // Play Song
+        // Play Song - using stream endpoint
         async function playSong() {
             if (!currentSong) return;
             
@@ -720,7 +631,7 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
-        // Download Song
+        // Download Song - Direct Download
         function downloadSong() {
             if (!currentSong || !currentSong.r2_key) {
                 alert('Download not available');
@@ -729,6 +640,7 @@
             
             const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
             
+            // Create hidden link and trigger download
             const link = document.createElement('a');
             link.href = audioUrl;
             link.download = currentSong.filename || `${currentSong.title} - ${currentSong.artist}.mp3`;
@@ -736,6 +648,7 @@
             link.click();
             document.body.removeChild(link);
             
+            // Increment download count
             fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
         }
         
@@ -832,21 +745,15 @@
             }
             
             try {
-                // Use the single track API which now returns featured_artists
-                const apiUrl = `${API_BASE}/tracks?slug=${slug}`;
+                // Use the working endpoint from your old code
+                const apiUrl = `${API_BASE}/song/by-slug/${slug}`;
                 const response = await fetch(apiUrl);
                 
                 if (!response.ok) {
                     throw new Error('Song not found');
                 }
                 
-                const data = await response.json();
-                const song = Array.isArray(data) ? data[0] : (data.results ? data.results[0] : data);
-                
-                if (!song) {
-                    throw new Error('Song not found');
-                }
-                
+                const song = await response.json();
                 currentSong = song;
                 
                 document.getElementById('song-header').style.display = 'flex';
@@ -856,9 +763,6 @@
                 document.getElementById('song-duration').textContent = formatDuration(song.duration);
                 document.getElementById('breadcrumb-title').textContent = song.title || 'Song';
                 document.getElementById('artist-name-placeholder').textContent = song.artist || 'Artist';
-                
-                // Display featured artists
-                displayFeaturedArtists(song);
                 
                 if (song.description) {
                     document.getElementById('song-description').innerHTML = `<i class="fas fa-align-left" style="margin-right: 8px; color: #ff4b2b;"></i> ${escapeHtml(song.description)}`;
@@ -879,7 +783,7 @@
                 
                 document.getElementById('song-cover').src = getSongImageUrl(song);
                 
-                // Fetch related songs by same artist
+                // Fetch related songs
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracks = await tracksRes.json();
                 const trackList = Array.isArray(allTracks) ? allTracks : (allTracks.results || []);
