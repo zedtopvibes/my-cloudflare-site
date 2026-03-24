@@ -51,7 +51,7 @@
         .error-message { text-align: center; padding: 60px 20px; color: #ff2121; font-size: 14px; }
         
         /* Collaboration badge */
-        .featured-badge {
+        .collab-badge {
             background: #9c27b0;
             color: white;
             padding: 2px 8px;
@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <!-- SONGS BY ARTIST SECTION -->
+    <!-- ===== SONGS BY ARTIST SECTION (PRIMARY TRACKS) ===== -->
     <div class="section-header" style="margin-top:0;">
         <h2 class="section-title">
             <i class="fas fa-music" style="margin-right: 8px;"></i>
@@ -124,8 +124,8 @@
 
     <div class="page-navi" align="center"></div>
 
-    <!-- COLLABORATIONS SECTION (Artist is featured) -->
-    <div class="section-header section-spacing" id="collaborations-section" style="display: none;">
+    <!-- ===== COLLABORATIONS SECTION (ARTIST IS FEATURED) ===== -->
+    <div class="section-header section-spacing" id="collaborations-header" style="display: none;">
         <h2 class="section-title">
             <i class="fas fa-users" style="margin-right: 8px;"></i>
             Collaborations
@@ -138,7 +138,7 @@
         </div>
     </div>
 
-    <!-- ALBUMS BY ARTIST SECTION -->
+    <!-- ===== ALBUMS BY ARTIST SECTION ===== -->
     <div class="section-header section-spacing">
         <h2 class="section-title">
             <i class="fas fa-compact-disc" style="margin-right: 8px;"></i>
@@ -160,7 +160,7 @@
         
         let currentTrackPage = 1;
         let itemsPerPage = 8;
-        let allTracks = [];
+        let allPrimaryTracks = [];
         let currentArtistName = '';
         
         function formatDuration(seconds) {
@@ -189,7 +189,7 @@
         }
         
         // Render primary tracks (artist is main)
-        function renderTracks(tracks) {
+        function renderPrimaryTracks(tracks) {
             const container = document.getElementById('tracks-container');
             if (!container) return;
             if (!tracks || tracks.length === 0) {
@@ -199,10 +199,10 @@
                 return;
             }
             
-            allTracks = tracks;
-            const totalPages = Math.ceil(allTracks.length / itemsPerPage);
+            allPrimaryTracks = tracks;
+            const totalPages = Math.ceil(allPrimaryTracks.length / itemsPerPage);
             const start = (currentTrackPage - 1) * itemsPerPage;
-            const paginatedTracks = allTracks.slice(start, start + itemsPerPage);
+            const paginatedTracks = allPrimaryTracks.slice(start, start + itemsPerPage);
             
             container.innerHTML = paginatedTracks.map((track, index) => {
                 const actualIndex = start + index;
@@ -231,20 +231,18 @@
         // Render collaboration tracks (artist is featured)
         function renderCollaborations(collaborations) {
             const container = document.getElementById('collaborations-container');
-            const section = document.getElementById('collaborations-section');
-            if (!container) return;
+            const header = document.getElementById('collaborations-header');
             
-            console.log('Rendering collaborations:', collaborations.length);
+            if (!container) return;
             
             if (!collaborations || collaborations.length === 0) {
                 container.style.display = 'none';
-                if (section) section.style.display = 'none';
-                container.innerHTML = '';
+                if (header) header.style.display = 'none';
                 return;
             }
             
-            if (section) section.style.display = 'flex';
             container.style.display = 'block';
+            if (header) header.style.display = 'flex';
             
             container.innerHTML = collaborations.map(collab => {
                 return `
@@ -258,7 +256,7 @@
                             <div class="item-data">
                                 <span class="track-title">
                                     <b>${escapeHtml(collab.title)}</b>
-                                    <span class="featured-badge">Featured</span>
+                                    <span class="collab-badge">Featured</span>
                                 </span>
                                 <div class="artist-name">${escapeHtml(collab.primary_artist)}</div>
                                 <span class="item-meta">
@@ -335,7 +333,7 @@
         
         window.loadPage = function(page) {
             currentTrackPage = page;
-            renderTracks(allTracks);
+            renderPrimaryTracks(allPrimaryTracks);
             const section = document.querySelector('.section-header');
             if (section) section.scrollIntoView({ behavior: 'smooth' });
         };
@@ -405,17 +403,17 @@
                 
                 console.log('All tracks loaded:', trackList.length);
                 
-                // Split into primary tracks and collaborations
+                // ===== SEPARATE PRIMARY TRACKS AND COLLABORATIONS =====
+                // Primary tracks: artist is the main artist
                 const primaryTracks = trackList.filter(t => t.artist === artist.name);
                 
-                // Find collaborations where this artist is in featured_artists_list
+                // Collaborations: artist appears in featured_artists_list
                 const collaborations = trackList.filter(t => {
                     if (t.featured_artists_list && t.featured_artists_list !== '') {
-                        // Split by comma and trim spaces
                         const featuredArtists = t.featured_artists_list.split(',').map(a => a.trim());
                         const isFeatured = featuredArtists.includes(artist.name);
                         if (isFeatured) {
-                            console.log(`Found collaboration: ${t.title} - featured in: ${t.featured_artists_list}`);
+                            console.log(`Found collaboration: ${t.title} - Main artist: ${t.artist}`);
                         }
                         return isFeatured;
                     }
@@ -431,20 +429,21 @@
                 const albumList = Array.isArray(allAlbums) ? allAlbums : (allAlbums.results || []);
                 const artistAlbums = albumList.filter(a => a.artist === artist.name);
                 
+                console.log('=== SEPARATE SECTIONS ===');
                 console.log('Primary tracks:', primaryTracks.length);
-                console.log('Collaborations found:', collaborations.length);
+                console.log('Collaborations:', collaborations.length);
                 console.log('Albums found:', artistAlbums.length);
                 
-                // Log collaborations details for debugging
                 if (collaborations.length > 0) {
+                    console.log('Collaborations details:');
                     collaborations.forEach(c => {
-                        console.log(`- ${c.title} by ${c.primary_artist} (featured: ${c.featured_artists_list})`);
+                        console.log(`  - ${c.title} by ${c.primary_artist} (featured in: ${c.featured_artists_list})`);
                     });
                 }
                 
-                // Render sections
+                // Render sections separately
                 currentTrackPage = 1;
-                renderTracks(primaryTracks);
+                renderPrimaryTracks(primaryTracks);
                 renderCollaborations(collaborations);
                 renderAlbums(artistAlbums);
                 
