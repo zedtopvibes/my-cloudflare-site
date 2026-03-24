@@ -15,7 +15,26 @@ export async function onRequest(context) {
       return new Response('Track not found', { status: 404, headers });
     }
     
-    return new Response(JSON.stringify(track), { headers });
+    // Get featured artists as array
+    const { results: featuredArtists } = await env.DB.prepare(`
+      SELECT 
+        id,
+        track_id,
+        artist_name,
+        artist_slug,
+        artist_id,
+        created_at
+      FROM featured_artists 
+      WHERE track_id = ?
+      ORDER BY id
+    `).bind(params.id).all();
+    
+    // Return track with featured artists
+    return new Response(JSON.stringify({
+      ...track,
+      featured_artists: featuredArtists
+    }), { headers });
+    
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500, 
