@@ -10,23 +10,33 @@ export async function onRequest(context) {
   try {
     const { results } = await env.DB.prepare(`
       SELECT 
-        id,
-        title,
-        artist,
-        description,
-        artwork_url,
-        r2_key,
-        filename,
-        duration,
-        genre,
-        plays,
-        downloads,
-        views,
-        slug,
-        artist_slug,
-        uploaded_at
-      FROM tracks 
-      ORDER BY uploaded_at DESC
+        t.id,
+        t.title,
+        t.artist,
+        t.description,
+        t.artwork_url,
+        t.r2_key,
+        t.filename,
+        t.duration,
+        t.genre,
+        t.plays,
+        t.downloads,
+        t.views,
+        t.slug,
+        t.artist_slug,
+        t.uploaded_at,
+        (
+          SELECT GROUP_CONCAT(artist_name, ', ')
+          FROM featured_artists 
+          WHERE track_id = t.id
+        ) as featured_artists_list,
+        (
+          SELECT COUNT(*) 
+          FROM featured_artists 
+          WHERE track_id = t.id
+        ) as featured_count
+      FROM tracks t
+      ORDER BY t.uploaded_at DESC
     `).all();
     
     return new Response(JSON.stringify(results), { headers });
