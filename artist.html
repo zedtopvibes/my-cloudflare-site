@@ -49,19 +49,6 @@
         .loading-spinner::after { content: ''; display: inline-block; width: 30px; height: 30px; margin-left: 10px; border: 3px solid #f3f3f3; border-top: 3px solid #ff4b2b; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .error-message { text-align: center; padding: 60px 20px; color: #ff2121; font-size: 14px; }
-        
-        /* Collaboration badge */
-        .collab-badge {
-            background: #9c27b0;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            margin-left: 8px;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        
         @media (max-width: 768px) {
             .artist-header { flex-direction: column; text-align: center; gap: 20px; }
             .artist-artwork img { width: 150px; height: 150px; }
@@ -108,7 +95,6 @@
         </div>
     </div>
 
-    <!-- ===== SONGS BY ARTIST SECTION (PRIMARY TRACKS) ===== -->
     <div class="section-header" style="margin-top:0;">
         <h2 class="section-title">
             <i class="fas fa-music" style="margin-right: 8px;"></i>
@@ -124,21 +110,6 @@
 
     <div class="page-navi" align="center"></div>
 
-    <!-- ===== COLLABORATIONS SECTION (ARTIST IS FEATURED) ===== -->
-    <div class="section-header section-spacing" id="collaborations-header" style="display: none;">
-        <h2 class="section-title">
-            <i class="fas fa-users" style="margin-right: 8px;"></i>
-            Collaborations
-        </h2>
-    </div>
-    
-    <div class="corner">
-        <div class="music-grid" id="collaborations-container">
-            <div class="loading-spinner">Loading collaborations...</div>
-        </div>
-    </div>
-
-    <!-- ===== ALBUMS BY ARTIST SECTION ===== -->
     <div class="section-header section-spacing">
         <h2 class="section-title">
             <i class="fas fa-compact-disc" style="margin-right: 8px;"></i>
@@ -160,8 +131,7 @@
         
         let currentTrackPage = 1;
         let itemsPerPage = 8;
-        let allPrimaryTracks = [];
-        let currentArtistName = '';
+        let allTracks = [];
         
         function formatDuration(seconds) {
             if (!seconds) return '0:00';
@@ -188,8 +158,7 @@
             return match ? match[1] : null;
         }
         
-        // Render primary tracks (artist is main)
-        function renderPrimaryTracks(tracks) {
+        function renderTracks(tracks) {
             const container = document.getElementById('tracks-container');
             if (!container) return;
             if (!tracks || tracks.length === 0) {
@@ -199,10 +168,10 @@
                 return;
             }
             
-            allPrimaryTracks = tracks;
-            const totalPages = Math.ceil(allPrimaryTracks.length / itemsPerPage);
+            allTracks = tracks;
+            const totalPages = Math.ceil(allTracks.length / itemsPerPage);
             const start = (currentTrackPage - 1) * itemsPerPage;
-            const paginatedTracks = allPrimaryTracks.slice(start, start + itemsPerPage);
+            const paginatedTracks = allTracks.slice(start, start + itemsPerPage);
             
             container.innerHTML = paginatedTracks.map((track, index) => {
                 const actualIndex = start + index;
@@ -226,47 +195,6 @@
             }).join('');
             
             updatePagination(totalPages);
-        }
-        
-        // Render collaboration tracks (artist is featured)
-        function renderCollaborations(collaborations) {
-            const container = document.getElementById('collaborations-container');
-            const header = document.getElementById('collaborations-header');
-            
-            if (!container) return;
-            
-            if (!collaborations || collaborations.length === 0) {
-                container.style.display = 'none';
-                if (header) header.style.display = 'none';
-                return;
-            }
-            
-            container.style.display = 'block';
-            if (header) header.style.display = 'flex';
-            
-            container.innerHTML = collaborations.map(collab => {
-                return `
-                    <a href="/song/${collab.slug || collab.id}" class="music-item">
-                        <div class="item-container">
-                            <div class="item-thumb">
-                                <div class="roundthumb track-number" style="background: #9c27b0; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                                    <i class="fas fa-handshake"></i>
-                                </div>
-                            </div>
-                            <div class="item-data">
-                                <span class="track-title">
-                                    <b>${escapeHtml(collab.title)}</b>
-                                    <span class="collab-badge">Featured</span>
-                                </span>
-                                <div class="artist-name">${escapeHtml(collab.primary_artist)}</div>
-                                <span class="item-meta">
-                                    <b style="color:#ff0000">${formatDuration(collab.duration)}</b>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                `;
-            }).join('');
         }
         
         function renderAlbums(albums) {
@@ -333,7 +261,7 @@
         
         window.loadPage = function(page) {
             currentTrackPage = page;
-            renderPrimaryTracks(allPrimaryTracks);
+            renderTracks(allTracks);
             const section = document.querySelector('.section-header');
             if (section) section.scrollIntoView({ behavior: 'smooth' });
         };
@@ -372,7 +300,7 @@
             }
             
             try {
-                // Get artist info
+                // Direct fetch using the artist name endpoint (works!)
                 const response = await fetch(`${API_BASE}/artist/${artistName}`);
                 
                 if (!response.ok) {
@@ -380,7 +308,6 @@
                 }
                 
                 const artist = await response.json();
-                currentArtistName = artist.name;
                 console.log('Artist found:', artist);
                 
                 document.getElementById('artist-header').style.display = 'flex';
@@ -396,55 +323,23 @@
                     document.getElementById('artist-cover').src = imgUrl;
                 }
                 
-                // Get all tracks with featured artists list
+                // Get all tracks and filter by artist name
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracksData = await tracksRes.json();
                 const trackList = Array.isArray(allTracksData) ? allTracksData : (allTracksData.results || []);
+                const artistTracks = trackList.filter(t => t.artist === artist.name);
                 
-                console.log('All tracks loaded:', trackList.length);
-                
-                // ===== SEPARATE PRIMARY TRACKS AND COLLABORATIONS =====
-                // Primary tracks: artist is the main artist
-                const primaryTracks = trackList.filter(t => t.artist === artist.name);
-                
-                // Collaborations: artist appears in featured_artists_list
-                const collaborations = trackList.filter(t => {
-                    if (t.featured_artists_list && t.featured_artists_list !== '') {
-                        const featuredArtists = t.featured_artists_list.split(',').map(a => a.trim());
-                        const isFeatured = featuredArtists.includes(artist.name);
-                        if (isFeatured) {
-                            console.log(`Found collaboration: ${t.title} - Main artist: ${t.artist}`);
-                        }
-                        return isFeatured;
-                    }
-                    return false;
-                }).map(t => ({
-                    ...t,
-                    primary_artist: t.artist
-                }));
-                
-                // Get all albums
+                // Get all albums and filter by artist name
                 const albumsRes = await fetch(`${API_BASE}/albums`);
                 const allAlbums = await albumsRes.json();
                 const albumList = Array.isArray(allAlbums) ? allAlbums : (allAlbums.results || []);
                 const artistAlbums = albumList.filter(a => a.artist === artist.name);
                 
-                console.log('=== SEPARATE SECTIONS ===');
-                console.log('Primary tracks:', primaryTracks.length);
-                console.log('Collaborations:', collaborations.length);
+                console.log('Tracks found:', artistTracks.length);
                 console.log('Albums found:', artistAlbums.length);
                 
-                if (collaborations.length > 0) {
-                    console.log('Collaborations details:');
-                    collaborations.forEach(c => {
-                        console.log(`  - ${c.title} by ${c.primary_artist} (featured in: ${c.featured_artists_list})`);
-                    });
-                }
-                
-                // Render sections separately
                 currentTrackPage = 1;
-                renderPrimaryTracks(primaryTracks);
-                renderCollaborations(collaborations);
+                renderTracks(artistTracks);
                 renderAlbums(artistAlbums);
                 
             } catch (error) {
@@ -452,7 +347,6 @@
                 document.getElementById('artist-name').textContent = 'Error loading artist';
                 document.getElementById('artist-bio').textContent = error.message;
                 document.getElementById('tracks-container').innerHTML = '<div class="error-message">Failed to load artist. The artist may not exist.</div>';
-                document.getElementById('collaborations-container').innerHTML = '';
                 document.getElementById('albums-container').innerHTML = '<div class="error-message">Failed to load albums</div>';
                 document.getElementById('artist-header').style.display = 'flex';
             }
