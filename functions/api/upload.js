@@ -40,6 +40,9 @@ export async function onRequest(context) {
     const trackNumber = formData.get('trackNumber') || '1';
     const albumId = formData.get('album_id') || '';
     const albumTitle = formData.get('album_title') || '';
+    
+    // NEW: Get featured artists from form
+    const featuredArtistsInput = formData.get('featured_artists') || '';
 
     if (!file || !title || !artist) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), 
@@ -52,7 +55,7 @@ export async function onRequest(context) {
     }
 
     // =====================================================
-    // UPLOAD ARTWORK TO R2 (COVERS FOLDER - MATCHES COVER API)
+    // UPLOAD ARTWORK TO R2 (COVERS FOLDER)
     // =====================================================
     let artworkUrl = null;
     const artworkFile = formData.get('artwork');
@@ -62,25 +65,19 @@ export async function onRequest(context) {
         if (!artworkFile.type.startsWith('image/')) {
           console.warn('Invalid artwork type:', artworkFile.type);
         } else {
-          // Convert jpeg to jpg for consistency
           let artworkExt = artworkFile.type.split('/')[1] || 'jpg';
           if (artworkExt === 'jpeg') artworkExt = 'jpg';
           
-          // Generate safe filename
           const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
           const timestamp = Date.now();
-          
-          // Store in covers folder (same as album covers)
           const artworkFilename = `covers/${timestamp}-${safeTitle}.${artworkExt}`;
           
-          // Upload to R2
           await env.AUDIO.put(artworkFilename, await artworkFile.arrayBuffer(), {
             httpMetadata: {
               contentType: artworkFile.type
             }
           });
           
-          // Use the cover API endpoint: /api/cover/{filename}
           artworkUrl = `/api/cover/${timestamp}-${safeTitle}.${artworkExt}`;
           console.log('Track artwork uploaded to:', artworkUrl);
         }
@@ -204,12 +201,61 @@ export async function onRequest(context) {
 
     const trackId = result.results[0]?.id;
 
+    // =====================================================
+    // SAVE FEATURED ARTISTS (NEW)
+    // =====================================================
+    if (featuredArtistsInput && trackId) {
+      const featuredArtists = featuredArtistsInput.split(',').map(a => a.trim()).filter(a => a);
+      
+      for (const artistName of featuredArtists) {
+        // Skip if it's the same as main artist
+        if (artistName === artist) continue;
+        
+        // Generate slug
+        const artistSlug = artistName.toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w-]/g, '')
+          .replace(/--+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        
+        try {
+          // Check if artist exists in artists table
+          let existingArtist = await env.DB.prepare(`
+            SELECT id FROM artists WHERE name = ? OR slug = ?
+          `).bind(artistName, artistSlug).first();
+          
+          // If artist doesn't exist, create them
+          if (!existingArtist) {
+            const newArtist = await env.DB.prepare(`
+              INSERT INTO artists (name, slug) VALUES (?, ?)
+              RETURNING id
+            `).bind(artistName, artistSlug).run();
+            existingArtist = { id: newArtist.results[0]?.id };
+          }
+          
+          // Add to featured_artists table
+          await env.DB.prepare(`
+            INSERT INTO featured_artists (track_id, artist_name, artist_slug, artist_id)
+            VALUES (?, ?, ?, ?)
+          `).bind(trackId, artistName, artistSlug, existingArtist?.id || null).run();
+          
+          console.log(`Added featured artist: ${artistName} to track ${trackId}`);
+        } catch (err) {
+          console.error(`Failed to add featured artist ${artistName}:`, err);
+        }
+      }
+    }
+
+    // =====================================================
+    // ALBUM ASSOCIATION
+    // =====================================================
     if (albumId && trackId) {
       try {
         await env.DB.prepare(`
           INSERT INTO album_tracks (album_id, track_id, track_number)
           VALUES (?, ?, ?)
         `).bind(parseInt(albumId), trackId, parseInt(trackNumber) || 1).run();
+        console.log('Track added to album:', albumId);
       } catch (err) {
         console.error('Failed to add track to album:', err);
       }
@@ -239,7 +285,7 @@ export async function onRequest(context) {
 }
 
 // =====================================================
-// ID3 HELPER FUNCTIONS
+// ID3 HELPER FUNCTIONS (unchanged)
 // =====================================================
 
 function stripExistingID3(buffer) {
