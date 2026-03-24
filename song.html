@@ -607,21 +607,38 @@
             return '/images/default-song.jpg';
         }
         
-        // Display featured artists
-        function displayFeaturedArtists(featuredArtists) {
+        // Display featured artists from the song object
+        function displayFeaturedArtists(song) {
             const container = document.getElementById('featured-artists-container');
             if (!container) return;
             
-            if (!featuredArtists || featuredArtists.length === 0) {
+            // Check if song has featured_artists array or featured_artists_list string
+            let featuredArtists = [];
+            
+            if (song.featured_artists && Array.isArray(song.featured_artists) && song.featured_artists.length > 0) {
+                featuredArtists = song.featured_artists;
+            } else if (song.featured_artists_list && song.featured_artists_list !== '') {
+                // Parse comma-separated string into array
+                featuredArtists = song.featured_artists_list.split(',').map(a => a.trim()).filter(a => a);
+            }
+            
+            if (featuredArtists.length === 0) {
                 container.style.display = 'none';
                 return;
             }
             
-            const featuredHtml = featuredArtists.map(artist => `
-                <a href="/artist/${artist.artist_slug}" class="featured-artist-link">
-                    ${escapeHtml(artist.artist_name)}
-                </a>
-            `).join('');
+            const featuredHtml = featuredArtists.map(artist => {
+                const artistSlug = typeof artist === 'string' 
+                    ? artist.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
+                    : artist.artist_slug;
+                const artistName = typeof artist === 'string' ? artist : artist.artist_name;
+                
+                return `
+                    <a href="/artist/${artistSlug}" class="featured-artist-link">
+                        ${escapeHtml(artistName)}
+                    </a>
+                `;
+            }).join('');
             
             container.innerHTML = `
                 <span class="featured-label">Feat.</span>
@@ -630,7 +647,7 @@
             container.style.display = 'flex';
             
             // Update page title with featured artists
-            const featuredNames = featuredArtists.map(a => a.artist_name).join(', ');
+            const featuredNames = featuredArtists.map(a => typeof a === 'string' ? a : a.artist_name).join(', ');
             document.title = `${currentSong.artist} (feat. ${featuredNames}) - ${currentSong.title} | Zedtopvibes`;
         }
         
@@ -815,7 +832,7 @@
             }
             
             try {
-                // Use the single track API which now returns featured_artists array
+                // Use the single track API which now returns featured_artists
                 const apiUrl = `${API_BASE}/tracks?slug=${slug}`;
                 const response = await fetch(apiUrl);
                 
@@ -840,12 +857,8 @@
                 document.getElementById('breadcrumb-title').textContent = song.title || 'Song';
                 document.getElementById('artist-name-placeholder').textContent = song.artist || 'Artist';
                 
-                // Display featured artists (if any)
-                if (song.featured_artists && song.featured_artists.length > 0) {
-                    displayFeaturedArtists(song.featured_artists);
-                } else {
-                    document.getElementById('featured-artists-container').style.display = 'none';
-                }
+                // Display featured artists
+                displayFeaturedArtists(song);
                 
                 if (song.description) {
                     document.getElementById('song-description').innerHTML = `<i class="fas fa-align-left" style="margin-right: 8px; color: #ff4b2b;"></i> ${escapeHtml(song.description)}`;
