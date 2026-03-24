@@ -124,7 +124,7 @@
 
     <div class="page-navi" align="center"></div>
 
-    <!-- NEW: COLLABORATIONS SECTION (Artist is featured) -->
+    <!-- COLLABORATIONS SECTION (Artist is featured) -->
     <div class="section-header section-spacing" id="collaborations-section" style="display: none;">
         <h2 class="section-title">
             <i class="fas fa-users" style="margin-right: 8px;"></i>
@@ -234,9 +234,12 @@
             const section = document.getElementById('collaborations-section');
             if (!container) return;
             
+            console.log('Rendering collaborations:', collaborations.length);
+            
             if (!collaborations || collaborations.length === 0) {
                 container.style.display = 'none';
                 if (section) section.style.display = 'none';
+                container.innerHTML = '';
                 return;
             }
             
@@ -244,10 +247,6 @@
             container.style.display = 'block';
             
             container.innerHTML = collaborations.map(collab => {
-                // Display: "Song Title - Main Artist (feat. This Artist)"
-                let displayText = collab.title;
-                let displayArtist = collab.primary_artist;
-                
                 return `
                     <a href="/song/${collab.slug || collab.id}" class="music-item">
                         <div class="item-container">
@@ -258,10 +257,10 @@
                             </div>
                             <div class="item-data">
                                 <span class="track-title">
-                                    <b>${escapeHtml(displayText)}</b>
+                                    <b>${escapeHtml(collab.title)}</b>
                                     <span class="featured-badge">Featured</span>
                                 </span>
-                                <div class="artist-name">${escapeHtml(displayArtist)}</div>
+                                <div class="artist-name">${escapeHtml(collab.primary_artist)}</div>
                                 <span class="item-meta">
                                     <b style="color:#ff0000">${formatDuration(collab.duration)}</b>
                                 </span>
@@ -399,16 +398,29 @@
                     document.getElementById('artist-cover').src = imgUrl;
                 }
                 
-                // Get all tracks
+                // Get all tracks with featured artists list
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracksData = await tracksRes.json();
                 const trackList = Array.isArray(allTracksData) ? allTracksData : (allTracksData.results || []);
                 
+                console.log('All tracks loaded:', trackList.length);
+                
                 // Split into primary tracks and collaborations
                 const primaryTracks = trackList.filter(t => t.artist === artist.name);
-                const collaborations = trackList.filter(t => 
-                    t.featured_artists_list && t.featured_artists_list.includes(artist.name)
-                ).map(t => ({
+                
+                // Find collaborations where this artist is in featured_artists_list
+                const collaborations = trackList.filter(t => {
+                    if (t.featured_artists_list && t.featured_artists_list !== '') {
+                        // Split by comma and trim spaces
+                        const featuredArtists = t.featured_artists_list.split(',').map(a => a.trim());
+                        const isFeatured = featuredArtists.includes(artist.name);
+                        if (isFeatured) {
+                            console.log(`Found collaboration: ${t.title} - featured in: ${t.featured_artists_list}`);
+                        }
+                        return isFeatured;
+                    }
+                    return false;
+                }).map(t => ({
                     ...t,
                     primary_artist: t.artist
                 }));
@@ -420,8 +432,15 @@
                 const artistAlbums = albumList.filter(a => a.artist === artist.name);
                 
                 console.log('Primary tracks:', primaryTracks.length);
-                console.log('Collaborations:', collaborations.length);
+                console.log('Collaborations found:', collaborations.length);
                 console.log('Albums found:', artistAlbums.length);
+                
+                // Log collaborations details for debugging
+                if (collaborations.length > 0) {
+                    collaborations.forEach(c => {
+                        console.log(`- ${c.title} by ${c.primary_artist} (featured: ${c.featured_artists_list})`);
+                    });
+                }
                 
                 // Render sections
                 currentTrackPage = 1;
