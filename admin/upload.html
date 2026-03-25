@@ -1507,7 +1507,7 @@
         let mainArtistTimeout;
         let featuredArtistTimeout;
         let selectedMainArtist = null;
-        let selectedFeaturedArtists = new Map();
+        let selectedFeaturedArtists = new Map(); // Store {artistId: artistName}
         
         // Album variables
         let allAlbums = [];
@@ -1519,6 +1519,23 @@
         let allPlaylists = [];
         let playlistSearchTimeout;
         let selectedPlaylists = new Set();
+        
+        // ==================== FORM VALIDATION ====================
+        function validateFormAndEnableButton() {
+            const hasFile = selectedFile !== null;
+            const hasTitle = document.getElementById('title').value.trim() !== '';
+            const hasArtist = selectedMainArtist !== null;
+            
+            // Only disable if required fields are missing
+            submitBtn.disabled = !(hasFile && hasTitle && hasArtist);
+            
+            // Optional: Show visual feedback
+            if (submitBtn.disabled) {
+                submitBtn.title = 'Please fill all required fields (Title, Artist, and MP3 file)';
+            } else {
+                submitBtn.title = '';
+            }
+        }
         
         // File handling
         fileInput.addEventListener('change', (e) => {
@@ -1540,6 +1557,7 @@
             fileSize.textContent = formatFileSize(file.size);
             fileInfo.style.display = 'flex';
             getAudioDuration(file);
+            validateFormAndEnableButton();
         }
 
         window.clearSelectedFile = () => {
@@ -1550,6 +1568,7 @@
             document.getElementById('durationValue').textContent = '0:00';
             durationMs = 0;
             durationSeconds = 0;
+            validateFormAndEnableButton();
         };
 
         // Artwork handling
@@ -1685,6 +1704,7 @@
             document.getElementById('selectedMainArtistName').textContent = artistName;
             document.getElementById('selectedMainArtistBadge').style.display = 'inline-flex';
             updateFilenamePreview();
+            validateFormAndEnableButton();
         };
 
         window.clearMainArtistSelection = () => {
@@ -1693,6 +1713,7 @@
             document.getElementById('mainArtistSelect').value = '';
             document.getElementById('selectedMainArtistBadge').style.display = 'none';
             updateFilenamePreview();
+            validateFormAndEnableButton();
         };
 
         function setupFeaturedArtistSearch() {
@@ -2203,48 +2224,30 @@
         window.closeSuccessOverlay = () => { document.getElementById('successOverlay').classList.remove('active'); };
         window.resetAndClose = () => { closeSuccessOverlay(); resetForm(); };
 
-        // Form submission - FIXED
+        // Form submission
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            console.log('Form submitted - checking validation...');
-            
             if (!selectedFile) {
                 showStatus('error', 'Please select an MP3 file');
                 return;
             }
-
             const title = document.getElementById('title').value.trim();
-            if (!title) {
-                showStatus('error', 'Song title is required');
+            if (!title || !selectedMainArtist) {
+                showStatus('error', 'Title and main artist are required');
                 return;
             }
-            
-            if (!selectedMainArtist) {
-                showStatus('error', 'Please select a main artist');
-                return;
-            }
-
-            console.log('Validation passed - starting upload...');
-            
-            // Disable submit button and show progress
-            const submitButton = document.getElementById('submitBtn');
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
             showUploadProgress();
-            
+            submitBtn.disabled = true;
             try {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 formData.append('title', title);
                 formData.append('main_artist_id', selectedMainArtist.id);
-                
                 if (selectedFeaturedArtists.size > 0) {
                     for (const [artistId, artistName] of selectedFeaturedArtists) {
                         formData.append('featured_artists[]', artistId);
                     }
                 }
-                
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', durationMs);
@@ -2253,99 +2256,48 @@
                 formData.append('explicit', document.getElementById('explicit').checked ? '1' : '0');
                 formData.append('featured', document.getElementById('featured').checked ? '1' : '0');
                 formData.append('editor_pick', document.getElementById('editorPick').checked ? '1' : '0');
-                
-                if (artworkFile) {
-                    formData.append('artwork', artworkFile);
-                }
-
+                if (artworkFile) formData.append('artwork', artworkFile);
                 formData.append('customFilename', document.getElementById('customFilename').value.trim());
-                
                 if (selectedAlbumId) {
                     formData.append('album_id', selectedAlbumId);
-                    if (selectedAlbumTitle) {
-                        formData.append('album_title', selectedAlbumTitle);
-                    }
+                    if (selectedAlbumTitle) formData.append('album_title', selectedAlbumTitle);
                     const trackNumber = document.getElementById('trackNumber').value;
-                    if (trackNumber) {
-                        formData.append('trackNumber', trackNumber);
-                    }
+                    if (trackNumber) formData.append('trackNumber', trackNumber);
                 }
-
                 let progress = 0;
                 const interval = setInterval(() => {
                     progress += 5;
-                    if (progress <= 95) {
-                        updateProgress(progress);
-                    }
+                    if (progress <= 95) updateProgress(progress);
                 }, 500);
-
-                console.log('Sending upload request...');
-                const response = await fetch(`${API_BASE}/upload`, { 
-                    method: 'POST', 
-                    body: formData 
-                });
-                
+                const response = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
                 clearInterval(interval);
-
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.error || `Upload failed: ${response.status}`);
+                    throw new Error(errorData.error || 'Upload failed');
                 }
-
                 const result = await response.json();
-                console.log('Upload successful:', result);
                 const trackId = result.id;
-
-                // Album association after track is created
                 if (selectedAlbumId) {
-                    try {
-                        const body = { track_id: trackId };
-                        const trackNumber = document.getElementById('trackNumber').value;
-                        if (trackNumber) body.track_number = parseInt(trackNumber);
-                        
-                        await fetch(`${API_BASE}/admin/albums/${selectedAlbumId}/tracks`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(body)
-                        });
-                        console.log('Added to album successfully');
-                    } catch (e) {
-                        console.warn('Failed to add to album:', e);
-                    }
+                    const body = { track_id: trackId };
+                    const trackNumber = document.getElementById('trackNumber').value;
+                    if (trackNumber) body.track_number = parseInt(trackNumber);
+                    await fetch(`${API_BASE}/admin/albums/${selectedAlbumId}/tracks`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(e => console.warn('Failed to add to album'));
                 }
-
-                // Playlist associations
                 if (selectedPlaylists.size > 0) {
                     for (const playlistId of selectedPlaylists) {
-                        try {
-                            await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ track_id: trackId })
-                            });
-                        } catch (e) {
-                            console.warn('Failed to add to playlist:', e);
-                        }
+                        await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ track_id: trackId }) }).catch(e => console.warn('Failed to add to playlist'));
                     }
                 }
-
                 updateProgress(100);
-                
                 setTimeout(() => {
                     hideUploadProgress();
                     showSuccessOverlay(result);
-                    // Reset button after success
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Song';
                 }, 500);
-                
             } catch (error) {
                 console.error('Upload error:', error);
                 hideUploadProgress();
                 showStatus('error', error.message || 'Upload failed');
-                // Re-enable submit button on error
-                submitButton.disabled = false;
-                submitButton.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Song';
+                submitBtn.disabled = false;
             }
         });
 
@@ -2372,7 +2324,7 @@
             window.selectedAlbumTitle = null;
             window.artworkDataUrl = null;
             updateFilenamePreview();
-            submitBtn.disabled = false;
+            validateFormAndEnableButton();
         };
 
         function showStatus(type, message) {
@@ -2420,10 +2372,12 @@
             try {
                 await Promise.all([loadArtists(), loadAlbums(), loadPlaylists(), loadSettingsFromD1()]);
                 document.getElementById('title').addEventListener('input', updateFilenamePreview);
+                document.getElementById('title').addEventListener('input', validateFormAndEnableButton);
                 document.getElementById('customFilename').addEventListener('input', updateFilenamePreview);
                 document.getElementById('skeletonLoader').classList.add('hidden');
                 document.getElementById('realForm').classList.add('visible');
                 updateFilenamePreview();
+                validateFormAndEnableButton();
             } catch (error) {
                 console.error('Error loading initial data:', error);
                 document.getElementById('skeletonLoader').classList.add('hidden');
