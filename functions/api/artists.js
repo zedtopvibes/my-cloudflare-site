@@ -22,57 +22,77 @@ export async function onRequest(context) {
   }
 
   try {
-    // Get ALL artist stats from tracks table
+    // Updated query to use artists table and track_artists junction
     const { results } = await env.DB.prepare(`
       SELECT 
-        -- Basic info
-        artist as name,
-        artist_slug as slug,
+        a.id,
+        a.name,
+        a.slug,
+        a.bio,
+        a.website,
+        a.social_links,
+        a.created_at,
+        a.updated_at,
         
-        -- Track counts
-        COUNT(*) as track_count,
+        -- Track counts (counting all tracks this artist is associated with)
+        COUNT(DISTINCT ta.track_id) as track_count,
         
-        -- Play stats
-        SUM(plays) as total_plays,
-        AVG(plays) as avg_plays,
-        MAX(plays) as most_played_single_plays,
+        -- Primary tracks count (tracks where artist is primary)
+        COUNT(DISTINCT CASE WHEN ta.is_primary = 1 THEN ta.track_id END) as primary_track_count,
+        
+        -- Featured tracks count (tracks where artist is featured)
+        COUNT(DISTINCT CASE WHEN ta.is_primary = 0 THEN ta.track_id END) as featured_track_count,
+        
+        -- Play stats from all associated tracks
+        SUM(t.plays) as total_plays,
+        AVG(t.plays) as avg_plays,
+        MAX(t.plays) as most_played_single_plays,
         
         -- Download stats
-        SUM(downloads) as total_downloads,
-        AVG(downloads) as avg_downloads,
-        MAX(downloads) as most_downloaded_single_downloads,
+        SUM(t.downloads) as total_downloads,
+        AVG(t.downloads) as avg_downloads,
+        MAX(t.downloads) as most_downloaded_single_downloads,
         
         -- View stats
-        SUM(views) as total_views,
-        AVG(views) as avg_views,
-        MAX(views) as most_viewed_single_views,
+        SUM(t.views) as total_views,
+        AVG(t.views) as avg_views,
+        MAX(t.views) as most_viewed_single_views,
         
         -- Date info
-        MIN(uploaded_at) as first_release,
-        MAX(uploaded_at) as latest_release,
+        MIN(t.uploaded_at) as first_release,
+        MAX(t.uploaded_at) as latest_release,
         
         -- Genres (as JSON array)
-        GROUP_CONCAT(DISTINCT genre) as genres,
+        GROUP_CONCAT(DISTINCT t.genre) as genres,
         
         -- Track IDs (for reference)
-        GROUP_CONCAT(id) as track_ids,
+        GROUP_CONCAT(DISTINCT ta.track_id) as track_ids,
         
         -- Track titles (for reference)
-        GROUP_CONCAT(title) as track_titles
+        GROUP_CONCAT(DISTINCT t.title) as track_titles
         
-      FROM tracks 
-      WHERE artist IS NOT NULL AND artist != ''
-      GROUP BY artist, artist_slug
+      FROM artists a
+      LEFT JOIN track_artists ta ON a.id = ta.artist_id
+      LEFT JOIN tracks t ON ta.track_id = t.id
+      GROUP BY a.id
       ORDER BY total_plays DESC
     `).all();
 
     // Process results to make them more usable
     const artists = results.map(artist => ({
+      id: artist.id,
       name: artist.name,
       slug: artist.slug,
+      bio: artist.bio,
+      website: artist.website,
+      social_links: artist.social_links ? JSON.parse(artist.social_links) : null,
+      created_at: artist.created_at,
+      updated_at: artist.updated_at,
       
       // Stats
       track_count: parseInt(artist.track_count) || 0,
+      primary_track_count: parseInt(artist.primary_track_count) || 0,
+      featured_track_count: parseInt(artist.featured_track_count) || 0,
       
       plays: {
         total: parseInt(artist.total_plays) || 0,
@@ -97,12 +117,12 @@ export async function onRequest(context) {
       latest_release: artist.latest_release,
       
       // Genres (split the concatenated string)
-      genres: artist.genres ? artist.genres.split(',') : [],
+      genres: artist.genres ? [...new Set(artist.genres.split(',').filter(g => g && g !== 'null'))] : [],
       
       // Track IDs (for reference)
       track_ids: artist.track_ids ? artist.track_ids.split(',').map(Number) : [],
       
-      track_titles: artist.track_titles ? artist.track_titles.split(',') : []
+      track_titles: artist.track_titles ? [...new Set(artist.track_titles.split(','))] : []
     }));
     
     return new Response(JSON.stringify(artists), { headers });
