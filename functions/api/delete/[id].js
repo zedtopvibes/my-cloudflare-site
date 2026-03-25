@@ -39,7 +39,19 @@ export async function onRequest(context) {
       // Continue with DB deletion even if R2 delete fails
     }
 
-    // Delete from D1
+    // Delete from track_artists junction table first (foreign key constraint)
+    await env.DB.prepare('DELETE FROM track_artists WHERE track_id = ?').bind(id).run();
+    
+    // Delete from album_tracks if track is in any album
+    await env.DB.prepare('DELETE FROM album_tracks WHERE track_id = ?').bind(id).run();
+    
+    // Delete from ep_tracks if track is in any EP
+    await env.DB.prepare('DELETE FROM ep_tracks WHERE track_id = ?').bind(id).run();
+    
+    // Delete from playlist_tracks if track is in any playlist
+    await env.DB.prepare('DELETE FROM playlist_tracks WHERE track_id = ?').bind(id).run();
+    
+    // Finally delete from tracks table
     await env.DB.prepare('DELETE FROM tracks WHERE id = ?').bind(id).run();
 
     return new Response(JSON.stringify({ 
