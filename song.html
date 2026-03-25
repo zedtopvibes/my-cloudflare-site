@@ -47,17 +47,40 @@
             margin-bottom: 8px;
         }
         
+        .song-artists-container {
+            margin-bottom: 8px;
+        }
+        
         .song-artist-link {
             font-size: 18px;
             color: #ff4b2b;
             font-weight: 600;
             text-decoration: none;
             display: inline-block;
-            margin-bottom: 8px;
             cursor: pointer;
         }
         
         .song-artist-link:hover {
+            text-decoration: underline;
+        }
+        
+        .featured-artists {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .featured-artists span {
+            color: #888;
+        }
+        
+        .featured-artist-link {
+            color: #ff4b2b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .featured-artist-link:hover {
             text-decoration: underline;
         }
         
@@ -462,7 +485,11 @@
         </div>
         <div class="song-info">
             <h1 class="song-title" id="song-title">Loading...</h1>
-            <a class="song-artist-link" id="song-artist">Loading...</a>
+            
+            <div class="song-artists-container" id="song-artists-container">
+                <a class="song-artist-link" id="song-primary-artist">Loading...</a>
+                <div class="featured-artists" id="featured-artists-container"></div>
+            </div>
             
             <div class="song-album-info" id="song-album-info"></div>
             
@@ -562,6 +589,38 @@
             return '/images/default-song.jpg';
         }
         
+        // Helper function to get primary artist
+        function getPrimaryArtist(song) {
+            if (!song.artists || song.artists.length === 0) return null;
+            const primary = song.artists.find(a => a.is_primary === 1);
+            return primary || song.artists[0];
+        }
+        
+        // Helper function to get featured artists
+        function getFeaturedArtists(song) {
+            if (!song.artists || song.artists.length === 0) return [];
+            return song.artists.filter(a => a.is_primary === 0);
+        }
+        
+        // Helper function to get artist display name
+        function getArtistDisplayName(song) {
+            const primary = getPrimaryArtist(song);
+            if (primary) return primary.name;
+            
+            // Fallback for backward compatibility
+            if (song.artist) return song.artist;
+            return 'Unknown Artist';
+        }
+        
+        // Helper function to check if a track belongs to an artist (primary or featured)
+        function trackHasArtist(track, artistId) {
+            if (!track.artists || track.artists.length === 0) {
+                // Fallback for backward compatibility
+                return track.artist_id === artistId;
+            }
+            return track.artists.some(a => a.id === artistId);
+        }
+        
         // Play Song - using stream endpoint
         async function playSong() {
             if (!currentSong) return;
@@ -585,9 +644,12 @@
                 await audioPlayer.play();
                 isPlaying = true;
                 
-                // Update floating bar
+                // Update floating bar with primary artist
+                const primaryArtist = getPrimaryArtist(currentSong);
+                const displayArtist = primaryArtist ? primaryArtist.name : (currentSong.artist || 'Unknown Artist');
+                
                 document.getElementById('player-title').textContent = currentSong.title;
-                document.getElementById('player-artist').textContent = currentSong.artist;
+                document.getElementById('player-artist').textContent = displayArtist;
                 document.getElementById('player-thumb').src = getSongImageUrl(currentSong);
                 document.getElementById('playerPlayPause').innerHTML = '<i class="fas fa-pause"></i>';
                 document.getElementById('floatingPlayer').style.display = 'flex';
@@ -643,7 +705,7 @@
             // Create hidden link and trigger download
             const link = document.createElement('a');
             link.href = audioUrl;
-            link.download = currentSong.filename || `${currentSong.title} - ${currentSong.artist}.mp3`;
+            link.download = currentSong.filename || `${currentSong.title} - ${getArtistDisplayName(currentSong)}.mp3`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -660,43 +722,69 @@
             }
         }
         
-        function renderRelatedSongs(songs, currentSongId) {
+        function renderRelatedSongs(songs, currentSongId, currentSongArtists) {
             const container = document.getElementById('related-songs-container');
             if (!container) return;
             
-            const related = songs.filter(s => s.id !== currentSongId).slice(0, 4);
+            // Get primary artist ID for filtering
+            const primaryArtist = getPrimaryArtist(currentSongArtists);
+            const primaryArtistId = primaryArtist ? primaryArtist.id : null;
+            
+            // Filter songs that share at least one artist with current song
+            const related = songs.filter(song => {
+                if (song.id === currentSongId) return false;
+                
+                // Check if song shares any artist with current song
+                if (song.artists && currentSongArtists.artists) {
+                    return song.artists.some(artist => 
+                        currentSongArtists.artists.some(currentArtist => currentArtist.id === artist.id)
+                    );
+                }
+                
+                // Fallback for backward compatibility
+                if (song.artist_id && primaryArtistId) {
+                    return song.artist_id === primaryArtistId;
+                }
+                
+                return false;
+            }).slice(0, 4);
             
             if (!related || related.length === 0) {
                 container.innerHTML = '<div class="error-message">No more songs from this artist</div>';
                 return;
             }
             
-            container.innerHTML = related.map(song => `
-                <a href="/song/${song.slug || song.id}" class="music-item">
-                    <div class="item-container">
-                        <div class="item-thumb">
-                            <img src="${getSongImageUrl(song)}" 
-                                 width="80" height="80" 
-                                 class="roundthumb" 
-                                 alt="${escapeHtml(song.title)}"
-                                 onerror="this.src='/images/default-song.jpg'">
+            container.innerHTML = related.map(song => {
+                const songPrimaryArtist = getPrimaryArtist(song);
+                const displayArtist = songPrimaryArtist ? songPrimaryArtist.name : (song.artist || 'Unknown Artist');
+                
+                return `
+                    <a href="/song/${song.slug || song.id}" class="music-item">
+                        <div class="item-container">
+                            <div class="item-thumb">
+                                <img src="${getSongImageUrl(song)}" 
+                                     width="80" height="80" 
+                                     class="roundthumb" 
+                                     alt="${escapeHtml(song.title)}"
+                                     onerror="this.src='/images/default-song.jpg'">
+                            </div>
+                            <div class="item-data">
+                                <span class="track-title"><b>${escapeHtml(song.title)}</b></span>
+                                <div class="artist-name">${escapeHtml(displayArtist)}</div>
+                                <span class="item-meta">
+                                    <b style="color:#ff0000">${formatDuration(song.duration)}</b>
+                                </span>
+                            </div>
                         </div>
-                        <div class="item-data">
-                            <span class="track-title"><b>${escapeHtml(song.title)}</b></span>
-                            <div class="artist-name">${escapeHtml(song.artist || 'Unknown Artist')}</div>
-                            <span class="item-meta">
-                                <b style="color:#ff0000">${formatDuration(song.duration)}</b>
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
+                    </a>
+                `;
+            }).join('');
         }
         
         function getShareText() {
             const title = document.getElementById('song-title')?.textContent || 'Song';
-            const artist = document.getElementById('song-artist')?.textContent || 'Artist';
-            return `🎵 Check out "${title}" by ${artist} on Zedtopvibes!`;
+            const primaryArtist = document.getElementById('song-primary-artist')?.textContent || 'Artist';
+            return `🎵 Check out "${title}" by ${primaryArtist} on Zedtopvibes!`;
         }
         
         window.shareTelegram = function() {
@@ -758,11 +846,40 @@
                 
                 document.getElementById('song-header').style.display = 'flex';
                 document.getElementById('song-title').textContent = song.title || 'Untitled';
-                document.getElementById('song-artist').textContent = song.artist || 'Unknown Artist';
-                document.getElementById('song-artist').setAttribute('data-artist', song.artist || '');
                 document.getElementById('song-duration').textContent = formatDuration(song.duration);
                 document.getElementById('breadcrumb-title').textContent = song.title || 'Song';
-                document.getElementById('artist-name-placeholder').textContent = song.artist || 'Artist';
+                
+                // Handle artists display
+                const primaryArtist = getPrimaryArtist(song);
+                const featuredArtists = getFeaturedArtists(song);
+                
+                if (primaryArtist) {
+                    document.getElementById('song-primary-artist').textContent = primaryArtist.name;
+                    document.getElementById('song-primary-artist').setAttribute('data-artist-id', primaryArtist.id);
+                    document.getElementById('song-primary-artist').setAttribute('data-artist-slug', primaryArtist.slug);
+                    
+                    // Set artist name placeholder for "More from" section
+                    document.getElementById('artist-name-placeholder').textContent = primaryArtist.name;
+                } else {
+                    // Fallback for backward compatibility
+                    const artistName = song.artist || 'Unknown Artist';
+                    document.getElementById('song-primary-artist').textContent = artistName;
+                    document.getElementById('artist-name-placeholder').textContent = artistName;
+                }
+                
+                // Display featured artists if any
+                if (featuredArtists.length > 0) {
+                    const featuredHtml = `
+                        <span>feat. </span>
+                        ${featuredArtists.map((artist, index) => `
+                            <a href="/artist/${artist.slug}" class="featured-artist-link" data-artist-id="${artist.id}">${escapeHtml(artist.name)}</a>
+                            ${index < featuredArtists.length - 1 ? ', ' : ''}
+                        `).join('')}
+                    `;
+                    document.getElementById('featured-artists-container').innerHTML = featuredHtml;
+                } else {
+                    document.getElementById('featured-artists-container').innerHTML = '';
+                }
                 
                 if (song.description) {
                     document.getElementById('song-description').innerHTML = `<i class="fas fa-align-left" style="margin-right: 8px; color: #ff4b2b;"></i> ${escapeHtml(song.description)}`;
@@ -783,13 +900,12 @@
                 
                 document.getElementById('song-cover').src = getSongImageUrl(song);
                 
-                // Fetch related songs
+                // Fetch all tracks for related songs
                 const tracksRes = await fetch(`${API_BASE}/tracks`);
                 const allTracks = await tracksRes.json();
                 const trackList = Array.isArray(allTracks) ? allTracks : (allTracks.results || []);
-                const artistSongs = trackList.filter(t => t.artist === song.artist);
                 
-                renderRelatedSongs(artistSongs, song.id);
+                renderRelatedSongs(trackList, song.id, song);
                 
             } catch (error) {
                 console.error('Error loading song:', error);
@@ -813,13 +929,23 @@
         }
         
         document.addEventListener('click', function(e) {
-            const artistLink = e.target.closest('#song-artist');
-            if (artistLink) {
+            // Handle primary artist click
+            const primaryArtistLink = e.target.closest('#song-primary-artist');
+            if (primaryArtistLink) {
                 e.preventDefault();
-                const artistName = artistLink.textContent;
-                if (artistName && artistName !== 'Loading...' && artistName !== 'Unknown Artist') {
-                    const slug = artistName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-                    window.location.href = `/artist/${slug}`;
+                const artistSlug = primaryArtistLink.getAttribute('data-artist-slug');
+                if (artistSlug) {
+                    window.location.href = `/artist/${artistSlug}`;
+                }
+            }
+            
+            // Handle featured artist clicks
+            const featuredLink = e.target.closest('.featured-artist-link');
+            if (featuredLink) {
+                e.preventDefault();
+                const href = featuredLink.getAttribute('href');
+                if (href) {
+                    window.location.href = href;
                 }
             }
         });
