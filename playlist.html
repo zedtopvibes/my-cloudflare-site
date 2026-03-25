@@ -50,6 +50,18 @@
         .loading-spinner::after { content: ''; display: inline-block; width: 30px; height: 30px; margin-left: 10px; border: 3px solid #f3f3f3; border-top: 3px solid #ff4b2b; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .error-message { text-align: center; padding: 60px 20px; color: #ff2121; font-size: 14px; }
+        .track-artists {
+            font-size: 13px;
+            color: #666;
+            margin-top: 2px;
+        }
+        .track-artists .primary-artist {
+            color: #ff4b2b;
+            font-weight: 500;
+        }
+        .track-artists .featured {
+            color: #888;
+        }
         @media (max-width: 768px) {
             .album-header { flex-direction: column; text-align: center; gap: 20px; }
             .album-artwork img { width: 150px; height: 150px; }
@@ -153,6 +165,38 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
         
+        // Helper function to get primary artist
+        function getPrimaryArtist(track) {
+            if (!track.artists || track.artists.length === 0) return null;
+            const primary = track.artists.find(a => a.is_primary === 1);
+            return primary || track.artists[0];
+        }
+        
+        // Helper function to get featured artists
+        function getFeaturedArtists(track) {
+            if (!track.artists || track.artists.length === 0) return [];
+            return track.artists.filter(a => a.is_primary === 0);
+        }
+        
+        // Helper function to format artist display string
+        function formatArtistsDisplay(track) {
+            const primary = getPrimaryArtist(track);
+            const featured = getFeaturedArtists(track);
+            
+            if (!primary) {
+                // Fallback for backward compatibility
+                return escapeHtml(track.artist || 'Unknown Artist');
+            }
+            
+            let display = `<span class="primary-artist">${escapeHtml(primary.name)}</span>`;
+            
+            if (featured.length > 0) {
+                display += ` <span class="featured">feat. ${featured.map(a => escapeHtml(a.name)).join(', ')}</span>`;
+            }
+            
+            return display;
+        }
+        
         function calculateTotalDuration(tracks) {
             if (!tracks || tracks.length === 0) return '0 min';
             const totalSeconds = tracks.reduce((sum, track) => sum + (track.duration || 0), 0);
@@ -188,6 +232,8 @@
             
             container.innerHTML = paginatedTracks.map((track, index) => {
                 const actualIndex = start + index;
+                const artistsDisplay = formatArtistsDisplay(track);
+                
                 return `
                     <a href="/song/${track.slug || track.id}" class="music-item">
                         <div class="item-container">
@@ -198,7 +244,7 @@
                             </div>
                             <div class="item-data">
                                 <span class="track-title"><b>${escapeHtml(track.title)}</b></span>
-                                <div class="artist-name">${escapeHtml(track.artist)}</div>
+                                <div class="artist-name">${artistsDisplay}</div>
                                 <span class="item-meta">
                                     <b style="color:#ff0000">${formatDuration(track.duration)}</b>
                                 </span>
