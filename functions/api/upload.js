@@ -26,7 +26,6 @@ export async function onRequest(context) {
     const file = formData.get('file');
     
     const title = formData.get('title');
-    const artist = formData.get('artist');
     const description = formData.get('description') || '';
     const genre = formData.get('genre') || 'unknown';
     const duration = parseInt(formData.get('duration')) || 0;
@@ -41,14 +40,47 @@ export async function onRequest(context) {
     const albumId = formData.get('album_id') || '';
     const albumTitle = formData.get('album_title') || '';
 
-    if (!file || !title || !artist) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), 
+    // Get artist data from form (new structure)
+    const mainArtistId = parseInt(formData.get('main_artist_id'));
+    let featuredArtistsIds = [];
+    try {
+      const featuredArtists = formData.getAll('featured_artists[]');
+      featuredArtistsIds = featuredArtists.filter(id => id && id !== '').map(id => parseInt(id));
+    } catch (e) {
+      console.log('No featured artists or invalid format');
+    }
+
+    if (!file || !title || !mainArtistId) {
+      return new Response(JSON.stringify({ error: 'Missing required fields: file, title, and main artist are required' }), 
         { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
     }
 
     if (!file.type.startsWith('audio/')) {
       return new Response(JSON.stringify({ error: 'File must be an audio file' }), 
         { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
+    }
+
+    // Verify main artist exists
+    const artistCheck = await env.DB.prepare(`
+      SELECT id FROM artists WHERE id = ?
+    `).bind(mainArtistId).first();
+    
+    if (!artistCheck) {
+      return new Response(JSON.stringify({ error: 'Main artist not found' }), 
+        { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
+    }
+
+    // Verify featured artists exist (if any)
+    if (featuredArtistsIds.length > 0) {
+      const placeholders = featuredArtistsIds.map(() => '?').join(',');
+      const featuredCheck = await env.DB.prepare(`
+        SELECT COUNT(*) as count FROM artists WHERE id IN (${placeholders})
+      `).bind(...featuredArtistsIds).first();
+      
+      if (featuredCheck.count !== featuredArtistsIds.length) {
+        return new Response(JSON.stringify({ error: 'One or more featured artists not found' }), 
+          { status: 400, headers: { 'Content-Type': 'application/json', ...headers } });
+      }
     }
 
     // =====================================================
@@ -93,6 +125,12 @@ export async function onRequest(context) {
     // ID3 BRANDING - PROCESS THE MP3 FILE
     // =====================================================
     
+    // Get artist name for ID3 tags
+    const mainArtist = await env.DB.prepare(`
+      SELECT name FROM artists WHERE id = ?
+    `).bind(mainArtistId).first();
+    const mainArtistName = mainArtist ? mainArtist.name : 'Unknown Artist';
+    
     const fileBuffer = await file.arrayBuffer();
     const cleanBuffer = stripExistingID3(fileBuffer);
     
@@ -110,7 +148,7 @@ export async function onRequest(context) {
     }
 
     let id3Album = albumTitle || 'Zedtopvibes Compilation';
-    const brandedArtist = `${artist} | ${SITENAME}`;
+    const brandedArtist = `${mainArtistName} | ${SITENAME}`;
     const brandedComment = `🎵 Discover your next favorite track at ${SITENAME}`;
 
     const taggedMp3 = createCompleteID3Tags(cleanBuffer, {
@@ -137,7 +175,7 @@ export async function onRequest(context) {
         .substring(0, 100);
       filename = `${cleanCustom} (${SITENAME}).mp3`;
     } else {
-      const cleanArtist = artist
+      const cleanArtist = mainArtistName
         .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim()
@@ -157,7 +195,7 @@ export async function onRequest(context) {
       },
       customMetadata: {
         title,
-        artist,
+        artist: mainArtistName,
         uploadedAt: new Date().toISOString(),
         branded: 'true',
         sitename: SITENAME
@@ -165,13 +203,13 @@ export async function onRequest(context) {
     });
 
     // =====================================================
-    // D1 DATABASE OPERATIONS
+    // D1 DATABASE OPERATIONS - UPDATED FOR NEW STRUCTURE
     // =====================================================
     
+    // Insert track WITHOUT artist field (removed artist column)
     const result = await env.DB.prepare(`
       INSERT INTO tracks (
         title, 
-        artist, 
         description, 
         r2_key, 
         filename, 
@@ -184,11 +222,10 @@ export async function onRequest(context) {
         featured,
         editor_pick
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       RETURNING id
     `).bind(
       title, 
-      artist, 
       description, 
       filename, 
       filename, 
@@ -204,6 +241,30 @@ export async function onRequest(context) {
 
     const trackId = result.results[0]?.id;
 
+    if (!trackId) {
+      throw new Error('Failed to create track record');
+    }
+
+    // Insert track artists into junction table
+    if (trackId && mainArtistId) {
+      // Insert main artist (is_primary = 1, display_order = 0)
+      await env.DB.prepare(`
+        INSERT INTO track_artists (track_id, artist_id, is_primary, display_order)
+        VALUES (?, ?, ?, ?)
+      `).bind(trackId, mainArtistId, 1, 0).run();
+      
+      // Insert featured artists (is_primary = 0)
+      for (let i = 0; i < featuredArtistsIds.length; i++) {
+        await env.DB.prepare(`
+          INSERT INTO track_artists (track_id, artist_id, is_primary, display_order)
+          VALUES (?, ?, ?, ?)
+        `).bind(trackId, featuredArtistsIds[i], 0, i + 1).run();
+      }
+      
+      console.log(`Added ${featuredArtistsIds.length + 1} artists to track ${trackId}`);
+    }
+
+    // Album association (if album_id provided)
     if (albumId && trackId) {
       try {
         await env.DB.prepare(`
@@ -212,16 +273,22 @@ export async function onRequest(context) {
         `).bind(parseInt(albumId), trackId, parseInt(trackNumber) || 1).run();
       } catch (err) {
         console.error('Failed to add track to album:', err);
+        // Don't fail the whole upload if album association fails
       }
     }
 
+    // Return success response with track data
     return new Response(JSON.stringify({ 
       success: true, 
       id: trackId,
       message: 'Track uploaded successfully',
       filename,
       artwork_url: artworkUrl,
-      branded: true
+      branded: true,
+      artists: {
+        main: mainArtistId,
+        featured: featuredArtistsIds
+      }
     }), { 
       status: 200, 
       headers: { 'Content-Type': 'application/json', ...headers } 
@@ -389,4 +456,4 @@ function encodeSynchsafe(size) {
     (size >> 7) & 0x7F,
     size & 0x7F
   ];
-      }
+}
