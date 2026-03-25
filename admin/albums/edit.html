@@ -215,7 +215,7 @@
             padding: 40px;
         }
         
-        /* Suggestions container - matching upload form style */
+        /* Suggestions container */
         .suggestions-container {
             position: absolute;
             top: 100%;
@@ -282,6 +282,21 @@
             margin-top: 5px;
         }
         
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+        
+        .form-hint a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .form-hint a:hover {
+            text-decoration: underline;
+        }
+        
         @media (max-width: 640px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -323,7 +338,8 @@
         let currentCoverFile = null;
         let allArtists = [];
         let artistTimeout;
-        let selectedArtist = '';
+        let selectedArtistId = null;
+        let selectedArtistName = '';
         
         async function loadArtists() {
             try {
@@ -357,8 +373,9 @@
                 if (!res.ok) throw new Error('Album not found');
                 const album = await res.json();
                 
-                // Set selected artist
-                selectedArtist = album.artist;
+                // Set selected artist from the album data (handles both new and old structure)
+                selectedArtistId = album.artist_id || null;
+                selectedArtistName = album.artist_name || album.artist || '';
                 
                 pageTitle.textContent = `Edit: ${album.title}`;
                 renderForm(album);
@@ -377,6 +394,9 @@
         
         function renderForm(album) {
             const isEditing = !!album;
+            
+            // Find the artist name for display
+            const artistDisplayName = selectedArtistName || '';
             
             document.getElementById('formCard').innerHTML = `
                 <form id="albumForm">
@@ -404,17 +424,17 @@
                         <input type="text" id="albumTitle" value="${escapeHtml(album?.title || '')}" placeholder="e.g. Midnight Waves" required>
                     </div>
                     
-                    <!-- Artist Selection with Real-Time Search (matching upload form) -->
+                    <!-- Artist Selection with Real-Time Search (using artist_id) -->
                     <div class="form-group">
                         <label><i class="fas fa-user"></i> Artist *</label>
                         <div style="position: relative;">
-                            <input type="text" id="artistSearchInput" placeholder="Search or type artist name..." autocomplete="off" value="${escapeHtml(selectedArtist || '')}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md);">
+                            <input type="text" id="artistSearchInput" placeholder="Search or type artist name..." autocomplete="off" value="${escapeHtml(artistDisplayName)}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md);">
                             
-                            <!-- Hidden select for form submission -->
+                            <!-- Hidden select for form submission (stores artist_id) -->
                             <select id="artistSelect" style="display: none;">
                                 <option value="">Select Artist</option>
                                 ${allArtists.map(artist => 
-                                    `<option value="${escapeHtml(artist.name)}" ${artist.name === selectedArtist ? 'selected' : ''}>${escapeHtml(artist.name)}</option>`
+                                    `<option value="${artist.id}" ${artist.id === selectedArtistId ? 'selected' : ''}>${escapeHtml(artist.name)}</option>`
                                 ).join('')}
                             </select>
                             
@@ -423,15 +443,15 @@
                         </div>
                         
                         <!-- Selected artist badge -->
-                        <div id="selectedArtistBadge" class="selected-badge" style="display: ${selectedArtist ? 'inline-flex' : 'none'};">
-                            <i class="fas fa-check-circle"></i> <span id="selectedArtistName">${escapeHtml(selectedArtist || '')}</span>
+                        <div id="selectedArtistBadge" class="selected-badge" style="display: ${selectedArtistId ? 'inline-flex' : 'none'};">
+                            <i class="fas fa-check-circle"></i> <span id="selectedArtistName">${escapeHtml(artistDisplayName)}</span>
                             <button type="button" onclick="clearArtistSelection()" style="background: none; border: none; color: var(--primary); margin-left: 5px; cursor: pointer;">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
                         
-                        <div class="form-hint" style="font-size: 0.8rem; color: var(--gray-500); margin-top: 4px;">
-                            <a href="#" onclick="openNewArtistModal()" style="color: var(--primary);">
+                        <div class="form-hint">
+                            <a href="#" onclick="openNewArtistModal()">
                                 <i class="fas fa-plus-circle"></i> Add New Artist
                             </a>
                         </div>
@@ -520,7 +540,7 @@
             let html = '';
             artists.forEach(artist => {
                 html += `
-                    <div class="suggestion-item" onclick="selectArtist('${escapeHtml(artist.name)}')">
+                    <div class="suggestion-item" onclick="selectArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')">
                         <div class="suggestion-icon"><i class="fas fa-user-circle"></i></div>
                         <div class="suggestion-info">
                             <div class="suggestion-name">${escapeHtml(artist.name)}</div>
@@ -533,10 +553,11 @@
             document.getElementById('artistSuggestions').style.display = 'block';
         }
         
-        window.selectArtist = (artistName) => {
-            selectedArtist = artistName;
+        window.selectArtist = (artistId, artistName) => {
+            selectedArtistId = artistId;
+            selectedArtistName = artistName;
             document.getElementById('artistSearchInput').value = artistName;
-            document.getElementById('artistSelect').value = artistName;
+            document.getElementById('artistSelect').value = artistId;
             document.getElementById('artistSuggestions').style.display = 'none';
             
             document.getElementById('selectedArtistName').textContent = artistName;
@@ -544,7 +565,8 @@
         };
         
         window.clearArtistSelection = () => {
-            selectedArtist = '';
+            selectedArtistId = null;
+            selectedArtistName = '';
             document.getElementById('artistSearchInput').value = '';
             document.getElementById('artistSelect').value = '';
             document.getElementById('selectedArtistBadge').style.display = 'none';
@@ -568,15 +590,15 @@
             const id = document.getElementById('albumId').value;
             const isEditing = !!id;
             
-            // Use selectedArtist instead of text input
-            if (!selectedArtist) {
+            // Validate artist selection (use artist_id)
+            if (!selectedArtistId) {
                 alert('Please select an artist');
                 return;
             }
             
             const albumData = {
                 title: document.getElementById('albumTitle').value.trim(),
-                artist: selectedArtist, // Use selected artist
+                artist_id: selectedArtistId,  // Use artist_id instead of artist name
                 release_date: document.getElementById('albumReleaseDate').value || null,
                 genre: document.getElementById('albumGenre').value.trim() || null,
                 description: document.getElementById('albumDescription').value.trim() || null,
@@ -645,25 +667,52 @@
             }
         }
         
-        // New Artist Modal (simplified version)
+        // New Artist Modal with full creation
         function openNewArtistModal() {
-            // You can reuse the same modal from upload form or create a simple prompt
             const artistName = prompt('Enter new artist name:');
             if (artistName && artistName.trim()) {
-                // Add to local list and select it
-                const newArtist = { name: artistName.trim(), country: '' };
-                allArtists.push(newArtist);
+                saveNewArtist(artistName.trim());
+            }
+        }
+        
+        async function saveNewArtist(name) {
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: name,
+                        country: null,
+                        bio: null,
+                        is_featured: false,
+                        is_zambian_legend: false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create artist');
+                }
+                
+                // Add to local artists list
+                allArtists.push(data);
                 allArtists.sort((a, b) => a.name.localeCompare(b.name));
                 
                 // Update hidden select
                 const select = document.getElementById('artistSelect');
                 const option = document.createElement('option');
-                option.value = artistName.trim();
-                option.textContent = artistName.trim();
+                option.value = data.id;
+                option.textContent = data.name;
                 select.appendChild(option);
                 
                 // Select the new artist
-                selectArtist(artistName.trim());
+                selectArtist(data.id, data.name);
+                
+                showToast(`Artist "${name}" created!`, 'success');
+                
+            } catch (error) {
+                showToast(error.message, 'error');
             }
         }
         
@@ -696,7 +745,16 @@
         // Check authentication
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            if (!isLoggedIn) {
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
                 window.location.href = '/admin/login.html';
                 return false;
             }
