@@ -140,21 +140,46 @@ export async function onRequest(context) {
     }
   }
 
-  // DELETE - Delete EP
+  // DELETE - Delete EP with track count check
   if (request.method === 'DELETE') {
     try {
-      // First, delete associated tracks from ep_tracks junction table
-      await env.DB.prepare(
-        'DELETE FROM ep_tracks WHERE ep_id = ?'
-      ).bind(id).run();
+      // Check if EP exists
+      const ep = await env.DB.prepare(
+        'SELECT id FROM eps WHERE id = ?'
+      ).bind(id).first();
       
-      // Then delete the EP
+      if (!ep) {
+        return new Response(JSON.stringify({ error: 'EP not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+      
+      // Check if EP has any tracks in ep_tracks junction table
+      const trackCount = await env.DB.prepare(`
+        SELECT COUNT(*) as count FROM ep_tracks WHERE ep_id = ?
+      `).bind(id).first();
+      
+      if (trackCount.count > 0) {
+        return new Response(JSON.stringify({ 
+          error: `Cannot delete EP with ${trackCount.count} track(s). Remove all tracks first.`,
+          track_count: trackCount.count
+        }), { 
+          status: 400, 
+          headers 
+        });
+      }
+      
+      // Delete the EP (no tracks to clean up since we already checked)
       await env.DB.prepare(
         'DELETE FROM eps WHERE id = ?'
       ).bind(id).run();
       
-      return new Response(JSON.stringify({ success: true }), { headers });
-
+      return new Response(JSON.stringify({ 
+        success: true,
+        message: 'EP deleted successfully'
+      }), { headers });
+      
     } catch (error) {
       console.error('Error deleting EP:', error);
       return new Response(JSON.stringify({ error: error.message }), { 
