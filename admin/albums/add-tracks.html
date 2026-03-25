@@ -175,6 +175,30 @@
             color: var(--success);
         }
         
+        /* Artist badges */
+        .artist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
+        }
+        
+        .artist-badge.primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .artist-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+        
         /* Search Section */
         .search-section {
             padding: 20px;
@@ -330,9 +354,6 @@
         .track-artist {
             font-size: 0.8rem;
             color: var(--gray-500);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .track-meta {
@@ -549,6 +570,30 @@
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
+        // Helper function to format artists display
+        function formatArtistsDisplay(track) {
+            if (!track.artists || track.artists.length === 0) {
+                return escapeHtml(track.artist || 'Unknown Artist');
+            }
+            
+            const primaryArtist = track.artists.find(a => a.is_primary === 1) || track.artists[0];
+            const featuredArtists = track.artists.filter(a => a.is_primary === 0);
+            
+            let html = `<span class="artist-badge primary">${escapeHtml(primaryArtist.name)}</span>`;
+            if (featuredArtists.length > 0) {
+                html += featuredArtists.map(a => `<span class="artist-badge">${escapeHtml(a.name)}</span>`).join('');
+            }
+            return html;
+        }
+
+        // Helper function to get artist names for search
+        function getArtistSearchString(track) {
+            if (!track.artists || track.artists.length === 0) {
+                return track.artist || '';
+            }
+            return track.artists.map(a => a.name).join(' ');
+        }
+
         async function loadPage() {
             const urlParams = new URLSearchParams(window.location.search);
             albumId = urlParams.get('id');
@@ -619,8 +664,9 @@
             
             // First filter by search
             let filteredTracks = allTracks.filter(track => {
+                const artistSearch = getArtistSearchString(track).toLowerCase();
                 return track.title.toLowerCase().includes(searchTerm) ||
-                       track.artist.toLowerCase().includes(searchTerm);
+                       artistSearch.includes(searchTerm);
             });
             
             // Then apply category filter
@@ -636,6 +682,9 @@
 
             const contentCard = document.getElementById('contentCard');
             
+            // Get album artist name (handling new structure)
+            const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
+            
             contentCard.innerHTML = `
                 <div class="album-header">
                     <div class="album-cover-small">
@@ -646,7 +695,7 @@
                     </div>
                     <div class="album-details">
                         <h2>${escapeHtml(album.title)}</h2>
-                        <div class="album-artist">${escapeHtml(album.artist)}</div>
+                        <div class="album-artist">${escapeHtml(albumArtist)}</div>
                         <div class="album-stats">
                             <span><i class="fas fa-music"></i> ${album.tracks?.length || 0} tracks</span>
                             <span><i class="fas fa-headphones"></i> ${formatNumber(album.plays || 0)} plays</span>
@@ -690,6 +739,7 @@
                             const inOtherAlbum = tracksInOtherAlbums.get(track.id);
                             const isDisabled = isInThisAlbum || inOtherAlbum;
                             const isSelected = selectedTracks.has(track.id);
+                            const artistsDisplay = formatArtistsDisplay(track);
                             
                             return `
                             <div class="track-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}" 
@@ -708,7 +758,7 @@
                                 </div>
                                 <div class="track-info">
                                     <div class="track-title">${escapeHtml(track.title)}</div>
-                                    <div class="track-artist">${escapeHtml(track.artist)}</div>
+                                    <div class="track-artist">${artistsDisplay}</div>
                                 </div>
                                 <div class="track-meta">
                                     <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
