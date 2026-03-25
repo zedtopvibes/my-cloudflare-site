@@ -175,6 +175,22 @@
             vertical-align: middle;
         }
         
+        /* Track artists styling */
+        .track-artists {
+            font-size: 13px;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .track-artists .primary-artist {
+            color: #ff4b2b;
+            font-weight: 500;
+        }
+        
+        .track-artists .featured {
+            color: #888;
+        }
+        
         /* Pagination styles - reduced spacing */
         .page-navi {
             padding: 2px 6px;
@@ -448,6 +464,38 @@
                 .replace(/'/g, '&#39;');
         }
         
+        // Helper function to get primary artist from track
+        function getPrimaryArtist(track) {
+            if (!track.artists || track.artists.length === 0) return null;
+            const primary = track.artists.find(a => a.is_primary === 1);
+            return primary || track.artists[0];
+        }
+        
+        // Helper function to get featured artists from track
+        function getFeaturedArtists(track) {
+            if (!track.artists || track.artists.length === 0) return [];
+            return track.artists.filter(a => a.is_primary === 0);
+        }
+        
+        // Helper function to format artist display string for track
+        function formatTrackArtistsDisplay(track) {
+            const primary = getPrimaryArtist(track);
+            const featured = getFeaturedArtists(track);
+            
+            if (!primary) {
+                // Fallback for backward compatibility
+                return escapeHtml(track.artist || 'Unknown Artist');
+            }
+            
+            let display = `<span class="primary-artist">${escapeHtml(primary.name)}</span>`;
+            
+            if (featured.length > 0) {
+                display += ` <span class="featured">feat. ${featured.map(a => escapeHtml(a.name)).join(', ')}</span>`;
+            }
+            
+            return display;
+        }
+        
         function getEPImage(ep) {
             if (ep.cover_url && ep.cover_url !== 'null' && ep.cover_url !== '') {
                 if (ep.cover_url.startsWith('/')) {
@@ -503,6 +551,8 @@
             // Render tracks for current page
             container.innerHTML = paginatedTracks.map((track, index) => {
                 const actualIndex = start + index;
+                const artistsDisplay = formatTrackArtistsDisplay(track);
+                
                 return `
                     <a href="/song/${track.slug || track.id}" class="music-item">
                         <div class="item-container">
@@ -513,7 +563,7 @@
                             </div>
                             <div class="item-data">
                                 <span class="track-title"><b>${escapeHtml(track.title)}</b></span>
-                                <div class="artist-name">${escapeHtml(track.artist || 'Unknown Artist')}</div>
+                                <div class="artist-name">${artistsDisplay}</div>
                                 <span class="item-meta">
                                     <b style="color:#ff0000">${formatDuration(track.duration)}</b>
                                 </span>
@@ -638,7 +688,7 @@
         };
         
         // Load recommended EPs
-        async function loadRecommendedEPs(currentEPId, currentArtist) {
+        async function loadRecommendedEPs(currentEPId, currentArtistId) {
             const container = document.getElementById('recommended-container');
             if (!container) return;
             
@@ -649,10 +699,20 @@
                 
                 let recommendations = epList.filter(ep => ep.id != currentEPId);
                 
-                if (currentArtist) {
-                    const sameArtist = recommendations.filter(ep => ep.artist === currentArtist);
+                // Filter by artist ID if available (new structure)
+                if (currentArtistId) {
+                    const sameArtist = recommendations.filter(ep => ep.artist_id === currentArtistId);
                     if (sameArtist.length > 0) {
-                        recommendations = [...sameArtist, ...recommendations.filter(a => a.artist !== currentArtist)];
+                        recommendations = [...sameArtist, ...recommendations.filter(a => a.artist_id !== currentArtistId)];
+                    }
+                } else if (currentArtistId === undefined) {
+                    // Fallback for backward compatibility - filter by artist name
+                    const currentArtistName = document.getElementById('ep-artist')?.textContent;
+                    if (currentArtistName && currentArtistName !== 'Unknown Artist') {
+                        const sameArtist = recommendations.filter(ep => ep.artist === currentArtistName);
+                        if (sameArtist.length > 0) {
+                            recommendations = [...sameArtist, ...recommendations.filter(a => a.artist !== currentArtistName)];
+                        }
                     }
                 }
                 
@@ -663,27 +723,32 @@
                     return;
                 }
                 
-                container.innerHTML = recommendations.map(ep => `
-                    <a href="/ep/${ep.slug}" class="music-item">
-                        <div class="item-container">
-                            <div class="item-thumb">
-                                <img src="${getEPImage(ep)}" 
-                                     width="80" height="80" 
-                                     class="roundthumb" 
-                                     alt="${escapeHtml(ep.title)}"
-                                     onerror="this.src='/images/default-ep.jpg'">
+                container.innerHTML = recommendations.map(ep => {
+                    // Get artist name from either new or old structure
+                    const artistName = ep.artist_name || ep.artist || 'Unknown Artist';
+                    
+                    return `
+                        <a href="/ep/${ep.slug}" class="music-item">
+                            <div class="item-container">
+                                <div class="item-thumb">
+                                    <img src="${getEPImage(ep)}" 
+                                         width="80" height="80" 
+                                         class="roundthumb" 
+                                         alt="${escapeHtml(ep.title)}"
+                                         onerror="this.src='/images/default-ep.jpg'">
+                                </div>
+                                <div class="item-data">
+                                    <span class="track-title"><b>${escapeHtml(ep.title)}</b> <span class="ep-badge">EP</span></span>
+                                    <div class="artist-name">${escapeHtml(artistName)}</div>
+                                    <span class="item-meta">
+                                        <b style="color:#ff0000">${ep.track_count || 0} tracks</b>
+                                        ${ep.release_date ? `<span style="margin-left:8px">${new Date(ep.release_date).getFullYear()}</span>` : ''}
+                                    </span>
+                                </div>
                             </div>
-                            <div class="item-data">
-                                <span class="track-title"><b>${escapeHtml(ep.title)}</b> <span class="ep-badge">EP</span></span>
-                                <div class="artist-name">${escapeHtml(ep.artist || 'Unknown Artist')}</div>
-                                <span class="item-meta">
-                                    <b style="color:#ff0000">${ep.track_count || 0} tracks</b>
-                                    ${ep.release_date ? `<span style="margin-left:8px">${new Date(ep.release_date).getFullYear()}</span>` : ''}
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                `).join('');
+                        </a>
+                    `;
+                }).join('');
                 
             } catch (error) {
                 console.error('Error loading recommendations:', error);
@@ -720,8 +785,14 @@
                 
                 // Populate EP header
                 document.getElementById('ep-title').textContent = ep.title || 'Untitled';
-                document.getElementById('ep-artist').textContent = ep.artist || 'Unknown Artist';
-                document.getElementById('ep-artist').setAttribute('data-artist', ep.artist || '');
+                
+                // Handle artist display - use artist_name if available (new structure), fallback to artist
+                const artistName = ep.artist_name || ep.artist || 'Unknown Artist';
+                document.getElementById('ep-artist').textContent = artistName;
+                
+                // Store artist ID for recommendations if available
+                const artistId = ep.artist_id || null;
+                
                 document.getElementById('breadcrumb-title').textContent = ep.title || 'EP Details';
                 
                 // Release date
@@ -757,7 +828,7 @@
                 renderTracklist(ep.tracks || []);
                 
                 // Load recommended EPs
-                await loadRecommendedEPs(ep.id, ep.artist);
+                await loadRecommendedEPs(ep.id, artistId);
                 
             } catch (error) {
                 console.error('Error loading EP:', error);
