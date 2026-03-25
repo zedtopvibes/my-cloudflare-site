@@ -210,7 +210,6 @@
             transition: background 0.2s;
         }
         
-        /* Remove borders for cleaner look */
         .stat-card:nth-child(3n) {
             border-right: none;
         }
@@ -507,6 +506,15 @@
     <script>
         const API_BASE = '/api';
         
+        // Helper function to check if track belongs to artist (using track_artists)
+        function trackBelongsToArtist(track, artistId) {
+            if (!track.artists || track.artists.length === 0) {
+                // Fallback for old data structure
+                return false;
+            }
+            return track.artists.some(a => a.id === artistId);
+        }
+        
         async function loadArtistProfile() {
             const urlParams = new URLSearchParams(window.location.search);
             const artistId = urlParams.get('id');
@@ -535,23 +543,25 @@
                 
                 if (!artist) throw new Error('Artist not found');
                 
-                // Fetch tracks, albums, playlists
-                const [tracksRes, albumsRes, playlistsRes] = await Promise.all([
+                // Fetch tracks, albums, EPs
+                const [tracksRes, albumsRes, epsRes] = await Promise.all([
                     fetch(`${API_BASE}/tracks`).catch(() => ({ ok: false })),
                     fetch(`${API_BASE}/albums`).catch(() => ({ ok: false })),
-                    fetch(`${API_BASE}/playlists`).catch(() => ({ ok: false }))
+                    fetch(`${API_BASE}/eps`).catch(() => ({ ok: false }))
                 ]);
                 
                 const allTracks = tracksRes.ok ? await tracksRes.json() : [];
                 const allAlbums = albumsRes.ok ? await albumsRes.json() : [];
-                const allPlaylists = playlistsRes.ok ? await playlistsRes.json() : [];
+                const allEps = epsRes.ok ? await epsRes.json() : [];
                 
-                // Filter content
-                const artistTracks = allTracks.filter(t => t.artist === artist.name);
-                const artistAlbums = allAlbums.filter(a => a.artist === artist.name);
-                const artistPlaylists = allPlaylists.filter(p => 
-                    p.description && p.description.includes(artist.name)
-                );
+                // Filter tracks that belong to this artist via track_artists
+                const artistTracks = allTracks.filter(t => trackBelongsToArtist(t, artist.id));
+                
+                // Filter albums where artist_id matches
+                const artistAlbums = allAlbums.filter(a => a.artist_id === artist.id);
+                
+                // Filter EPs where artist_id matches
+                const artistEps = allEps.filter(e => e.artist_id === artist.id);
                 
                 // Calculate stats
                 const totalPlays = artistTracks.reduce((sum, t) => sum + (t.plays || 0), 0);
@@ -566,6 +576,16 @@
                         day: 'numeric' 
                       })
                     : 'Unknown';
+                
+                // Count primary and featured tracks
+                const primaryTracks = artistTracks.filter(t => {
+                    if (!t.artists) return false;
+                    return t.artists.some(a => a.id === artist.id && a.is_primary === 1);
+                });
+                const featuredTracks = artistTracks.filter(t => {
+                    if (!t.artists) return false;
+                    return t.artists.some(a => a.id === artist.id && a.is_primary === 0);
+                });
                 
                 document.getElementById('profileContent').innerHTML = `
                     <div class="profile-cover"></div>
@@ -609,17 +629,17 @@
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-music"></i></div>
                             <div class="stat-value">${artistTracks.length}</div>
-                            <div class="stat-label">Songs</div>
+                            <div class="stat-label">Total Songs</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
-                            <div class="stat-value">${artistAlbums.length}</div>
-                            <div class="stat-label">Albums</div>
+                            <div class="stat-icon"><i class="fas fa-star"></i></div>
+                            <div class="stat-value">${primaryTracks.length}</div>
+                            <div class="stat-label">As Main Artist</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-list"></i></div>
-                            <div class="stat-value">${artistPlaylists.length}</div>
-                            <div class="stat-label">Playlists</div>
+                            <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
+                            <div class="stat-value">${featuredTracks.length}</div>
+                            <div class="stat-label">As Featured</div>
                         </div>
                     </div>
                     
@@ -714,10 +734,27 @@
         }
         
         // Auth check
-        if (localStorage.getItem('admin_logged_in') === 'true') {
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Initialize
+        if (checkAuth()) {
             loadArtistProfile();
-        } else {
-            window.location.href = '/admin/login.html';
         }
     </script>
 </body>
