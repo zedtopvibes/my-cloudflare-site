@@ -40,10 +40,25 @@ export async function onRequest(context) {
         updates.push('title = ?');
         values.push(data.title);
       }
-      if (data.artist !== undefined) {
-        updates.push('artist = ?');
-        values.push(data.artist);
+      
+      // Handle artist_id instead of artist
+      if (data.artist_id !== undefined) {
+        // Verify artist exists
+        const artist = await env.DB.prepare(`
+          SELECT id FROM artists WHERE id = ?
+        `).bind(data.artist_id).first();
+        
+        if (!artist) {
+          return new Response(JSON.stringify({ error: 'Artist not found' }), { 
+            status: 400, 
+            headers 
+          });
+        }
+        
+        updates.push('artist_id = ?');
+        values.push(data.artist_id);
       }
+      
       if (data.description !== undefined) {
         updates.push('description = ?');
         values.push(data.description);
@@ -62,7 +77,11 @@ export async function onRequest(context) {
       }
       if (data.is_featured !== undefined) {
         updates.push('is_featured = ?');
-        values.push(data.is_featured);
+        values.push(data.is_featured ? 1 : 0);
+      }
+      if (data.cover_url !== undefined) {
+        updates.push('cover_url = ?');
+        values.push(data.cover_url);
       }
 
       updates.push('updated_at = CURRENT_TIMESTAMP');
@@ -79,11 +98,38 @@ export async function onRequest(context) {
       const query = `UPDATE albums SET ${updates.join(', ')} WHERE id = ?`;
       await env.DB.prepare(query).bind(...values).run();
 
-      const updated = await env.DB.prepare(
-        'SELECT * FROM albums WHERE id = ?'
-      ).bind(id).first();
+      // Fetch updated album with artist info
+      const updated = await env.DB.prepare(`
+        SELECT 
+          a.id,
+          a.title,
+          a.description,
+          a.cover_url,
+          a.release_date,
+          a.genre,
+          a.label,
+          a.plays,
+          a.downloads,
+          a.views,
+          a.slug,
+          a.is_featured,
+          a.created_at,
+          a.updated_at,
+          a.artist_id,
+          ar.name as artist_name,
+          ar.slug as artist_slug
+        FROM albums a
+        LEFT JOIN artists ar ON a.artist_id = ar.id
+        WHERE a.id = ?
+      `).bind(id).first();
 
-      return new Response(JSON.stringify(updated), { headers });
+      // Add backward compatibility field
+      const albumData = {
+        ...updated,
+        artist: updated.artist_name || 'Unknown Artist'
+      };
+
+      return new Response(JSON.stringify(albumData), { headers });
 
     } catch (error) {
       console.error('Error updating album:', error);
@@ -97,7 +143,13 @@ export async function onRequest(context) {
   // DELETE - Delete album
   if (request.method === 'DELETE') {
     try {
-      const result = await env.DB.prepare(
+      // First, delete associated tracks from album_tracks junction table
+      await env.DB.prepare(
+        'DELETE FROM album_tracks WHERE album_id = ?'
+      ).bind(id).run();
+      
+      // Then delete the album
+      await env.DB.prepare(
         'DELETE FROM albums WHERE id = ?'
       ).bind(id).run();
       
