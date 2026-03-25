@@ -9,6 +9,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Keep all existing styles, add artist badge styles */
+        .artist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
+        }
+        
+        .artist-badge.primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .artist-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+        
+        .artist-list .separator {
+            color: #999;
+            font-size: 0.7rem;
+        }
+        
+        /* Rest of existing styles remain the same */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
@@ -959,8 +989,9 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Artist</label>
-                    <input type="text" id="editArtist" readonly disabled>
+                    <label>Artists</label>
+                    <div id="editArtistsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; background: var(--light-gray); border-radius: 8px; min-height: 50px;"></div>
+                    <div class="form-hint" style="font-size: 0.8rem; color: #666; margin-top: 5px;">Main artist shown in blue, featured artists in light blue</div>
                 </div>
                 
                 <div class="form-group">
@@ -993,7 +1024,7 @@
                         <input type="checkbox" id="editExplicit"> Explicit
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="editFeatured"> Featured
+                        <input type="checkbox" id="editFeatured"> Featured (Track)
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="editEditorPick"> Editor's Pick
@@ -1066,6 +1097,30 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
+        // Helper function to format artists display
+        function formatArtistsDisplay(song) {
+            if (!song.artists || song.artists.length === 0) {
+                return escapeHtml(song.artist || 'Unknown');
+            }
+            
+            const primaryArtist = song.artists.find(a => a.is_primary === 1) || song.artists[0];
+            const featuredArtists = song.artists.filter(a => a.is_primary === 0);
+            
+            let html = `<span class="artist-badge primary">${escapeHtml(primaryArtist.name)}</span>`;
+            if (featuredArtists.length > 0) {
+                html += featuredArtists.map(a => `<span class="artist-badge">${escapeHtml(a.name)}</span>`).join('');
+            }
+            return html;
+        }
+
+        // Helper function to get artist names for search
+        function getArtistSearchString(song) {
+            if (!song.artists || song.artists.length === 0) {
+                return song.artist || '';
+            }
+            return song.artists.map(a => a.name).join(' ');
+        }
+
         async function loadSongs() {
             if (!checkAuth()) return;
             
@@ -1126,8 +1181,9 @@
             const sort = document.getElementById('sortFilter').value;
             
             filteredSongs = allSongs.filter(song => {
+                const artistSearch = getArtistSearchString(song).toLowerCase();
                 const matchesSearch = song.title?.toLowerCase().includes(searchTerm) ||
-                                     song.artist?.toLowerCase().includes(searchTerm);
+                                     artistSearch.includes(searchTerm);
                 const matchesGenre = !genre || song.genre === genre;
                 return matchesSearch && matchesGenre;
             });
@@ -1186,7 +1242,7 @@
                         <thead>
                             <tr>
                                 <th>Song</th>
-                                <th>Artist</th>
+                                <th>Artists</th>
                                 <th>Genre</th>
                                 <th>Stats</th>
                                 <th>Actions</th>
@@ -1196,6 +1252,7 @@
             `;
             
             songs.forEach(song => {
+                const artistsDisplay = formatArtistsDisplay(song);
                 html += `
                     <tr>
                         <td>
@@ -1209,7 +1266,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td><strong>${escapeHtml(song.artist) || 'Unknown'}</strong></td>
+                        <td><div class="artist-list">${artistsDisplay}</div></td>
                         <td>${escapeHtml(song.genre) || '—'}</td>
                         <td>
                             <div><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</div>
@@ -1240,6 +1297,7 @@
             let html = '';
             
             songs.forEach(song => {
+                const artistsDisplay = formatArtistsDisplay(song);
                 const tags = [];
                 if (song.explicit) tags.push('<span class="badge explicit">Explicit</span>');
                 if (song.featured) tags.push('<span class="badge featured">Featured</span>');
@@ -1253,7 +1311,7 @@
                             </div>
                             <div class="song-mobile-info">
                                 <div class="song-mobile-title">${escapeHtml(song.title) || 'Untitled'}</div>
-                                <div class="song-mobile-artist">${escapeHtml(song.artist) || 'Unknown'}</div>
+                                <div class="song-mobile-artist">${artistsDisplay}</div>
                             </div>
                         </div>
                         
@@ -1279,7 +1337,7 @@
         }
 
         function escapeHtml(text) {
-            if (!text) return text;
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
@@ -1338,6 +1396,23 @@
             document.querySelector('.remove-image').style.display = 'none';
         };
 
+        function displayArtistsInEditModal(song) {
+            const container = document.getElementById('editArtistsContainer');
+            if (!song.artists || song.artists.length === 0) {
+                container.innerHTML = '<span style="color: #999;">No artists associated</span>';
+                return;
+            }
+            
+            let html = '';
+            song.artists.forEach(artist => {
+                const badgeClass = artist.is_primary === 1 ? 'primary' : '';
+                html += `<span class="artist-badge ${badgeClass}" style="padding: 5px 12px; font-size: 0.85rem;">
+                    ${escapeHtml(artist.name)} ${artist.is_primary === 1 ? '(Main)' : '(Featured)'}
+                </span>`;
+            });
+            container.innerHTML = html;
+        }
+
         window.editSong = (id) => {
             const song = allSongs.find(s => s.id === id);
             if (!song) return;
@@ -1347,7 +1422,6 @@
             document.getElementById('editId').value = song.id;
             document.getElementById('existingArtworkUrl').value = song.artwork_url || '';
             document.getElementById('editTitle').value = song.title || '';
-            document.getElementById('editArtist').value = song.artist || '';
             document.getElementById('editGenre').value = song.genre || '';
             document.getElementById('editDuration').value = song.duration || '';
             document.getElementById('editBpm').value = song.bpm || '';
@@ -1356,6 +1430,8 @@
             document.getElementById('editExplicit').checked = song.explicit === 1 || song.explicit === true;
             document.getElementById('editFeatured').checked = song.featured === 1 || song.featured === true;
             document.getElementById('editEditorPick').checked = song.editor_pick === 1 || song.editor_pick === true;
+            
+            displayArtistsInEditModal(song);
             
             if (song.artwork_url) {
                 document.getElementById('imagePreview').src = song.artwork_url;
@@ -1379,7 +1455,6 @@
             currentEditingSong = null;
         };
 
-        // Function to extract filename from artwork URL
         function extractFilenameFromUrl(url) {
             if (!url) return null;
             const match = url.match(/\/api\/cover\/(.+)$/);
@@ -1392,12 +1467,10 @@
             const id = document.getElementById('editId').value;
             const existingArtworkUrl = document.getElementById('existingArtworkUrl').value;
             
-            // Upload image if selected - using the existing filename to prevent duplicates
             if (selectedImageFile) {
                 const imageFormData = new FormData();
                 imageFormData.append('image', selectedImageFile);
                 
-                // If there's an existing artwork, extract the filename to overwrite it
                 const existingFilename = extractFilenameFromUrl(existingArtworkUrl);
                 if (existingFilename) {
                     imageFormData.append('existing_filename', existingFilename);
