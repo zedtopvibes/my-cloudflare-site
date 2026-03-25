@@ -49,6 +49,28 @@
         .loading-spinner::after { content: ''; display: inline-block; width: 30px; height: 30px; margin-left: 10px; border: 3px solid #f3f3f3; border-top: 3px solid #ff4b2b; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .error-message { text-align: center; padding: 60px 20px; color: #ff2121; font-size: 14px; }
+        
+        /* Artist badge styles */
+        .artist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #ff4b2b;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
+        }
+        .artist-badge.primary {
+            background: #ff4b2b;
+            color: white;
+        }
+        .track-artist-display {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
+        }
+        
         @media (max-width: 768px) {
             .artist-header { flex-direction: column; text-align: center; gap: 20px; }
             .artist-artwork img { width: 150px; height: 150px; }
@@ -80,9 +102,10 @@
         <div class="artist-info">
             <h1 class="artist-name" id="artist-name">Loading...</h1>
             <div class="artist-meta">
-                <span class="artist-stats"><i class="fas fa-music"></i> <span id="artist-total-tracks">---</span> tracks</span>
+                <span class="artist-stats"><i class="fas fa-music"></i> <span id="artist-total-tracks">---</span> total tracks</span>
+                <span class="artist-stats"><i class="fas fa-star"></i> <span id="artist-primary-tracks">---</span> songs by</span>
+                <span class="artist-stats"><i class="fas fa-user-friends"></i> <span id="artist-featured-tracks">---</span> featured in</span>
                 <span class="artist-stats"><i class="fas fa-headphones"></i> <span id="artist-total-plays">---</span> plays</span>
-                <span class="artist-stats"><i class="fas fa-calendar-alt"></i> <span id="artist-joined">---</span></span>
             </div>
             <p class="artist-bio" id="artist-bio">Loading artist bio...</p>
             
@@ -95,25 +118,43 @@
         </div>
     </div>
 
+    <!-- Songs by Artist (Primary) -->
     <div class="section-header" style="margin-top:0;">
         <h2 class="section-title">
             <i class="fas fa-music" style="margin-right: 8px;"></i>
-            Songs by Artist
+            Songs by <span id="artist-name-primary"></span>
         </h2>
     </div>
     
     <div class="corner">
-        <div class="music-grid" id="tracks-container">
+        <div class="music-grid" id="primary-tracks-container">
             <div class="loading-spinner">Loading tracks...</div>
         </div>
     </div>
 
-    <div class="page-navi" align="center"></div>
+    <div class="page-navi" id="primary-pagination"></div>
 
+    <!-- Songs Featured In -->
+    <div class="section-header section-spacing">
+        <h2 class="section-title">
+            <i class="fas fa-user-friends" style="margin-right: 8px;"></i>
+            Songs Featured In
+        </h2>
+    </div>
+    
+    <div class="corner">
+        <div class="music-grid" id="featured-tracks-container">
+            <div class="loading-spinner">Loading featured tracks...</div>
+        </div>
+    </div>
+
+    <div class="page-navi" id="featured-pagination"></div>
+
+    <!-- Albums by Artist -->
     <div class="section-header section-spacing">
         <h2 class="section-title">
             <i class="fas fa-compact-disc" style="margin-right: 8px;"></i>
-            Albums by Artist
+            Albums by <span id="artist-name-albums"></span>
         </h2>
     </div>
     
@@ -129,9 +170,12 @@
         const API_BASE = 'https://zedtopvibes.pages.dev/api';
         const IMAGE_BASE = 'https://zedtopvibes.pages.dev';
         
-        let currentTrackPage = 1;
+        let currentPrimaryPage = 1;
+        let currentFeaturedPage = 1;
         let itemsPerPage = 8;
-        let allTracks = [];
+        let primaryTracks = [];
+        let featuredTracks = [];
+        let currentArtist = null;
         
         function formatDuration(seconds) {
             if (!seconds) return '0:00';
@@ -152,29 +196,48 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
         
-        function getArtistName() {
+        function getArtistSlug() {
             const path = window.location.pathname;
             const match = path.match(/\/artist\/([^\/]+)/);
             return match ? match[1] : null;
         }
         
-        function renderTracks(tracks) {
-            const container = document.getElementById('tracks-container');
+        // Format track artists display for the track listing
+        function formatTrackArtistsDisplay(track) {
+            if (!track.artists || track.artists.length === 0) {
+                return '';
+            }
+            
+            const primaryArtist = track.artists.find(a => a.is_primary === 1) || track.artists[0];
+            const featuredArtists = track.artists.filter(a => a.is_primary === 0);
+            
+            let html = `<div class="track-artist-display"><span class="artist-badge primary">${escapeHtml(primaryArtist.name)}</span>`;
+            if (featuredArtists.length > 0) {
+                html += ` <span class="artist-badge">feat. ${featuredArtists.map(a => escapeHtml(a.name)).join(', ')}</span>`;
+            }
+            html += `</div>`;
+            return html;
+        }
+        
+        function renderTracks(containerId, tracks, currentPage, paginationId, isPrimary) {
+            const container = document.getElementById(containerId);
             if (!container) return;
+            
             if (!tracks || tracks.length === 0) {
-                container.innerHTML = '<div class="error-message">No tracks found for this artist</div>';
-                const paginationDiv = document.querySelector('.page-navi');
+                container.innerHTML = '<div class="error-message">No tracks found</div>';
+                const paginationDiv = document.getElementById(paginationId);
                 if (paginationDiv) paginationDiv.style.display = 'none';
                 return;
             }
             
-            allTracks = tracks;
-            const totalPages = Math.ceil(allTracks.length / itemsPerPage);
-            const start = (currentTrackPage - 1) * itemsPerPage;
-            const paginatedTracks = allTracks.slice(start, start + itemsPerPage);
+            const totalPages = Math.ceil(tracks.length / itemsPerPage);
+            const start = (currentPage - 1) * itemsPerPage;
+            const paginatedTracks = tracks.slice(start, start + itemsPerPage);
             
             container.innerHTML = paginatedTracks.map((track, index) => {
                 const actualIndex = start + index;
+                const artistsDisplay = formatTrackArtistsDisplay(track);
+                
                 return `
                     <a href="/song/${track.slug || track.id}" class="music-item">
                         <div class="item-container">
@@ -185,8 +248,10 @@
                             </div>
                             <div class="item-data">
                                 <span class="track-title"><b>${escapeHtml(track.title)}</b></span>
+                                ${artistsDisplay}
                                 <span class="item-meta">
                                     <b style="color:#ff0000">${formatDuration(track.duration)}</b>
+                                    <span style="margin-left: 8px;"><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
                                 </span>
                             </div>
                         </div>
@@ -194,41 +259,11 @@
                 `;
             }).join('');
             
-            updatePagination(totalPages);
+            updatePagination(paginationId, totalPages, currentPage, containerId, tracks, isPrimary);
         }
         
-        function renderAlbums(albums) {
-            const container = document.getElementById('albums-container');
-            if (!container) return;
-            if (!albums || albums.length === 0) {
-                container.innerHTML = '<div class="error-message">No albums found for this artist</div>';
-                return;
-            }
-            
-            container.innerHTML = albums.slice(0, 6).map(album => `
-                <a href="/album/${album.slug}" class="music-item">
-                    <div class="item-container">
-                        <div class="item-thumb">
-                            <img src="${album.cover_url ? (album.cover_url.startsWith('/') ? IMAGE_BASE + album.cover_url : album.cover_url) : '/images/default-album.jpg'}" 
-                                 width="80" height="80" 
-                                 class="roundthumb" 
-                                 alt="${escapeHtml(album.title)}">
-                        </div>
-                        <div class="item-data">
-                            <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                            <div class="artist-name">${escapeHtml(album.artist || 'Unknown Artist')}</div>
-                            <span class="item-meta">
-                                <b style="color:#ff0000">${album.track_count || 0} tracks</b>
-                                ${album.release_date ? `<span style="margin-left:8px">${new Date(album.release_date).getFullYear()}</span>` : ''}
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
-        }
-        
-        function updatePagination(totalPages) {
-            const paginationDiv = document.querySelector('.page-navi');
+        function updatePagination(paginationId, totalPages, currentPage, containerId, tracks, isPrimary) {
+            const paginationDiv = document.getElementById(paginationId);
             if (!paginationDiv) return;
             if (totalPages <= 1) {
                 paginationDiv.style.display = 'none';
@@ -237,34 +272,72 @@
             paginationDiv.style.display = 'block';
             
             let html = '';
-            if (currentTrackPage === 1) html += `<span class="page-numbers current">1</span>`;
-            else html += `<a class="page-numbers" href="#" onclick="loadPage(1)">1</a>`;
+            if (currentPage === 1) html += `<span class="page-numbers current">1</span>`;
+            else html += `<a class="page-numbers" href="#" onclick="loadPage(1, ${isPrimary})">1</a>`;
             
-            if (currentTrackPage > 3) html += `<span class="page-numbers dots">…</span>`;
+            if (currentPage > 3) html += `<span class="page-numbers dots">…</span>`;
             
-            for (let i = Math.max(2, currentTrackPage - 1); i <= Math.min(totalPages - 1, currentTrackPage + 1); i++) {
-                if (i === currentTrackPage) html += `<span class="page-numbers current">${i}</span>`;
-                else html += `<a class="page-numbers" href="#" onclick="loadPage(${i})">${i}</a>`;
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                if (i === currentPage) html += `<span class="page-numbers current">${i}</span>`;
+                else html += `<a class="page-numbers" href="#" onclick="loadPage(${i}, ${isPrimary})">${i}</a>`;
             }
             
-            if (currentTrackPage < totalPages - 2) html += `<span class="page-numbers dots">…</span>`;
+            if (currentPage < totalPages - 2) html += `<span class="page-numbers dots">…</span>`;
             
             if (totalPages > 1) {
-                if (currentTrackPage === totalPages) html += `<span class="page-numbers current">${totalPages}</span>`;
-                else html += `<a class="page-numbers" href="#" onclick="loadPage(${totalPages})">${totalPages}</a>`;
+                if (currentPage === totalPages) html += `<span class="page-numbers current">${totalPages}</span>`;
+                else html += `<a class="page-numbers" href="#" onclick="loadPage(${totalPages}, ${isPrimary})">${totalPages}</a>`;
             }
             
-            if (currentTrackPage < totalPages) html += `<a class="next page-numbers" href="#" onclick="loadPage(${currentTrackPage + 1})">Next »</a>`;
+            if (currentPage < totalPages) html += `<a class="next page-numbers" href="#" onclick="loadPage(${currentPage + 1}, ${isPrimary})">Next »</a>`;
             
             paginationDiv.innerHTML = html;
         }
         
-        window.loadPage = function(page) {
-            currentTrackPage = page;
-            renderTracks(allTracks);
+        window.loadPage = function(page, isPrimary) {
+            if (isPrimary) {
+                currentPrimaryPage = page;
+                renderTracks('primary-tracks-container', primaryTracks, currentPrimaryPage, 'primary-pagination', true);
+            } else {
+                currentFeaturedPage = page;
+                renderTracks('featured-tracks-container', featuredTracks, currentFeaturedPage, 'featured-pagination', false);
+            }
             const section = document.querySelector('.section-header');
             if (section) section.scrollIntoView({ behavior: 'smooth' });
         };
+        
+        function renderAlbums(albums, artistName) {
+            const container = document.getElementById('albums-container');
+            if (!container) return;
+            if (!albums || albums.length === 0) {
+                container.innerHTML = '<div class="error-message">No albums found for this artist</div>';
+                return;
+            }
+            
+            container.innerHTML = albums.slice(0, 6).map(album => {
+                const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
+                return `
+                    <a href="/album/${album.slug}" class="music-item">
+                        <div class="item-container">
+                            <div class="item-thumb">
+                                <img src="${album.cover_url ? (album.cover_url.startsWith('/') ? IMAGE_BASE + album.cover_url : album.cover_url) : '/images/default-album.jpg'}" 
+                                     width="80" height="80" 
+                                     class="roundthumb" 
+                                     alt="${escapeHtml(album.title)}">
+                            </div>
+                            <div class="item-data">
+                                <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
+                                <div class="artist-name">${escapeHtml(albumArtist)}</div>
+                                <span class="item-meta">
+                                    <b style="color:#ff0000">${album.track_count || 0} tracks</b>
+                                    ${album.release_date ? `<span style="margin-left:8px">${new Date(album.release_date).getFullYear()}</span>` : ''}
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
         
         function getShareText() {
             const name = document.getElementById('artist-name')?.textContent || 'Artist';
@@ -290,31 +363,35 @@
         };
         
         async function loadArtistDetails() {
-            const artistName = getArtistName();
-            console.log('Artist name:', artistName);
+            const artistSlug = getArtistSlug();
+            console.log('Artist slug:', artistSlug);
             
-            if (!artistName) {
+            if (!artistSlug) {
                 document.getElementById('artist-name').textContent = 'Artist not specified';
                 document.getElementById('artist-bio').textContent = 'No artist name provided in URL.';
                 return;
             }
             
             try {
-                // Direct fetch using the artist name endpoint (works!)
-                const response = await fetch(`${API_BASE}/artist/${artistName}`);
+                // Fetch artist data by slug
+                const artistResponse = await fetch(`${API_BASE}/artist/${artistSlug}`);
                 
-                if (!response.ok) {
+                if (!artistResponse.ok) {
                     throw new Error('Artist not found');
                 }
                 
-                const artist = await response.json();
+                const artist = await artistResponse.json();
+                currentArtist = artist;
                 console.log('Artist found:', artist);
                 
                 document.getElementById('artist-header').style.display = 'flex';
                 document.getElementById('artist-name').textContent = artist.name || 'Unknown Artist';
+                document.getElementById('artist-name-primary').textContent = artist.name || '';
+                document.getElementById('artist-name-albums').textContent = artist.name || '';
                 document.getElementById('artist-total-tracks').textContent = artist.total_tracks || 0;
+                document.getElementById('artist-primary-tracks').textContent = artist.primary_tracks_count || 0;
+                document.getElementById('artist-featured-tracks').textContent = artist.featured_tracks_count || 0;
                 document.getElementById('artist-total-plays').textContent = formatNumber(artist.total_plays || 0);
-                document.getElementById('artist-joined').textContent = artist.created_at ? new Date(artist.created_at).getFullYear() : 'Unknown';
                 document.getElementById('artist-bio').textContent = artist.bio || 'No bio available.';
                 document.getElementById('breadcrumb-title').textContent = artist.name || 'Artist';
                 
@@ -323,30 +400,33 @@
                     document.getElementById('artist-cover').src = imgUrl;
                 }
                 
-                // Get all tracks and filter by artist name
-                const tracksRes = await fetch(`${API_BASE}/tracks`);
-                const allTracksData = await tracksRes.json();
-                const trackList = Array.isArray(allTracksData) ? allTracksData : (allTracksData.results || []);
-                const artistTracks = trackList.filter(t => t.artist === artist.name);
+                // Get tracks from the artist data (already split by API)
+                primaryTracks = artist.primary_tracks || [];
+                featuredTracks = artist.featured_tracks || [];
                 
-                // Get all albums and filter by artist name
+                console.log('Primary tracks:', primaryTracks.length);
+                console.log('Featured tracks:', featuredTracks.length);
+                
+                currentPrimaryPage = 1;
+                currentFeaturedPage = 1;
+                renderTracks('primary-tracks-container', primaryTracks, currentPrimaryPage, 'primary-pagination', true);
+                renderTracks('featured-tracks-container', featuredTracks, currentFeaturedPage, 'featured-pagination', false);
+                
+                // Fetch albums by this artist (using artist_id from the new structure)
                 const albumsRes = await fetch(`${API_BASE}/albums`);
                 const allAlbums = await albumsRes.json();
                 const albumList = Array.isArray(allAlbums) ? allAlbums : (allAlbums.results || []);
-                const artistAlbums = albumList.filter(a => a.artist === artist.name);
+                const artistAlbums = albumList.filter(a => a.artist_id === artist.id);
                 
-                console.log('Tracks found:', artistTracks.length);
                 console.log('Albums found:', artistAlbums.length);
-                
-                currentTrackPage = 1;
-                renderTracks(artistTracks);
-                renderAlbums(artistAlbums);
+                renderAlbums(artistAlbums, artist.name);
                 
             } catch (error) {
                 console.error('Error loading artist:', error);
                 document.getElementById('artist-name').textContent = 'Error loading artist';
                 document.getElementById('artist-bio').textContent = error.message;
-                document.getElementById('tracks-container').innerHTML = '<div class="error-message">Failed to load artist. The artist may not exist.</div>';
+                document.getElementById('primary-tracks-container').innerHTML = '<div class="error-message">Failed to load artist. The artist may not exist.</div>';
+                document.getElementById('featured-tracks-container').innerHTML = '';
                 document.getElementById('albums-container').innerHTML = '<div class="error-message">Failed to load albums</div>';
                 document.getElementById('artist-header').style.display = 'flex';
             }
