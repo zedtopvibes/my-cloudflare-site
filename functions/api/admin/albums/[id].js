@@ -143,18 +143,43 @@ export async function onRequest(context) {
   // DELETE - Delete album
   if (request.method === 'DELETE') {
     try {
-      // First, delete associated tracks from album_tracks junction table
-      await env.DB.prepare(
-        'DELETE FROM album_tracks WHERE album_id = ?'
-      ).bind(id).run();
+      // Check if album exists
+      const album = await env.DB.prepare(
+        'SELECT id FROM albums WHERE id = ?'
+      ).bind(id).first();
       
-      // Then delete the album
+      if (!album) {
+        return new Response(JSON.stringify({ error: 'Album not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+      
+      // Check if album has any tracks
+      const trackCount = await env.DB.prepare(`
+        SELECT COUNT(*) as count FROM album_tracks WHERE album_id = ?
+      `).bind(id).first();
+      
+      if (trackCount.count > 0) {
+        return new Response(JSON.stringify({ 
+          error: `Cannot delete album with ${trackCount.count} track(s). Remove all tracks first.`,
+          track_count: trackCount.count
+        }), { 
+          status: 400, 
+          headers 
+        });
+      }
+      
+      // Delete the album
       await env.DB.prepare(
         'DELETE FROM albums WHERE id = ?'
       ).bind(id).run();
       
-      return new Response(JSON.stringify({ success: true }), { headers });
-
+      return new Response(JSON.stringify({ 
+        success: true,
+        message: 'Album deleted successfully'
+      }), { headers });
+      
     } catch (error) {
       console.error('Error deleting album:', error);
       return new Response(JSON.stringify({ error: error.message }), { 
