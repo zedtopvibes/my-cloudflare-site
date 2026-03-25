@@ -22,23 +22,41 @@ export async function onRequest(context) {
   }
 
   try {
-    // Get all albums with their track stats
+    // Updated query to join with artists table for album artist info
     const { results } = await env.DB.prepare(`
       SELECT 
-        a.*,
-        a.cover_url,  -- ← ADDED THIS LINE!
+        a.id,
+        a.title,
+        a.description,
+        a.cover_url,
+        a.slug,
+        a.release_date,
+        a.plays,
+        a.created_at,
+        a.updated_at,
+        a.artist_id,
+        ar.name as artist_name,
+        ar.slug as artist_slug,
         COUNT(at.track_id) as track_count,
         SUM(t.plays) as total_plays,
         SUM(t.downloads) as total_downloads,
         SUM(t.duration) as total_duration
       FROM albums a
+      LEFT JOIN artists ar ON a.artist_id = ar.id
       LEFT JOIN album_tracks at ON a.id = at.album_id
       LEFT JOIN tracks t ON at.track_id = t.id
       GROUP BY a.id
       ORDER BY a.release_date DESC
     `).all();
     
-    return new Response(JSON.stringify(results), { headers });
+    // Process results to add backward compatibility fields
+    const processedResults = results.map(album => ({
+      ...album,
+      // Add artist field for backward compatibility
+      artist: album.artist_name || 'Unknown Artist'
+    }));
+    
+    return new Response(JSON.stringify(processedResults), { headers });
     
   } catch (error) {
     console.error('Error fetching albums:', error);
