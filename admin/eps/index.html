@@ -472,8 +472,29 @@
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            if (!isLoggedIn) window.location.href = '/admin/login.html';
-            return isLoggedIn;
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Helper function to get artist display name (handles both new and old structure)
+        function getArtistDisplayName(ep) {
+            // New structure: artist_name field
+            if (ep.artist_name) return ep.artist_name;
+            // Old structure: artist field
+            if (ep.artist) return ep.artist;
+            return 'Unknown Artist';
         }
 
         async function loadEPs() {
@@ -508,10 +529,11 @@
             const container = document.getElementById('epsList');
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
-            let filtered = allEPs.filter(ep => 
-                ep.title.toLowerCase().includes(searchTerm) ||
-                ep.artist.toLowerCase().includes(searchTerm)
-            );
+            let filtered = allEPs.filter(ep => {
+                const artistName = getArtistDisplayName(ep);
+                return ep.title.toLowerCase().includes(searchTerm) ||
+                       artistName.toLowerCase().includes(searchTerm);
+            });
             
             if (filtered.length === 0) {
                 container.innerHTML = `
@@ -534,29 +556,32 @@
             const end = start + itemsPerPage;
             const pageEPs = filtered.slice(start, end);
             
-            container.innerHTML = pageEPs.map(ep => `
-                <a href="/admin/eps/profile.html?id=${ep.id}" class="ep-list-item">
-                    <div class="ep-list-cover">
-                        ${ep.cover_url 
-                            ? `<img src="${ep.cover_url}" alt="${escapeHtml(ep.title)}" loading="lazy">`
-                            : `<i class="fas fa-compact-disc"></i>`
-                        }
-                    </div>
-                    <div class="ep-list-info">
-                        <div class="ep-list-title">${escapeHtml(ep.title)} <span class="ep-badge">EP</span></div>
-                        <div class="ep-list-artist">${escapeHtml(ep.artist)}</div>
-                    </div>
-                    <div class="ep-list-stats">
-                        <div class="ep-list-stat">
-                            <i class="fas fa-music"></i> ${ep.track_count || 0}
+            container.innerHTML = pageEPs.map(ep => {
+                const artistName = getArtistDisplayName(ep);
+                return `
+                    <a href="/admin/eps/profile.html?id=${ep.id}" class="ep-list-item">
+                        <div class="ep-list-cover">
+                            ${ep.cover_url 
+                                ? `<img src="${ep.cover_url}" alt="${escapeHtml(ep.title)}" loading="lazy">`
+                                : `<i class="fas fa-compact-disc"></i>`
+                            }
                         </div>
-                        <div class="ep-list-stat">
-                            <i class="fas fa-headphones"></i> ${formatNumber(ep.plays || 0)}
+                        <div class="ep-list-info">
+                            <div class="ep-list-title">${escapeHtml(ep.title)} <span class="ep-badge">EP</span></div>
+                            <div class="ep-list-artist">${escapeHtml(artistName)}</div>
                         </div>
-                    </div>
-                    ${ep.is_featured ? '<span class="ep-list-featured">Featured</span>' : ''}
-                </a>
-            `).join('');
+                        <div class="ep-list-stats">
+                            <div class="ep-list-stat">
+                                <i class="fas fa-music"></i> ${ep.track_count || 0}
+                            </div>
+                            <div class="ep-list-stat">
+                                <i class="fas fa-headphones"></i> ${formatNumber(ep.plays || 0)}
+                            </div>
+                        </div>
+                        ${ep.is_featured ? '<span class="ep-list-featured">Featured</span>' : ''}
+                    </a>
+                `;
+            }).join('');
             
             renderPagination(totalPages);
         }
