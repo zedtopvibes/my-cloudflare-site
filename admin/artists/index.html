@@ -67,6 +67,14 @@
             border-radius: 30px;
         }
         
+        .logout-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray);
+            font-size: 1rem;
+        }
+        
         .admin-tabs {
             display: flex;
             gap: 5px;
@@ -288,6 +296,11 @@
             border-color: var(--primary-blue);
         }
         
+        @keyframes loading {
+            0% { background-position: -100% 0; }
+            100% { background-position: 100% 0; }
+        }
+        
         @media (max-width: 768px) {
             .artist-row-info {
                 flex-wrap: wrap;
@@ -338,8 +351,8 @@
             <!-- Artists List -->
             <div id="artistsList" class="artists-list">
                 <!-- Loading skeletons -->
-                <div class="artist-row" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); animation: loading 1.5s infinite; height: 56px;"></div>
-                <div class="artist-row" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); animation: loading 1.5s infinite; height: 56px;"></div>
+                <div class="artist-row" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; height: 56px;"></div>
+                <div class="artist-row" style="background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; height: 56px;"></div>
             </div>
 
             <!-- Pagination -->
@@ -363,8 +376,36 @@
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            if (!isLoggedIn) window.location.href = '/admin/login.html';
-            return isLoggedIn;
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Helper function to check if track belongs to artist
+        function trackBelongsToArtist(track, artistId) {
+            if (!track.artists || track.artists.length === 0) {
+                return false;
+            }
+            return track.artists.some(a => a.id === artistId);
+        }
+
+        // Helper function to get track count and plays for an artist
+        function getArtistStats(artistId, tracks) {
+            const artistTracks = tracks.filter(t => trackBelongsToArtist(t, artistId));
+            const trackCount = artistTracks.length;
+            const totalPlays = artistTracks.reduce((sum, t) => sum + (t.plays || 0), 0);
+            return { trackCount, totalPlays };
         }
 
         async function loadArtists() {
@@ -381,7 +422,8 @@
                 
                 renderArtists();
             } catch (error) {
-                console.error('Failed to load artists');
+                console.error('Failed to load artists:', error);
+                document.getElementById('artistsList').innerHTML = '<div style="text-align: center; padding: 40px;">Failed to load artists</div>';
             }
         }
 
@@ -396,6 +438,7 @@
             
             if (filtered.length === 0) {
                 container.innerHTML = '<div style="text-align: center; padding: 40px;">No artists found</div>';
+                document.getElementById('pagination').innerHTML = '';
                 return;
             }
             
@@ -406,32 +449,29 @@
             const pageArtists = filtered.slice(start, end);
             
             container.innerHTML = pageArtists.map(artist => {
-                const trackCount = allTracks.filter(t => t.artist === artist.name).length;
-                const totalPlays = allTracks
-                    .filter(t => t.artist === artist.name)
-                    .reduce((sum, t) => sum + (t.plays || 0), 0);
+                const stats = getArtistStats(artist.id, allTracks);
                 
                 return `
                 <a href="/admin/artists/profile.html?id=${artist.id}" class="artist-row">
                     <div class="artist-avatar">
                         ${artist.image_url 
-                            ? `<img src="${artist.image_url}" alt="${artist.name}">`
+                            ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">`
                             : `<i class="fas fa-user"></i>`
                         }
                     </div>
                     <div class="artist-row-info">
                         <span class="artist-name">${escapeHtml(artist.name)}</span>
                         <div class="artist-badges">
-                            ${artist.is_featured ? '<span class="badge featured">F</span>' : ''}
-                            ${artist.is_zambian_legend ? '<span class="badge legend">L</span>' : ''}
+                            ${artist.is_featured ? '<span class="badge featured">Featured</span>' : ''}
+                            ${artist.is_zambian_legend ? '<span class="badge legend">Legend</span>' : ''}
                         </div>
                         <div class="artist-stats">
-                            <span><i class="fas fa-music"></i> ${trackCount}</span>
-                            <span><i class="fas fa-headphones"></i> ${formatNumber(totalPlays)}</span>
+                            <span><i class="fas fa-music"></i> ${stats.trackCount}</span>
+                            <span><i class="fas fa-headphones"></i> ${formatNumber(stats.totalPlays)}</span>
                         </div>
                         ${artist.country ? `
                             <div class="artist-country">
-                                <i class="fas fa-map-marker-alt"></i> ${artist.country}
+                                <i class="fas fa-map-marker-alt"></i> ${escapeHtml(artist.country)}
                             </div>
                         ` : ''}
                     </div>
@@ -465,19 +505,24 @@
         }
 
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
         function formatNumber(num) {
+            if (!num || isNaN(num)) return '0';
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
 
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            if (checkAuth()) loadArtists();
+            if (checkAuth()) {
+                loadArtists();
+            }
         });
     </script>
 </body>
