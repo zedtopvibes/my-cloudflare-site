@@ -208,7 +208,7 @@
             border: 1px solid var(--gray-200);
         }
         
-        /* NEW: Compact List View */
+        /* Compact List View */
         .albums-list {
             display: flex;
             flex-direction: column;
@@ -360,7 +360,7 @@
             
             .album-list-stats {
                 width: 100%;
-                margin-left: 96px; /* 80px image + 16px margin */
+                margin-left: 96px;
                 margin-top: 8px;
                 gap: 15px;
             }
@@ -447,7 +447,7 @@
         const API_BASE = '/api';
         let allAlbums = [];
         let currentPage = 1;
-        const itemsPerPage = 15; // Show more items per page now
+        const itemsPerPage = 15;
 
         function logout() {
             if (confirm('Logout?')) {
@@ -458,8 +458,29 @@
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            if (!isLoggedIn) window.location.href = '/admin/login.html';
-            return isLoggedIn;
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Helper function to get artist display name (handles both new and old structure)
+        function getArtistDisplayName(album) {
+            // New structure: artist_name field
+            if (album.artist_name) return album.artist_name;
+            // Old structure: artist field
+            if (album.artist) return album.artist;
+            return 'Unknown Artist';
         }
 
         async function loadAlbums() {
@@ -494,10 +515,11 @@
             const container = document.getElementById('albumsList');
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
-            let filtered = allAlbums.filter(album => 
-                album.title.toLowerCase().includes(searchTerm) ||
-                album.artist.toLowerCase().includes(searchTerm)
-            );
+            let filtered = allAlbums.filter(album => {
+                const artistName = getArtistDisplayName(album);
+                return album.title.toLowerCase().includes(searchTerm) ||
+                       artistName.toLowerCase().includes(searchTerm);
+            });
             
             if (filtered.length === 0) {
                 container.innerHTML = `
@@ -520,29 +542,32 @@
             const end = start + itemsPerPage;
             const pageAlbums = filtered.slice(start, end);
             
-            container.innerHTML = pageAlbums.map(album => `
-                <a href="/admin/albums/profile.html?id=${album.id}" class="album-list-item">
-                    <div class="album-list-cover">
-                        ${album.cover_url 
-                            ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}" loading="lazy">`
-                            : `<i class="fas fa-compact-disc"></i>`
-                        }
-                    </div>
-                    <div class="album-list-info">
-                        <div class="album-list-title">${escapeHtml(album.title)}</div>
-                        <div class="album-list-artist">${escapeHtml(album.artist)}</div>
-                    </div>
-                    <div class="album-list-stats">
-                        <div class="album-list-stat">
-                            <i class="fas fa-music"></i> ${album.track_count || 0}
+            container.innerHTML = pageAlbums.map(album => {
+                const artistName = getArtistDisplayName(album);
+                return `
+                    <a href="/admin/albums/profile.html?id=${album.id}" class="album-list-item">
+                        <div class="album-list-cover">
+                            ${album.cover_url 
+                                ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}" loading="lazy">`
+                                : `<i class="fas fa-compact-disc"></i>`
+                            }
                         </div>
-                        <div class="album-list-stat">
-                            <i class="fas fa-headphones"></i> ${formatNumber(album.plays || 0)}
+                        <div class="album-list-info">
+                            <div class="album-list-title">${escapeHtml(album.title)}</div>
+                            <div class="album-list-artist">${escapeHtml(artistName)}</div>
                         </div>
-                    </div>
-                    ${album.is_featured ? '<span class="album-list-featured">Featured</span>' : ''}
-                </a>
-            `).join('');
+                        <div class="album-list-stats">
+                            <div class="album-list-stat">
+                                <i class="fas fa-music"></i> ${album.track_count || 0}
+                            </div>
+                            <div class="album-list-stat">
+                                <i class="fas fa-headphones"></i> ${formatNumber(album.plays || 0)}
+                            </div>
+                        </div>
+                        ${album.is_featured ? '<span class="album-list-featured">Featured</span>' : ''}
+                    </a>
+                `;
+            }).join('');
             
             renderPagination(totalPages);
         }
