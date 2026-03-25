@@ -388,10 +388,13 @@
                 document.getElementById('artist-name').textContent = artist.name || 'Unknown Artist';
                 document.getElementById('artist-name-primary').textContent = artist.name || '';
                 document.getElementById('artist-name-albums').textContent = artist.name || '';
-                document.getElementById('artist-total-tracks').textContent = artist.total_tracks || 0;
-                document.getElementById('artist-primary-tracks').textContent = artist.primary_tracks_count || 0;
-                document.getElementById('artist-featured-tracks').textContent = artist.featured_tracks_count || 0;
-                document.getElementById('artist-total-plays').textContent = formatNumber(artist.total_plays || 0);
+                
+                // FIX: Use artist.stats for calculated values instead of artist table fields
+                document.getElementById('artist-total-tracks').textContent = artist.stats?.total_tracks || 0;
+                document.getElementById('artist-primary-tracks').textContent = artist.stats?.primary_tracks_count || 0;
+                document.getElementById('artist-featured-tracks').textContent = artist.stats?.featured_tracks_count || 0;
+                document.getElementById('artist-total-plays').textContent = formatNumber(artist.stats?.total_plays || 0);
+                
                 document.getElementById('artist-bio').textContent = artist.bio || 'No bio available.';
                 document.getElementById('breadcrumb-title').textContent = artist.name || 'Artist';
                 
