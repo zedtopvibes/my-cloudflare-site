@@ -25,6 +25,7 @@ export async function onRequest(context) {
         const slug = params.slug;
         
         // Get artist info from artists table
+        // REMOVED ONLY: updated_at (doesn't exist)
         const artist = await env.DB.prepare(`
             SELECT 
                 id,
@@ -38,8 +39,7 @@ export async function onRequest(context) {
                 total_tracks,
                 total_plays,
                 total_downloads,
-                created_at,
-                updated_at
+                created_at
             FROM artists 
             WHERE slug = ?
         `).bind(slug).first();
