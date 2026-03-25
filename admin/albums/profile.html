@@ -101,6 +101,30 @@
             border: 1px solid #fbbf24;
         }
         
+        /* Artist badge styles */
+        .artist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
+        }
+        
+        .artist-badge.primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .artist-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+        
         /* Profile Card */
         .profile-card {
             background: white;
@@ -447,6 +471,22 @@
     <script>
         const API_BASE = '/api';
         
+        // Helper function to get artist display name from track
+        function getTrackArtistDisplay(track) {
+            if (!track.artists || track.artists.length === 0) {
+                return escapeHtml(track.artist || 'Unknown Artist');
+            }
+            
+            const primaryArtist = track.artists.find(a => a.is_primary === 1) || track.artists[0];
+            const featuredArtists = track.artists.filter(a => a.is_primary === 0);
+            
+            let html = `<span class="artist-badge primary">${escapeHtml(primaryArtist.name)}</span>`;
+            if (featuredArtists.length > 0) {
+                html += featuredArtists.map(a => `<span class="artist-badge">${escapeHtml(a.name)}</span>`).join('');
+            }
+            return html;
+        }
+        
         async function loadAlbum() {
             const urlParams = new URLSearchParams(window.location.search);
             const albumId = urlParams.get('id');
@@ -457,11 +497,14 @@
             }
             
             try {
-                // Fetch album details - should include tracks
+                // Fetch album details - should include tracks with artists
                 const res = await fetch(`${API_BASE}/albums/${albumId}`);
                 if (!res.ok) throw new Error('Album not found');
                 
                 const album = await res.json();
+                
+                // Get album artist name (handles both new and old structure)
+                const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
                 
                 // Tracks should be in album.tracks
                 const tracks = album.tracks || [];
@@ -497,7 +540,7 @@
                     
                     <div class="album-info">
                         <h1 class="album-name">${escapeHtml(album.title)}</h1>
-                        <div class="album-artist">${escapeHtml(album.artist)}</div>
+                        <div class="album-artist">${escapeHtml(albumArtist)}</div>
                         <div class="album-creator">
                             <i class="fas fa-calendar"></i>
                             Released: ${releaseDate}
@@ -543,7 +586,7 @@
                                         <div class="track-number">${index + 1}</div>
                                         <div class="track-info">
                                             <div class="track-title">${escapeHtml(track.title)}</div>
-                                            <div class="track-artist">${escapeHtml(track.artist)}</div>
+                                            <div class="track-artist">${getTrackArtistDisplay(track)}</div>
                                         </div>
                                         <div class="track-stats">
                                             <span class="track-stat"><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
@@ -621,7 +664,8 @@
                     
                     // Update track count
                     const trackCount = document.querySelectorAll('.track-item').length;
-                    document.querySelector('.track-count').textContent = trackCount + ' tracks';
+                    const trackCountSpan = document.querySelector('.track-count');
+                    if (trackCountSpan) trackCountSpan.textContent = trackCount + ' tracks';
                     
                     // Update stats
                     const tracksStat = document.querySelector('.stat-card:first-child .stat-value');
