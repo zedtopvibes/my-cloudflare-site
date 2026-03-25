@@ -397,7 +397,7 @@
         }
         
         .form-group {
-            margin-bottom: 20px; /* FIX 4: Consistent 20px spacing */
+            margin-bottom: 20px;
         }
         
         .form-group label {
@@ -405,7 +405,7 @@
             font-size: 0.9rem;
             font-weight: 600;
             color: #444;
-            margin-bottom: 8px; /* FIX 4: 8px between label and field */
+            margin-bottom: 8px;
         }
         
         .form-group label i {
@@ -436,7 +436,7 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px; /* FIX 4: 15px between fields in same row */
+            gap: 15px;
             margin-bottom: 0;
         }
         
@@ -469,7 +469,6 @@
             border-left: 3px solid var(--primary-blue);
         }
         
-        /* FIX 2: Duration display */
         .duration-display {
             margin-top: 8px;
             padding: 10px 15px;
@@ -492,7 +491,94 @@
             color: var(--primary-blue);
         }
         
-        /* FIX 3 & 5: Full-screen overlay */
+        /* Suggestions container */
+        .suggestions-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+        
+        .suggestion-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .suggestion-item.selected {
+            background: #e3f2fd;
+            border-left: 3px solid var(--primary-blue);
+        }
+        
+        .suggestion-icon {
+            color: var(--primary-blue);
+            width: 24px;
+            text-align: center;
+        }
+        
+        .suggestion-info {
+            flex: 1;
+        }
+        
+        .suggestion-name {
+            font-weight: 500;
+        }
+        
+        .suggestion-meta {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .selected-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            margin-right: 5px;
+        }
+        
+        .selected-badge button {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            margin-left: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .filename-preview {
+            background: #ebf4ff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin: 10px 0 20px;
+            font-family: monospace;
+            font-size: 14px;
+            border: 1px dashed var(--primary-blue);
+        }
+        
+        /* Overlay styles */
         .overlay {
             display: none;
             position: fixed;
@@ -535,7 +621,6 @@
             }
         }
         
-        /* Upload Progress Overlay */
         .upload-progress-overlay {
             text-align: center;
         }
@@ -627,7 +712,6 @@
             gap: 10px;
         }
         
-        /* Success Overlay */
         .success-overlay {
             text-align: center;
         }
@@ -822,7 +906,6 @@
             display: flex;
         }
         
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -967,93 +1050,6 @@
             cursor: pointer;
         }
         
-        /* Suggestions container */
-        .suggestions-container {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-top: 4px;
-            max-height: 250px;
-            overflow-y: auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none;
-            z-index: 1000;
-        }
-        
-        .suggestion-item {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.2s;
-        }
-        
-        .suggestion-item:hover {
-            background: #f5f5f5;
-        }
-        
-        .suggestion-item.selected {
-            background: #e3f2fd;
-            border-left: 3px solid var(--primary-blue);
-        }
-        
-        .suggestion-icon {
-            color: var(--primary-blue);
-            width: 24px;
-            text-align: center;
-        }
-        
-        .suggestion-info {
-            flex: 1;
-        }
-        
-        .suggestion-name {
-            font-weight: 500;
-        }
-        
-        .suggestion-meta {
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .selected-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: #e3f2fd;
-            color: var(--primary-blue);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            margin-right: 5px;
-        }
-        
-        .selected-badge button {
-            background: none;
-            border: none;
-            color: var(--primary-blue);
-            margin-left: 5px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-        
-        .filename-preview {
-            background: #ebf4ff;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin: 10px 0 20px;
-            font-family: monospace;
-            font-size: 14px;
-            border: 1px dashed var(--primary-blue);
-        }
-        
         @media (max-width: 768px) {
             .upload-grid {
                 grid-template-columns: 1fr;
@@ -1073,7 +1069,7 @@
             
             .form-row {
                 grid-template-columns: 1fr;
-                gap: 20px; /* FIX 4: Mobile spacing */
+                gap: 20px;
             }
             
             .skeleton-row {
@@ -1129,90 +1125,29 @@
                 <div id="skeletonLoader" class="skeleton-wrapper">
                     <div class="skeleton-content">
                         <div class="skeleton-grid">
-                            <!-- Left Column Skeleton -->
                             <div class="skeleton-section">
                                 <div class="skeleton-header shimmer"></div>
-                                
-                                <div class="skeleton-field">
-                                    <div class="skeleton-label shimmer"></div>
-                                    <div class="skeleton-input shimmer"></div>
-                                </div>
-                                
-                                <div class="skeleton-field">
-                                    <div class="skeleton-label shimmer"></div>
-                                    <div class="skeleton-input shimmer"></div>
-                                </div>
-                                
-                                <div class="skeleton-field">
-                                    <div class="skeleton-label shimmer"></div>
-                                    <div class="skeleton-input shimmer"></div>
-                                </div>
-                                
-                                <div class="skeleton-field">
-                                    <div class="skeleton-label shimmer"></div>
-                                    <div class="skeleton-input shimmer"></div>
-                                </div>
-                                
-                                <div class="skeleton-row">
-                                    <div class="skeleton-field">
-                                        <div class="skeleton-label shimmer"></div>
-                                        <div class="skeleton-input shimmer"></div>
-                                    </div>
-                                    <div class="skeleton-field">
-                                        <div class="skeleton-label shimmer"></div>
-                                        <div class="skeleton-input shimmer"></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="skeleton-row">
-                                    <div class="skeleton-field">
-                                        <div class="skeleton-label shimmer"></div>
-                                        <div class="skeleton-input shimmer"></div>
-                                    </div>
-                                    <div class="skeleton-field">
-                                        <div class="skeleton-label shimmer"></div>
-                                        <div class="skeleton-input shimmer"></div>
-                                    </div>
-                                </div>
+                                <div class="skeleton-field"><div class="skeleton-label shimmer"></div><div class="skeleton-input shimmer"></div></div>
+                                <div class="skeleton-field"><div class="skeleton-label shimmer"></div><div class="skeleton-input shimmer"></div></div>
+                                <div class="skeleton-field"><div class="skeleton-label shimmer"></div><div class="skeleton-input shimmer"></div></div>
+                                <div class="skeleton-field"><div class="skeleton-label shimmer"></div><div class="skeleton-input shimmer"></div></div>
+                                <div class="skeleton-row"><div class="skeleton-field"><div class="skeleton-label shimmer"></div><div class="skeleton-input shimmer"></div></div><div class="skeleton-field"><div class="skeleton-label shimmer"></div><div class="skeleton-input shimmer"></div></div></div>
                             </div>
-                            
-                            <!-- Right Column Skeleton -->
                             <div class="skeleton-section">
                                 <div class="skeleton-header shimmer"></div>
-                                
-                                <div class="skeleton-field">
-                                    <div class="skeleton-label shimmer"></div>
-                                    <div class="skeleton-textarea shimmer"></div>
-                                </div>
-                                
+                                <div class="skeleton-field"><div class="skeleton-label shimmer"></div><div class="skeleton-textarea shimmer"></div></div>
                                 <div class="skeleton-header shimmer" style="width: 150px; margin: 30px 0 15px;"></div>
-                                
-                                <div class="skeleton-checkbox-group">
-                                    <div class="skeleton-checkbox shimmer"></div>
-                                    <div class="skeleton-checkbox shimmer"></div>
-                                    <div class="skeleton-checkbox shimmer"></div>
-                                </div>
+                                <div class="skeleton-checkbox-group"><div class="skeleton-checkbox shimmer"></div><div class="skeleton-checkbox shimmer"></div><div class="skeleton-checkbox shimmer"></div></div>
                             </div>
                         </div>
-                        
-                        <!-- Upload Fields Skeleton -->
-                        <div class="skeleton-upload-row">
-                            <div class="skeleton-upload shimmer"></div>
-                            <div class="skeleton-upload shimmer"></div>
-                        </div>
-                        
-                        <!-- Actions Skeleton -->
-                        <div class="skeleton-actions">
-                            <div class="skeleton-button shimmer"></div>
-                            <div class="skeleton-button shimmer"></div>
-                        </div>
+                        <div class="skeleton-upload-row"><div class="skeleton-upload shimmer"></div><div class="skeleton-upload shimmer"></div></div>
+                        <div class="skeleton-actions"><div class="skeleton-button shimmer"></div><div class="skeleton-button shimmer"></div></div>
                     </div>
                 </div>
 
                 <!-- Real Form -->
                 <div id="realForm" class="real-form">
                     <form id="uploadForm" enctype="multipart/form-data">
-                      
                         <div class="upload-grid">
                             <div class="form-section">
                                 <div class="section-header">
@@ -1222,14 +1157,12 @@
                                     </button>
                                 </div>
                                 
-                                <!-- Custom Filename Field - ID3 ONLY (not saved to database) -->
                                 <div class="form-group">
                                     <label><i class="fas fa-tag"></i> Custom Filename <span style="font-weight: normal; color: #999; font-size: 0.8rem; margin-left: 5px;">(ID3 only)</span></label>
                                     <input type="text" id="customFilename" placeholder="e.g. my-awesome-song">
                                     <div class="form-hint">Leave empty to auto-generate from Artist - Title</div>
                                 </div>
                                 
-                                <!-- Filename Preview -->
                                 <div id="filenamePreview" class="filename-preview">
                                     <strong>Filename Preview:</strong> <span id="previewText">Artist - Title (Zedtopvibes.Com).mp3</span>
                                 </div>
@@ -1239,26 +1172,39 @@
                                     <input type="text" id="title" placeholder="e.g. Midnight Waves" required>
                                 </div>
                                 
-                                <!-- Artist Selection -->
+                                <!-- NEW: Main Artist Selection -->
                                 <div class="form-group">
-                                    <label><i class="fas fa-user"></i> Artist *</label>
+                                    <label><i class="fas fa-star"></i> Main Artist *</label>
                                     <div style="position: relative;">
-                                        <input type="text" id="artistInput" placeholder="Type artist name..." autocomplete="off">
-                                        <select id="artistSelect" required style="display: none;">
-                                            <option value="">Select Artist</option>
+                                        <input type="text" id="mainArtistInput" placeholder="Type main artist name..." autocomplete="off">
+                                        <select id="mainArtistSelect" required style="display: none;">
+                                            <option value="">Select Main Artist</option>
                                         </select>
-                                        <div id="artistSuggestions" class="suggestions-container"></div>
+                                        <div id="mainArtistSuggestions" class="suggestions-container"></div>
                                     </div>
-                                    <div id="selectedArtistBadge" class="selected-badge" style="display: none;">
-                                        <i class="fas fa-check-circle"></i> <span id="selectedArtistName"></span>
-                                        <button type="button" onclick="clearArtistSelection()"><i class="fas fa-times"></i></button>
+                                    <div id="selectedMainArtistBadge" class="selected-badge" style="display: none;">
+                                        <i class="fas fa-check-circle"></i> <span id="selectedMainArtistName"></span>
+                                        <button type="button" onclick="clearMainArtistSelection()"><i class="fas fa-times"></i></button>
                                     </div>
                                     <div class="form-hint">
                                         <a href="#" onclick="showModal('artistModal')"><i class="fas fa-plus-circle"></i> Add New Artist</a>
                                     </div>
                                 </div>
 
-                                <!-- Album Selection (Hideable) -->
+                                <!-- NEW: Featured Artists Selection -->
+                                <div class="form-group">
+                                    <label><i class="fas fa-users"></i> Featured Artists (Optional)</label>
+                                    <div style="position: relative;">
+                                        <input type="text" id="featuredArtistInput" placeholder="Type featured artist name..." autocomplete="off">
+                                        <div id="featuredArtistSuggestions" class="suggestions-container"></div>
+                                    </div>
+                                    <div id="featuredArtistsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
+                                    <div class="form-hint">
+                                        <a href="#" onclick="showModal('artistModal')"><i class="fas fa-plus-circle"></i> Add New Artist</a>
+                                    </div>
+                                </div>
+
+                                <!-- Album Selection -->
                                 <div id="albumSection" class="hideable-section">
                                     <div class="form-group">
                                         <label><i class="fas fa-compact-disc"></i> Album (Optional)</label>
@@ -1275,8 +1221,7 @@
                                             <button type="button" onclick="clearAlbumSelection()"><i class="fas fa-times"></i></button>
                                         </div>
                                         
-                                        <!-- FIX 1: Removed style="display: none;" from container -->
-                                        <div id="trackNumberContainer" class="track-number-container">
+                                        <div id="trackNumberContainer" class="track-number-container" style="display: none;">
                                             <label style="display: block; font-size: 0.9rem; font-weight: 600; color: #444; margin-bottom: 6px;">
                                                 <i class="fas fa-hashtag"></i> Track Number <span style="font-weight: normal; color: #999; font-size: 0.8rem;">(ID3 only)</span>
                                             </label>
@@ -1290,7 +1235,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Playlists Section (Hideable) -->
+                                <!-- Playlists Section -->
                                 <div id="playlistSection" class="hideable-section">
                                     <div class="form-group">
                                         <label><i class="fas fa-list"></i> Add to Playlists (Optional)</label>
@@ -1366,7 +1311,6 @@
                                 </div>
                             </div>
 
-                            <!-- Bottom uploads section -->
                             <div class="bottom-uploads">
                                 <div class="compact-upload">
                                     <label><i class="fas fa-image"></i> Artwork (Optional)</label>
@@ -1393,15 +1337,12 @@
                                         <div class="remove-compact-file" onclick="clearSelectedFile()"><i class="fas fa-times"></i></div>
                                     </div>
                                     
-                                    <!-- FIX 2: Duration display -->
                                     <div id="durationDisplay" class="duration-display" style="display: none;">
                                         <i class="fas fa-clock"></i>
                                         <span>Duration detected:</span> <span id="durationValue">0:00</span>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- FIX 3 & 5: Removed inline progress - now in overlay -->
                             
                             <div id="statusMessage" class="status-message">
                                 <i class="fas fa-info-circle"></i> <span></span>
@@ -1422,13 +1363,10 @@
         </div>
     </div>
 
-    <!-- FIX 3: Upload Progress Overlay -->
+    <!-- Upload Progress Overlay -->
     <div id="uploadProgressOverlay" class="overlay">
         <div class="overlay-content upload-progress-overlay">
-            <h2>
-                <i class="fas fa-cloud-upload-alt"></i> UPLOADING
-            </h2>
-            
+            <h2><i class="fas fa-cloud-upload-alt"></i> UPLOADING</h2>
             <div class="progress-circle">
                 <svg viewBox="0 0 120 120">
                     <circle class="bg-circle" cx="60" cy="60" r="50"></circle>
@@ -1436,77 +1374,32 @@
                 </svg>
                 <div class="progress-percentage" id="progressPercentage">0%</div>
             </div>
-            
             <div class="file-info">
-                <div class="file-info-item">
-                    <i class="fas fa-music"></i>
-                    <span id="progressFileName">Loading...</span>
-                </div>
-                <div class="file-info-item">
-                    <i class="fas fa-weight-hanging"></i>
-                    <span id="progressFileSize">0 MB</span>
-                </div>
-                <div class="file-info-item">
-                    <i class="fas fa-clock"></i>
-                    <span id="progressDuration">0:00</span>
-                </div>
+                <div class="file-info-item"><i class="fas fa-music"></i><span id="progressFileName">Loading...</span></div>
+                <div class="file-info-item"><i class="fas fa-weight-hanging"></i><span id="progressFileSize">0 MB</span></div>
+                <div class="file-info-item"><i class="fas fa-clock"></i><span id="progressDuration">0:00</span></div>
             </div>
-            
-            <div class="status-message" id="progressStatus">
-                <i class="fas fa-spinner fa-spin"></i>
-                <span>Processing file...</span>
-            </div>
+            <div class="status-message" id="progressStatus"><i class="fas fa-spinner fa-spin"></i><span>Processing file...</span></div>
         </div>
     </div>
 
-    <!-- FIX 5: Success Overlay -->
+    <!-- Success Overlay -->
     <div id="successOverlay" class="overlay">
         <div class="overlay-content success-overlay">
-            <div class="success-icon">
-                <i class="fas fa-check"></i>
-            </div>
-            
+            <div class="success-icon"><i class="fas fa-check"></i></div>
             <h2>UPLOAD COMPLETE!</h2>
-            
-            <div id="successArtwork" class="artwork-thumbnail">
-                <i class="fas fa-music"></i>
-            </div>
-            
+            <div id="successArtwork" class="artwork-thumbnail"><i class="fas fa-music"></i></div>
             <div class="song-details">
-                <div class="detail-item">
-                    <i class="fas fa-heading"></i>
-                    <span id="successTitle">Song Title</span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-user"></i>
-                    <span id="successArtist">Artist Name</span>
-                </div>
-                <div class="detail-item" id="successAlbumRow" style="display: none;">
-                    <i class="fas fa-compact-disc"></i>
-                    <span id="successAlbum">Album Name</span>
-                    <span id="successTrackNumber"></span>
-                </div>
-                <div class="detail-item" id="successPlaylistsRow" style="display: none;">
-                    <i class="fas fa-list"></i>
-                    <div id="successPlaylists"></div>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-tag"></i>
-                    <span id="successFilename">filename.mp3</span>
-                </div>
-                <div class="detail-item">
-                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
-                    <span>ID3 branding added ✓</span>
-                </div>
+                <div class="detail-item"><i class="fas fa-heading"></i><span id="successTitle">Song Title</span></div>
+                <div class="detail-item"><i class="fas fa-user"></i><span id="successArtist">Artist Name</span></div>
+                <div class="detail-item" id="successAlbumRow" style="display: none;"><i class="fas fa-compact-disc"></i><span id="successAlbum">Album Name</span><span id="successTrackNumber"></span></div>
+                <div class="detail-item" id="successPlaylistsRow" style="display: none;"><i class="fas fa-list"></i><div id="successPlaylists"></div></div>
+                <div class="detail-item"><i class="fas fa-tag"></i><span id="successFilename">filename.mp3</span></div>
+                <div class="detail-item"><i class="fas fa-check-circle" style="color: var(--success);"></i><span>ID3 branding added ✓</span></div>
             </div>
-            
             <div class="overlay-actions">
-                <button class="btn btn-secondary" onclick="closeSuccessOverlay()">
-                    <i class="fas fa-times"></i> Close
-                </button>
-                <button class="btn btn-success" onclick="resetAndClose()">
-                    <i class="fas fa-upload"></i> Upload Another
-                </button>
+                <button class="btn btn-secondary" onclick="closeSuccessOverlay()"><i class="fas fa-times"></i> Close</button>
+                <button class="btn btn-success" onclick="resetAndClose()"><i class="fas fa-upload"></i> Upload Another</button>
             </div>
         </div>
     </div>
@@ -1518,36 +1411,14 @@
                 <h3><i class="fas fa-cog"></i> Field Visibility</h3>
                 <button class="close-btn" onclick="hideSettingsModal()">✕</button>
             </div>
-
             <div style="padding: 10px 0;">
-                <p style="color: #666; margin-bottom: 15px; font-size: 0.9rem;">
-                    Uncheck to hide fields you don't use
-                </p>
-
-                <div class="settings-item">
-                    <span><i class="fas fa-compact-disc"></i> Albums</span>
-                    <input type="checkbox" id="showAlbums" checked onchange="saveSettingsToD1()">
-                </div>
-
-                <div class="settings-item">
-                    <span><i class="fas fa-list"></i> Playlists</span>
-                    <input type="checkbox" id="showPlaylists" checked onchange="saveSettingsToD1()">
-                </div>
-
-                <div class="settings-item">
-                    <span><i class="fas fa-music"></i> BPM</span>
-                    <input type="checkbox" id="showBPM" checked onchange="saveSettingsToD1()">
-                </div>
-
-                <div class="settings-item">
-                    <span><i class="fas fa-check-circle"></i> Options</span>
-                    <input type="checkbox" id="showOptions" checked onchange="saveSettingsToD1()">
-                </div>
+                <p style="color: #666; margin-bottom: 15px; font-size: 0.9rem;">Uncheck to hide fields you don't use</p>
+                <div class="settings-item"><span><i class="fas fa-compact-disc"></i> Albums</span><input type="checkbox" id="showAlbums" checked onchange="saveSettingsToD1()"></div>
+                <div class="settings-item"><span><i class="fas fa-list"></i> Playlists</span><input type="checkbox" id="showPlaylists" checked onchange="saveSettingsToD1()"></div>
+                <div class="settings-item"><span><i class="fas fa-music"></i> BPM</span><input type="checkbox" id="showBPM" checked onchange="saveSettingsToD1()"></div>
+                <div class="settings-item"><span><i class="fas fa-check-circle"></i> Options</span><input type="checkbox" id="showOptions" checked onchange="saveSettingsToD1()"></div>
             </div>
-
-            <div class="modal-actions">
-                <button onclick="hideSettingsModal()" class="btn btn-primary">Done</button>
-            </div>
+            <div class="modal-actions"><button onclick="hideSettingsModal()" class="btn btn-primary">Done</button></div>
         </div>
     </div>
 
@@ -1558,47 +1429,17 @@
                 <h3><i class="fas fa-microphone-alt"></i> Add New Artist</h3>
                 <button class="close-btn" onclick="hideModal('artistModal')">✕</button>
             </div>
-
             <div class="image-upload">
-                <div id="artistImagePreview" class="image-preview">
-                    <i class="fas fa-user"></i>
-                </div>
-                <button type="button" onclick="document.getElementById('artistImageInput').click()" class="btn btn-secondary">
-                    <i class="fas fa-camera"></i> Upload Photo
-                </button>
+                <div id="artistImagePreview" class="image-preview"><i class="fas fa-user"></i></div>
+                <button type="button" onclick="document.getElementById('artistImageInput').click()" class="btn btn-secondary"><i class="fas fa-camera"></i> Upload Photo</button>
                 <input type="file" id="artistImageInput" accept="image/*" style="display: none;" onchange="previewImage(this, 'artistImagePreview')">
             </div>
-
-            <div class="form-group">
-                <label>Artist Name *</label>
-                <input type="text" id="artistName" placeholder="e.g. Slap Dee">
-            </div>
-            
-            <div class="form-group">
-                <label>Country</label>
-                <input type="text" id="artistCountry" placeholder="e.g. Zambia">
-            </div>
-            
-            <div class="form-group">
-                <label>Bio</label>
-                <textarea id="artistBio" rows="3" placeholder="Artist biography..."></textarea>
-            </div>
-            
-            <div class="checkbox-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="artistFeatured"> Featured Artist
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="artistLegend"> Zambian Legend
-                </label>
-            </div>
-
+            <div class="form-group"><label>Artist Name *</label><input type="text" id="artistName" placeholder="e.g. Slap Dee"></div>
+            <div class="form-group"><label>Country</label><input type="text" id="artistCountry" placeholder="e.g. Zambia"></div>
+            <div class="form-group"><label>Bio</label><textarea id="artistBio" rows="3" placeholder="Artist biography..."></textarea></div>
+            <div class="checkbox-group"><label class="checkbox-label"><input type="checkbox" id="artistFeatured"> Featured Artist</label><label class="checkbox-label"><input type="checkbox" id="artistLegend"> Zambian Legend</label></div>
             <div id="artistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px; background: #f8d7da; color: #721c24;"></div>
-
-            <div class="modal-actions">
-                <button onclick="hideModal('artistModal')" class="btn btn-secondary">Cancel</button>
-                <button onclick="saveArtist()" class="btn btn-primary">Save Artist</button>
-            </div>
+            <div class="modal-actions"><button onclick="hideModal('artistModal')" class="btn btn-secondary">Cancel</button><button onclick="saveArtist()" class="btn btn-primary">Save Artist</button></div>
         </div>
     </div>
 
@@ -1609,55 +1450,21 @@
                 <h3><i class="fas fa-compact-disc"></i> Create New Album</h3>
                 <button class="close-btn" onclick="hideModal('albumModal')">✕</button>
             </div>
-
             <div class="image-upload">
-                <div id="albumImagePreview" class="image-preview">
-                    <i class="fas fa-compact-disc"></i>
-                </div>
-                <button type="button" onclick="document.getElementById('albumImageInput').click()" class="btn btn-secondary">
-                    <i class="fas fa-camera"></i> Upload Cover
-                </button>
+                <div id="albumImagePreview" class="image-preview"><i class="fas fa-compact-disc"></i></div>
+                <button type="button" onclick="document.getElementById('albumImageInput').click()" class="btn btn-secondary"><i class="fas fa-camera"></i> Upload Cover</button>
                 <input type="file" id="albumImageInput" accept="image/*" style="display: none;" onchange="previewImage(this, 'albumImagePreview')">
             </div>
-
-            <div class="form-group">
-                <label>Album Title *</label>
-                <input type="text" id="albumTitle" placeholder="e.g. Midnight Waves">
-            </div>
-
-            <div class="form-group">
-                <label>Artist *</label>
-                <input type="text" id="albumArtist" placeholder="e.g. Slap Dee">
-            </div>
-
+            <div class="form-group"><label>Album Title *</label><input type="text" id="albumTitle" placeholder="e.g. Midnight Waves"></div>
+            <div class="form-group"><label>Artist *</label><input type="text" id="albumArtist" placeholder="e.g. Slap Dee"></div>
             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="form-group">
-                    <label>Release Date</label>
-                    <input type="date" id="albumReleaseDate">
-                </div>
-                <div class="form-group">
-                    <label>Genre</label>
-                    <input type="text" id="albumGenre" placeholder="e.g. Hip-Hop">
-                </div>
+                <div class="form-group"><label>Release Date</label><input type="date" id="albumReleaseDate"></div>
+                <div class="form-group"><label>Genre</label><input type="text" id="albumGenre" placeholder="e.g. Hip-Hop"></div>
             </div>
-
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="albumDescription" rows="3" placeholder="Album description..."></textarea>
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="albumFeatured"> Featured Album
-                </label>
-            </div>
-
+            <div class="form-group"><label>Description</label><textarea id="albumDescription" rows="3" placeholder="Album description..."></textarea></div>
+            <div style="margin-bottom: 20px;"><label class="checkbox-label"><input type="checkbox" id="albumFeatured"> Featured Album</label></div>
             <div id="albumModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px; background: #f8d7da; color: #721c24;"></div>
-
-            <div class="modal-actions">
-                <button onclick="hideModal('albumModal')" class="btn btn-secondary">Cancel</button>
-                <button onclick="saveAlbum()" class="btn btn-primary">Create Album</button>
-            </div>
+            <div class="modal-actions"><button onclick="hideModal('albumModal')" class="btn btn-secondary">Cancel</button><button onclick="saveAlbum()" class="btn btn-primary">Create Album</button></div>
         </div>
     </div>
 
@@ -1668,33 +1475,15 @@
                 <h3><i class="fas fa-list"></i> Create New Playlist</h3>
                 <button class="close-btn" onclick="hideModal('playlistModal')">✕</button>
             </div>
-
             <div class="image-upload">
-                <div id="playlistImagePreview" class="image-preview">
-                    <i class="fas fa-list"></i>
-                </div>
-                <button type="button" onclick="document.getElementById('playlistImageInput').click()" class="btn btn-secondary">
-                    <i class="fas fa-camera"></i> Upload Cover
-                </button>
+                <div id="playlistImagePreview" class="image-preview"><i class="fas fa-list"></i></div>
+                <button type="button" onclick="document.getElementById('playlistImageInput').click()" class="btn btn-secondary"><i class="fas fa-camera"></i> Upload Cover</button>
                 <input type="file" id="playlistImageInput" accept="image/*" style="display: none;" onchange="previewImage(this, 'playlistImagePreview')">
             </div>
-
-            <div class="form-group">
-                <label>Playlist Name *</label>
-                <input type="text" id="playlistName" placeholder="e.g. Chill Vibes">
-            </div>
-
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="playlistDescription" rows="3" placeholder="What's this playlist about?"></textarea>
-            </div>
-
+            <div class="form-group"><label>Playlist Name *</label><input type="text" id="playlistName" placeholder="e.g. Chill Vibes"></div>
+            <div class="form-group"><label>Description</label><textarea id="playlistDescription" rows="3" placeholder="What's this playlist about?"></textarea></div>
             <div id="playlistModalStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 15px; background: #f8d7da; color: #721c24;"></div>
-
-            <div class="modal-actions">
-                <button onclick="hideModal('playlistModal')" class="btn btn-secondary">Cancel</button>
-                <button onclick="savePlaylist()" class="btn btn-primary">Create Playlist</button>
-            </div>
+            <div class="modal-actions"><button onclick="hideModal('playlistModal')" class="btn btn-secondary">Cancel</button><button onclick="savePlaylist()" class="btn btn-primary">Create Playlist</button></div>
         </div>
     </div>
 
@@ -1702,7 +1491,7 @@
         const API_BASE = '/api';
         const SITENAME = "Zedtopvibes.Com";
         
-        // ==================== FILE UPLOAD HANDLING ====================
+        // File upload variables
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
@@ -1712,7 +1501,26 @@
         let artworkFile = null;
         let durationMs = 0;
         let durationSeconds = 0;
-
+        
+        // Artist variables
+        let allArtists = [];
+        let mainArtistTimeout;
+        let featuredArtistTimeout;
+        let selectedMainArtist = null;
+        let selectedFeaturedArtists = new Map(); // Store {artistId: artistName}
+        
+        // Album variables
+        let allAlbums = [];
+        let albumTimeout;
+        let selectedAlbumId = null;
+        let selectedAlbumTitle = null;
+        
+        // Playlist variables
+        let allPlaylists = [];
+        let playlistSearchTimeout;
+        let selectedPlaylists = new Set();
+        
+        // File handling
         fileInput.addEventListener('change', (e) => {
             if (e.target.files[0]) {
                 handleFileSelect(e.target.files[0]);
@@ -1744,36 +1552,7 @@
             durationSeconds = 0;
         };
 
-        // ==================== FILENAME PREVIEW ====================
-        function updateFilenamePreview() {
-            const artist = document.getElementById('artistSelect').value || 'Artist';
-            const title = document.getElementById('title').value.trim() || 'Title';
-            const customFilename = document.getElementById('customFilename').value.trim();
-            
-            let preview;
-            if (customFilename) {
-                // Sanitize custom filename
-                const cleanCustom = customFilename
-                    .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim();
-                preview = `${cleanCustom} (${SITENAME}).mp3`;
-            } else {
-                const cleanArtist = artist
-                    .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim() || 'Artist';
-                const cleanTitle = title
-                    .replace(/[^a-zA-Z0-9\s\-_]/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim() || 'Title';
-                preview = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
-            }
-            
-            document.getElementById('previewText').textContent = preview;
-        }
-
-        // ==================== ARTWORK HANDLING ====================
+        // Artwork handling
         const artworkInput = document.getElementById('artworkInput');
         const artworkInfo = document.getElementById('artworkInfo');
         const artworkName = document.getElementById('artworkName');
@@ -1785,29 +1564,22 @@
                 clearArtworkFile();
                 return;
             }
-            
             if (!file.type.startsWith('image/')) {
                 showStatus('error', 'Please select an image file');
                 artworkInput.value = '';
                 return;
             }
-            
             if (file.size > 2 * 1024 * 1024) {
                 showStatus('error', 'Image must be less than 2MB');
                 artworkInput.value = '';
                 return;
             }
-            
             artworkFile = file;
             artworkName.textContent = file.name;
             artworkSize.textContent = formatFileSize(file.size);
             artworkInfo.style.display = 'flex';
-            
-            // Preview for success overlay
             const reader = new FileReader();
-            reader.onload = (e) => {
-                window.artworkDataUrl = e.target.result;
-            };
+            reader.onload = (e) => { window.artworkDataUrl = e.target.result; };
             reader.readAsDataURL(file);
         });
 
@@ -1835,109 +1607,295 @@
             audio.addEventListener('loadedmetadata', () => {
                 durationSeconds = audio.duration;
                 durationMs = Math.round(audio.duration * 1000);
-                
-                // FIX 2: Show duration display
                 const durationDisplay = document.getElementById('durationDisplay');
                 const durationValue = document.getElementById('durationValue');
                 durationValue.textContent = formatDuration(durationSeconds);
                 durationDisplay.style.display = 'flex';
-                
                 URL.revokeObjectURL(audio.src);
             });
         }
 
-        // ==================== D1 SETTINGS PERSISTENCE ====================
-        async function loadSettingsFromD1() {
+        // Filename preview
+        function updateFilenamePreview() {
+            const artist = selectedMainArtist ? selectedMainArtist.name : 'Artist';
+            const title = document.getElementById('title').value.trim() || 'Title';
+            const customFilename = document.getElementById('customFilename').value.trim();
+            
+            let preview;
+            if (customFilename) {
+                const cleanCustom = customFilename.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
+                preview = `${cleanCustom} (${SITENAME}).mp3`;
+            } else {
+                const cleanArtist = artist.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim() || 'Artist';
+                const cleanTitle = title.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim() || 'Title';
+                preview = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
+            }
+            document.getElementById('previewText').textContent = preview;
+        }
+
+        // Artist functions
+        async function loadArtists() {
             try {
-                const response = await fetch(`${API_BASE}/admin/preferences`);
-                if (!response.ok) throw new Error('Failed to load settings');
-                
-                const settings = await response.json();
-                
-                document.getElementById('showAlbums').checked = settings.showAlbums;
-                document.getElementById('showPlaylists').checked = settings.showPlaylists;
-                document.getElementById('showBPM').checked = settings.showBPM;
-                document.getElementById('showOptions').checked = settings.showOptions;
-                
-                applyFieldVisibility();
-                
+                const response = await fetch(`${API_BASE}/admin/artists`);
+                if (!response.ok) throw new Error('Failed to load artists');
+                allArtists = await response.json();
+                setupMainArtistSearch();
+                setupFeaturedArtistSearch();
+                updateFilenamePreview();
             } catch (error) {
-                console.error('Error loading settings:', error);
-                document.getElementById('showAlbums').checked = true;
-                document.getElementById('showPlaylists').checked = true;
-                document.getElementById('showBPM').checked = true;
-                document.getElementById('showOptions').checked = true;
-                applyFieldVisibility();
+                console.error('Error loading artists:', error);
             }
         }
 
-        window.saveSettingsToD1 = async () => {
-            const settings = {
-                showAlbums: document.getElementById('showAlbums').checked,
-                showPlaylists: document.getElementById('showPlaylists').checked,
-                showBPM: document.getElementById('showBPM').checked,
-                showOptions: document.getElementById('showOptions').checked
-            };
-            
-            applyFieldVisibility();
-            
-            try {
-                await fetch(`${API_BASE}/admin/preferences`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(settings)
-                });
-            } catch (error) {
-                console.error('Error saving settings:', error);
-            }
-        };
-
-        function applyFieldVisibility() {
-            const showAlbums = document.getElementById('showAlbums').checked;
-            const showPlaylists = document.getElementById('showPlaylists').checked;
-            const showBPM = document.getElementById('showBPM').checked;
-            const showOptions = document.getElementById('showOptions').checked;
-
-            document.getElementById('albumSection').style.display = showAlbums ? 'block' : 'none';
-            document.getElementById('playlistSection').style.display = showPlaylists ? 'block' : 'none';
-            document.getElementById('bpmSection').style.display = showBPM ? 'block' : 'none';
-            document.getElementById('optionsSection').style.display = showOptions ? 'block' : 'none';
+        function setupMainArtistSearch() {
+            const artistInput = document.getElementById('mainArtistInput');
+            artistInput.addEventListener('input', function(e) {
+                const search = e.target.value.toLowerCase();
+                if (search.length < 2) {
+                    document.getElementById('mainArtistSuggestions').style.display = 'none';
+                    return;
+                }
+                clearTimeout(mainArtistTimeout);
+                mainArtistTimeout = setTimeout(() => {
+                    const matches = allArtists.filter(artist => artist.name.toLowerCase().includes(search)).slice(0, 8);
+                    if (matches.length > 0) {
+                        displayMainArtistSuggestions(matches);
+                    } else {
+                        document.getElementById('mainArtistSuggestions').innerHTML = `<div style="padding: 15px; text-align: center;">No artists found. <a href="#" onclick="showModal('artistModal'); return false;">Add new?</a></div>`;
+                        document.getElementById('mainArtistSuggestions').style.display = 'block';
+                    }
+                }, 300);
+            });
         }
 
-        // ==================== SETTINGS MODAL ====================
-        window.showSettingsModal = () => {
-            document.getElementById('settingsModal').style.display = 'flex';
+        function displayMainArtistSuggestions(artists) {
+            let html = '';
+            artists.forEach(artist => {
+                html += `<div class="suggestion-item" onclick="selectMainArtist(${artist.id}, '${escapeHtml(artist.name.replace(/'/g, "\\'"))}')"><div class="suggestion-icon"><i class="fas fa-user-circle"></i></div><div class="suggestion-info"><div class="suggestion-name">${escapeHtml(artist.name)}</div>${artist.country ? `<div class="suggestion-meta">${escapeHtml(artist.country)}</div>` : ''}</div></div>`;
+            });
+            document.getElementById('mainArtistSuggestions').innerHTML = html;
+            document.getElementById('mainArtistSuggestions').style.display = 'block';
+        }
+
+        window.selectMainArtist = (artistId, artistName) => {
+            selectedMainArtist = { id: artistId, name: artistName };
+            document.getElementById('mainArtistInput').value = artistName;
+            document.getElementById('mainArtistSelect').value = artistId;
+            document.getElementById('mainArtistSuggestions').style.display = 'none';
+            document.getElementById('selectedMainArtistName').textContent = artistName;
+            document.getElementById('selectedMainArtistBadge').style.display = 'inline-flex';
+            updateFilenamePreview();
         };
 
-        window.hideSettingsModal = () => {
-            document.getElementById('settingsModal').style.display = 'none';
+        window.clearMainArtistSelection = () => {
+            selectedMainArtist = null;
+            document.getElementById('mainArtistInput').value = '';
+            document.getElementById('mainArtistSelect').value = '';
+            document.getElementById('selectedMainArtistBadge').style.display = 'none';
+            updateFilenamePreview();
         };
 
-        // ==================== MODAL FUNCTIONS ====================
-        window.showModal = (modalId) => {
-            document.getElementById(modalId).style.display = 'flex';
+        function setupFeaturedArtistSearch() {
+            const featuredInput = document.getElementById('featuredArtistInput');
+            featuredInput.addEventListener('input', function(e) {
+                const search = e.target.value.toLowerCase();
+                if (search.length < 2) {
+                    document.getElementById('featuredArtistSuggestions').style.display = 'none';
+                    return;
+                }
+                clearTimeout(featuredArtistTimeout);
+                featuredArtistTimeout = setTimeout(() => {
+                    const selectedIds = new Set([...selectedFeaturedArtists.keys()]);
+                    if (selectedMainArtist) selectedIds.add(selectedMainArtist.id);
+                    const matches = allArtists.filter(artist => artist.name.toLowerCase().includes(search) && !selectedIds.has(artist.id)).slice(0, 8);
+                    if (matches.length > 0) {
+                        displayFeaturedArtistSuggestions(matches);
+                    } else {
+                        document.getElementById('featuredArtistSuggestions').innerHTML = `<div style="padding: 15px; text-align: center;">No artists found. <a href="#" onclick="showModal('artistModal'); return false;">Add new?</a></div>`;
+                        document.getElementById('featuredArtistSuggestions').style.display = 'block';
+                    }
+                }, 300);
+            });
+        }
+
+        function displayFeaturedArtistSuggestions(artists) {
+            let html = '';
+            artists.forEach(artist => {
+                html += `<div class="suggestion-item" onclick="addFeaturedArtist(${artist.id}, '${escapeHtml(artist.name.replace(/'/g, "\\'"))}')"><div class="suggestion-icon"><i class="fas fa-user-circle"></i></div><div class="suggestion-info"><div class="suggestion-name">${escapeHtml(artist.name)}</div>${artist.country ? `<div class="suggestion-meta">${escapeHtml(artist.country)}</div>` : ''}</div></div>`;
+            });
+            document.getElementById('featuredArtistSuggestions').innerHTML = html;
+            document.getElementById('featuredArtistSuggestions').style.display = 'block';
+        }
+
+        window.addFeaturedArtist = (artistId, artistName) => {
+            if (selectedFeaturedArtists.has(artistId)) return;
+            selectedFeaturedArtists.set(artistId, artistName);
+            addFeaturedArtistBadge(artistId, artistName);
+            document.getElementById('featuredArtistInput').value = '';
+            document.getElementById('featuredArtistSuggestions').style.display = 'none';
+            updateFilenamePreview();
         };
 
-        window.hideModal = (modalId) => {
-            document.getElementById(modalId).style.display = 'none';
-            if (modalId === 'artistModal') resetArtistForm();
-            if (modalId === 'albumModal') resetAlbumForm();
-            if (modalId === 'playlistModal') resetPlaylistForm();
+        function addFeaturedArtistBadge(artistId, artistName) {
+            const container = document.getElementById('featuredArtistsContainer');
+            const badge = document.createElement('div');
+            badge.className = 'selected-badge';
+            badge.id = `featured-badge-${artistId}`;
+            badge.innerHTML = `<i class="fas fa-user-plus"></i> ${escapeHtml(artistName)}<button type="button" onclick="removeFeaturedArtist(${artistId})"><i class="fas fa-times"></i></button>`;
+            container.appendChild(badge);
+        }
+
+        window.removeFeaturedArtist = (artistId) => {
+            selectedFeaturedArtists.delete(artistId);
+            const badge = document.getElementById(`featured-badge-${artistId}`);
+            if (badge) badge.remove();
+            updateFilenamePreview();
         };
 
-        window.previewImage = (input, previewId) => {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById(previewId).innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                };
-                reader.readAsDataURL(input.files[0]);
+        // Album functions
+        async function loadAlbums() {
+            try {
+                const response = await fetch(`${API_BASE}/albums`);
+                if (!response.ok) throw new Error('Failed to load albums');
+                allAlbums = await response.json();
+                setupAlbumSearch();
+            } catch (error) {
+                console.error('Error loading albums:', error);
             }
+        }
+
+        function setupAlbumSearch() {
+            const albumSearch = document.getElementById('albumSearchInput');
+            albumSearch.addEventListener('input', function(e) {
+                const search = e.target.value.toLowerCase();
+                if (search.length < 1) {
+                    document.getElementById('albumSuggestions').style.display = 'none';
+                    return;
+                }
+                clearTimeout(albumTimeout);
+                albumTimeout = setTimeout(() => {
+                    const matches = allAlbums.filter(album => album.title.toLowerCase().includes(search) || (album.artist_name && album.artist_name.toLowerCase().includes(search))).slice(0, 8);
+                    if (matches.length > 0) {
+                        displayAlbumSuggestions(matches);
+                    } else {
+                        document.getElementById('albumSuggestions').innerHTML = `<div style="padding: 15px; text-align: center;">No albums found. <a href="#" onclick="showModal('albumModal'); return false;">Create new?</a></div>`;
+                        document.getElementById('albumSuggestions').style.display = 'block';
+                    }
+                }, 300);
+            });
+        }
+
+        function displayAlbumSuggestions(albums) {
+            let html = '';
+            albums.forEach(album => {
+                const artistName = album.artist_name || album.artist || 'Unknown Artist';
+                html += `<div class="suggestion-item" onclick="selectAlbum(${album.id}, '${escapeHtml(album.title)}', '${escapeHtml(album.title)} - ${escapeHtml(artistName)}')"><div class="suggestion-icon"><i class="fas fa-compact-disc"></i></div><div class="suggestion-info"><div class="suggestion-name">${escapeHtml(album.title)}</div><div class="suggestion-meta">${escapeHtml(artistName)}</div></div></div>`;
+            });
+            document.getElementById('albumSuggestions').innerHTML = html;
+            document.getElementById('albumSuggestions').style.display = 'block';
+        }
+
+        window.selectAlbum = (albumId, albumTitle, displayName) => {
+            selectedAlbumId = albumId;
+            selectedAlbumTitle = albumTitle;
+            document.getElementById('albumSearchInput').value = displayName;
+            document.getElementById('albumSelect').value = albumId;
+            document.getElementById('albumSuggestions').style.display = 'none';
+            document.getElementById('selectedAlbumName').textContent = displayName;
+            document.getElementById('selectedAlbumId').textContent = albumId;
+            document.getElementById('selectedAlbumBadge').style.display = 'inline-flex';
+            document.getElementById('trackNumberContainer').style.display = 'block';
         };
 
-        // ==================== ARTIST FUNCTIONS ====================
+        window.clearAlbumSelection = () => {
+            selectedAlbumId = null;
+            selectedAlbumTitle = null;
+            document.getElementById('albumSearchInput').value = '';
+            document.getElementById('albumSelect').value = '';
+            document.getElementById('selectedAlbumBadge').style.display = 'none';
+            document.getElementById('selectedAlbumId').textContent = '';
+            document.getElementById('trackNumberContainer').style.display = 'none';
+            document.getElementById('trackNumber').value = '1';
+        };
+
+        // Playlist functions
+        async function loadPlaylists() {
+            try {
+                const response = await fetch(`${API_BASE}/playlists`);
+                if (!response.ok) throw new Error('Failed to load playlists');
+                allPlaylists = await response.json();
+                setupPlaylistSearch();
+            } catch (error) {
+                console.error('Error loading playlists:', error);
+            }
+        }
+
+        function setupPlaylistSearch() {
+            const searchInput = document.getElementById('playlistSearch');
+            searchInput.addEventListener('input', function(e) {
+                const search = e.target.value.toLowerCase();
+                if (search.length < 1) {
+                    document.getElementById('playlistSuggestions').style.display = 'none';
+                    return;
+                }
+                clearTimeout(playlistSearchTimeout);
+                playlistSearchTimeout = setTimeout(() => {
+                    const matches = allPlaylists.filter(playlist => playlist.name.toLowerCase().includes(search)).slice(0, 8);
+                    if (matches.length > 0) {
+                        displayPlaylistSuggestions(matches);
+                    } else {
+                        document.getElementById('playlistSuggestions').innerHTML = `<div style="padding: 15px; text-align: center;">No playlists found. <a href="#" onclick="showModal('playlistModal'); return false;">Create new?</a></div>`;
+                        document.getElementById('playlistSuggestions').style.display = 'block';
+                    }
+                }, 300);
+            });
+        }
+
+        function displayPlaylistSuggestions(playlists) {
+            let html = '';
+            playlists.forEach(playlist => {
+                const isSelected = selectedPlaylists.has(playlist.id);
+                html += `<div class="suggestion-item ${isSelected ? 'selected' : ''}" onclick="togglePlaylist(${playlist.id}, '${escapeHtml(playlist.name)}')"><div class="suggestion-icon"><i class="fas fa-list"></i></div><div class="suggestion-info"><div class="suggestion-name">${escapeHtml(playlist.name)}</div>${playlist.description ? `<div class="suggestion-meta">${escapeHtml(playlist.description.substring(0, 50))}${playlist.description.length > 50 ? '...' : ''}</div>` : ''}</div></div>`;
+            });
+            document.getElementById('playlistSuggestions').innerHTML = html;
+            document.getElementById('playlistSuggestions').style.display = 'block';
+        }
+
+        window.togglePlaylist = (playlistId, playlistName) => {
+            if (selectedPlaylists.has(playlistId)) {
+                selectedPlaylists.delete(playlistId);
+                const badge = document.getElementById(`playlist-badge-${playlistId}`);
+                if (badge) badge.remove();
+            } else {
+                selectedPlaylists.add(playlistId);
+                addPlaylistBadge(playlistId, playlistName);
+            }
+            const searchInput = document.getElementById('playlistSearch');
+            if (searchInput.value.length >= 1) {
+                const matches = allPlaylists.filter(playlist => playlist.name.toLowerCase().includes(searchInput.value.toLowerCase())).slice(0, 8);
+                displayPlaylistSuggestions(matches);
+            }
+            searchInput.value = '';
+            document.getElementById('playlistSuggestions').style.display = 'none';
+        };
+
+        function addPlaylistBadge(playlistId, playlistName) {
+            const container = document.getElementById('selectedPlaylistsContainer');
+            const badge = document.createElement('div');
+            badge.className = 'selected-badge';
+            badge.id = `playlist-badge-${playlistId}`;
+            badge.innerHTML = `<i class="fas fa-check-circle"></i> ${escapeHtml(playlistName)}<button type="button" onclick="removePlaylist(${playlistId})"><i class="fas fa-times"></i></button>`;
+            container.appendChild(badge);
+        }
+
+        window.removePlaylist = (playlistId) => {
+            selectedPlaylists.delete(playlistId);
+            const badge = document.getElementById(`playlist-badge-${playlistId}`);
+            if (badge) badge.remove();
+        };
+
+        // Save Artist
         let artistImageFile = null;
-
         function resetArtistForm() {
             document.getElementById('artistName').value = '';
             document.getElementById('artistCountry').value = '';
@@ -1956,53 +1914,33 @@
             const featured = document.getElementById('artistFeatured').checked;
             const legend = document.getElementById('artistLegend').checked;
             const statusEl = document.getElementById('artistModalStatus');
-            
             if (!name) {
                 statusEl.textContent = 'Please enter artist name';
                 statusEl.style.display = 'block';
                 return;
             }
-            
             const saveBtn = event.target;
             const originalText = saveBtn.innerHTML;
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             saveBtn.disabled = true;
             statusEl.style.display = 'none';
-            
             try {
                 const response = await fetch(`${API_BASE}/admin/artists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name: name,
-                        country: country || null,
-                        bio: bio || null,
-                        is_featured: featured,
-                        is_zambian_legend: legend
-                    })
+                    body: JSON.stringify({ name: name, country: country || null, bio: bio || null, is_featured: featured, is_zambian_legend: legend })
                 });
-
                 const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to save artist');
-                }
-
+                if (!response.ok) throw new Error(data.error || 'Failed to save artist');
                 artistImageFile = document.getElementById('artistImageInput').files[0];
                 if (artistImageFile) {
                     const photoData = new FormData();
                     photoData.append('photo', artistImageFile);
-                    await fetch(`${API_BASE}/admin/artists/${data.id}/photo`, {
-                        method: 'POST',
-                        body: photoData
-                    }).catch(e => console.warn('Photo upload failed'));
+                    await fetch(`${API_BASE}/admin/artists/${data.id}/photo`, { method: 'POST', body: photoData }).catch(e => console.warn('Photo upload failed'));
                 }
-
                 await loadArtists();
-                
                 hideModal('artistModal');
                 showStatus('success', `Artist "${name}" added!`);
-                
             } catch (error) {
                 statusEl.textContent = error.message;
                 statusEl.style.display = 'block';
@@ -2012,9 +1950,8 @@
             }
         };
 
-        // ==================== ALBUM FUNCTIONS ====================
+        // Save Album
         let albumImageFile = null;
-
         function resetAlbumForm() {
             document.getElementById('albumTitle').value = '';
             document.getElementById('albumArtist').value = '';
@@ -2031,19 +1968,16 @@
             const title = document.getElementById('albumTitle').value.trim();
             const artist = document.getElementById('albumArtist').value.trim();
             const statusEl = document.getElementById('albumModalStatus');
-            
             if (!title || !artist) {
                 statusEl.textContent = 'Title and artist are required';
                 statusEl.style.display = 'block';
                 return;
             }
-            
             const saveBtn = event.target;
             const originalText = saveBtn.innerHTML;
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
             saveBtn.disabled = true;
             statusEl.style.display = 'none';
-            
             try {
                 const response = await fetch(`${API_BASE}/admin/albums`, {
                     method: 'POST',
@@ -2057,31 +1991,18 @@
                         is_featured: document.getElementById('albumFeatured').checked
                     })
                 });
-                
                 const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to create album');
-                }
-                
+                if (!response.ok) throw new Error(data.error || 'Failed to create album');
                 albumImageFile = document.getElementById('albumImageInput').files[0];
                 if (albumImageFile) {
                     const coverData = new FormData();
                     coverData.append('cover', albumImageFile);
-                    await fetch(`${API_BASE}/admin/albums/${data.id}/cover`, {
-                        method: 'POST',
-                        body: coverData
-                    }).catch(e => console.warn('Cover upload failed'));
+                    await fetch(`${API_BASE}/admin/albums/${data.id}/cover`, { method: 'POST', body: coverData }).catch(e => console.warn('Cover upload failed'));
                 }
-                
                 await loadAlbums();
-                
-                const displayName = `${data.title} - ${data.artist}`;
-                selectAlbum(data.id, data.title, displayName);
-                
+                selectAlbum(data.id, data.title, `${data.title} - ${data.artist}`);
                 hideModal('albumModal');
                 showStatus('success', `Album "${title}" created!`);
-                
             } catch (error) {
                 statusEl.textContent = error.message;
                 statusEl.style.display = 'block';
@@ -2091,9 +2012,8 @@
             }
         };
 
-        // ==================== PLAYLIST FUNCTIONS ====================
+        // Save Playlist
         let playlistImageFile = null;
-
         function resetPlaylistForm() {
             document.getElementById('playlistName').value = '';
             document.getElementById('playlistDescription').value = '';
@@ -2106,54 +2026,34 @@
             const name = document.getElementById('playlistName').value.trim();
             const description = document.getElementById('playlistDescription').value.trim();
             const statusEl = document.getElementById('playlistModalStatus');
-            
             if (!name) {
                 statusEl.textContent = 'Playlist name is required';
                 statusEl.style.display = 'block';
                 return;
             }
-            
             const saveBtn = event.target;
             const originalText = saveBtn.innerHTML;
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
             saveBtn.disabled = true;
             statusEl.style.display = 'none';
-            
             try {
                 const response = await fetch(`${API_BASE}/admin/playlists`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name: name,
-                        description: description || null
-                    })
+                    body: JSON.stringify({ name: name, description: description || null })
                 });
-
                 const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to create playlist');
-                }
-
+                if (!response.ok) throw new Error(data.error || 'Failed to create playlist');
                 playlistImageFile = document.getElementById('playlistImageInput').files[0];
                 if (playlistImageFile) {
                     const coverData = new FormData();
                     coverData.append('cover', playlistImageFile);
-                    await fetch(`${API_BASE}/admin/playlists/${data.id}/cover`, {
-                        method: 'POST',
-                        body: coverData
-                    }).catch(e => console.warn('Cover upload failed'));
+                    await fetch(`${API_BASE}/admin/playlists/${data.id}/cover`, { method: 'POST', body: coverData }).catch(e => console.warn('Cover upload failed'));
                 }
-
                 await loadPlaylists();
-                
-                setTimeout(() => {
-                    togglePlaylist(data.id, data.name);
-                }, 500);
-                
+                setTimeout(() => { togglePlaylist(data.id, data.name); }, 500);
                 hideModal('playlistModal');
                 showStatus('success', `Playlist "${name}" created!`);
-                
             } catch (error) {
                 statusEl.textContent = error.message;
                 statusEl.style.display = 'block';
@@ -2163,340 +2063,78 @@
             }
         };
 
-        // ==================== ARTIST SELECTION ====================
-        let allArtists = [];
-        let artistTimeout;
-        let selectedArtist = '';
-
-        async function loadArtists() {
+        // Settings functions
+        async function loadSettingsFromD1() {
             try {
-                const response = await fetch(`${API_BASE}/admin/artists`);
-                if (!response.ok) throw new Error('Failed to load artists');
-                
-                allArtists = await response.json();
-                const select = document.getElementById('artistSelect');
-                
-                allArtists.forEach(artist => {
-                    const option = document.createElement('option');
-                    option.value = artist.name;
-                    option.textContent = artist.name;
-                    select.appendChild(option);
+                const response = await fetch(`${API_BASE}/admin/preferences`);
+                if (!response.ok) throw new Error('Failed to load settings');
+                const settings = await response.json();
+                document.getElementById('showAlbums').checked = settings.showAlbums;
+                document.getElementById('showPlaylists').checked = settings.showPlaylists;
+                document.getElementById('showBPM').checked = settings.showBPM;
+                document.getElementById('showOptions').checked = settings.showOptions;
+                applyFieldVisibility();
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                document.getElementById('showAlbums').checked = true;
+                document.getElementById('showPlaylists').checked = true;
+                document.getElementById('showBPM').checked = true;
+                document.getElementById('showOptions').checked = true;
+                applyFieldVisibility();
+            }
+        }
+
+        window.saveSettingsToD1 = async () => {
+            const settings = {
+                showAlbums: document.getElementById('showAlbums').checked,
+                showPlaylists: document.getElementById('showPlaylists').checked,
+                showBPM: document.getElementById('showBPM').checked,
+                showOptions: document.getElementById('showOptions').checked
+            };
+            applyFieldVisibility();
+            try {
+                await fetch(`${API_BASE}/admin/preferences`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
                 });
-                
-                setupArtistSearch();
-                
-                // Update preview when artists load
-                updateFilenamePreview();
-                
             } catch (error) {
-                console.error('Error loading artists:', error);
+                console.error('Error saving settings:', error);
             }
-        }
-
-        function setupArtistSearch() {
-            const artistInput = document.getElementById('artistInput');
-            
-            artistInput.addEventListener('input', function(e) {
-                const search = e.target.value.toLowerCase();
-                
-                if (search.length < 2) {
-                    document.getElementById('artistSuggestions').style.display = 'none';
-                    return;
-                }
-                
-                clearTimeout(artistTimeout);
-                artistTimeout = setTimeout(() => {
-                    const matches = allArtists.filter(artist => 
-                        artist.name.toLowerCase().includes(search)
-                    ).slice(0, 8);
-                    
-                    if (matches.length > 0) {
-                        displayArtistSuggestions(matches);
-                    } else {
-                        document.getElementById('artistSuggestions').innerHTML = `
-                            <div style="padding: 15px; text-align: center;">
-                                No artists found. <a href="#" onclick="showModal('artistModal'); return false;">Add new?</a>
-                            </div>
-                        `;
-                        document.getElementById('artistSuggestions').style.display = 'block';
-                    }
-                }, 300);
-            });
-        }
-
-        function displayArtistSuggestions(artists) {
-            let html = '';
-            artists.forEach(artist => {
-                html += `
-                    <div class="suggestion-item" onclick="selectArtist('${escapeHtml(artist.name.replace(/'/g, "\\'"))}')">
-                        <div class="suggestion-icon"><i class="fas fa-user-circle"></i></div>
-                        <div class="suggestion-info">
-                            <div class="suggestion-name">${escapeHtml(artist.name)}</div>
-                            ${artist.country ? `<div class="suggestion-meta">${escapeHtml(artist.country)}</div>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('artistSuggestions').innerHTML = html;
-            document.getElementById('artistSuggestions').style.display = 'block';
-        }
-
-        window.selectArtist = (artistName) => {
-            selectedArtist = artistName;
-            document.getElementById('artistInput').value = artistName;
-            document.getElementById('artistSelect').value = artistName;
-            document.getElementById('artistSuggestions').style.display = 'none';
-            document.getElementById('selectedArtistName').textContent = artistName;
-            document.getElementById('selectedArtistBadge').style.display = 'inline-flex';
-            updateFilenamePreview();
         };
 
-        window.clearArtistSelection = () => {
-            selectedArtist = '';
-            document.getElementById('artistInput').value = '';
-            document.getElementById('artistSelect').value = '';
-            document.getElementById('selectedArtistBadge').style.display = 'none';
-            updateFilenamePreview();
+        function applyFieldVisibility() {
+            const showAlbums = document.getElementById('showAlbums').checked;
+            const showPlaylists = document.getElementById('showPlaylists').checked;
+            const showBPM = document.getElementById('showBPM').checked;
+            const showOptions = document.getElementById('showOptions').checked;
+            document.getElementById('albumSection').style.display = showAlbums ? 'block' : 'none';
+            document.getElementById('playlistSection').style.display = showPlaylists ? 'block' : 'none';
+            document.getElementById('bpmSection').style.display = showBPM ? 'block' : 'none';
+            document.getElementById('optionsSection').style.display = showOptions ? 'block' : 'none';
+        }
+
+        // Modal functions
+        window.showSettingsModal = () => { document.getElementById('settingsModal').style.display = 'flex'; };
+        window.hideSettingsModal = () => { document.getElementById('settingsModal').style.display = 'none'; };
+        window.showModal = (modalId) => { document.getElementById(modalId).style.display = 'flex'; };
+        window.hideModal = (modalId) => { 
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'artistModal') resetArtistForm();
+            if (modalId === 'albumModal') resetAlbumForm();
+            if (modalId === 'playlistModal') resetPlaylistForm();
+        };
+        window.previewImage = (input, previewId) => {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => { document.getElementById(previewId).innerHTML = `<img src="${e.target.result}" alt="Preview">`; };
+                reader.readAsDataURL(input.files[0]);
+            }
         };
 
-        // ==================== ALBUM SELECTION ====================
-        let allAlbums = [];
-        let albumTimeout;
-
-        async function loadAlbums() {
-            try {
-                const response = await fetch(`${API_BASE}/albums`);
-                if (!response.ok) throw new Error('Failed to load albums');
-                
-                allAlbums = await response.json();
-                const select = document.getElementById('albumSelect');
-                
-                allAlbums.forEach(album => {
-                    const option = document.createElement('option');
-                    option.value = album.id;
-                    option.textContent = `${album.title} - ${album.artist}`;
-                    select.appendChild(option);
-                });
-                
-                setupAlbumSearch();
-                
-            } catch (error) {
-                console.error('Error loading albums:', error);
-            }
-        }
-
-        function setupAlbumSearch() {
-            const albumSearch = document.getElementById('albumSearchInput');
-            
-            albumSearch.addEventListener('input', function(e) {
-                const search = e.target.value.toLowerCase();
-                
-                if (search.length < 1) {
-                    document.getElementById('albumSuggestions').style.display = 'none';
-                    return;
-                }
-                
-                clearTimeout(albumTimeout);
-                albumTimeout = setTimeout(() => {
-                    const matches = allAlbums.filter(album => 
-                        album.title.toLowerCase().includes(search) ||
-                        album.artist.toLowerCase().includes(search)
-                    ).slice(0, 8);
-                    
-                    if (matches.length > 0) {
-                        displayAlbumSuggestions(matches);
-                    } else {
-                        document.getElementById('albumSuggestions').innerHTML = `
-                            <div style="padding: 15px; text-align: center;">
-                                No albums found. <a href="#" onclick="showModal('albumModal'); return false;">Create new?</a>
-                            </div>
-                        `;
-                        document.getElementById('albumSuggestions').style.display = 'block';
-                    }
-                }, 300);
-            });
-        }
-
-        function displayAlbumSuggestions(albums) {
-            let html = '';
-            albums.forEach(album => {
-                html += `
-                    <div class="suggestion-item" onclick="selectAlbum('${album.id}', '${escapeHtml(album.title)}', '${escapeHtml(album.title)} - ${escapeHtml(album.artist)}')">
-                        <div class="suggestion-icon"><i class="fas fa-compact-disc"></i></div>
-                        <div class="suggestion-info">
-                            <div class="suggestion-name">${escapeHtml(album.title)}</div>
-                            <div class="suggestion-meta">${escapeHtml(album.artist)}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('albumSuggestions').innerHTML = html;
-            document.getElementById('albumSuggestions').style.display = 'block';
-        }
-
-        window.selectAlbum = (albumId, albumTitle, displayName) => {
-            document.getElementById('albumSearchInput').value = displayName;
-            document.getElementById('albumSelect').value = albumId;
-            document.getElementById('albumSuggestions').style.display = 'none';
-            document.getElementById('selectedAlbumName').textContent = displayName;
-            document.getElementById('selectedAlbumId').textContent = albumId;
-            document.getElementById('selectedAlbumBadge').style.display = 'inline-flex';
-            
-            // Store album title for ID3
-            window.selectedAlbumTitle = albumTitle;
-            
-            // FIX 1: Show track number field when album is selected
-            document.getElementById('trackNumberContainer').style.display = 'block';
-        };
-
-        window.clearAlbumSelection = () => {
-            document.getElementById('albumSearchInput').value = '';
-            document.getElementById('albumSelect').value = '';
-            document.getElementById('selectedAlbumBadge').style.display = 'none';
-            document.getElementById('selectedAlbumId').textContent = '';
-            window.selectedAlbumTitle = null;
-            
-            // FIX 1: Hide track number field when album is cleared
-            document.getElementById('trackNumberContainer').style.display = 'none';
-            document.getElementById('trackNumber').value = '1';
-        };
-
-        // ==================== PLAYLISTS ====================
-        let allPlaylists = [];
-        let playlistSearchTimeout;
-        let selectedPlaylists = new Set();
-
-        async function loadPlaylists() {
-            try {
-                const response = await fetch(`${API_BASE}/playlists`);
-                if (!response.ok) throw new Error('Failed to load playlists');
-                
-                allPlaylists = await response.json();
-                setupPlaylistSearch();
-                
-            } catch (error) {
-                console.error('Error loading playlists:', error);
-            }
-        }
-
-        function setupPlaylistSearch() {
-            const searchInput = document.getElementById('playlistSearch');
-            
-            searchInput.addEventListener('input', function(e) {
-                const search = e.target.value.toLowerCase();
-                
-                if (search.length < 1) {
-                    document.getElementById('playlistSuggestions').style.display = 'none';
-                    return;
-                }
-                
-                clearTimeout(playlistSearchTimeout);
-                playlistSearchTimeout = setTimeout(() => {
-                    const matches = allPlaylists.filter(playlist => 
-                        playlist.name.toLowerCase().includes(search) ||
-                        (playlist.description && playlist.description.toLowerCase().includes(search))
-                    ).slice(0, 8);
-                    
-                    if (matches.length > 0) {
-                        displayPlaylistSuggestions(matches);
-                    } else {
-                        document.getElementById('playlistSuggestions').innerHTML = `
-                            <div style="padding: 15px; text-align: center;">
-                                No playlists found. <a href="#" onclick="showModal('playlistModal'); return false;">Create new?</a>
-                            </div>
-                        `;
-                        document.getElementById('playlistSuggestions').style.display = 'block';
-                    }
-                }, 300);
-            });
-        }
-
-        function displayPlaylistSuggestions(playlists) {
-            let html = '';
-            playlists.forEach(playlist => {
-                const isSelected = selectedPlaylists.has(playlist.id);
-                html += `
-                    <div class="suggestion-item ${isSelected ? 'selected' : ''}" onclick="togglePlaylist(${playlist.id}, '${escapeHtml(playlist.name)}')">
-                        <div class="suggestion-icon"><i class="fas fa-list"></i></div>
-                        <div class="suggestion-info">
-                            <div class="suggestion-name">${escapeHtml(playlist.name)}</div>
-                            ${playlist.description ? `<div class="suggestion-meta">${escapeHtml(playlist.description.substring(0, 50))}${playlist.description.length > 50 ? '...' : ''}</div>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('playlistSuggestions').innerHTML = html;
-            document.getElementById('playlistSuggestions').style.display = 'block';
-        }
-
-        window.togglePlaylist = (playlistId, playlistName) => {
-            if (selectedPlaylists.has(playlistId)) {
-                selectedPlaylists.delete(playlistId);
-                removePlaylistBadge(playlistId);
-            } else {
-                selectedPlaylists.add(playlistId);
-                addPlaylistBadge(playlistId, playlistName);
-            }
-            
-            const searchInput = document.getElementById('playlistSearch');
-            if (searchInput.value.length >= 1) {
-                const matches = allPlaylists.filter(playlist => 
-                    playlist.name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-                    (playlist.description && playlist.description.toLowerCase().includes(searchInput.value.toLowerCase()))
-                ).slice(0, 8);
-                displayPlaylistSuggestions(matches);
-            }
-            
-            searchInput.value = '';
-            document.getElementById('playlistSuggestions').style.display = 'none';
-        };
-
-        function addPlaylistBadge(playlistId, playlistName) {
-            const container = document.getElementById('selectedPlaylistsContainer');
-            const badge = document.createElement('div');
-            badge.className = 'selected-badge';
-            badge.id = `playlist-badge-${playlistId}`;
-            badge.innerHTML = `
-                <i class="fas fa-check-circle"></i> ${escapeHtml(playlistName)}
-                <button type="button" onclick="removePlaylist(${playlistId})"><i class="fas fa-times"></i></button>
-            `;
-            container.appendChild(badge);
-        }
-
-        function removePlaylistBadge(playlistId) {
-            const badge = document.getElementById(`playlist-badge-${playlistId}`);
-            if (badge) badge.remove();
-        }
-
-        window.removePlaylist = (playlistId) => {
-            selectedPlaylists.delete(playlistId);
-            removePlaylistBadge(playlistId);
-        };
-
-        // ==================== CHECK AUTH ====================
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            return true;
-        }
-
-        // ==================== OVERLAY FUNCTIONS ====================
+        // Overlay functions
         function showUploadProgress() {
             document.getElementById('uploadProgressOverlay').classList.add('active');
-            
-            // Update file info
             if (selectedFile) {
                 document.getElementById('progressFileName').textContent = selectedFile.name;
                 document.getElementById('progressFileSize').textContent = formatFileSize(selectedFile.size);
@@ -2506,27 +2144,19 @@
 
         function updateProgress(percentage) {
             const circle = document.querySelector('.progress-circle-fill');
-            const perimeter = 314; // 2 * π * r (r=50)
+            const perimeter = 314;
             const offset = perimeter - (perimeter * percentage / 100);
             circle.style.strokeDashoffset = offset;
             document.getElementById('progressPercentage').textContent = percentage + '%';
-            
-            // Update status message based on progress
             const statusEl = document.getElementById('progressStatus').querySelector('span');
-            if (percentage < 30) {
-                statusEl.textContent = 'Processing file...';
-            } else if (percentage < 60) {
-                statusEl.textContent = 'Adding ID3 branding...';
-            } else if (percentage < 90) {
-                statusEl.textContent = 'Uploading to cloud...';
-            } else {
-                statusEl.textContent = 'Finalizing...';
-            }
+            if (percentage < 30) statusEl.textContent = 'Processing file...';
+            else if (percentage < 60) statusEl.textContent = 'Adding ID3 branding...';
+            else if (percentage < 90) statusEl.textContent = 'Uploading to cloud...';
+            else statusEl.textContent = 'Finalizing...';
         }
 
         function hideUploadProgress() {
             document.getElementById('uploadProgressOverlay').classList.remove('active');
-            // Reset progress
             const circle = document.querySelector('.progress-circle-fill');
             circle.style.strokeDashoffset = 314;
             document.getElementById('progressPercentage').textContent = '0%';
@@ -2534,34 +2164,23 @@
 
         function showSuccessOverlay(result) {
             const overlay = document.getElementById('successOverlay');
-            
-            // Set basic info
             document.getElementById('successTitle').textContent = document.getElementById('title').value.trim();
-            document.getElementById('successArtist').textContent = document.getElementById('artistSelect').value;
+            document.getElementById('successArtist').textContent = selectedMainArtist ? selectedMainArtist.name : '';
             document.getElementById('successFilename').textContent = result.filename;
-            
-            // Set artwork
             const artworkDiv = document.getElementById('successArtwork');
             if (window.artworkDataUrl) {
                 artworkDiv.innerHTML = `<img src="${window.artworkDataUrl}" alt="Artwork">`;
             } else {
                 artworkDiv.innerHTML = '<i class="fas fa-music"></i>';
             }
-            
-            // Show album info if selected
-            const albumId = document.getElementById('albumSelect').value;
-            if (albumId) {
+            if (selectedAlbumId) {
                 document.getElementById('successAlbumRow').style.display = 'flex';
-                document.getElementById('successAlbum').textContent = window.selectedAlbumTitle || '';
+                document.getElementById('successAlbum').textContent = selectedAlbumTitle || '';
                 const trackNum = document.getElementById('trackNumber').value;
-                if (trackNum) {
-                    document.getElementById('successTrackNumber').textContent = `(Track ${trackNum})`;
-                }
+                if (trackNum) document.getElementById('successTrackNumber').textContent = `(Track ${trackNum})`;
             } else {
                 document.getElementById('successAlbumRow').style.display = 'none';
             }
-            
-            // Show playlists if any
             if (selectedPlaylists.size > 0) {
                 document.getElementById('successPlaylistsRow').style.display = 'flex';
                 const playlistsDiv = document.getElementById('successPlaylists');
@@ -2578,47 +2197,36 @@
             } else {
                 document.getElementById('successPlaylistsRow').style.display = 'none';
             }
-            
             overlay.classList.add('active');
         }
 
-        window.closeSuccessOverlay = () => {
-            document.getElementById('successOverlay').classList.remove('active');
-        };
+        window.closeSuccessOverlay = () => { document.getElementById('successOverlay').classList.remove('active'); };
+        window.resetAndClose = () => { closeSuccessOverlay(); resetForm(); };
 
-        window.resetAndClose = () => {
-            closeSuccessOverlay();
-            resetForm();
-        };
-
-        // ==================== FORM SUBMISSION ====================
+        // Form submission
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             if (!selectedFile) {
                 showStatus('error', 'Please select an MP3 file');
                 return;
             }
-
             const title = document.getElementById('title').value.trim();
-            const artistName = document.getElementById('artistSelect').value;
-
-            if (!title || !artistName) {
-                showStatus('error', 'Title and artist are required');
+            if (!title || !selectedMainArtist) {
+                showStatus('error', 'Title and main artist are required');
                 return;
             }
-
-            // FIX 3: Show full-screen progress overlay
             showUploadProgress();
             submitBtn.disabled = true;
-
             try {
                 const formData = new FormData();
-                
-                // Standard fields (go to D1)
                 formData.append('file', selectedFile);
                 formData.append('title', title);
-                formData.append('artist', artistName);
+                formData.append('main_artist_id', selectedMainArtist.id);
+                if (selectedFeaturedArtists.size > 0) {
+                    for (const [artistId, artistName] of selectedFeaturedArtists) {
+                        formData.append('featured_artists[]', artistId);
+                    }
+                }
                 formData.append('genre', document.getElementById('genre').value);
                 formData.append('release_date', document.getElementById('releaseDate').value);
                 formData.append('duration', durationMs);
@@ -2627,85 +2235,43 @@
                 formData.append('explicit', document.getElementById('explicit').checked ? '1' : '0');
                 formData.append('featured', document.getElementById('featured').checked ? '1' : '0');
                 formData.append('editor_pick', document.getElementById('editorPick').checked ? '1' : '0');
-                
-                if (artworkFile) {
-                    formData.append('artwork', artworkFile);
-                }
-
-                // ID3-ONLY fields (not saved to D1)
+                if (artworkFile) formData.append('artwork', artworkFile);
                 formData.append('customFilename', document.getElementById('customFilename').value.trim());
-                
-                // Album info for ID3
-                const albumId = document.getElementById('albumSelect').value;
-                if (albumId) {
-                    formData.append('album_id', albumId);
-                    if (window.selectedAlbumTitle) {
-                        formData.append('album_title', window.selectedAlbumTitle);
-                    }
+                if (selectedAlbumId) {
+                    formData.append('album_id', selectedAlbumId);
+                    if (selectedAlbumTitle) formData.append('album_title', selectedAlbumTitle);
                     const trackNumber = document.getElementById('trackNumber').value;
-                    if (trackNumber) {
-                        formData.append('trackNumber', trackNumber);
-                    }
+                    if (trackNumber) formData.append('trackNumber', trackNumber);
                 }
-
                 let progress = 0;
                 const interval = setInterval(() => {
                     progress += 5;
-                    if (progress <= 95) {
-                        updateProgress(progress);
-                    }
+                    if (progress <= 95) updateProgress(progress);
                 }, 500);
-
-                const response = await fetch(`${API_BASE}/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const response = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
                 clearInterval(interval);
-
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.error || 'Upload failed');
                 }
-
                 const result = await response.json();
                 const trackId = result.id;
-
-                // Album association (existing functionality)
-                if (albumId) {
+                if (selectedAlbumId) {
                     const body = { track_id: trackId };
                     const trackNumber = document.getElementById('trackNumber').value;
-                    if (trackNumber) {
-                        body.track_number = parseInt(trackNumber);
-                    }
-                    
-                    await fetch(`${API_BASE}/admin/albums/${albumId}/tracks`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(body)
-                    }).catch(e => console.warn('Failed to add to album'));
+                    if (trackNumber) body.track_number = parseInt(trackNumber);
+                    await fetch(`${API_BASE}/admin/albums/${selectedAlbumId}/tracks`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(e => console.warn('Failed to add to album'));
                 }
-
-                // Playlist associations (existing functionality)
                 if (selectedPlaylists.size > 0) {
                     for (const playlistId of selectedPlaylists) {
-                        await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ track_id: trackId })
-                        }).catch(e => console.warn('Failed to add to playlist'));
+                        await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ track_id: trackId }) }).catch(e => console.warn('Failed to add to playlist'));
                     }
                 }
-
                 updateProgress(100);
-                
-                // FIX 3: Hide progress overlay
                 setTimeout(() => {
                     hideUploadProgress();
-                    // FIX 5: Show success overlay
                     showSuccessOverlay(result);
                 }, 500);
-                
             } catch (error) {
                 console.error('Upload error:', error);
                 hideUploadProgress();
@@ -2714,7 +2280,7 @@
             }
         });
 
-        // ==================== RESET FORM ====================
+        // Reset form
         window.resetForm = () => {
             clearSelectedFile();
             clearArtworkFile();
@@ -2723,57 +2289,35 @@
             document.getElementById('releaseDate').value = '';
             document.getElementById('description').value = '';
             document.getElementById('bpm').value = '';
-            clearArtistSelection();
+            clearMainArtistSelection();
+            selectedFeaturedArtists.clear();
+            document.getElementById('featuredArtistsContainer').innerHTML = '';
             clearAlbumSelection();
-            
             selectedPlaylists.clear();
             document.getElementById('selectedPlaylistsContainer').innerHTML = '';
-            
             document.getElementById('explicit').checked = false;
             document.getElementById('featured').checked = false;
             document.getElementById('editorPick').checked = false;
-            
-            document.getElementById('trackNumberContainer').style.display = 'none';
             document.getElementById('trackNumber').value = '1';
             document.getElementById('customFilename').value = '';
-            
-            document.getElementById('uploadProgress').style.display = 'none';
-            document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('progressText').textContent = '0%';
-            
             window.selectedAlbumTitle = null;
             window.artworkDataUrl = null;
             updateFilenamePreview();
-            
             submitBtn.disabled = false;
         };
 
-        // ==================== STATUS MESSAGES ====================
         function showStatus(type, message) {
             const statusEl = document.getElementById('statusMessage');
             if (!statusEl) return;
-            
             const icon = statusEl.querySelector('i');
             const span = statusEl.querySelector('span');
-            
             statusEl.className = 'status-message';
             statusEl.classList.add(`status-${type}`);
-            
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                info: 'fa-info-circle'
-            };
-            
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
             if (icon) icon.className = `fas ${icons[type]}`;
             if (span) span.textContent = message;
             statusEl.style.display = 'flex';
-            
-            if (type !== 'info') {
-                setTimeout(() => {
-                    statusEl.style.display = 'none';
-                }, 5000);
-            }
+            if (type !== 'info') setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
         }
 
         function escapeHtml(text) {
@@ -2783,47 +2327,47 @@
             return div.innerHTML;
         }
 
-        // ==================== INITIALIZE ====================
+        // Check auth
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
-            // Immediately hide all hideable sections to prevent flash
-            document.querySelectorAll('.hideable-section').forEach(el => {
-                el.style.display = 'none';
-            });
-            
+            document.querySelectorAll('.hideable-section').forEach(el => { el.style.display = 'none'; });
             if (!checkAuth()) return;
-            
             try {
-                // Load all data in parallel
-                await Promise.all([
-                    loadArtists(),
-                    loadAlbums(),
-                    loadPlaylists(),
-                    loadSettingsFromD1()
-                ]);
-                
-                // Set up event listeners for filename preview
+                await Promise.all([loadArtists(), loadAlbums(), loadPlaylists(), loadSettingsFromD1()]);
                 document.getElementById('title').addEventListener('input', updateFilenamePreview);
                 document.getElementById('customFilename').addEventListener('input', updateFilenamePreview);
-                
-                // Hide skeleton and show real form
                 document.getElementById('skeletonLoader').classList.add('hidden');
                 document.getElementById('realForm').classList.add('visible');
-                
-                // Initial preview
                 updateFilenamePreview();
-                
             } catch (error) {
                 console.error('Error loading initial data:', error);
-                // Still show form even if some data fails
                 document.getElementById('skeletonLoader').classList.add('hidden');
                 document.getElementById('realForm').classList.add('visible');
             }
         });
 
-        // Close suggestions when clicking outside
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('#artistInput') && !e.target.closest('#artistSuggestions')) {
-                document.getElementById('artistSuggestions').style.display = 'none';
+            if (!e.target.closest('#mainArtistInput') && !e.target.closest('#mainArtistSuggestions')) {
+                document.getElementById('mainArtistSuggestions').style.display = 'none';
+            }
+            if (!e.target.closest('#featuredArtistInput') && !e.target.closest('#featuredArtistSuggestions')) {
+                document.getElementById('featuredArtistSuggestions').style.display = 'none';
             }
             if (!e.target.closest('#albumSearchInput') && !e.target.closest('#albumSuggestions')) {
                 document.getElementById('albumSuggestions').style.display = 'none';
