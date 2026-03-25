@@ -103,6 +103,30 @@
             background: var(--gray-200);
         }
         
+        /* Artist badge styles */
+        .artist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
+        }
+        
+        .artist-badge.primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .artist-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+        
         /* Main Content */
         .content-card {
             background: white;
@@ -486,6 +510,30 @@
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
+        // Helper function to format artists display
+        function formatArtistsDisplay(track) {
+            if (!track.artists || track.artists.length === 0) {
+                return escapeHtml(track.artist || 'Unknown Artist');
+            }
+            
+            const primaryArtist = track.artists.find(a => a.is_primary === 1) || track.artists[0];
+            const featuredArtists = track.artists.filter(a => a.is_primary === 0);
+            
+            let html = `<span class="artist-badge primary">${escapeHtml(primaryArtist.name)}</span>`;
+            if (featuredArtists.length > 0) {
+                html += featuredArtists.map(a => `<span class="artist-badge">${escapeHtml(a.name)}</span>`).join('');
+            }
+            return html;
+        }
+
+        // Helper function to get artist names for search
+        function getArtistSearchString(track) {
+            if (!track.artists || track.artists.length === 0) {
+                return track.artist || '';
+            }
+            return track.artists.map(a => a.name).join(' ');
+        }
+
         async function loadPage() {
             const urlParams = new URLSearchParams(window.location.search);
             playlistId = urlParams.get('id');
@@ -530,8 +578,9 @@
             // Apply search and filter
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
             const filteredTracks = availableTracks.filter(track => {
+                const artistSearch = getArtistSearchString(track).toLowerCase();
                 const matchesSearch = track.title.toLowerCase().includes(searchTerm) ||
-                                    track.artist.toLowerCase().includes(searchTerm);
+                                    artistSearch.includes(searchTerm);
                 
                 if (currentFilter === 'all') return matchesSearch;
                 if (currentFilter === 'featured') return matchesSearch && track.featured;
@@ -578,7 +627,9 @@
                 
                 <div class="tracks-container" id="tracksContainer">
                     ${filteredTracks.length > 0 
-                        ? filteredTracks.map(track => `
+                        ? filteredTracks.map(track => {
+                            const artistsDisplay = formatArtistsDisplay(track);
+                            return `
                             <div class="track-item ${selectedTracks.has(track.id) ? 'selected' : ''}" onclick="toggleTrack(${track.id}, event)">
                                 <div class="track-checkbox" onclick="event.stopPropagation()">
                                     <input type="checkbox" 
@@ -593,14 +644,14 @@
                                 </div>
                                 <div class="track-info">
                                     <div class="track-title">${escapeHtml(track.title)}</div>
-                                    <div class="track-artist">${escapeHtml(track.artist)}</div>
+                                    <div class="track-artist">${artistsDisplay}</div>
                                 </div>
                                 <div class="track-meta">
                                     <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
                                     <span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
                                 </div>
                             </div>
-                        `).join('')
+                        `}).join('')
                         : `
                             <div class="empty-state">
                                 <i class="fas fa-music"></i>
@@ -627,9 +678,14 @@
             `;
 
             // Add search listener
-            document.getElementById('searchInput').addEventListener('input', debounce(() => {
-                renderPage();
-            }, 300));
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                const newSearchInput = searchInput.cloneNode(true);
+                searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+                newSearchInput.addEventListener('input', debounce(() => {
+                    renderPage();
+                }, 300));
+            }
         }
 
         function toggleTrack(trackId, event) {
