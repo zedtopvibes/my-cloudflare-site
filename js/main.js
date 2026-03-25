@@ -10,6 +10,24 @@ let contentLoaded = false;
 
 // ===== HELPER FUNCTIONS =====
 
+// Helper function to get primary artist from album
+function getPrimaryArtistFromAlbum(album) {
+    if (!album.artists || album.artists.length === 0) return null;
+    const primary = album.artists.find(a => a.is_primary === 1);
+    return primary || album.artists[0];
+}
+
+// Helper function to get artist display name from album
+function getAlbumArtistDisplay(album) {
+    const primary = getPrimaryArtistFromAlbum(album);
+    if (primary) return primary.name;
+    
+    // Fallback for backward compatibility
+    if (album.artist) return album.artist;
+    if (album.artist_name) return album.artist_name;
+    return 'Unknown Artist';
+}
+
 // Stable image fallback - prevents layout shifts and glitching
 function getAlbumImage(album) {
     if (album.cover_url && album.cover_url !== 'null' && album.cover_url !== '') {
@@ -95,28 +113,31 @@ async function loadAlbums() {
             return;
         }
         
-        container.innerHTML = albums.slice(0, 6).map(album => `
-            <a href="/album/${album.slug}" class="music-item">
-                <div class="item-container">
-                    <div class="item-thumb">
-                        <img src="${getAlbumImage(album)}" 
-                             width="80" height="80" 
-                             class="roundthumb" 
-                             alt="${escapeHtml(album.title)}"
-                             data-type="album"
-                             onerror="handleImageError(this)">
+        container.innerHTML = albums.slice(0, 6).map(album => {
+            const artistName = getAlbumArtistDisplay(album);
+            return `
+                <a href="/album/${album.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb">
+                            <img src="${getAlbumImage(album)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(album.title)}"
+                                 data-type="album"
+                                 onerror="handleImageError(this)">
+                        </div>
+                        <div class="item-data">
+                            <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
+                            <div class="artist-name">${escapeHtml(artistName)}</div>
+                            <span class="item-meta">
+                                <b style="color:#ff0000">${album.track_count || 0} tracks</b>
+                                ${album.release_date ? `<span style="margin-left:8px">${new Date(album.release_date).getFullYear()}</span>` : ''}
+                            </span>
+                        </div>
                     </div>
-                    <div class="item-data">
-                        <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                        <div class="artist-name">${escapeHtml(album.artist || 'Unknown Artist')}</div>
-                        <span class="item-meta">
-                            <b style="color:#ff0000">${album.track_count || 0} tracks</b>
-                            ${album.release_date ? `<span style="margin-left:8px">${new Date(album.release_date).getFullYear()}</span>` : ''}
-                        </span>
-                    </div>
-                </div>
-            </a>
-        `).join('');
+                </a>
+            `;
+        }).join('');
         
     } catch (error) {
         console.error('Error loading albums:', error);
@@ -144,28 +165,31 @@ async function loadLatestReleases() {
             return;
         }
         
-        container.innerHTML = latest.map(album => `
-            <a href="/album/${album.slug}" class="music-item">
-                <div class="item-container">
-                    <div class="item-thumb">
-                        <img src="${getAlbumImage(album)}" 
-                             width="80" height="80" 
-                             class="roundthumb" 
-                             alt="${escapeHtml(album.title)}"
-                             data-type="album"
-                             onerror="handleImageError(this)">
+        container.innerHTML = latest.map(album => {
+            const artistName = getAlbumArtistDisplay(album);
+            return `
+                <a href="/album/${album.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb">
+                            <img src="${getAlbumImage(album)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(album.title)}"
+                                 data-type="album"
+                                 onerror="handleImageError(this)">
+                        </div>
+                        <div class="item-data">
+                            <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
+                            <div class="artist-name">${escapeHtml(artistName)}</div>
+                            <span class="item-meta">
+                                <b style="color:#ff0000">Released:</b> ${album.release_date ? new Date(album.release_date).getFullYear() : 'TBA'}
+                                <span class="new-badge" style="background:#4caf50; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">New</span>
+                            </span>
+                        </div>
                     </div>
-                    <div class="item-data">
-                        <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                        <div class="artist-name">${escapeHtml(album.artist || 'Unknown Artist')}</div>
-                        <span class="item-meta">
-                            <b style="color:#ff0000">Released:</b> ${album.release_date ? new Date(album.release_date).getFullYear() : 'TBA'}
-                            <span class="new-badge" style="background:#4caf50; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">New</span>
-                        </span>
-                    </div>
-                </div>
-            </a>
-        `).join('');
+                </a>
+            `;
+        }).join('');
         
     } catch (error) {
         console.error('Error loading latest releases:', error);
@@ -192,28 +216,31 @@ async function loadTrending() {
             return;
         }
         
-        container.innerHTML = trending.map(album => `
-            <a href="/album/${album.slug}" class="music-item">
-                <div class="item-container">
-                    <div class="item-thumb">
-                        <img src="${getAlbumImage(album)}" 
-                             width="80" height="80" 
-                             class="roundthumb" 
-                             alt="${escapeHtml(album.title)}"
-                             data-type="album"
-                             onerror="handleImageError(this)">
+        container.innerHTML = trending.map(album => {
+            const artistName = getAlbumArtistDisplay(album);
+            return `
+                <a href="/album/${album.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb">
+                            <img src="${getAlbumImage(album)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(album.title)}"
+                                 data-type="album"
+                                 onerror="handleImageError(this)">
+                        </div>
+                        <div class="item-data">
+                            <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
+                            <div class="artist-name">${escapeHtml(artistName)}</div>
+                            <span class="item-meta">
+                                <b style="color:#ff0000">${album.plays ? formatNumber(album.plays) + ' plays' : 'Trending'}</b>
+                                <span class="hot-badge" style="background:#ff9800; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">🔥 Hot</span>
+                            </span>
+                        </div>
                     </div>
-                    <div class="item-data">
-                        <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                        <div class="artist-name">${escapeHtml(album.artist || 'Unknown Artist')}</div>
-                        <span class="item-meta">
-                            <b style="color:#ff0000">${album.plays ? formatNumber(album.plays) + ' plays' : 'Trending'}</b>
-                            <span class="hot-badge" style="background:#ff9800; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">🔥 Hot</span>
-                        </span>
-                    </div>
-                </div>
-            </a>
-        `).join('');
+                </a>
+            `;
+        }).join('');
         
     } catch (error) {
         console.error('Error loading trending:', error);
@@ -269,35 +296,39 @@ async function loadEPs() {
     container.innerHTML = '<div class="loading">Loading EPs...</div>';
     
     try {
-        const response = await fetch(`${API_BASE}/albums`);
-        const albums = await response.json();
+        const response = await fetch(`${API_BASE}/eps`);
+        const eps = await response.json();
         
-        const eps = albums.filter(album => album.track_count <= 6 && album.track_count > 0).slice(0, 6);
+        const epsList = Array.isArray(eps) ? eps : (eps.results || []);
         
-        if (!eps || eps.length === 0) {
+        if (!epsList || epsList.length === 0) {
             container.innerHTML = '<div class="error-message">No EPs found</div>';
             return;
         }
         
-        container.innerHTML = eps.map(ep => `
-            <a href="/album/${ep.slug}" class="music-item">
-                <div class="item-container">
-                    <div class="item-thumb">
-                        <img src="${getAlbumImage(ep)}" 
-                             width="80" height="80" 
-                             class="roundthumb" 
-                             alt="${escapeHtml(ep.title)}"
-                             data-type="album"
-                             onerror="handleImageError(this)">
+        container.innerHTML = epsList.slice(0, 6).map(ep => {
+            // Handle artist display for EP (new structure uses artist_name)
+            const artistName = ep.artist_name || ep.artist || 'Unknown Artist';
+            return `
+                <a href="/ep/${ep.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb">
+                            <img src="${getAlbumImage(ep)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(ep.title)}"
+                                 data-type="album"
+                                 onerror="handleImageError(this)">
+                        </div>
+                        <div class="item-data">
+                            <span class="track-title"><b>${escapeHtml(ep.title)}</b> <span class="ep-badge">EP</span></span>
+                            <div class="artist-name">${escapeHtml(artistName)}</div>
+                            <span class="item-meta"><b style="color:#ff0000">${ep.track_count || 0} tracks</b></span>
+                        </div>
                     </div>
-                    <div class="item-data">
-                        <span class="track-title"><b>${escapeHtml(ep.title)}</b> <span class="ep-badge">EP</span></span>
-                        <div class="artist-name">${escapeHtml(ep.artist || 'Unknown Artist')}</div>
-                        <span class="item-meta"><b style="color:#ff0000">${ep.track_count || 0} tracks</b></span>
-                    </div>
-                </div>
-            </a>
-        `).join('');
+                </a>
+            `;
+        }).join('');
         
     } catch (error) {
         console.error('Error loading EPs:', error);
@@ -532,21 +563,25 @@ function initializeLiveSearch() {
                 const albumsRes = await fetch(`${API_BASE}/albums`);
                 const albums = await albumsRes.json();
                 
-                const results = albums.filter(album => 
-                    album.title.toLowerCase().includes(term.toLowerCase()) ||
-                    (album.artist && album.artist.toLowerCase().includes(term.toLowerCase()))
-                ).slice(0, 5);
+                const results = albums.filter(album => {
+                    const artistName = getAlbumArtistDisplay(album);
+                    return album.title.toLowerCase().includes(term.toLowerCase()) ||
+                           artistName.toLowerCase().includes(term.toLowerCase());
+                }).slice(0, 5);
                 
                 if (results.length > 0) {
                     resultsDiv.innerHTML = `
                         <ul class="live-search-list">
-                            ${results.map(item => `
-                                <li>
-                                    <a href="/album/${item.slug}">
-                                        ${escapeHtml(item.title)} - ${escapeHtml(item.artist || '')}
-                                    </a>
-                                </li>
-                            `).join('')}
+                            ${results.map(item => {
+                                const artistName = getAlbumArtistDisplay(item);
+                                return `
+                                    <li>
+                                        <a href="/album/${item.slug}">
+                                            ${escapeHtml(item.title)} - ${escapeHtml(artistName)}
+                                        </a>
+                                    </li>
+                                `;
+                            }).join('')}
                         </ul>
                     `;
                 } else {
