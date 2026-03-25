@@ -22,15 +22,13 @@ export async function onRequest(context) {
   }
 
   try {
-    // Updated query to use artists table and track_artists junction
-    // REMOVED: website and updated_at columns
+    // Updated query - REMOVED: website, updated_at, social_links
     const { results } = await env.DB.prepare(`
       SELECT 
         a.id,
         a.name,
         a.slug,
         a.bio,
-        a.social_links,
         a.created_at,
         
         -- Track counts (counting all tracks this artist is associated with)
@@ -77,14 +75,12 @@ export async function onRequest(context) {
       ORDER BY total_plays DESC
     `).all();
 
-    // Process results to make them more usable
-    // REMOVED: website and updated_at from mapping
+    // Process results - REMOVED: website, social_links, updated_at
     const artists = results.map(artist => ({
       id: artist.id,
       name: artist.name,
       slug: artist.slug,
       bio: artist.bio,
-      social_links: artist.social_links ? JSON.parse(artist.social_links) : null,
       created_at: artist.created_at,
       
       // Stats
