@@ -421,6 +421,29 @@
             margin-bottom: 16px;
         }
         
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -487,6 +510,14 @@
             return html;
         }
         
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
         async function loadAlbum() {
             const urlParams = new URLSearchParams(window.location.search);
             const albumId = urlParams.get('id');
@@ -497,23 +528,17 @@
             }
             
             try {
-                // Fetch album details - should include tracks with artists
                 const res = await fetch(`${API_BASE}/albums/${albumId}`);
                 if (!res.ok) throw new Error('Album not found');
                 
                 const album = await res.json();
                 
-                // Get album artist name (handles both new and old structure)
                 const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
-                
-                // Tracks should be in album.tracks
                 const tracks = album.tracks || [];
                 
-                // Calculate stats
                 const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
                 const totalDuration = tracks.reduce((sum, t) => sum + (t.duration || 0), 0);
                 
-                // Format duration
                 const formatDuration = (seconds) => {
                     if (!seconds) return '0:00';
                     const mins = Math.floor(seconds / 60);
@@ -521,7 +546,6 @@
                     return `${mins}:${secs.toString().padStart(2, '0')}`;
                 };
                 
-                // Format date
                 const releaseDate = album.release_date 
                     ? new Date(album.release_date).toLocaleDateString('en-US', { 
                         year: 'numeric', 
@@ -650,28 +674,23 @@
                     throw new Error(error.error || 'Failed to remove track');
                 }
                 
-                // Remove track from UI with animation
                 const trackItem = button.closest('.track-item');
                 trackItem.style.animation = 'fadeOut 0.3s';
                 setTimeout(() => {
                     trackItem.remove();
                     
-                    // Update track numbers
                     const trackItems = document.querySelectorAll('.track-item');
                     trackItems.forEach((item, index) => {
                         item.querySelector('.track-number').textContent = index + 1;
                     });
                     
-                    // Update track count
                     const trackCount = document.querySelectorAll('.track-item').length;
                     const trackCountSpan = document.querySelector('.track-count');
                     if (trackCountSpan) trackCountSpan.textContent = trackCount + ' tracks';
                     
-                    // Update stats
                     const tracksStat = document.querySelector('.stat-card:first-child .stat-value');
                     if (tracksStat) tracksStat.textContent = trackCount;
                     
-                    // If no tracks left, show empty state
                     if (trackCount === 0) {
                         location.reload();
                     }
@@ -691,42 +710,42 @@
         }
         
         async function deleteAlbum(id) {
-            if (!confirm('Delete this album? This action cannot be undone.')) return;
+            // First check if album has tracks by getting track count from the page
+            const trackCountElement = document.querySelector('.track-count');
+            let trackCount = 0;
+            if (trackCountElement) {
+                trackCount = parseInt(trackCountElement.textContent) || 0;
+            } else {
+                // Fallback: count track items
+                trackCount = document.querySelectorAll('.track-item').length;
+            }
+            
+            if (trackCount > 0) {
+                showToast(`❌ Cannot delete album with ${trackCount} track(s). Remove all tracks first.`, 'error');
+                return;
+            }
+            
+            if (!confirm('⚠️ Are you sure you want to delete this album? This action cannot be undone.')) return;
             
             try {
                 const res = await fetch(`${API_BASE}/admin/albums/${id}`, {
                     method: 'DELETE'
                 });
                 
-                if (!res.ok) throw new Error('Failed to delete');
+                const data = await res.json();
                 
-                showToast('Album deleted', 'success');
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to delete');
+                }
+                
+                showToast('✅ Album deleted successfully', 'success');
                 setTimeout(() => {
                     window.location.href = '/admin/albums/index.html';
                 }, 1500);
                 
             } catch (error) {
-                showToast(error.message, 'error');
+                showToast(`❌ ${error.message}`, 'error');
             }
-        }
-        
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
-                border-radius: 6px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 2000;
-                animation: slideIn 0.3s;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
         }
         
         function escapeHtml(text) {
@@ -749,10 +768,6 @@
             @keyframes fadeOut {
                 from { opacity: 1; transform: translateX(0); }
                 to { opacity: 0; transform: translateX(-10px); }
-            }
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
             }
         `;
         document.head.appendChild(style);
