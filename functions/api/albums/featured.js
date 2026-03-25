@@ -22,12 +22,25 @@ export async function onRequest(context) {
   }
 
   try {
-    // Get featured albums
+    // Get featured albums with artist info
     const { results } = await env.DB.prepare(`
       SELECT 
-        a.*,
+        a.id,
+        a.title,
+        a.description,
+        a.cover_url,
+        a.slug,
+        a.release_date,
+        a.plays,
+        a.created_at,
+        a.updated_at,
+        a.artist_id,
+        a.is_featured,
+        ar.name as artist_name,
+        ar.slug as artist_slug,
         COUNT(at.track_id) as track_count
       FROM albums a
+      LEFT JOIN artists ar ON a.artist_id = ar.id
       LEFT JOIN album_tracks at ON a.id = at.album_id
       WHERE a.is_featured = 1
       GROUP BY a.id
@@ -35,7 +48,14 @@ export async function onRequest(context) {
       LIMIT 5
     `).all();
     
-    return new Response(JSON.stringify(results), { headers });
+    // Process results to add backward compatibility fields
+    const processedResults = results.map(album => ({
+      ...album,
+      // Add artist field for backward compatibility
+      artist: album.artist_name || 'Unknown Artist'
+    }));
+    
+    return new Response(JSON.stringify(processedResults), { headers });
     
   } catch (error) {
     console.error('Error fetching featured albums:', error);
