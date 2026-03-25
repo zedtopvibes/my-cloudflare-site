@@ -22,23 +22,41 @@ export async function onRequest(context) {
   }
 
   try {
-    // Get all EPs with their track stats
+    // Updated query to join with artists table for EP artist info
     const { results } = await env.DB.prepare(`
       SELECT 
-        e.*,
+        e.id,
+        e.title,
+        e.description,
         e.cover_url,
+        e.slug,
+        e.release_date,
+        e.plays,
+        e.created_at,
+        e.updated_at,
+        e.artist_id,
+        a.name as artist_name,
+        a.slug as artist_slug,
         COUNT(et.track_id) as track_count,
         SUM(t.plays) as total_plays,
         SUM(t.downloads) as total_downloads,
         SUM(t.duration) as total_duration
       FROM eps e
+      LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN ep_tracks et ON e.id = et.ep_id
       LEFT JOIN tracks t ON et.track_id = t.id
       GROUP BY e.id
       ORDER BY e.release_date DESC
     `).all();
     
-    return new Response(JSON.stringify(results), { headers });
+    // Process results to add backward compatibility fields
+    const processedResults = results.map(ep => ({
+      ...ep,
+      // Add artist field for backward compatibility
+      artist: ep.artist_name || 'Unknown Artist'
+    }));
+    
+    return new Response(JSON.stringify(processedResults), { headers });
     
   } catch (error) {
     console.error('Error fetching EPs:', error);
