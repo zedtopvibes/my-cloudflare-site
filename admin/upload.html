@@ -415,16 +415,6 @@
             font-size: 0.85rem;
         }
         
-        .filename-preview {
-            background: #ebf4ff;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin: 10px 0 20px;
-            font-family: monospace;
-            font-size: 14px;
-            border: 1px dashed var(--primary-blue);
-        }
-        
         .overlay {
             display: none;
             position: fixed;
@@ -905,16 +895,6 @@
                             </div>
                             
                             <div class="form-group">
-                                <label><i class="fas fa-tag"></i> Custom Filename <span style="font-weight: normal; color: #999;">(ID3 only)</span></label>
-                                <input type="text" id="customFilename" placeholder="e.g. my-awesome-song">
-                                <div class="form-hint">Leave empty to auto-generate from Artist - Title</div>
-                            </div>
-                            
-                            <div class="filename-preview">
-                                <strong>Filename Preview:</strong> <span id="previewText">Artist - Title (Zedtopvibes.Com).mp3</span>
-                            </div>
-                            
-                            <div class="form-group">
                                 <label><i class="fas fa-heading"></i> Song Title *</label>
                                 <input type="text" id="title" placeholder="e.g. Midnight Waves">
                             </div>
@@ -960,9 +940,10 @@
                                     </div>
                                     <div id="trackNumberContainer" class="track-number-container" style="display: none;">
                                         <label style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px;">
-                                            <i class="fas fa-hashtag"></i> Track Number <span style="font-weight: normal; color: #999;">(ID3 only)</span>
+                                            <i class="fas fa-hashtag"></i> Track Number
                                         </label>
                                         <input type="number" id="trackNumber" min="1" value="1">
+                                        <div class="form-hint">Position of this track in the album</div>
                                     </div>
                                     <div class="form-hint">
                                         <a href="#" onclick="showModal('albumModal')"><i class="fas fa-plus-circle"></i> Create New Album</a>
@@ -1122,7 +1103,6 @@
                 <div class="detail-item" id="successAlbumRow" style="display: none;"><i class="fas fa-compact-disc"></i><span id="successAlbum">-</span><span id="successTrackNumber"></span></div>
                 <div class="detail-item" id="successPlaylistsRow" style="display: none;"><i class="fas fa-list"></i><div id="successPlaylists"></div></div>
                 <div class="detail-item"><i class="fas fa-tag"></i><span id="successFilename">-</span></div>
-                <div class="detail-item"><i class="fas fa-check-circle" style="color: var(--success);"></i><span>ID3 branding added ✓</span></div>
             </div>
             <div class="overlay-actions">
                 <button class="btn btn-secondary" onclick="closeSuccessOverlay()"><i class="fas fa-times"></i> Close</button>
@@ -1224,7 +1204,6 @@
 
     <script>
         const API_BASE = '/api';
-        const SITENAME = "Zedtopvibes.Com";
         
         // DOM Elements
         const submitBtn = document.getElementById('submitBtn');
@@ -1254,13 +1233,6 @@
             
             const isValid = hasFile && hasTitle && hasArtist;
             submitBtn.disabled = !isValid;
-            
-            // Visual feedback
-            if (!isValid) {
-                submitBtn.title = 'Please select: MP3 file, Title, and Main Artist';
-            } else {
-                submitBtn.title = '';
-            }
         }
         
         // ==================== FILE HANDLING ====================
@@ -1358,7 +1330,6 @@
                 allArtists = await response.json();
                 setupArtistSearch();
                 setupFeaturedArtistSearch();
-                updateFilenamePreview();
             } catch (error) {
                 console.error('Error loading artists:', error);
                 showStatus('error', 'Could not load artists. Please refresh.');
@@ -1407,7 +1378,6 @@
             document.getElementById('mainArtistSuggestions').style.display = 'none';
             document.getElementById('selectedMainArtistName').textContent = artistName;
             document.getElementById('selectedMainArtistBadge').style.display = 'inline-flex';
-            updateFilenamePreview();
             updateButtonState();
         };
         
@@ -1415,7 +1385,6 @@
             selectedMainArtist = null;
             mainArtistInput.value = '';
             document.getElementById('selectedMainArtistBadge').style.display = 'none';
-            updateFilenamePreview();
             updateButtonState();
         };
         
@@ -1463,14 +1432,12 @@
             container.appendChild(badge);
             document.getElementById('featuredArtistInput').value = '';
             document.getElementById('featuredArtistSuggestions').style.display = 'none';
-            updateFilenamePreview();
         };
         
         window.removeFeaturedArtist = (artistId) => {
             selectedFeaturedArtists.delete(artistId);
             const badge = document.getElementById(`featured-badge-${artistId}`);
             if (badge) badge.remove();
-            updateFilenamePreview();
         };
         
         // ==================== ALBUM FUNCTIONS ====================
@@ -1607,24 +1574,6 @@
             const badge = document.getElementById(`playlist-badge-${playlistId}`);
             if (badge) badge.remove();
         };
-        
-        // ==================== FILENAME PREVIEW ====================
-        function updateFilenamePreview() {
-            const artist = selectedMainArtist ? selectedMainArtist.name : 'Artist';
-            const title = titleInput.value.trim() || 'Title';
-            const customFilename = document.getElementById('customFilename').value.trim();
-            
-            let preview;
-            if (customFilename) {
-                const cleanCustom = customFilename.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim();
-                preview = `${cleanCustom} (${SITENAME}).mp3`;
-            } else {
-                const cleanArtist = artist.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim() || 'Artist';
-                const cleanTitle = title.replace(/[^a-zA-Z0-9\s\-_]/g, ' ').replace(/\s+/g, ' ').trim() || 'Title';
-                preview = `${cleanArtist} - ${cleanTitle} (${SITENAME}).mp3`;
-            }
-            document.getElementById('previewText').textContent = preview;
-        }
         
         // ==================== SETTINGS ====================
         function applyFieldVisibility() {
@@ -1945,7 +1894,6 @@
                 formData.append('editor_pick', document.getElementById('editorPick').checked ? '1' : '0');
                 
                 if (artworkFile) formData.append('artwork', artworkFile);
-                formData.append('customFilename', document.getElementById('customFilename').value.trim());
                 
                 if (selectedAlbumId) {
                     formData.append('album_id', selectedAlbumId);
@@ -1968,6 +1916,31 @@
                 }
                 
                 const result = await response.json();
+                const trackId = result.id;
+                
+                // Add to album if selected
+                if (selectedAlbumId && trackId) {
+                    const albumBody = { track_id: trackId };
+                    const trackNumber = document.getElementById('trackNumber').value;
+                    if (trackNumber) albumBody.track_number = parseInt(trackNumber);
+                    await fetch(`${API_BASE}/admin/albums/${selectedAlbumId}/tracks`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(albumBody)
+                    }).catch(e => console.warn('Failed to add to album'));
+                }
+                
+                // Add to playlists if selected
+                if (selectedPlaylists.size > 0 && trackId) {
+                    for (const playlistId of selectedPlaylists) {
+                        await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ track_id: trackId })
+                        }).catch(e => console.warn('Failed to add to playlist'));
+                    }
+                }
+                
                 updateProgress(100);
                 
                 setTimeout(() => {
@@ -2001,9 +1974,7 @@
             document.getElementById('explicit').checked = false;
             document.getElementById('featured').checked = false;
             document.getElementById('editorPick').checked = false;
-            document.getElementById('customFilename').value = '';
             window.artworkDataUrl = null;
-            updateFilenamePreview();
             updateButtonState();
         };
         
@@ -2054,15 +2025,11 @@
         document.addEventListener('DOMContentLoaded', async () => {
             if (!checkAuth()) return;
             
-            titleInput.addEventListener('input', () => {
-                updateFilenamePreview();
-                updateButtonState();
-            });
-            
-            document.getElementById('customFilename').addEventListener('input', updateFilenamePreview);
+            titleInput.addEventListener('input', updateButtonState);
             
             try {
                 await Promise.all([loadArtists(), loadAlbums(), loadPlaylists()]);
+                applyFieldVisibility();
                 updateButtonState();
             } catch (error) {
                 console.error('Error loading data:', error);
