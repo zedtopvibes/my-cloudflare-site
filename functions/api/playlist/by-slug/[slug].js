@@ -48,16 +48,61 @@ export async function onRequest(context) {
       });
     }
     
-    // Get tracks in this playlist
+    // Get tracks in this playlist with full artist information
     const { results: tracks } = await env.DB.prepare(`
       SELECT 
-        t.*,
-        pt.position
+        t.id,
+        t.title,
+        t.description,
+        t.artwork_url,
+        t.r2_key,
+        t.filename,
+        t.duration,
+        t.genre,
+        t.plays,
+        t.downloads,
+        t.views,
+        t.slug,
+        t.uploaded_at,
+        t.release_date,
+        t.bpm,
+        t.explicit,
+        t.featured as is_featured,
+        t.editor_pick,
+        pt.position,
+        json_group_array(
+          json_object(
+            'id', a.id,
+            'name', a.name,
+            'slug', a.slug,
+            'is_primary', ta.is_primary,
+            'display_order', ta.display_order
+          )
+          ORDER BY ta.display_order ASC, ta.is_primary DESC
+        ) as artists
       FROM tracks t
       JOIN playlist_tracks pt ON t.id = pt.track_id
+      LEFT JOIN track_artists ta ON t.id = ta.track_id
+      LEFT JOIN artists a ON ta.artist_id = a.id
       WHERE pt.playlist_id = ?
+      GROUP BY t.id
       ORDER BY pt.position
     `).bind(playlist.id).all();
+    
+    // Process each track to parse the artists JSON and add backward compatibility fields
+    const processedTracks = tracks.map(track => {
+      const artists = track.artists ? JSON.parse(track.artists) : [];
+      const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
+      
+      return {
+        ...track,
+        artists: artists,
+        // Add convenience fields for backward compatibility
+        artist: primaryArtist ? primaryArtist.name : 'Unknown Artist',
+        artist_id: primaryArtist ? primaryArtist.id : null,
+        artist_slug: primaryArtist ? primaryArtist.slug : null
+      };
+    });
     
     // Get playlist stats
     const stats = await env.DB.prepare(`
@@ -74,7 +119,7 @@ export async function onRequest(context) {
     
     return new Response(JSON.stringify({
       ...playlist,
-      tracks: tracks || [],
+      tracks: processedTracks || [],
       stats: {
         track_count: stats.track_count || 0,
         total_plays: stats.total_plays || 0,
