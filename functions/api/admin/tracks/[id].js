@@ -76,6 +76,11 @@ export async function onRequest(context) {
         fields.push('editor_pick = ?');
         values.push(updates.editor_pick ? 1 : 0);
       }
+      // NEW: Add status field
+      if (updates.status !== undefined) {
+        fields.push('status = ?');
+        values.push(updates.status);
+      }
 
       // Handle artist updates if provided
       if (updates.artists !== undefined && Array.isArray(updates.artists)) {
@@ -139,6 +144,7 @@ export async function onRequest(context) {
           t.explicit,
           t.featured as is_featured,
           t.editor_pick,
+          t.status,
           json_group_array(
             json_object(
               'id', a.id,
