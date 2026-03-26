@@ -24,7 +24,7 @@ export async function onRequest(context) {
     try {
         const slug = params.slug;
         
-        // Get artist info from artists table
+        // Get artist info from artists table - only if published and not deleted
         // REMOVED ONLY: updated_at (doesn't exist)
         const artist = await env.DB.prepare(`
             SELECT 
@@ -41,7 +41,7 @@ export async function onRequest(context) {
                 total_downloads,
                 created_at
             FROM artists 
-            WHERE slug = ?
+            WHERE slug = ? AND deleted_at IS NULL AND status = 'published'
         `).bind(slug).first();
         
         if (!artist) {
@@ -51,7 +51,7 @@ export async function onRequest(context) {
             });
         }
         
-        // ===== Get artist's tracks via track_artists junction table =====
+        // ===== Get artist's tracks via track_artists junction table - only published tracks =====
         const { results: tracks } = await env.DB.prepare(`
             SELECT 
                 t.id,
@@ -81,7 +81,9 @@ export async function onRequest(context) {
             JOIN track_artists ta ON t.id = ta.track_id
             LEFT JOIN track_artists ta2 ON t.id = ta2.track_id
             LEFT JOIN artists a ON ta2.artist_id = a.id
-            WHERE ta.artist_id = ?
+            WHERE ta.artist_id = ? 
+              AND t.deleted_at IS NULL 
+              AND t.status = 'published'
             GROUP BY t.id
             ORDER BY ta.is_primary DESC, ta.display_order ASC, t.plays DESC
         `).bind(artist.id).all();
