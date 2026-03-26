@@ -585,7 +585,7 @@
         let allEPs = [];
         let albumTrackIds = new Set();
         let tracksInOtherAlbums = new Map();
-        let tracksInEPs = new Map();
+        let tracksInEPs = new Map();  // CRITICAL: Track tracks that are in EPs
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
@@ -623,12 +623,12 @@
             }
             
             try {
-                // Load album details, all tracks, all albums, and all EPs in parallel
+                // Load album details, all tracks, all albums, and ALL EPS
                 const [albumRes, tracksRes, albumsRes, epsRes] = await Promise.all([
                     fetch(`${API_BASE}/albums/${albumId}`),
                     fetch(`${API_BASE}/tracks`),
                     fetch(`${API_BASE}/albums`),
-                    fetch(`${API_BASE}/eps`)
+                    fetch(`${API_BASE}/eps`)  // CRITICAL: Fetch EPs to check for conflicts
                 ]);
                 
                 if (!albumRes.ok) throw new Error('Album not found');
@@ -655,7 +655,7 @@
                     }
                 }
                 
-                // Build map of tracks in EPs
+                // CRITICAL: Build map of tracks in EPs (songs that cannot be added to albums)
                 tracksInEPs.clear();
                 for (const ep of allEPs) {
                     if (ep.tracks && ep.tracks.length > 0) {
@@ -667,6 +667,9 @@
                         }
                     }
                 }
+                
+                // Debug: Log to console to verify EP tracks are detected
+                console.log('Tracks in EPs:', tracksInEPs.size);
                 
                 renderPage();
                 
@@ -684,14 +687,14 @@
         }
 
         function renderPage() {
-            // Calculate stats
+            // Calculate stats including EP tracks
             const availableCount = allTracks.filter(t => 
                 !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id) && !tracksInEPs.has(t.id)
             ).length;
             
             const inThisAlbumCount = albumTrackIds.size;
             const inOtherAlbumsCount = tracksInOtherAlbums.size;
-            const inEPsCount = tracksInEPs.size;
+            const inEPsCount = tracksInEPs.size;  // CRITICAL: Count tracks in EPs
             
             // Apply search and filter
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -703,7 +706,7 @@
                        artistSearch.includes(searchTerm);
             });
             
-            // Then apply category filter
+            // Then apply category filter (includes In EPs filter)
             if (currentFilter === 'available') {
                 filteredTracks = filteredTracks.filter(t => 
                     !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id) && !tracksInEPs.has(t.id)
@@ -713,7 +716,7 @@
             } else if (currentFilter === 'in-other-albums') {
                 filteredTracks = filteredTracks.filter(t => tracksInOtherAlbums.has(t.id));
             } else if (currentFilter === 'in-eps') {
-                filteredTracks = filteredTracks.filter(t => tracksInEPs.has(t.id));
+                filteredTracks = filteredTracks.filter(t => tracksInEPs.has(t.id));  // CRITICAL: EP filter
             }
 
             const contentCard = document.getElementById('contentCard');
@@ -861,11 +864,21 @@
             if (selectedTracks.has(trackId)) {
                 selectedTracks.delete(trackId);
             } else {
-                // Check if track is available
+                // Check if track is available (not in this album, not in other albums, not in EPs)
                 if (!albumTrackIds.has(trackId) && !tracksInOtherAlbums.has(trackId) && !tracksInEPs.has(trackId)) {
                     selectedTracks.add(trackId);
                 } else {
-                    showToast('❌ This track cannot be added to an album', 'warning');
+                    let reason = '';
+                    if (tracksInEPs.has(trackId)) {
+                        const ep = tracksInEPs.get(trackId);
+                        reason = `This track is already in EP: "${ep.epTitle}"`;
+                    } else if (tracksInOtherAlbums.has(trackId)) {
+                        const album = tracksInOtherAlbums.get(trackId);
+                        reason = `This track is already in album: "${album.albumTitle}"`;
+                    } else if (albumTrackIds.has(trackId)) {
+                        reason = 'This track is already in this album';
+                    }
+                    showToast(`❌ Cannot add: ${reason}`, 'warning');
                 }
             }
             renderPage();
