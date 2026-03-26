@@ -3,30 +3,15 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
-
-  // Handle OPTIONS request
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers });
-  }
-
-  // Only allow GET
-  if (request.method !== 'GET') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-      status: 405, 
-      headers 
-    });
-  }
 
   try {
     const id = params.id;
     
-    // Get playlist details - use .first() to get single object
+    // Get playlist details
     const playlist = await env.DB.prepare(`
-      SELECT * FROM playlists WHERE id = ?
+      SELECT * FROM playlists WHERE id = ? AND deleted_at IS NULL
     `).bind(id).first();
     
     if (!playlist) {
@@ -36,7 +21,7 @@ export async function onRequest(context) {
       });
     }
     
-    // Get tracks in this playlist with full artist information
+    // Get tracks in this playlist
     const { results: tracks } = await env.DB.prepare(`
       SELECT 
         t.id,
@@ -72,12 +57,12 @@ export async function onRequest(context) {
       JOIN playlist_tracks pt ON t.id = pt.track_id
       LEFT JOIN track_artists ta ON t.id = ta.track_id
       LEFT JOIN artists a ON ta.artist_id = a.id
-      WHERE pt.playlist_id = ?
+      WHERE pt.playlist_id = ? AND t.deleted_at IS NULL
       GROUP BY t.id
       ORDER BY pt.position
     `).bind(id).all();
     
-    // Process each track to parse the artists JSON and add backward compatibility fields
+    // Process each track
     const processedTracks = tracks.map(track => {
       const artists = track.artists ? JSON.parse(track.artists) : [];
       const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
@@ -85,15 +70,13 @@ export async function onRequest(context) {
       return {
         ...track,
         artists: artists,
-        // Add convenience fields for backward compatibility
         artist: primaryArtist ? primaryArtist.name : 'Unknown Artist',
         artist_id: primaryArtist ? primaryArtist.id : null,
         artist_slug: primaryArtist ? primaryArtist.slug : null
       };
     });
     
-    // Add processed tracks to playlist object
-    playlist.tracks = processedTracks || [];
+    playlist.tracks = processedTracks;
     
     return new Response(JSON.stringify(playlist), { headers });
     
