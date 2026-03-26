@@ -20,7 +20,7 @@ export async function onRequest(context) {
       const { name, description, is_featured, cover_emoji } = await request.json();
 
       const existing = await env.DB.prepare(
-        'SELECT * FROM playlists WHERE id = ?'
+        'SELECT * FROM playlists WHERE id = ? AND deleted_at IS NULL'
       ).bind(id).first();
 
       if (!existing) {
@@ -30,7 +30,6 @@ export async function onRequest(context) {
         });
       }
 
-      // Generate new slug if name changed
       let slug = existing.slug;
       if (name && name !== existing.name) {
         slug = name
@@ -56,7 +55,7 @@ export async function onRequest(context) {
       ).run();
 
       const updated = await env.DB.prepare(
-        'SELECT * FROM playlists WHERE id = ?'
+        'SELECT * FROM playlists WHERE id = ? AND deleted_at IS NULL'
       ).bind(id).first();
 
       return new Response(JSON.stringify(updated), { headers });
@@ -70,14 +69,41 @@ export async function onRequest(context) {
     }
   }
 
-  // DELETE - Delete playlist
+  // DELETE - Soft delete playlist
   if (request.method === 'DELETE') {
     try {
-      await env.DB.prepare(
-        'DELETE FROM playlists WHERE id = ?'
-      ).bind(id).run();
+      const playlist = await env.DB.prepare(
+        'SELECT id FROM playlists WHERE id = ? AND deleted_at IS NULL'
+      ).bind(id).first();
 
-      return new Response(JSON.stringify({ success: true }), { headers });
+      if (!playlist) {
+        return new Response(JSON.stringify({ error: 'Playlist not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+
+      // Check if playlist has tracks
+      const trackCount = await env.DB.prepare(`
+        SELECT COUNT(*) as count FROM playlist_tracks WHERE playlist_id = ?
+      `).bind(id).first();
+
+      if (trackCount.count > 0) {
+        return new Response(JSON.stringify({ 
+          error: `Cannot delete playlist with ${trackCount.count} track(s). Remove all tracks first.`
+        }), { status: 400, headers });
+      }
+
+      await env.DB.prepare(`
+        UPDATE playlists 
+        SET deleted_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+      `).bind(id).run();
+
+      return new Response(JSON.stringify({ 
+        success: true, 
+        message: 'Playlist moved to trash'
+      }), { headers });
 
     } catch (error) {
       console.error('Error deleting playlist:', error);
