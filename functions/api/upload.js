@@ -1,5 +1,6 @@
 // =====================================================
 // SIMPLIFIED UPLOAD HANDLER - NO ID3 PROCESSING
+// WITH DRAFT/PUBLISH SUPPORT
 // =====================================================
 
 export async function onRequest(context) {
@@ -35,6 +36,10 @@ export async function onRequest(context) {
     
     const trackNumber = formData.get('trackNumber') || '1';
     const albumId = formData.get('album_id') || '';
+
+    // NEW: Get status from form (draft or publish)
+    const action = formData.get('action') || 'publish'; // 'draft' or 'publish'
+    const status = action === 'publish' ? 'published' : 'draft';
 
     // Get artist data
     const mainArtistId = parseInt(formData.get('main_artist_id'));
@@ -130,7 +135,8 @@ export async function onRequest(context) {
       customMetadata: {
         title,
         artist: mainArtistName,
-        uploadedAt: new Date().toISOString()
+        uploadedAt: new Date().toISOString(),
+        status // NEW: Store status in metadata
       },
     });
 
@@ -138,7 +144,7 @@ export async function onRequest(context) {
     // D1 DATABASE OPERATIONS
     // =====================================================
     
-    // Insert track
+    // Insert track with status field
     const result = await env.DB.prepare(`
       INSERT INTO tracks (
         title, 
@@ -152,9 +158,10 @@ export async function onRequest(context) {
         bpm,
         explicit,
         featured,
-        editor_pick
+        editor_pick,
+        status
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       RETURNING id
     `).bind(
       title, 
@@ -168,7 +175,8 @@ export async function onRequest(context) {
       parseInt(bpm) || 0,
       explicit ? 1 : 0,
       featured ? 1 : 0,
-      editorPick ? 1 : 0
+      editorPick ? 1 : 0,
+      status  // NEW: Insert status
     ).run();
 
     const trackId = result.results[0]?.id;
@@ -206,11 +214,12 @@ export async function onRequest(context) {
       }
     }
 
-    // Return success response
+    // Return success response with status info
     return new Response(JSON.stringify({ 
       success: true, 
       id: trackId,
-      message: 'Track uploaded successfully',
+      message: status === 'published' ? 'Track published successfully!' : 'Track saved as draft',
+      status: status,
       filename,
       artwork_url: artworkUrl,
       duration: Math.round(duration / 1000)
