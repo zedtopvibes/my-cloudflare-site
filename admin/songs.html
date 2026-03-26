@@ -890,8 +890,10 @@
                 <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
                 <a href="/admin/songs" class="tab-btn active"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/trash" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
         
@@ -1043,7 +1045,7 @@
     <div id="deleteModal" class="modal">
         <div class="modal-content" style="max-width: 400px;">
             <h3 style="color: var(--error);">Confirm Delete</h3>
-            <p style="margin-bottom: 25px;">Are you sure you want to delete "<span id="deleteSongTitle"></span>"? This action cannot be undone.</p>
+            <p style="margin-bottom: 25px;">Are you sure you want to delete "<span id="deleteSongTitle"></span>"? This will move it to trash.</p>
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="closeDeleteModal()" class="btn btn-secondary">Cancel</button>
                 <button onclick="confirmDelete()" class="btn btn-danger">Delete</button>
@@ -1549,21 +1551,23 @@
             currentDeleteId = null;
         };
 
+        // UPDATED: Changed from /api/delete/${id} to /api/admin/tracks/${id}
         window.confirmDelete = async () => {
             if (!currentDeleteId) return;
             
             try {
-                const response = await fetch(`${API_BASE}/delete/${currentDeleteId}`, {
+                const response = await fetch(`${API_BASE}/admin/tracks/${currentDeleteId}`, {
                     method: 'DELETE'
                 });
                 
                 if (!response.ok) {
-                    throw new Error('Delete failed');
+                    const error = await response.json();
+                    throw new Error(error.error || 'Delete failed');
                 }
                 
                 closeDeleteModal();
                 await loadSongs();
-                showToast('Song deleted successfully!', 'success');
+                showToast('Song moved to trash!', 'success');
                 
             } catch (error) {
                 console.error('Error deleting song:', error);
