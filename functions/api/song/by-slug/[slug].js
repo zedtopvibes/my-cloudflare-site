@@ -3,28 +3,13 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
-
-  // Handle OPTIONS request
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers });
-  }
-
-  // Only allow GET
-  if (request.method !== 'GET') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-      status: 405, 
-      headers 
-    });
-  }
 
   try {
     const slug = params.slug;
     
-    // Updated query to join with track_artists and artists tables
+    // Updated query to join with track_artists and artists tables, plus album/EP info
     const track = await env.DB.prepare(`
       SELECT 
         t.id,
@@ -45,6 +30,39 @@ export async function onRequest(context) {
         t.featured as is_featured,
         t.editor_pick,
         t.artwork_url,
+        
+        -- Album info (if track is in an album)
+        (SELECT a.id FROM albums a 
+         JOIN album_tracks at ON a.id = at.album_id 
+         WHERE at.track_id = t.id LIMIT 1) as album_id,
+        (SELECT a.title FROM albums a 
+         JOIN album_tracks at ON a.id = at.album_id 
+         WHERE at.track_id = t.id LIMIT 1) as album_name,
+        (SELECT a.slug FROM albums a 
+         JOIN album_tracks at ON a.id = at.album_id 
+         WHERE at.track_id = t.id LIMIT 1) as album_slug,
+        (SELECT a.cover_url FROM albums a 
+         JOIN album_tracks at ON a.id = at.album_id 
+         WHERE at.track_id = t.id LIMIT 1) as album_cover_url,
+        (SELECT at.track_number FROM album_tracks at 
+         WHERE at.track_id = t.id LIMIT 1) as album_track_number,
+        
+        -- EP info (if track is in an EP)
+        (SELECT e.id FROM eps e 
+         JOIN ep_tracks et ON e.id = et.ep_id 
+         WHERE et.track_id = t.id LIMIT 1) as ep_id,
+        (SELECT e.title FROM eps e 
+         JOIN ep_tracks et ON e.id = et.ep_id 
+         WHERE et.track_id = t.id LIMIT 1) as ep_name,
+        (SELECT e.slug FROM eps e 
+         JOIN ep_tracks et ON e.id = et.ep_id 
+         WHERE et.track_id = t.id LIMIT 1) as ep_slug,
+        (SELECT e.cover_url FROM eps e 
+         JOIN ep_tracks et ON e.id = et.ep_id 
+         WHERE et.track_id = t.id LIMIT 1) as ep_cover_url,
+        (SELECT et.track_number FROM ep_tracks et 
+         WHERE et.track_id = t.id LIMIT 1) as ep_track_number,
+        
         json_group_array(
           json_object(
             'id', a.id,
@@ -75,50 +93,68 @@ export async function onRequest(context) {
     // Find primary artist for backward compatibility
     const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
     
-    // Get album info if track is part of an album
-    let albumInfo = null;
-    if (track.id) {
-      const album = await env.DB.prepare(`
-        SELECT 
-          a.id as album_id,
-          a.title as album_name,
-          a.slug as album_slug,
-          a.cover_url as album_cover_url
-        FROM albums a
-        JOIN album_tracks at ON a.id = at.album_id
-        WHERE at.track_id = ?
-        LIMIT 1
-      `).bind(track.id).first();
-      
-      if (album) {
-        albumInfo = album;
-      }
+    // Determine release type (album or EP)
+    let releaseType = 'single';
+    let releaseId = null;
+    let releaseName = null;
+    let releaseSlug = null;
+    let releaseCoverUrl = null;
+    let trackNumber = null;
+    
+    if (track.album_id) {
+      releaseType = 'album';
+      releaseId = track.album_id;
+      releaseName = track.album_name;
+      releaseSlug = track.album_slug;
+      releaseCoverUrl = track.album_cover_url;
+      trackNumber = track.album_track_number;
+    } else if (track.ep_id) {
+      releaseType = 'ep';
+      releaseId = track.ep_id;
+      releaseName = track.ep_name;
+      releaseSlug = track.ep_slug;
+      releaseCoverUrl = track.ep_cover_url;
+      trackNumber = track.ep_track_number;
     }
     
     // Construct the final track object
     const trackData = {
-      ...track,
+      id: track.id,
+      title: track.title,
+      description: track.description,
+      r2_key: track.r2_key,
+      filename: track.filename,
+      duration: track.duration,
+      genre: track.genre,
+      plays: track.plays,
+      downloads: track.downloads,
+      views: track.views,
+      slug: track.slug,
+      uploaded_at: track.uploaded_at,
+      release_date: track.release_date,
+      bpm: track.bpm,
+      explicit: track.explicit,
+      is_featured: track.is_featured,
+      editor_pick: track.editor_pick,
+      artwork_url: track.artwork_url,
       artists: artists,
       // Add convenience fields for backward compatibility
       artist: primaryArtist ? primaryArtist.name : 'Unknown Artist',
       artist_id: primaryArtist ? primaryArtist.id : null,
       artist_slug: primaryArtist ? primaryArtist.slug : null,
-      // Add album info if available
-      ...(albumInfo && {
-        album_id: albumInfo.album_id,
-        album_name: albumInfo.album_name,
-        album_slug: albumInfo.album_slug,
-        album_cover_url: albumInfo.album_cover_url
-      })
+      // Release info
+      release_type: releaseType,
+      release_id: releaseId,
+      release_name: releaseName,
+      release_slug: releaseSlug,
+      release_cover_url: releaseCoverUrl,
+      track_number: trackNumber
     };
-    
-    // Remove the raw artists string (we already parsed it)
-    delete trackData.artists_raw;
     
     return new Response(JSON.stringify(trackData), { headers });
     
   } catch (error) {
-    console.error('Error fetching track by slug:', error);
+    console.error('Error fetching track:', error);
     return new Response(JSON.stringify({ error: error.message }), { 
       status: 500, 
       headers 
