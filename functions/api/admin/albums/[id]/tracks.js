@@ -1,5 +1,3 @@
-
-
 export async function onRequest(context) {
   const { request, env, params } = context;
   
@@ -21,22 +19,82 @@ export async function onRequest(context) {
   if (request.method === 'POST') {
     try {
       const { track_id } = await request.json();
-      
-      // Get current max track number
-      const maxTrack = await env.DB.prepare(`
-        SELECT MAX(track_number) as max_num 
+
+      // Check if album exists
+      const album = await env.DB.prepare(
+        'SELECT id, title FROM albums WHERE id = ?'
+      ).bind(albumId).first();
+
+      if (!album) {
+        return new Response(JSON.stringify({ error: 'Album not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+
+      // Check if track exists
+      const track = await env.DB.prepare(
+        'SELECT id FROM tracks WHERE id = ?'
+      ).bind(track_id).first();
+
+      if (!track) {
+        return new Response(JSON.stringify({ error: 'Track not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+
+      // ===== CHECK: Track already in an EP? =====
+      const existingInEP = await env.DB.prepare(`
+        SELECT et.ep_id, e.title as ep_title 
+        FROM ep_tracks et
+        JOIN eps e ON et.ep_id = e.id
+        WHERE et.track_id = ?
+      `).bind(track_id).first();
+
+      if (existingInEP) {
+        return new Response(JSON.stringify({ 
+          error: `❌ Track already belongs to EP: "${existingInEP.ep_title}". Cannot add to album.`,
+          ep_id: existingInEP.ep_id,
+          conflict_type: 'ep'
+        }), { status: 400, headers });
+      }
+
+      // Check if track is already in ANY album
+      const existingInAlbum = await env.DB.prepare(`
+        SELECT at.album_id, a.title as album_title 
+        FROM album_tracks at
+        JOIN albums a ON at.album_id = a.id
+        WHERE at.track_id = ?
+      `).bind(track_id).first();
+
+      if (existingInAlbum) {
+        return new Response(JSON.stringify({ 
+          error: `Track already belongs to album: "${existingInAlbum.album_title}"`,
+          album_id: existingInAlbum.album_id
+        }), { status: 400, headers });
+      }
+
+      // Get next track number
+      const maxPos = await env.DB.prepare(`
+        SELECT MAX(track_number) as max_pos 
         FROM album_tracks 
         WHERE album_id = ?
       `).bind(albumId).first();
-      
-      const trackNumber = (maxTrack?.max_num || 0) + 1;
 
+      const position = (maxPos?.max_pos || 0) + 1;
+
+      // Add track to album
       await env.DB.prepare(`
         INSERT INTO album_tracks (album_id, track_id, track_number)
         VALUES (?, ?, ?)
-      `).bind(albumId, track_id, trackNumber).run();
+      `).bind(albumId, track_id, position).run();
 
-      return new Response(JSON.stringify({ success: true }), { headers });
+      return new Response(JSON.stringify({ 
+        success: true, 
+        position,
+        message: 'Track added to album successfully'
+      }), { headers });
 
     } catch (error) {
       console.error('Error adding track to album:', error);
@@ -55,12 +113,37 @@ export async function onRequest(context) {
       const pathParts = url.pathname.split('/');
       const trackId = pathParts[pathParts.length - 1];
 
-      await env.DB.prepare(`
-        DELETE FROM album_tracks 
-        WHERE album_id = ? AND track_id = ?
-      `).bind(albumId, trackId).run();
+      // Check if relationship exists
+      const exists = await env.DB.prepare(
+        'SELECT * FROM album_tracks WHERE album_id = ? AND track_id = ?'
+      ).bind(albumId, trackId).first();
 
-      return new Response(JSON.stringify({ success: true }), { headers });
+      if (!exists) {
+        return new Response(JSON.stringify({ 
+          error: 'Track not found in this album'
+        }), { status: 404, headers });
+      }
+
+      // Delete the relationship
+      await env.DB.prepare(
+        'DELETE FROM album_tracks WHERE album_id = ? AND track_id = ?'
+      ).bind(albumId, trackId).run();
+
+      // Reorder remaining tracks
+      const remaining = await env.DB.prepare(
+        'SELECT track_id FROM album_tracks WHERE album_id = ? ORDER BY track_number'
+      ).bind(albumId).all();
+
+      for (let i = 0; i < remaining.results.length; i++) {
+        await env.DB.prepare(
+          'UPDATE album_tracks SET track_number = ? WHERE album_id = ? AND track_id = ?'
+        ).bind(i + 1, albumId, remaining.results[i].track_id).run();
+      }
+
+      return new Response(JSON.stringify({ 
+        success: true,
+        message: 'Track removed from album successfully'
+      }), { headers });
 
     } catch (error) {
       console.error('Error removing track from album:', error);
