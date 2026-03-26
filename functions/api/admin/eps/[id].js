@@ -8,7 +8,6 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
@@ -20,9 +19,8 @@ export async function onRequest(context) {
     try {
       const data = await request.json();
       
-      // Check if EP exists
       const existing = await env.DB.prepare(
-        'SELECT id FROM eps WHERE id = ?'
+        'SELECT id FROM eps WHERE id = ? AND deleted_at IS NULL'
       ).bind(id).first();
       
       if (!existing) {
@@ -32,7 +30,6 @@ export async function onRequest(context) {
         });
       }
 
-      // Build update query dynamically
       const updates = [];
       const values = [];
 
@@ -41,9 +38,7 @@ export async function onRequest(context) {
         values.push(data.title);
       }
       
-      // Handle artist_id instead of artist
       if (data.artist_id !== undefined) {
-        // Verify artist exists
         const artist = await env.DB.prepare(`
           SELECT id FROM artists WHERE id = ?
         `).bind(data.artist_id).first();
@@ -94,11 +89,9 @@ export async function onRequest(context) {
       }
 
       values.push(id);
-
       const query = `UPDATE eps SET ${updates.join(', ')} WHERE id = ?`;
       await env.DB.prepare(query).bind(...values).run();
 
-      // Fetch updated EP with artist info
       const updated = await env.DB.prepare(`
         SELECT 
           e.id,
@@ -120,10 +113,9 @@ export async function onRequest(context) {
           a.slug as artist_slug
         FROM eps e
         LEFT JOIN artists a ON e.artist_id = a.id
-        WHERE e.id = ?
+        WHERE e.id = ? AND e.deleted_at IS NULL
       `).bind(id).first();
 
-      // Add backward compatibility field
       const epData = {
         ...updated,
         artist: updated.artist_name || 'Unknown Artist'
@@ -140,12 +132,11 @@ export async function onRequest(context) {
     }
   }
 
-  // DELETE - Delete EP with track count check
+  // DELETE - Soft delete EP
   if (request.method === 'DELETE') {
     try {
-      // Check if EP exists
       const ep = await env.DB.prepare(
-        'SELECT id FROM eps WHERE id = ?'
+        'SELECT id FROM eps WHERE id = ? AND deleted_at IS NULL'
       ).bind(id).first();
       
       if (!ep) {
@@ -155,29 +146,26 @@ export async function onRequest(context) {
         });
       }
       
-      // Check if EP has any tracks in ep_tracks junction table
+      // Check if EP has tracks
       const trackCount = await env.DB.prepare(`
         SELECT COUNT(*) as count FROM ep_tracks WHERE ep_id = ?
       `).bind(id).first();
       
       if (trackCount.count > 0) {
         return new Response(JSON.stringify({ 
-          error: `Cannot delete EP with ${trackCount.count} track(s). Remove all tracks first.`,
-          track_count: trackCount.count
-        }), { 
-          status: 400, 
-          headers 
-        });
+          error: `Cannot delete EP with ${trackCount.count} track(s). Remove all tracks first.`
+        }), { status: 400, headers });
       }
       
-      // Delete the EP (no tracks to clean up since we already checked)
-      await env.DB.prepare(
-        'DELETE FROM eps WHERE id = ?'
-      ).bind(id).run();
+      await env.DB.prepare(`
+        UPDATE eps 
+        SET deleted_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+      `).bind(id).run();
       
       return new Response(JSON.stringify({ 
-        success: true,
-        message: 'EP deleted successfully'
+        success: true, 
+        message: 'EP moved to trash'
       }), { headers });
       
     } catch (error) {
