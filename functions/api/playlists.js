@@ -13,7 +13,7 @@ export async function onRequest(context) {
         COUNT(pt.track_id) as track_count
       FROM playlists p
       LEFT JOIN playlist_tracks pt ON p.id = pt.playlist_id
-      WHERE p.deleted_at IS NULL
+      WHERE p.deleted_at IS NULL AND p.status = 'published'
       GROUP BY p.id
       ORDER BY p.created_at DESC
     `).all();
