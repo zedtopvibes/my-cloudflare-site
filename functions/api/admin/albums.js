@@ -13,7 +13,7 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  // GET - List all albums with artist info
+  // GET - List all albums with artist info (ADMIN - shows all including drafts)
   if (request.method === 'GET') {
     try {
       const { results } = await env.DB.prepare(`
@@ -33,10 +33,12 @@ export async function onRequest(context) {
           a.created_at,
           a.updated_at,
           a.artist_id,
+          a.status,
           ar.name as artist_name,
           ar.slug as artist_slug
         FROM albums a
         LEFT JOIN artists ar ON a.artist_id = ar.id
+        WHERE a.deleted_at IS NULL
         ORDER BY a.created_at DESC
       `).all();
       
@@ -56,7 +58,7 @@ export async function onRequest(context) {
     }
   }
 
-  // POST - Create new album
+  // POST - Create new album with status support
   if (request.method === 'POST') {
     try {
       const data = await request.json();
@@ -70,6 +72,9 @@ export async function onRequest(context) {
           headers 
         });
       }
+      
+      // Get status from request (default to draft)
+      const status = data.status || 'draft'; // 'draft' or 'published'
       
       // Verify artist exists
       const artist = await env.DB.prepare(`
@@ -104,9 +109,10 @@ export async function onRequest(context) {
           is_featured, 
           slug, 
           cover_url,
+          status,
           created_at, 
           updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         RETURNING id
       `).bind(
         data.title,
@@ -117,7 +123,8 @@ export async function onRequest(context) {
         data.label || null,
         data.is_featured || 0,
         slug,
-        data.cover_url || null
+        data.cover_url || null,
+        status
       ).run();
 
       const newAlbum = await env.DB.prepare(`
@@ -137,6 +144,7 @@ export async function onRequest(context) {
           a.created_at,
           a.updated_at,
           a.artist_id,
+          a.status,
           ar.name as artist_name,
           ar.slug as artist_slug
         FROM albums a
