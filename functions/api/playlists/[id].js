@@ -9,9 +9,9 @@ export async function onRequest(context) {
   try {
     const id = params.id;
     
-    // Get playlist details
+    // Get playlist details - only if published and not deleted
     const playlist = await env.DB.prepare(`
-      SELECT * FROM playlists WHERE id = ? AND deleted_at IS NULL
+      SELECT * FROM playlists WHERE id = ? AND deleted_at IS NULL AND status = 'published'
     `).bind(id).first();
     
     if (!playlist) {
@@ -21,7 +21,7 @@ export async function onRequest(context) {
       });
     }
     
-    // Get tracks in this playlist
+    // Get tracks in this playlist - only published tracks
     const { results: tracks } = await env.DB.prepare(`
       SELECT 
         t.id,
@@ -57,7 +57,7 @@ export async function onRequest(context) {
       JOIN playlist_tracks pt ON t.id = pt.track_id
       LEFT JOIN track_artists ta ON t.id = ta.track_id
       LEFT JOIN artists a ON ta.artist_id = a.id
-      WHERE pt.playlist_id = ? AND t.deleted_at IS NULL
+      WHERE pt.playlist_id = ? AND t.deleted_at IS NULL AND t.status = 'published'
       GROUP BY t.id
       ORDER BY pt.position
     `).bind(id).all();
