@@ -13,11 +13,11 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  // GET - List all artists
+  // GET - List all artists (ADMIN - shows all including drafts)
   if (request.method === 'GET') {
     try {
       const { results } = await env.DB.prepare(`
-        SELECT * FROM artists ORDER BY name ASC
+        SELECT * FROM artists WHERE deleted_at IS NULL ORDER BY name ASC
       `).all();
       
       return new Response(JSON.stringify(results), { headers });
@@ -30,10 +30,10 @@ export async function onRequest(context) {
     }
   }
 
-  // POST - Create new artist
+  // POST - Create new artist with status support
   if (request.method === 'POST') {
     try {
-      const { name, country, bio, is_featured, is_zambian_legend } = await request.json();
+      const { name, country, bio, is_featured, is_zambian_legend, status } = await request.json();
       
       if (!name) {
         return new Response(JSON.stringify({ error: 'Artist name is required' }), { 
@@ -41,6 +41,9 @@ export async function onRequest(context) {
           headers 
         });
       }
+
+      // Get status from request (default to draft)
+      const artistStatus = status || 'draft'; // 'draft' or 'published'
 
       // Generate slug from name
       const slug = name
@@ -61,10 +64,10 @@ export async function onRequest(context) {
         }), { status: 400, headers });
       }
 
-      // Insert new artist
+      // Insert new artist with status
       const result = await env.DB.prepare(`
-        INSERT INTO artists (name, slug, country, bio, is_featured, is_zambian_legend)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO artists (name, slug, country, bio, is_featured, is_zambian_legend, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         RETURNING id
       `).bind(
         name, 
@@ -72,7 +75,8 @@ export async function onRequest(context) {
         country || null, 
         bio || null, 
         is_featured ? 1 : 0, 
-        is_zambian_legend ? 1 : 0
+        is_zambian_legend ? 1 : 0,
+        artistStatus
       ).run();
 
       const newArtist = await env.DB.prepare(
