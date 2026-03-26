@@ -639,20 +639,24 @@
         }
         
         function addTracks(playlistId) {
-    window.location.href = `/admin/playlists/add-tracks.html?id=${playlistId}`;
-}
+            window.location.href = `/admin/playlists/add-tracks.html?id=${playlistId}`;
+        }
         
+        // UPDATED: Changed to use soft delete endpoint
         async function deletePlaylist(id) {
-            if (!confirm('Delete this playlist? This action cannot be undone.')) return;
+            if (!confirm('Move this playlist to trash?')) return;
             
             try {
                 const res = await fetch(`${API_BASE}/admin/playlists/${id}`, {
                     method: 'DELETE'
                 });
                 
-                if (!res.ok) throw new Error('Failed to delete');
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Failed to delete');
+                }
                 
-                showToast('Playlist deleted', 'success');
+                showToast('Playlist moved to trash!', 'success');
                 setTimeout(() => {
                     window.location.href = '/admin/playlists/index.html';
                 }, 1500);
