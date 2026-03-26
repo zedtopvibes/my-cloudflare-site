@@ -40,7 +40,7 @@ export async function onRequest(context) {
       FROM tracks t
       LEFT JOIN track_artists ta ON t.id = ta.track_id
       LEFT JOIN artists a ON ta.artist_id = a.id
-      WHERE t.id = ? AND t.deleted_at IS NULL
+      WHERE t.id = ? AND t.deleted_at IS NULL AND t.status = 'published'
       GROUP BY t.id
     `).bind(params.id).first();
     
