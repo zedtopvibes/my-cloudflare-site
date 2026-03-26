@@ -696,6 +696,21 @@
             color: white;
         }
         
+        .btn-draft {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-draft:hover:not(:disabled) {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .btn-draft:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .status-message {
             grid-column: 1 / -1;
             padding: 15px;
@@ -725,6 +740,43 @@
             color: #0c5460;
             border: 1px solid #bee5eb;
             display: flex;
+        }
+        
+        .action-indicator {
+            margin: 20px 0 0;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .action-indicator-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .action-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .action-badge i {
+            font-size: 0.9rem;
+        }
+        
+        .action-badge.draft i {
+            color: #6c757d;
+        }
+        
+        .action-badge.publish i {
+            color: var(--primary-blue);
+        }
+        
+        .action-separator {
+            color: #999;
         }
         
         .modal {
@@ -862,6 +914,11 @@
             .overlay-actions {
                 flex-direction: column;
             }
+            
+            .action-indicator-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -876,8 +933,10 @@
                 <a href="/admin/upload" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
                 <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
         
@@ -1053,6 +1112,27 @@
                             </div>
                         </div>
                         
+                        <!-- Action Indicator -->
+                        <div class="action-indicator">
+                            <div class="action-indicator-content">
+                                <i class="fas fa-info-circle" style="color: var(--primary-blue);"></i>
+                                <span style="font-size: 0.9rem;">Choose action:</span>
+                                <span class="action-badge draft">
+                                    <i class="fas fa-save"></i>
+                                    <span style="font-size: 0.85rem;">Save as Draft</span>
+                                </span>
+                                <span class="action-separator">→</span>
+                                <span style="font-size: 0.85rem;">Content saved but not visible to public</span>
+                                <span class="action-separator">|</span>
+                                <span class="action-badge publish">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span style="font-size: 0.85rem;">Publish Now</span>
+                                </span>
+                                <span class="action-separator">→</span>
+                                <span style="font-size: 0.85rem;">Content visible immediately</span>
+                            </div>
+                        </div>
+                        
                         <div id="statusMessage" class="status-message">
                             <i class="fas fa-info-circle"></i> <span></span>
                         </div>
@@ -1061,8 +1141,11 @@
                             <button type="button" class="btn btn-secondary" onclick="resetForm()">
                                 <i class="fas fa-undo"></i> Reset
                             </button>
-                            <button type="submit" id="submitBtn" class="btn btn-primary" disabled>
-                                <i class="fas fa-cloud-upload-alt"></i> Upload Song
+                            <button type="submit" name="action" value="draft" id="draftBtn" class="btn btn-draft" disabled>
+                                <i class="fas fa-save"></i> Save as Draft
+                            </button>
+                            <button type="submit" name="action" value="publish" id="publishBtn" class="btn btn-primary" disabled>
+                                <i class="fas fa-cloud-upload-alt"></i> Publish Now
                             </button>
                         </div>
                     </div>
@@ -1232,7 +1315,11 @@
             const hasArtist = selectedMainArtist !== null;
             
             const isValid = hasFile && hasTitle && hasArtist;
-            submitBtn.disabled = !isValid;
+            const draftBtn = document.getElementById('draftBtn');
+            const publishBtn = document.getElementById('publishBtn');
+            
+            if (draftBtn) draftBtn.disabled = !isValid;
+            if (publishBtn) publishBtn.disabled = !isValid;
         }
         
         // ==================== FILE HANDLING ====================
@@ -1813,7 +1900,21 @@
             document.getElementById('progressPercentage').textContent = '0%';
         }
         
-        function showSuccessOverlay(result) {
+        function showSuccessOverlay(result, action) {
+            const isPublished = action === 'publish';
+            const successIcon = document.querySelector('#successOverlay .success-icon');
+            const successTitle = document.querySelector('#successOverlay h2');
+            
+            if (isPublished) {
+                successIcon.innerHTML = '<i class="fas fa-check"></i>';
+                successTitle.innerHTML = 'UPLOAD COMPLETE!';
+                successIcon.style.background = 'var(--success)';
+            } else {
+                successIcon.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+                successTitle.innerHTML = 'SAVED AS DRAFT!';
+                successIcon.style.background = '#ffc107';
+            }
+            
             document.getElementById('successTitle').textContent = titleInput.value.trim();
             document.getElementById('successArtist').textContent = selectedMainArtist ? selectedMainArtist.name : '';
             document.getElementById('successFilename').textContent = result.filename;
@@ -1860,6 +1961,9 @@
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // Get which button was clicked
+            const action = e.submitter ? e.submitter.value : 'publish';
+            
             if (!selectedFile) {
                 showStatus('error', 'Please select an MP3 file');
                 return;
@@ -1872,13 +1976,17 @@
             }
             
             showUploadProgress();
-            submitBtn.disabled = true;
+            const draftBtn = document.getElementById('draftBtn');
+            const publishBtn = document.getElementById('publishBtn');
+            draftBtn.disabled = true;
+            publishBtn.disabled = true;
             
             try {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 formData.append('title', title);
                 formData.append('main_artist_id', selectedMainArtist.id);
+                formData.append('action', action);
                 
                 for (const [artistId] of selectedFeaturedArtists) {
                     formData.append('featured_artists[]', artistId);
@@ -1945,14 +2053,15 @@
                 
                 setTimeout(() => {
                     hideUploadProgress();
-                    showSuccessOverlay(result);
+                    showSuccessOverlay(result, action);
                 }, 500);
                 
             } catch (error) {
                 console.error('Upload error:', error);
                 hideUploadProgress();
                 showStatus('error', error.message || 'Upload failed');
-                submitBtn.disabled = false;
+                draftBtn.disabled = false;
+                publishBtn.disabled = false;
             }
         });
         
