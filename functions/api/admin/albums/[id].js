@@ -8,7 +8,6 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
@@ -20,9 +19,8 @@ export async function onRequest(context) {
     try {
       const data = await request.json();
       
-      // Check if album exists
       const existing = await env.DB.prepare(
-        'SELECT id FROM albums WHERE id = ?'
+        'SELECT id FROM albums WHERE id = ? AND deleted_at IS NULL'
       ).bind(id).first();
       
       if (!existing) {
@@ -32,7 +30,6 @@ export async function onRequest(context) {
         });
       }
 
-      // Build update query dynamically
       const updates = [];
       const values = [];
 
@@ -41,9 +38,7 @@ export async function onRequest(context) {
         values.push(data.title);
       }
       
-      // Handle artist_id instead of artist
       if (data.artist_id !== undefined) {
-        // Verify artist exists
         const artist = await env.DB.prepare(`
           SELECT id FROM artists WHERE id = ?
         `).bind(data.artist_id).first();
@@ -94,11 +89,9 @@ export async function onRequest(context) {
       }
 
       values.push(id);
-
       const query = `UPDATE albums SET ${updates.join(', ')} WHERE id = ?`;
       await env.DB.prepare(query).bind(...values).run();
 
-      // Fetch updated album with artist info
       const updated = await env.DB.prepare(`
         SELECT 
           a.id,
@@ -120,10 +113,9 @@ export async function onRequest(context) {
           ar.slug as artist_slug
         FROM albums a
         LEFT JOIN artists ar ON a.artist_id = ar.id
-        WHERE a.id = ?
+        WHERE a.id = ? AND a.deleted_at IS NULL
       `).bind(id).first();
 
-      // Add backward compatibility field
       const albumData = {
         ...updated,
         artist: updated.artist_name || 'Unknown Artist'
@@ -140,12 +132,11 @@ export async function onRequest(context) {
     }
   }
 
-  // DELETE - Delete album
+  // DELETE - Soft delete album
   if (request.method === 'DELETE') {
     try {
-      // Check if album exists
       const album = await env.DB.prepare(
-        'SELECT id FROM albums WHERE id = ?'
+        'SELECT id FROM albums WHERE id = ? AND deleted_at IS NULL'
       ).bind(id).first();
       
       if (!album) {
@@ -155,29 +146,26 @@ export async function onRequest(context) {
         });
       }
       
-      // Check if album has any tracks
+      // Check if album has tracks
       const trackCount = await env.DB.prepare(`
         SELECT COUNT(*) as count FROM album_tracks WHERE album_id = ?
       `).bind(id).first();
       
       if (trackCount.count > 0) {
         return new Response(JSON.stringify({ 
-          error: `Cannot delete album with ${trackCount.count} track(s). Remove all tracks first.`,
-          track_count: trackCount.count
-        }), { 
-          status: 400, 
-          headers 
-        });
+          error: `Cannot delete album with ${trackCount.count} track(s). Remove all tracks first.`
+        }), { status: 400, headers });
       }
       
-      // Delete the album
-      await env.DB.prepare(
-        'DELETE FROM albums WHERE id = ?'
-      ).bind(id).run();
+      await env.DB.prepare(`
+        UPDATE albums 
+        SET deleted_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+      `).bind(id).run();
       
       return new Response(JSON.stringify({ 
-        success: true,
-        message: 'Album deleted successfully'
+        success: true, 
+        message: 'Album moved to trash'
       }), { headers });
       
     } catch (error) {
