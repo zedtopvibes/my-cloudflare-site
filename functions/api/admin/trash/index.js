@@ -20,11 +20,11 @@ export async function onRequest(context) {
     // }
 
     const queries = {
-      tracks: `SELECT id, title, artist_id, album_id, duration, file_url, cover_url, deleted_at FROM tracks WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
-      albums: `SELECT id, title, artist_id, cover_url, release_date, type, deleted_at FROM albums WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
+      tracks: `SELECT id, title, artist_id, duration, artwork_url, deleted_at FROM tracks WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
+      albums: `SELECT id, title, artist_id, cover_url, release_date, deleted_at FROM albums WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
       eps: `SELECT id, title, artist_id, cover_url, release_date, deleted_at FROM eps WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
-      artists: `SELECT id, name, bio, avatar_url, cover_url, deleted_at FROM artists WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
-      playlists: `SELECT id, title, description, cover_url, user_id, is_public, deleted_at FROM playlists WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`
+      artists: `SELECT id, name, bio, image_url, deleted_at FROM artists WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`,
+      playlists: `SELECT id, name, description, cover_url, created_by, deleted_at FROM playlists WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC`
     };
 
     const results = {};
