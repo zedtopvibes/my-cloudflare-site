@@ -78,6 +78,11 @@ export async function onRequest(context) {
         updates.push('cover_url = ?');
         values.push(data.cover_url);
       }
+      // NEW: Add status field
+      if (data.status !== undefined) {
+        updates.push('status = ?');
+        values.push(data.status);
+      }
 
       updates.push('updated_at = CURRENT_TIMESTAMP');
       
@@ -109,6 +114,7 @@ export async function onRequest(context) {
           e.created_at,
           e.updated_at,
           e.artist_id,
+          e.status,
           a.name as artist_name,
           a.slug as artist_slug
         FROM eps e
