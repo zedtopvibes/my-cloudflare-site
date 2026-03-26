@@ -19,9 +19,8 @@ export async function onRequest(context) {
     try {
       const { name, country, bio, is_featured, is_zambian_legend, image_url } = await request.json();
       
-      // Check if artist exists
       const existing = await env.DB.prepare(
-        'SELECT * FROM artists WHERE id = ?'
+        'SELECT * FROM artists WHERE id = ? AND deleted_at IS NULL'
       ).bind(id).first();
 
       if (!existing) {
@@ -31,7 +30,6 @@ export async function onRequest(context) {
         });
       }
 
-      // Generate new slug if name changed
       let slug = existing.slug;
       if (name && name !== existing.name) {
         slug = name
@@ -42,7 +40,6 @@ export async function onRequest(context) {
           .replace(/^-+|-+$/g, '');
       }
 
-      // Build update query dynamically
       const updates = [];
       const values = [];
 
@@ -85,7 +82,7 @@ export async function onRequest(context) {
       await env.DB.prepare(query).bind(...values).run();
 
       const updated = await env.DB.prepare(
-        'SELECT * FROM artists WHERE id = ?'
+        'SELECT * FROM artists WHERE id = ? AND deleted_at IS NULL'
       ).bind(id).first();
 
       return new Response(JSON.stringify(updated), { headers });
@@ -99,56 +96,41 @@ export async function onRequest(context) {
     }
   }
 
-  // DELETE - Delete artist
+  // DELETE - Soft delete artist
   if (request.method === 'DELETE') {
     try {
-      // First, check if artist is referenced in track_artists
-      const trackArtistRelations = await env.DB.prepare(`
+      const artist = await env.DB.prepare(
+        'SELECT id FROM artists WHERE id = ? AND deleted_at IS NULL'
+      ).bind(id).first();
+
+      if (!artist) {
+        return new Response(JSON.stringify({ error: 'Artist not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+
+      // Check if artist has tracks
+      const trackCount = await env.DB.prepare(`
         SELECT COUNT(*) as count FROM track_artists WHERE artist_id = ?
       `).bind(id).first();
 
-      if (trackArtistRelations.count > 0) {
-        // Option 1: Delete the relationships
-        await env.DB.prepare(`
-          DELETE FROM track_artists WHERE artist_id = ?
-        `).bind(id).run();
-        
-        // Option 2: Or return error if you don't want to allow deletion
-        // return new Response(JSON.stringify({ 
-        //   error: 'Cannot delete artist with existing track associations. Remove artist from tracks first.' 
-        // }), { status: 400, headers });
+      if (trackCount.count > 0) {
+        return new Response(JSON.stringify({ 
+          error: `Cannot delete artist with ${trackCount.count} track(s). Remove all tracks first or reassign to another artist.`
+        }), { status: 400, headers });
       }
 
-      // Check if artist is referenced in albums
-      const albumRelations = await env.DB.prepare(`
-        SELECT COUNT(*) as count FROM albums WHERE artist_id = ?
-      `).bind(id).first();
-
-      if (albumRelations.count > 0) {
-        await env.DB.prepare(`
-          UPDATE albums SET artist_id = NULL WHERE artist_id = ?
-        `).bind(id).run();
-      }
-
-      // Check if artist is referenced in eps
-      const epRelations = await env.DB.prepare(`
-        SELECT COUNT(*) as count FROM eps WHERE artist_id = ?
-      `).bind(id).first();
-
-      if (epRelations.count > 0) {
-        await env.DB.prepare(`
-          UPDATE eps SET artist_id = NULL WHERE artist_id = ?
-        `).bind(id).run();
-      }
-
-      // Finally, delete the artist
-      await env.DB.prepare(
-        'DELETE FROM artists WHERE id = ?'
-      ).bind(id).run();
+      // Soft delete
+      await env.DB.prepare(`
+        UPDATE artists 
+        SET deleted_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+      `).bind(id).run();
 
       return new Response(JSON.stringify({ 
-        success: true,
-        message: 'Artist deleted successfully'
+        success: true, 
+        message: 'Artist moved to trash'
       }), { headers });
 
     } catch (error) {
