@@ -28,6 +28,8 @@ export async function onRequest(context) {
         ar.slug as artist_slug
       FROM albums a
       LEFT JOIN artists ar ON a.artist_id = ar.id
+      WHERE a.deleted_at IS NULL
+        AND a.status = 'published'
       ORDER BY a.created_at DESC
     `).all();
     
