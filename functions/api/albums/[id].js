@@ -24,7 +24,7 @@ export async function onRequest(context) {
   try {
     const id = params.id;
     
-    // Get album details with artist info
+    // Get album details with artist info - only if published and not deleted
     const album = await env.DB.prepare(`
       SELECT 
         a.id,
@@ -41,7 +41,7 @@ export async function onRequest(context) {
         ar.slug as artist_slug
       FROM albums a
       LEFT JOIN artists ar ON a.artist_id = ar.id
-      WHERE a.id = ?
+      WHERE a.id = ? AND a.deleted_at IS NULL AND a.status = 'published'
     `).bind(id).first();
     
     if (!album) {
@@ -51,7 +51,7 @@ export async function onRequest(context) {
       });
     }
     
-    // Get tracks in album with full artist information
+    // Get tracks in album with full artist information - only published tracks
     const { results: tracks } = await env.DB.prepare(`
       SELECT 
         t.id,
@@ -88,7 +88,7 @@ export async function onRequest(context) {
       JOIN album_tracks at ON t.id = at.track_id
       LEFT JOIN track_artists ta ON t.id = ta.track_id
       LEFT JOIN artists a ON ta.artist_id = a.id
-      WHERE at.album_id = ?
+      WHERE at.album_id = ? AND t.deleted_at IS NULL AND t.status = 'published'
       GROUP BY t.id
       ORDER BY at.disc_number, at.track_number
     `).bind(id).all();
@@ -108,7 +108,7 @@ export async function onRequest(context) {
       };
     });
     
-    // Get album stats
+    // Get album stats - only from published tracks
     const stats = await env.DB.prepare(`
       SELECT 
         COUNT(*) as track_count,
@@ -117,7 +117,7 @@ export async function onRequest(context) {
         SUM(t.duration) as total_duration
       FROM tracks t
       JOIN album_tracks at ON t.id = at.track_id
-      WHERE at.album_id = ?
+      WHERE at.album_id = ? AND t.deleted_at IS NULL AND t.status = 'published'
     `).bind(id).first();
     
     // Add artist field to album for backward compatibility
