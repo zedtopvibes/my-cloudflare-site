@@ -709,6 +709,7 @@
             window.location.href = `/admin/eps/add-tracks.html?id=${epId}`;
         }
         
+        // UPDATED: Changed to use soft delete endpoint with proper error handling
         async function deleteEP(id) {
             // First check if EP has tracks
             const trackCountElement = document.querySelector('.track-count');
@@ -724,7 +725,7 @@
                 return;
             }
             
-            if (!confirm('⚠️ Are you sure you want to delete this EP? This action cannot be undone.')) return;
+            if (!confirm('⚠️ Move this EP to trash?')) return;
             
             try {
                 const res = await fetch(`${API_BASE}/admin/eps/${id}`, {
@@ -737,7 +738,7 @@
                     throw new Error(data.error || 'Failed to delete');
                 }
                 
-                showToast('✅ EP deleted successfully', 'success');
+                showToast('✅ EP moved to trash!', 'success');
                 setTimeout(() => {
                     window.location.href = '/admin/eps/index.html';
                 }, 1500);
