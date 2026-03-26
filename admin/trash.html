@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Trash - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --deep-bg: #0b0f1c;
+            --dark: #1a1a1a;
+            --gray: #666;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --card-bg: rgba(22, 28, 40, 0.03);
+            
+            /* Trash gradient */
+            --trash-start: #d32f2f;
+            --trash-end: #f44336;
+            
+            /* Playlists - distinct blue-purple */
+            --playlist-start: #5f3dc7;
+            --playlist-end: #8a6de0;
+            
+            /* EPs - orange gradient */
+            --ep-start: #ff5722;
+            --ep-end: #ff8c00;
+        }
+        
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            line-height: 1.5;
+            color: #333;
+        }
+        
+        .admin-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        /* Header */
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--light-gray);
+            padding: 4px 4px 4px 12px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            margin-left: auto;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            height: 36px;
+        }
+        
+        .user-info i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+        }
+        
+        .user-info span {
+            font-weight: 600;
+            line-height: 1;
+        }
+        
+        .logout-btn {
+            color: #666;
+            transition: all 0.3s;
+            padding: 6px 10px;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 30px;
+            height: 28px;
+            margin-left: 2px;
+        }
+        
+        .logout-btn:hover {
+            color: var(--primary-blue);
+            background: white;
+        }
+        
+        /* Navigation Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 10px 15px !important;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            line-height: 1;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+            box-sizing: border-box;
+        }
+        
+        .tab-btn i {
+            font-size: 1rem !important;
+            width: 16px;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        /* Content Area */
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(31, 111, 159, 0.03) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+            animation: rotate-light 20s linear infinite;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        @keyframes rotate-light {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stat-card.trash-gradient {
+            background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+            border: none;
+        }
+        
+        .stat-card.trash-gradient h3,
+        .stat-card.trash-gradient .number,
+        .stat-card.trash-gradient .label {
+            color: white !important;
+        }
+        
+        .stat-card h3 {
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+        }
+        
+        .stat-card .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-card .label {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .filter-btn:hover {
+            background: var(--light-gray);
+            color: var(--primary-blue);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        /* Items Grid */
+        .items-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .item-card {
+            background: var(--light-gray);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .item-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(31, 111, 159, 0.03) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+        
+        .item-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(31, 111, 159, 0.1);
+        }
+        
+        .item-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .item-info h4 {
+            color: var(--primary-dark);
+            font-size: 1rem;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        
+        .item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+        
+        .item-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .item-meta i {
+            color: var(--primary-blue);
+            font-size: 0.7rem;
+        }
+        
+        .deleted-date {
+            color: #f44336 !important;
+            font-weight: 500;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-restore {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-restore:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+        
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #da190b;
+            transform: translateY(-1px);
+        }
+        
+        .btn-refresh {
+            background: var(--primary-blue);
+            color: white;
+            padding: 8px 20px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-refresh:hover {
+            background: var(--primary-light);
+        }
+        
+        /* Section Header */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 5%, 
+                var(--primary-blue) 20%, 
+                var(--primary-lighter) 50%,
+                var(--primary-blue) 80%, 
+                transparent 95%
+            );
+        }
+        
+        .section-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Loading & Empty States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-blue);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal-content h3 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        
+        .modal-content p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1100;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success {
+            background: #4caf50;
+        }
+        
+        .toast.error {
+            background: #f44336;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-bottom: 12px;
+        }
+        
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .admin-container {
+                padding: 20px;
+            }
+            
+            .admin-header {
+                padding: 20px 25px;
+            }
+            
+            .header-top h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 15px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-card h3 {
+                font-size: 0.9rem;
+            }
+            
+            .stat-card .number {
+                font-size: 2rem;
+            }
+            
+            .stat-card .label {
+                font-size: 0.75rem;
+            }
+            
+            .item-card {
+                padding: 18px;
+            }
+        }
+        
+        /* Small phones */
+        @media (max-width: 480px) {
+            .item-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+            
+            .item-meta {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="header-top">
+                <h1>
+                    <i class="fas fa-trash-alt"></i> 
+                    Trash Management
+                </h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                    <button class="logout-btn" title="Logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="admin-tabs">
+                <a href="index.html" class="tab-btn">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="upload.html" class="tab-btn">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                </a>
+                <a href="songs.html" class="tab-btn">
+                    <i class="fas fa-music"></i> Songs
+                </a>
+                <a href="albums.html" class="tab-btn">
+                    <i class="fas fa-compact-disc"></i> Albums
+                </a>
+                <a href="eps.html" class="tab-btn">
+                    <i class="fas fa-play-circle"></i> EPs
+                </a>
+                <a href="artists.html" class="tab-btn">
+                    <i class="fas fa-microphone"></i> Artists
+                </a>
+                <a href="playlists.html" class="tab-btn">
+                    <i class="fas fa-list"></i> Playlists
+                </a>
+                <a href="analytics.html" class="tab-btn">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+                <a href="media.html" class="tab-btn">
+                    <i class="fas fa-images"></i> Media
+                </a>
+                <a href="trash.html" class="tab-btn active">
+                    <i class="fas fa-trash-alt"></i> Trash
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-content">
+            <!-- Status Badge -->
+            <div class="status-badge">🗑️ RECYCLE BIN</div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card trash-gradient">
+                    <h3>Total Deleted</h3>
+                    <div class="number" id="totalDeleted">0</div>
+                    <div class="label">items</div>
+                </div>
+                <div class="stat-card" onclick="filterByType('tracks')">
+                    <h3>Deleted Songs</h3>
+                    <div class="number" id="deletedTracks">0</div>
+                    <div class="label">tracks</div>
+                </div>
+                <div class="stat-card" onclick="filterByType('albums')">
+                    <h3>Deleted Albums</h3>
+                    <div class="number" id="deletedAlbums">0</div>
+                    <div class="label">albums</div>
+                </div>
+                <div class="stat-card" onclick="filterByType('eps')">
+                    <h3>Deleted EPs</h3>
+                    <div class="number" id="deletedEPs">0</div>
+                    <div class="label">eps</div>
+                </div>
+                <div class="stat-card" onclick="filterByType('artists')">
+                    <h3>Deleted Artists</h3>
+                    <div class="number" id="deletedArtists">0</div>
+                    <div class="label">artists</div>
+                </div>
+                <div class="stat-card" onclick="filterByType('playlists')">
+                    <h3>Deleted Playlists</h3>
+                    <div class="number" id="deletedPlaylists">0</div>
+                    <div class="label">playlists</div>
+                </div>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-type="all" onclick="filterByType('all')">
+                    <i class="fas fa-layer-group"></i> All Items
+                </button>
+                <button class="filter-btn" data-type="tracks" onclick="filterByType('tracks')">
+                    <i class="fas fa-music"></i> Songs
+                </button>
+                <button class="filter-btn" data-type="albums" onclick="filterByType('albums')">
+                    <i class="fas fa-compact-disc"></i> Albums
+                </button>
+                <button class="filter-btn" data-type="eps" onclick="filterByType('eps')">
+                    <i class="fas fa-play-circle"></i> EPs
+                </button>
+                <button class="filter-btn" data-type="artists" onclick="filterByType('artists')">
+                    <i class="fas fa-microphone"></i> Artists
+                </button>
+                <button class="filter-btn" data-type="playlists" onclick="filterByType('playlists')">
+                    <i class="fas fa-list"></i> Playlists
+                </button>
+            </div>
+            
+            <!-- Refresh Button -->
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                <button class="btn btn-refresh" onclick="loadData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            
+            <!-- Items Container -->
+            <div id="itemsContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-pulse"></i>
+                    <p>Loading deleted items...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for permanent deletion confirmation -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f44336; margin-bottom: 15px;"></i>
+            <h3>⚠️ Permanent Deletion</h3>
+            <p>Are you sure you want to permanently delete this item? This action cannot be undone and will remove all associated files.</p>
+            <div class="modal-buttons">
+                <button class="btn" style="background:#cbd5e0; color:#333;" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-delete" id="confirmDeleteBtn">Delete Permanently</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast"></div>
+    
+    <script>
+        let currentFilter = 'all';
+        let pendingDelete = null;
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/';
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = '/';
+            }
+        }
+        
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        function closeModal() {
+            pendingDelete = null;
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+        
+        function confirmDelete(type, id, name) {
+            pendingDelete = { type, id, name };
+            document.getElementById('deleteModal').classList.add('active');
+        }
+        
+        async function permanentDelete() {
+            if (!pendingDelete) return;
+            
+            try {
+                const response = await fetch(`/api/admin/trash/${pendingDelete.type}/${pendingDelete.id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    showToast(`"${pendingDelete.name}" permanently deleted`, 'success');
+                    closeModal();
+                    loadData(); // Refresh the list
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete');
+                }
+            } catch (error) {
+                showToast('Error deleting item: ' + error.message, 'error');
+                closeModal();
+            }
+        }
+        
+        async function restoreItem(type, id, name) {
+            try {
+                const response = await fetch(`/api/admin/${type}/${id}/restore`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showToast(`"${name}" restored successfully!`, 'success');
+                    loadData(); // Refresh the list
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to restore');
+                }
+            } catch (error) {
+                showToast('Error restoring item: ' + error.message, 'error');
+            }
+        }
+        
+        function filterByType(type) {
+            currentFilter = type;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.type === type) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            loadData();
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function getTypeIcon(type) {
+            const icons = {
+                tracks: 'fa-music',
+                albums: 'fa-compact-disc',
+                eps: 'fa-play-circle',
+                artists: 'fa-microphone',
+                playlists: 'fa-list'
+            };
+            return icons[type] || 'fa-file';
+        }
+        
+        function getTypeName(type) {
+            const names = {
+                tracks: 'Song',
+                albums: 'Album',
+                eps: 'EP',
+                artists: 'Artist',
+                playlists: 'Playlist'
+            };
+            return names[type] || type;
+        }
+        
+        function renderItemCard(item, type) {
+            const typeName = getTypeName(type);
+            const typeIcon = getTypeIcon(type);
+            const deletedDate = formatDate(item.deleted_at);
+            const itemName = item.title || item.name || 'Untitled';
+            
+            let metaInfo = [];
+            
+            switch(type) {
+                case 'tracks':
+                    if (item.artist_id) metaInfo.push(`<i class="fas fa-user"></i> Artist ID: ${item.artist_id}`);
+                    if (item.duration) {
+                        const minutes = Math.floor(item.duration / 60);
+                        const seconds = (item.duration % 60).toString().padStart(2, '0');
+                        metaInfo.push(`<i class="fas fa-clock"></i> ${minutes}:${seconds}`);
+                    }
+                    break;
+                case 'albums':
+                case 'eps':
+                    if (item.artist_id) metaInfo.push(`<i class="fas fa-user"></i> Artist ID: ${item.artist_id}`);
+                    if (item.release_date) metaInfo.push(`<i class="fas fa-calendar"></i> ${new Date(item.release_date).getFullYear()}`);
+                    break;
+                case 'artists':
+                    if (item.bio) metaInfo.push(`<i class="fas fa-info-circle"></i> ${item.bio.substring(0, 50)}${item.bio.length > 50 ? '...' : ''}`);
+                    break;
+                case 'playlists':
+                    if (item.user_id) metaInfo.push(`<i class="fas fa-user"></i> User ID: ${item.user_id}`);
+                    metaInfo.push(item.is_public ? '<i class="fas fa-globe"></i> Public' : '<i class="fas fa-lock"></i> Private');
+                    break;
+            }
+            
+            return `
+                <div class="item-card">
+                    <div class="item-info">
+                        <h4>
+                            <i class="fas ${typeIcon}" style="color: var(--primary-blue); margin-right: 8px;"></i>
+                            ${escapeHtml(itemName)}
+                        </h4>
+                        <div class="item-meta">
+                            <span><i class="fas fa-tag"></i> ${typeName}</span>
+                            <span><i class="fas fa-hashtag"></i> ID: ${item.id}</span>
+                            ${metaInfo.map(info => `<span>${info}</span>`).join('')}
+                            <span class="deleted-date"><i class="fas fa-trash-alt"></i> Deleted: ${deletedDate}</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn btn-restore" onclick="restoreItem('${type}', ${item.id}, '${escapeHtml(itemName).replace(/'/g, "\\'")}')">
+                            <i class="fas fa-undo-alt"></i> Restore
+                        </button>
+                        <button class="btn btn-delete" onclick="confirmDelete('${type}', ${item.id}, '${escapeHtml(itemName).replace(/'/g, "\\'")}')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        async function loadData() {
+            const container = document.getElementById('itemsContainer');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i><p>Loading deleted items...</p></div>';
+            
+            try {
+                let url = '/api/admin/trash';
+                if (currentFilter !== 'all') {
+                    url = `/api/admin/trash/${currentFilter}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Update stats
+                if (currentFilter === 'all') {
+                    const total = (data.tracks?.length || 0) + (data.albums?.length || 0) + 
+                                 (data.eps?.length || 0) + (data.artists?.length || 0) + 
+                                 (data.playlists?.length || 0);
+                    
+                    document.getElementById('totalDeleted').textContent = total;
+                    document.getElementById('deletedTracks').textContent = data.tracks?.length || 0;
+                    document.getElementById('deletedAlbums').textContent = data.albums?.length || 0;
+                    document.getElementById('deletedEPs').textContent = data.eps?.length || 0;
+                    document.getElementById('deletedArtists').textContent = data.artists?.length || 0;
+                    document.getElementById('deletedPlaylists').textContent = data.playlists?.length || 0;
+                }
+                
+                // Display items
+                let items = [];
+                let hasItems = false;
+                
+                if (currentFilter === 'all') {
+                    for (const [type, typeItems] of Object.entries(data)) {
+                        if (Array.isArray(typeItems) && typeItems.length > 0) {
+                            hasItems = true;
+                            typeItems.forEach(item => {
+                                items.push(renderItemCard(item, type));
+                            });
+                        }
+                    }
+                } else {
+                    if (Array.isArray(data) && data.length > 0) {
+                        hasItems = true;
+                        data.forEach(item => {
+                            items.push(renderItemCard(item, currentFilter));
+                        });
+                    }
+                }
+                
+                if (!hasItems) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-trash-alt"></i>
+                            <p>No deleted items found</p>
+                            <p style="font-size: 0.8rem; margin-top: 8px;">Deleted items will appear here</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `<div class="items-grid">${items.join('')}</div>`;
+                }
+                
+            } catch (error) {
+                console.error('Error loading trash:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error loading deleted items</p>
+                        <button class="btn btn-primary" onclick="loadData()" style="margin-top: 15px;">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Set up modal confirmation
+        document.getElementById('confirmDeleteBtn').addEventListener('click', permanentDelete);
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+        
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuth()) return;
+            loadData();
+        });
+    </script>
+</body>
+</html>
