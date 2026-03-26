@@ -46,14 +46,13 @@ export async function onRequest(context) {
     const extension = cover.name.split('.').pop();
     const filename = `eps/${ep.slug}-${Date.now()}.${extension}`;
 
-    // Upload to R2 using AUDIO binding (same as artists)
+    // Upload to R2
     await env.AUDIO.put(filename, await cover.arrayBuffer(), {
       httpMetadata: { contentType: cover.type }
     });
 
-    // Store the URL in the same format as your existing EP
-    // Using /images/eps/ path to match your database
-    const coverUrl = `/images/eps/${filename.split('/').pop()}`;
+    // ===== UPDATED: Use correct URL format =====
+    const coverUrl = `/api/images/eps/${filename.split('/').pop()}`;
 
     // Update database
     await env.DB.prepare(
