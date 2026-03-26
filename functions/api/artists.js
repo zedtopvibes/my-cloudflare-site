@@ -23,6 +23,7 @@ export async function onRequest(context) {
 
   try {
     // Updated query - REMOVED: website, updated_at, social_links
+    // Added status filter to only show published artists
     const { results } = await env.DB.prepare(`
       SELECT 
         a.id,
@@ -71,6 +72,8 @@ export async function onRequest(context) {
       FROM artists a
       LEFT JOIN track_artists ta ON a.id = ta.artist_id
       LEFT JOIN tracks t ON ta.track_id = t.id
+      WHERE a.deleted_at IS NULL AND a.status = 'published'
+        AND (t.id IS NULL OR (t.deleted_at IS NULL AND t.status = 'published'))
       GROUP BY a.id
       ORDER BY total_plays DESC
     `).all();
