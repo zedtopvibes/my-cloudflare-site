@@ -17,6 +17,8 @@
             --primary-soft: #e8f0fe;
             --secondary: #00b4d8;
             --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -173,6 +175,10 @@
         
         .stats-badge.available i {
             color: var(--success);
+        }
+        
+        .stats-badge.ep i {
+            color: var(--warning);
         }
         
         /* Artist badges */
@@ -380,20 +386,30 @@
             font-size: 0.7rem;
             padding: 4px 8px;
             border-radius: 12px;
-            background: var(--gray-200);
-            color: var(--gray-600);
             white-space: nowrap;
             margin-left: 8px;
-        }
-        
-        .track-badge.other-album {
-            background: var(--primary-soft);
-            color: var(--primary);
+            font-weight: 500;
         }
         
         .track-badge.in-this-album {
             background: var(--gray-300);
             color: var(--gray-700);
+        }
+        
+        .track-badge.in-other-album {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+        
+        .track-badge.in-ep {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+        
+        .track-badge.available {
+            background: var(--success);
+            color: white;
         }
         
         /* Selection Bar */
@@ -487,14 +503,15 @@
             top: 20px;
             right: 20px;
             padding: 12px 20px;
-            border-radius: 6px;
+            border-radius: 8px;
             color: white;
             z-index: 2000;
             animation: slideIn 0.3s;
         }
         
         .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
+        .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -565,8 +582,10 @@
         let album = null;
         let allTracks = [];
         let allAlbums = [];
+        let allEPs = [];
         let albumTrackIds = new Set();
         let tracksInOtherAlbums = new Map(); // track_id -> {albumId, albumTitle}
+        let tracksInEPs = new Map(); // track_id -> {epId, epTitle}
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
@@ -604,11 +623,12 @@
             }
             
             try {
-                // Load album details, all tracks, and all albums in parallel
-                const [albumRes, tracksRes, albumsRes] = await Promise.all([
+                // Load album details, all tracks, all albums, and all EPs in parallel
+                const [albumRes, tracksRes, albumsRes, epsRes] = await Promise.all([
                     fetch(`${API_BASE}/albums/${albumId}`),
                     fetch(`${API_BASE}/tracks`),
-                    fetch(`${API_BASE}/albums`)
+                    fetch(`${API_BASE}/albums`),
+                    fetch(`${API_BASE}/eps`)
                 ]);
                 
                 if (!albumRes.ok) throw new Error('Album not found');
@@ -616,6 +636,7 @@
                 album = await albumRes.json();
                 allTracks = await tracksRes.json();
                 allAlbums = await albumsRes.json();
+                allEPs = await epsRes.json();
                 
                 // Get IDs of tracks already in THIS album
                 albumTrackIds = new Set((album.tracks || []).map(t => t.id));
@@ -630,6 +651,19 @@
                             tracksInOtherAlbums.set(track.id, {
                                 albumId: otherAlbum.id,
                                 albumTitle: otherAlbum.title
+                            });
+                        }
+                    }
+                }
+                
+                // Build map of tracks in EPs
+                tracksInEPs.clear();
+                for (const ep of allEPs) {
+                    if (ep.tracks && ep.tracks.length > 0) {
+                        for (const track of ep.tracks) {
+                            tracksInEPs.set(track.id, {
+                                epId: ep.id,
+                                epTitle: ep.title
                             });
                         }
                     }
@@ -653,11 +687,12 @@
         function renderPage() {
             // Calculate stats
             const availableCount = allTracks.filter(t => 
-                !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id)
+                !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id) && !tracksInEPs.has(t.id)
             ).length;
             
             const inThisAlbumCount = albumTrackIds.size;
             const inOtherAlbumsCount = tracksInOtherAlbums.size;
+            const inEPsCount = tracksInEPs.size;
             
             // Apply search and filter
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -672,17 +707,19 @@
             // Then apply category filter
             if (currentFilter === 'available') {
                 filteredTracks = filteredTracks.filter(t => 
-                    !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id)
+                    !albumTrackIds.has(t.id) && !tracksInOtherAlbums.has(t.id) && !tracksInEPs.has(t.id)
                 );
             } else if (currentFilter === 'in-this-album') {
                 filteredTracks = filteredTracks.filter(t => albumTrackIds.has(t.id));
             } else if (currentFilter === 'in-other-albums') {
                 filteredTracks = filteredTracks.filter(t => tracksInOtherAlbums.has(t.id));
+            } else if (currentFilter === 'in-eps') {
+                filteredTracks = filteredTracks.filter(t => tracksInEPs.has(t.id));
             }
 
             const contentCard = document.getElementById('contentCard');
             
-            // Get album artist name (handling new structure)
+            // Get album artist name
             const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
             
             contentCard.innerHTML = `
@@ -722,6 +759,10 @@
                             <i class="fas fa-lock"></i>
                             ${inOtherAlbumsCount} In other albums
                         </span>
+                        <span class="stats-badge ep">
+                            <i class="fas fa-microphone-alt"></i>
+                            ${inEPsCount} In EPs
+                        </span>
                     </div>
                     
                     <div class="filter-bar">
@@ -729,6 +770,7 @@
                         <button class="filter-btn ${currentFilter === 'available' ? 'active' : ''}" onclick="setFilter('available')">Available</button>
                         <button class="filter-btn ${currentFilter === 'in-this-album' ? 'active' : ''}" onclick="setFilter('in-this-album')">In This Album</button>
                         <button class="filter-btn ${currentFilter === 'in-other-albums' ? 'active' : ''}" onclick="setFilter('in-other-albums')">In Other Albums</button>
+                        <button class="filter-btn ${currentFilter === 'in-eps' ? 'active' : ''}" onclick="setFilter('in-eps')">In EPs</button>
                     </div>
                 </div>
                 
@@ -737,9 +779,22 @@
                         ? filteredTracks.map(track => {
                             const isInThisAlbum = albumTrackIds.has(track.id);
                             const inOtherAlbum = tracksInOtherAlbums.get(track.id);
-                            const isDisabled = isInThisAlbum || inOtherAlbum;
+                            const inEP = tracksInEPs.get(track.id);
+                            const isDisabled = isInThisAlbum || inOtherAlbum || inEP;
                             const isSelected = selectedTracks.has(track.id);
                             const artistsDisplay = formatArtistsDisplay(track);
+                            
+                            // Determine badge text and style
+                            let badgeHtml = '';
+                            if (isInThisAlbum) {
+                                badgeHtml = '<span class="track-badge in-this-album">✓ Already in this album</span>';
+                            } else if (inOtherAlbum) {
+                                badgeHtml = `<span class="track-badge in-other-album">📀 In album: "${escapeHtml(inOtherAlbum.albumTitle)}"</span>`;
+                            } else if (inEP) {
+                                badgeHtml = `<span class="track-badge in-ep">🎤 In EP: "${escapeHtml(inEP.epTitle)}"</span>`;
+                            } else {
+                                badgeHtml = '<span class="track-badge available">✓ Available</span>';
+                            }
                             
                             return `
                             <div class="track-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}" 
@@ -764,8 +819,7 @@
                                     <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
                                     <span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
                                 </div>
-                                ${isInThisAlbum ? '<span class="track-badge in-this-album">Already in this album</span>' : ''}
-                                ${inOtherAlbum ? `<span class="track-badge other-album">In "${escapeHtml(inOtherAlbum.albumTitle)}"</span>` : ''}
+                                ${badgeHtml}
                             </div>
                         `}).join('')
                         : `
@@ -796,7 +850,6 @@
             // Add search listener
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
-                // Remove existing listener to avoid duplicates
                 const newSearchInput = searchInput.cloneNode(true);
                 searchInput.parentNode.replaceChild(newSearchInput, searchInput);
                 
@@ -810,9 +863,11 @@
             if (selectedTracks.has(trackId)) {
                 selectedTracks.delete(trackId);
             } else {
-                // Check if track is available (not in this album and not in other albums)
-                if (!albumTrackIds.has(trackId) && !tracksInOtherAlbums.has(trackId)) {
+                // Check if track is available (not in this album, not in other albums, not in EPs)
+                if (!albumTrackIds.has(trackId) && !tracksInOtherAlbums.has(trackId) && !tracksInEPs.has(trackId)) {
                     selectedTracks.add(trackId);
+                } else {
+                    showToast('❌ This track cannot be added to an album', 'warning');
                 }
             }
             renderPage();
@@ -836,6 +891,7 @@
 
             let successCount = 0;
             let errorCount = 0;
+            let conflictMessages = [];
 
             for (const trackId of selectedTracks) {
                 try {
@@ -852,22 +908,29 @@
                         albumTrackIds.add(trackId);
                     } else {
                         errorCount++;
+                        if (data.error) conflictMessages.push(data.error);
                         console.error('Failed to add track:', data.error);
                     }
                 } catch (error) {
                     console.error('Error adding track:', error);
                     errorCount++;
+                    conflictMessages.push(error.message);
                 }
             }
 
             selectedTracks.clear();
 
             if (errorCount === 0) {
-                showToast(`Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
+                showToast(`✅ Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
             } else if (successCount > 0) {
-                showToast(`Added ${successCount} tracks (${errorCount} failed)`, 'error');
+                showToast(`⚠️ Added ${successCount} tracks (${errorCount} failed)`, 'warning');
+                if (conflictMessages.length > 0) {
+                    setTimeout(() => {
+                        alert(conflictMessages.join('\n'));
+                    }, 500);
+                }
             } else {
-                showToast('Failed to add tracks', 'error');
+                showToast(`❌ Failed to add tracks. ${conflictMessages[0] || 'Unknown error'}`, 'error');
             }
 
             // Reload page to show updated album
