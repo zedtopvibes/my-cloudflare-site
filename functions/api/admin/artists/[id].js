@@ -17,7 +17,7 @@ export async function onRequest(context) {
   // PUT - Update artist
   if (request.method === 'PUT') {
     try {
-      const { name, country, bio, is_featured, is_zambian_legend, image_url } = await request.json();
+      const { name, country, bio, is_featured, is_zambian_legend, image_url, status } = await request.json();
       
       const existing = await env.DB.prepare(
         'SELECT * FROM artists WHERE id = ? AND deleted_at IS NULL'
@@ -68,6 +68,11 @@ export async function onRequest(context) {
       if (image_url !== undefined) {
         updates.push('image_url = ?');
         values.push(image_url);
+      }
+      // NEW: Add status field
+      if (status !== undefined) {
+        updates.push('status = ?');
+        values.push(status);
       }
 
       if (updates.length === 0) {
