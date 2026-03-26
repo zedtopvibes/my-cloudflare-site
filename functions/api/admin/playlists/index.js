@@ -20,7 +20,7 @@ export async function onRequest(context) {
   }
 
   try {
-    const { name, description, is_featured, cover_emoji } = await request.json();
+    const { name, description, is_featured, cover_emoji, status } = await request.json();
 
     if (!name) {
       return new Response(JSON.stringify({ error: 'Playlist name is required' }), { 
@@ -28,6 +28,9 @@ export async function onRequest(context) {
         headers 
       });
     }
+
+    // Get status from request (default to draft)
+    const playlistStatus = status || 'draft'; // 'draft' or 'published'
 
     // Generate slug
     const slug = name
@@ -40,8 +43,8 @@ export async function onRequest(context) {
     const result = await env.DB.prepare(`
       INSERT INTO playlists (
         name, slug, description, cover_emoji, is_featured, 
-        created_by, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        created_by, status, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
       RETURNING id
     `).bind(
       name, 
@@ -49,7 +52,8 @@ export async function onRequest(context) {
       description || null, 
       cover_emoji || '📋', 
       is_featured ? 1 : 0,
-      'Admin' // or get from session
+      'Admin', // or get from session
+      playlistStatus
     ).run();
 
     const newPlaylist = await env.DB.prepare(`
