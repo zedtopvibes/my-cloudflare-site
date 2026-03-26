@@ -3,28 +3,13 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
-
-  // Handle OPTIONS request
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers });
-  }
-
-  // Only allow GET
-  if (request.method !== 'GET') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-      status: 405, 
-      headers 
-    });
-  }
 
   try {
     const slug = params.slug;
     
-    // Get playlist details - WITH cover_url
+    // Get playlist details
     const playlist = await env.DB.prepare(`
       SELECT 
         id,
@@ -38,7 +23,7 @@ export async function onRequest(context) {
         views,
         slug,
         is_featured
-      FROM playlists WHERE slug = ?
+      FROM playlists WHERE slug = ? AND deleted_at IS NULL
     `).bind(slug).first();
     
     if (!playlist) {
@@ -48,7 +33,7 @@ export async function onRequest(context) {
       });
     }
     
-    // Get tracks in this playlist with full artist information
+    // Get tracks in this playlist
     const { results: tracks } = await env.DB.prepare(`
       SELECT 
         t.id,
@@ -84,12 +69,11 @@ export async function onRequest(context) {
       JOIN playlist_tracks pt ON t.id = pt.track_id
       LEFT JOIN track_artists ta ON t.id = ta.track_id
       LEFT JOIN artists a ON ta.artist_id = a.id
-      WHERE pt.playlist_id = ?
+      WHERE pt.playlist_id = ? AND t.deleted_at IS NULL
       GROUP BY t.id
       ORDER BY pt.position
     `).bind(playlist.id).all();
     
-    // Process each track to parse the artists JSON and add backward compatibility fields
     const processedTracks = tracks.map(track => {
       const artists = track.artists ? JSON.parse(track.artists) : [];
       const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
@@ -97,7 +81,6 @@ export async function onRequest(context) {
       return {
         ...track,
         artists: artists,
-        // Add convenience fields for backward compatibility
         artist: primaryArtist ? primaryArtist.name : 'Unknown Artist',
         artist_id: primaryArtist ? primaryArtist.id : null,
         artist_slug: primaryArtist ? primaryArtist.slug : null
@@ -114,12 +97,12 @@ export async function onRequest(context) {
         SUM(t.duration) as total_duration
       FROM tracks t
       JOIN playlist_tracks pt ON t.id = pt.track_id
-      WHERE pt.playlist_id = ?
+      WHERE pt.playlist_id = ? AND t.deleted_at IS NULL
     `).bind(playlist.id).first();
     
     return new Response(JSON.stringify({
       ...playlist,
-      tracks: processedTracks || [],
+      tracks: processedTracks,
       stats: {
         track_count: stats.track_count || 0,
         total_plays: stats.total_plays || 0,
