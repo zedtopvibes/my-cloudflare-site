@@ -1,7 +1,6 @@
 export async function onRequest(context) {
   const { request, env } = context;
   
-  // CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Content-Type': 'application/json'
@@ -41,28 +40,26 @@ export async function onRequest(context) {
       FROM tracks t
       LEFT JOIN track_artists ta ON t.id = ta.track_id
       LEFT JOIN artists a ON ta.artist_id = a.id
+      WHERE t.deleted_at IS NULL
       GROUP BY t.id
       ORDER BY t.uploaded_at DESC
     `).all();
     
-    // Process results to parse the JSON artists string
     const processedResults = results.map(track => {
       const artists = track.artists ? JSON.parse(track.artists) : [];
-      
-      // Find primary artist for backward compatibility
       const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
       
       return {
         ...track,
         artists: artists,
-        // Add convenience fields for backward compatibility
         artist: primaryArtist ? primaryArtist.name : 'Unknown Artist',
-        artist_slug: primaryArtist ? primaryArtist.slug : null,
-        artist_id: primaryArtist ? primaryArtist.id : null
+        artist_id: primaryArtist ? primaryArtist.id : null,
+        artist_slug: primaryArtist ? primaryArtist.slug : null
       };
     });
     
     return new Response(JSON.stringify(processedResults), { headers });
+    
   } catch (error) {
     console.error('Error fetching tracks:', error);
     return new Response(JSON.stringify({ error: error.message }), { 
