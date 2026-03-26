@@ -405,6 +405,7 @@
             padding: 0 24px 20px 24px;
             display: flex;
             justify-content: flex-end;
+            gap: 12px;
         }
         
         .btn {
@@ -429,10 +430,43 @@
             background: var(--primary-light);
         }
         
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
         .loading {
             text-align: center;
             padding: 40px;
             color: var(--gray-500);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
         /* Responsive */
@@ -479,6 +513,15 @@
             .stat-card:nth-child(even) {
                 border-right: none;
             }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -505,6 +548,14 @@
 
     <script>
         const API_BASE = '/api';
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
         
         // Helper function to check if track belongs to artist (using track_artists)
         function trackBelongsToArtist(track, artistId) {
@@ -704,6 +755,9 @@
                         <a href="/admin/artists/edit.html?id=${artist.id}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> Edit Profile
                         </a>
+                        <button class="btn btn-danger" onclick="deleteArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}', ${artistTracks.length})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
                     </div>
                 `;
                 
@@ -716,6 +770,36 @@
                         <a href="/admin/artists/index.html" class="btn btn-primary">Back</a>
                     </div>
                 `;
+            }
+        }
+        
+        // NEW: Delete artist function with soft delete
+        async function deleteArtist(id, name, trackCount) {
+            if (trackCount > 0) {
+                showToast(`❌ Cannot delete artist with ${trackCount} track(s). Remove all tracks first or reassign to another artist.`, 'error');
+                return;
+            }
+            
+            if (!confirm(`⚠️ Move "${name}" to trash?`)) return;
+            
+            try {
+                const res = await fetch(`${API_BASE}/admin/artists/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to delete');
+                }
+                
+                showToast('✅ Artist moved to trash!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/admin/artists/index.html';
+                }, 1500);
+                
+            } catch (error) {
+                showToast(`❌ ${error.message}`, 'error');
             }
         }
         
