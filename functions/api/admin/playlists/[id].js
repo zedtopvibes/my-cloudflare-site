@@ -17,7 +17,7 @@ export async function onRequest(context) {
   // PUT - Update playlist
   if (request.method === 'PUT') {
     try {
-      const { name, description, is_featured, cover_emoji } = await request.json();
+      const { name, description, is_featured, cover_emoji, status } = await request.json();
 
       const existing = await env.DB.prepare(
         'SELECT * FROM playlists WHERE id = ? AND deleted_at IS NULL'
@@ -40,19 +40,36 @@ export async function onRequest(context) {
           .replace(/^-+|-+$/g, '');
       }
 
-      await env.DB.prepare(`
-        UPDATE playlists 
-        SET name = ?, slug = ?, description = ?, 
-            is_featured = ?, cover_emoji = ?, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `).bind(
-        name || existing.name,
-        slug,
-        description !== undefined ? description : existing.description,
-        is_featured !== undefined ? (is_featured ? 1 : 0) : existing.is_featured,
-        cover_emoji || existing.cover_emoji,
-        id
-      ).run();
+      // Build dynamic UPDATE query with status
+      const updates = [];
+      const values = [];
+
+      updates.push('name = ?');
+      values.push(name || existing.name);
+      
+      updates.push('slug = ?');
+      values.push(slug);
+      
+      updates.push('description = ?');
+      values.push(description !== undefined ? description : existing.description);
+      
+      updates.push('is_featured = ?');
+      values.push(is_featured !== undefined ? (is_featured ? 1 : 0) : existing.is_featured);
+      
+      updates.push('cover_emoji = ?');
+      values.push(cover_emoji || existing.cover_emoji);
+      
+      // NEW: Add status field
+      if (status !== undefined) {
+        updates.push('status = ?');
+        values.push(status);
+      }
+      
+      updates.push('updated_at = CURRENT_TIMESTAMP');
+      
+      values.push(id);
+      const query = `UPDATE playlists SET ${updates.join(', ')} WHERE id = ?`;
+      await env.DB.prepare(query).bind(...values).run();
 
       const updated = await env.DB.prepare(
         'SELECT * FROM playlists WHERE id = ? AND deleted_at IS NULL'
