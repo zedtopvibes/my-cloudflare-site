@@ -84,11 +84,11 @@
             text-decoration: underline;
         }
         
-        .song-album-info {
+        .song-release-info {
             margin-bottom: 15px;
         }
         
-        .album-badge-link {
+        .release-badge-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -100,17 +100,30 @@
             text-decoration: none;
         }
         
-        .album-badge-link i {
+        .release-badge-link i {
             color: #ff4b2b;
         }
         
-        .album-badge-link:hover {
+        .release-badge-link:hover {
             background: #ff4b2b;
             color: white;
         }
         
-        .album-badge-link:hover i {
+        .release-badge-link:hover i {
             color: white;
+        }
+        
+        .release-badge-link.ep {
+            background: #ff5722;
+            color: white;
+        }
+        
+        .release-badge-link.ep i {
+            color: white;
+        }
+        
+        .release-badge-link.ep:hover {
+            background: #ff7a44;
         }
         
         .single-badge {
@@ -491,7 +504,7 @@
                 <div class="featured-artists" id="featured-artists-container"></div>
             </div>
             
-            <div class="song-album-info" id="song-album-info"></div>
+            <div class="song-release-info" id="song-release-info"></div>
             
             <div class="song-meta">
                 <span class="song-stats"><i class="fas fa-clock"></i> <span id="song-duration">---</span></span>
@@ -606,19 +619,8 @@
         function getArtistDisplayName(song) {
             const primary = getPrimaryArtist(song);
             if (primary) return primary.name;
-            
-            // Fallback for backward compatibility
             if (song.artist) return song.artist;
             return 'Unknown Artist';
-        }
-        
-        // Helper function to check if a track belongs to an artist (primary or featured)
-        function trackHasArtist(track, artistId) {
-            if (!track.artists || track.artists.length === 0) {
-                // Fallback for backward compatibility
-                return track.artist_id === artistId;
-            }
-            return track.artists.some(a => a.id === artistId);
         }
         
         // Play Song - using stream endpoint
@@ -637,14 +639,12 @@
                     audioPlayer.pause();
                 }
                 
-                // Increment play count
                 fetch(`${API_BASE}/tracks/${currentSong.id}/play`, { method: 'POST' }).catch(() => {});
                 
                 audioPlayer = new Audio(audioUrl);
                 await audioPlayer.play();
                 isPlaying = true;
                 
-                // Update floating bar with primary artist
                 const primaryArtist = getPrimaryArtist(currentSong);
                 const displayArtist = primaryArtist ? primaryArtist.name : (currentSong.artist || 'Unknown Artist');
                 
@@ -693,7 +693,6 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
-        // Download Song - Direct Download
         function downloadSong() {
             if (!currentSong || !currentSong.r2_key) {
                 alert('Download not available');
@@ -701,8 +700,6 @@
             }
             
             const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
-            
-            // Create hidden link and trigger download
             const link = document.createElement('a');
             link.href = audioUrl;
             link.download = currentSong.filename || `${currentSong.title} - ${getArtistDisplayName(currentSong)}.mp3`;
@@ -710,7 +707,6 @@
             link.click();
             document.body.removeChild(link);
             
-            // Increment download count
             fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
         }
         
@@ -726,22 +722,18 @@
             const container = document.getElementById('related-songs-container');
             if (!container) return;
             
-            // Get primary artist ID for filtering
             const primaryArtist = getPrimaryArtist(currentSongArtists);
             const primaryArtistId = primaryArtist ? primaryArtist.id : null;
             
-            // Filter songs that share at least one artist with current song
             const related = songs.filter(song => {
                 if (song.id === currentSongId) return false;
                 
-                // Check if song shares any artist with current song
                 if (song.artists && currentSongArtists.artists) {
                     return song.artists.some(artist => 
                         currentSongArtists.artists.some(currentArtist => currentArtist.id === artist.id)
                     );
                 }
                 
-                // Fallback for backward compatibility
                 if (song.artist_id && primaryArtistId) {
                     return song.artist_id === primaryArtistId;
                 }
@@ -833,7 +825,6 @@
             }
             
             try {
-                // Use the working endpoint from your old code
                 const apiUrl = `${API_BASE}/song/by-slug/${slug}`;
                 const response = await fetch(apiUrl);
                 
@@ -857,11 +848,8 @@
                     document.getElementById('song-primary-artist').textContent = primaryArtist.name;
                     document.getElementById('song-primary-artist').setAttribute('data-artist-id', primaryArtist.id);
                     document.getElementById('song-primary-artist').setAttribute('data-artist-slug', primaryArtist.slug);
-                    
-                    // Set artist name placeholder for "More from" section
                     document.getElementById('artist-name-placeholder').textContent = primaryArtist.name;
                 } else {
-                    // Fallback for backward compatibility
                     const artistName = song.artist || 'Unknown Artist';
                     document.getElementById('song-primary-artist').textContent = artistName;
                     document.getElementById('artist-name-placeholder').textContent = artistName;
@@ -888,14 +876,29 @@
                     document.getElementById('song-description').style.display = 'none';
                 }
                 
-                if (song.album_id && song.album_name) {
-                    document.getElementById('song-album-info').innerHTML = `
-                        <a href="/album/${song.album_slug}" class="album-badge-link">
-                            <i class="fas fa-compact-disc"></i> From: ${escapeHtml(song.album_name)}
+                // ===== UPDATED: Show Album, EP, or Single badge =====
+                const releaseInfoDiv = document.getElementById('song-release-info');
+                
+                if (song.release_type === 'album' && song.release_name) {
+                    releaseInfoDiv.innerHTML = `
+                        <a href="/album/${song.release_slug}" class="release-badge-link">
+                            <i class="fas fa-compact-disc"></i> From Album: ${escapeHtml(song.release_name)}
+                            ${song.track_number ? `<span style="margin-left: 5px;">(Track ${song.track_number})</span>` : ''}
+                        </a>
+                    `;
+                } else if (song.release_type === 'ep' && song.release_name) {
+                    releaseInfoDiv.innerHTML = `
+                        <a href="/ep/${song.release_slug}" class="release-badge-link ep">
+                            <i class="fas fa-microphone-alt"></i> From EP: ${escapeHtml(song.release_name)}
+                            ${song.track_number ? `<span style="margin-left: 5px;">(Track ${song.track_number})</span>` : ''}
                         </a>
                     `;
                 } else {
-                    document.getElementById('song-album-info').innerHTML = `<span class="single-badge"><i class="fas fa-star"></i> Single</span>`;
+                    releaseInfoDiv.innerHTML = `
+                        <span class="single-badge">
+                            <i class="fas fa-star"></i> Single
+                        </span>
+                    `;
                 }
                 
                 document.getElementById('song-cover').src = getSongImageUrl(song);
@@ -929,7 +932,6 @@
         }
         
         document.addEventListener('click', function(e) {
-            // Handle primary artist click
             const primaryArtistLink = e.target.closest('#song-primary-artist');
             if (primaryArtistLink) {
                 e.preventDefault();
@@ -939,7 +941,6 @@
                 }
             }
             
-            // Handle featured artist clicks
             const featuredLink = e.target.closest('.featured-artist-link');
             if (featuredLink) {
                 e.preventDefault();
