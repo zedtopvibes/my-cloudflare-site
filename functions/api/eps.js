@@ -22,7 +22,7 @@ export async function onRequest(context) {
   }
 
   try {
-    // First, get all EPs with basic info
+    // First, get all EPs with basic info - only published and not deleted
     const { results } = await env.DB.prepare(`
       SELECT 
         e.id,
@@ -45,6 +45,7 @@ export async function onRequest(context) {
       LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN ep_tracks et ON e.id = et.ep_id
       LEFT JOIN tracks t ON et.track_id = t.id
+      WHERE e.deleted_at IS NULL AND e.status = 'published'
       GROUP BY e.id
       ORDER BY e.release_date DESC
     `).all();
@@ -52,7 +53,7 @@ export async function onRequest(context) {
     // For each EP, fetch its tracks
     const epsWithTracks = await Promise.all(
       results.map(async (ep) => {
-        // Get tracks for this EP
+        // Get tracks for this EP - only published tracks
         const tracksResult = await env.DB.prepare(`
           SELECT 
             t.id,
@@ -76,7 +77,7 @@ export async function onRequest(context) {
           JOIN ep_tracks et ON t.id = et.track_id
           LEFT JOIN track_artists ta ON t.id = ta.track_id
           LEFT JOIN artists a ON ta.artist_id = a.id
-          WHERE et.ep_id = ?
+          WHERE et.ep_id = ? AND t.deleted_at IS NULL AND t.status = 'published'
           GROUP BY t.id
           ORDER BY et.track_number
         `).bind(ep.id).all();
