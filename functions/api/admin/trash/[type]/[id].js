@@ -20,13 +20,14 @@ export async function onRequest(context) {
     //   });
     // }
 
-    // Define table configurations
+    // Define table configurations with correct column names
     const config = {
       tracks: {
         table: 'tracks',
         idField: 'id',
+        nameField: 'title',
         getFileUrls: async (db, id) => {
-          const stmt = db.prepare('SELECT file_url, cover_url FROM tracks WHERE id = ?');
+          const stmt = db.prepare('SELECT r2_key, artwork_url FROM tracks WHERE id = ?');
           const { results } = await stmt.bind(id).all();
           return results[0] || null;
         }
@@ -34,6 +35,7 @@ export async function onRequest(context) {
       albums: {
         table: 'albums',
         idField: 'id',
+        nameField: 'title',
         getFileUrls: async (db, id) => {
           const stmt = db.prepare('SELECT cover_url FROM albums WHERE id = ?');
           const { results } = await stmt.bind(id).all();
@@ -43,6 +45,7 @@ export async function onRequest(context) {
       eps: {
         table: 'eps',
         idField: 'id',
+        nameField: 'title',
         getFileUrls: async (db, id) => {
           const stmt = db.prepare('SELECT cover_url FROM eps WHERE id = ?');
           const { results } = await stmt.bind(id).all();
@@ -52,8 +55,9 @@ export async function onRequest(context) {
       artists: {
         table: 'artists',
         idField: 'id',
+        nameField: 'name',
         getFileUrls: async (db, id) => {
-          const stmt = db.prepare('SELECT avatar_url, cover_url FROM artists WHERE id = ?');
+          const stmt = db.prepare('SELECT image_url FROM artists WHERE id = ?');
           const { results } = await stmt.bind(id).all();
           return results[0] || null;
         }
@@ -61,6 +65,7 @@ export async function onRequest(context) {
       playlists: {
         table: 'playlists',
         idField: 'id',
+        nameField: 'name',
         getFileUrls: async (db, id) => {
           const stmt = db.prepare('SELECT cover_url FROM playlists WHERE id = ?');
           const { results } = await stmt.bind(id).all();
@@ -108,22 +113,28 @@ export async function onRequest(context) {
       try {
         const urlObj = new URL(url);
         const pathname = urlObj.pathname;
-        // Remove leading slash if present
         return pathname.startsWith('/') ? pathname.slice(1) : pathname;
       } catch (e) {
         return null;
       }
     };
 
-    // Track files
-    if (type === 'tracks' && fileUrls.file_url) {
-      const key = getKeyFromUrl(fileUrls.file_url);
-      if (key) deletePromises.push(env.R2.delete(key));
+    // Track files - using r2_key for tracks
+    if (type === 'tracks' && fileUrls.r2_key) {
+      deletePromises.push(env.R2.delete(fileUrls.r2_key));
     }
     
-    // Cover/avatar files
-    const coverFields = ['cover_url', 'avatar_url'];
-    coverFields.forEach(field => {
+    // Cover/artwork files
+    const fileFields = {
+      tracks: ['artwork_url'],
+      albums: ['cover_url'],
+      eps: ['cover_url'],
+      artists: ['image_url'],
+      playlists: ['cover_url']
+    };
+    
+    const fields = fileFields[type] || [];
+    fields.forEach(field => {
       if (fileUrls[field]) {
         const key = getKeyFromUrl(fileUrls[field]);
         if (key) deletePromises.push(env.R2.delete(key));
