@@ -16,6 +16,8 @@
             --primary-light: #ff7a44;
             --primary-soft: #fff0e8;
             --secondary: #ff9800;
+            --success: #28a745;
+            --warning: #ffc107;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -146,7 +148,8 @@
         }
         
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--gray-200);
@@ -156,7 +159,8 @@
         }
         
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-soft);
@@ -208,6 +212,26 @@
             background: var(--gray-100);
             color: var(--gray-700);
             border: 1px solid var(--gray-200);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
         }
         
         .loading {
@@ -369,7 +393,8 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE}/eps/${epId}`);
+                // Use admin endpoint to get EP with status
+                const res = await fetch(`${API_BASE}/admin/eps/${epId}`);
                 if (!res.ok) throw new Error('EP not found');
                 const ep = await res.json();
                 
@@ -394,6 +419,7 @@
         
         function renderForm(ep) {
             const isEditing = !!ep;
+            const currentStatus = ep?.status || 'draft';
             
             // Find the artist name for display
             const artistDisplayName = selectedArtistName || '';
@@ -472,6 +498,18 @@
                     <div class="form-group">
                         <label><i class="fas fa-align-left"></i> Description</label>
                         <textarea id="epDescription" rows="3" placeholder="EP description...">${escapeHtml(ep?.description || '')}</textarea>
+                    </div>
+                    
+                    <!-- NEW: Status Field -->
+                    <div class="form-group">
+                        <label><i class="fas fa-flag"></i> Status</label>
+                        <select id="epStatus">
+                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
+                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
+                        </select>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
+                        </div>
                     </div>
                     
                     <div class="checkbox-label">
@@ -602,7 +640,8 @@
                 release_date: document.getElementById('epReleaseDate').value || null,
                 genre: document.getElementById('epGenre').value.trim() || null,
                 description: document.getElementById('epDescription').value.trim() || null,
-                is_featured: document.getElementById('epFeatured').checked
+                is_featured: document.getElementById('epFeatured').checked,
+                status: document.getElementById('epStatus').value  // NEW: Add status
             };
             
             if (!epData.title) {
@@ -654,7 +693,8 @@
                     }
                 }
                 
-                showToast(`EP ${isEditing ? 'updated' : 'created'}!`, 'success');
+                const statusText = epData.status === 'published' ? 'published' : 'saved as draft';
+                showToast(`EP ${isEditing ? 'updated' : 'created'} and ${statusText}!`, 'success');
                 
                 setTimeout(() => {
                     window.location.href = `/admin/eps/profile.html?id=${epId}`;
