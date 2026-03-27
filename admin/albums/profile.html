@@ -17,6 +17,7 @@
             --primary-soft: #e8f0fe;
             --secondary: #00b4d8;
             --success: #10b981;
+            --warning: #ffc107;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -101,6 +102,29 @@
             border: 1px solid #fbbf24;
         }
         
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         /* Artist badge styles */
         .artist-badge {
             display: inline-block;
@@ -168,6 +192,10 @@
             font-weight: 700;
             color: var(--gray-800);
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
         .album-artist {
@@ -409,6 +437,24 @@
             background: #dc2626;
         }
         
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #0e8f3e;
+        }
+        
+        .btn-unpublish {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
         .loading {
             text-align: center;
             padding: 60px;
@@ -493,6 +539,7 @@
 
     <script>
         const API_BASE = '/api';
+        let currentAlbum = null;
         
         // Helper function to get artist display name from track
         function getTrackArtistDisplay(track) {
@@ -518,6 +565,50 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // Publish album
+        async function publishAlbum(id, title) {
+            if (!confirm(`Publish "${title}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${title}" published!`, 'success');
+                loadAlbum(); // Reload to show updated status
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        // Unpublish album
+        async function unpublishAlbum(id, title) {
+            if (!confirm(`Unpublish "${title}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${title}" moved to drafts`, 'success');
+                loadAlbum(); // Reload to show updated status
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
         async function loadAlbum() {
             const urlParams = new URLSearchParams(window.location.search);
             const albumId = urlParams.get('id');
@@ -528,10 +619,12 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE}/albums/${albumId}`);
+                // Use admin endpoint to get album with status
+                const res = await fetch(`${API_BASE}/admin/albums/${albumId}`);
                 if (!res.ok) throw new Error('Album not found');
                 
                 const album = await res.json();
+                currentAlbum = album;
                 
                 const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
                 const tracks = album.tracks || [];
@@ -554,6 +647,10 @@
                       })
                     : 'Unknown';
                 
+                const statusBadge = album.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
                 document.getElementById('profileContent').innerHTML = `
                     <div class="album-cover-large">
                         ${album.cover_url 
@@ -563,7 +660,10 @@
                     </div>
                     
                     <div class="album-info">
-                        <h1 class="album-name">${escapeHtml(album.title)}</h1>
+                        <h1 class="album-name">
+                            ${escapeHtml(album.title)}
+                            ${statusBadge}
+                        </h1>
                         <div class="album-artist">${escapeHtml(albumArtist)}</div>
                         <div class="album-creator">
                             <i class="fas fa-calendar"></i>
@@ -640,6 +740,14 @@
                         <a href="/admin/albums/edit.html?id=${album.id}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> Edit Album
                         </a>
+                        ${album.status === 'draft' 
+                            ? `<button class="btn btn-publish" onclick="publishAlbum(${album.id}, '${escapeHtml(album.title).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-cloud-upload-alt"></i> Publish
+                               </button>`
+                            : `<button class="btn btn-unpublish" onclick="unpublishAlbum(${album.id}, '${escapeHtml(album.title).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-eye-slash"></i> Unpublish
+                               </button>`
+                        }
                         <button class="btn btn-danger" onclick="deleteAlbum(${album.id})">
                             <i class="fas fa-trash"></i> Delete
                         </button>
@@ -709,7 +817,6 @@
             window.location.href = `/admin/albums/add-tracks.html?id=${albumId}`;
         }
         
-        // UPDATED: Changed to use soft delete endpoint with proper messaging
         async function deleteAlbum(id) {
             // First check if album has tracks by getting track count from the page
             const trackCountElement = document.querySelector('.track-count');
