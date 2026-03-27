@@ -17,6 +17,7 @@
             --primary-soft: #fff0e8;
             --secondary: #ff9800;
             --success: #10b981;
+            --warning: #ffc107;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -101,6 +102,29 @@
             border: 1px solid #fbbf24;
         }
         
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         /* Artist badge styles */
         .artist-badge {
             display: inline-block;
@@ -168,6 +192,10 @@
             font-weight: 700;
             color: var(--gray-800);
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
         .ep-artist {
@@ -409,6 +437,24 @@
             background: #dc2626;
         }
         
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #0e8f3e;
+        }
+        
+        .btn-unpublish {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
         .loading {
             text-align: center;
             padding: 60px;
@@ -493,6 +539,7 @@
 
     <script>
         const API_BASE = '/api';
+        let currentEP = null;
         
         // Helper function to get artist display name from track
         function getTrackArtistDisplay(track) {
@@ -518,6 +565,50 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // Publish EP
+        async function publishEP(id, title) {
+            if (!confirm(`Publish "${title}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/eps/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${title}" published!`, 'success');
+                loadEP(); // Reload to show updated status
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        // Unpublish EP
+        async function unpublishEP(id, title) {
+            if (!confirm(`Unpublish "${title}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/eps/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${title}" moved to drafts`, 'success');
+                loadEP(); // Reload to show updated status
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
         async function loadEP() {
             const urlParams = new URLSearchParams(window.location.search);
             const epId = urlParams.get('id');
@@ -528,10 +619,12 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE}/eps/${epId}`);
+                // Use admin endpoint to get EP with status
+                const res = await fetch(`${API_BASE}/admin/eps/${epId}`);
                 if (!res.ok) throw new Error('EP not found');
                 
                 const ep = await res.json();
+                currentEP = ep;
                 
                 const epArtist = ep.artist_name || ep.artist || 'Unknown Artist';
                 const tracks = ep.tracks || [];
@@ -554,6 +647,10 @@
                       })
                     : 'Unknown';
                 
+                const statusBadge = ep.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
                 document.getElementById('profileContent').innerHTML = `
                     <div class="ep-cover-large">
                         ${ep.cover_url 
@@ -563,7 +660,11 @@
                     </div>
                     
                     <div class="ep-info">
-                        <h1 class="ep-name">${escapeHtml(ep.title)} <span class="badge featured" style="background: var(--primary); color: white; margin-left: 8px; font-size: 0.7rem;">EP</span></h1>
+                        <h1 class="ep-name">
+                            ${escapeHtml(ep.title)} 
+                            <span class="badge featured" style="background: var(--primary); color: white; margin-left: 8px; font-size: 0.7rem;">EP</span>
+                            ${statusBadge}
+                        </h1>
                         <div class="ep-artist">${escapeHtml(epArtist)}</div>
                         <div class="ep-creator">
                             <i class="fas fa-calendar"></i>
@@ -640,6 +741,14 @@
                         <a href="/admin/eps/edit.html?id=${ep.id}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> Edit EP
                         </a>
+                        ${ep.status === 'draft' 
+                            ? `<button class="btn btn-publish" onclick="publishEP(${ep.id}, '${escapeHtml(ep.title).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-cloud-upload-alt"></i> Publish
+                               </button>`
+                            : `<button class="btn btn-unpublish" onclick="unpublishEP(${ep.id}, '${escapeHtml(ep.title).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-eye-slash"></i> Unpublish
+                               </button>`
+                        }
                         <button class="btn btn-danger" onclick="deleteEP(${ep.id})">
                             <i class="fas fa-trash"></i> Delete
                         </button>
@@ -709,7 +818,6 @@
             window.location.href = `/admin/eps/add-tracks.html?id=${epId}`;
         }
         
-        // UPDATED: Changed to use soft delete endpoint with proper error handling
         async function deleteEP(id) {
             // First check if EP has tracks
             const trackCountElement = document.querySelector('.track-count');
