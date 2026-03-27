@@ -3,7 +3,7 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
@@ -13,6 +13,31 @@ export async function onRequest(context) {
   }
 
   const id = params.id;
+
+  // ✅ NEW: GET - Fetch single EP for editing
+  if (request.method === 'GET') {
+    try {
+      const ep = await env.DB.prepare(`
+        SELECT * FROM eps WHERE id = ? AND deleted_at IS NULL
+      `).bind(id).first();
+      
+      if (!ep) {
+        return new Response(JSON.stringify({ error: 'EP not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+      
+      return new Response(JSON.stringify(ep), { headers });
+      
+    } catch (error) {
+      console.error('Error fetching EP:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
 
   // PUT - Update EP
   if (request.method === 'PUT') {
@@ -78,7 +103,7 @@ export async function onRequest(context) {
         updates.push('cover_url = ?');
         values.push(data.cover_url);
       }
-      // NEW: Add status field
+      // Add status field
       if (data.status !== undefined) {
         updates.push('status = ?');
         values.push(data.status);
