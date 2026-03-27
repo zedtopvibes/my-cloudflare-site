@@ -38,6 +38,83 @@
             font-size: 0.7rem;
         }
         
+        /* Status badge styles */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .status-badge i {
+            font-size: 0.65rem;
+        }
+        
+        .btn-publish {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #218838;
+        }
+        
+        .btn-unpublish {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-tab:hover {
+            background: var(--light-gray);
+            color: var(--primary-blue);
+        }
+        
+        .filter-tab.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
         /* Rest of existing styles remain the same */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -310,6 +387,24 @@
             background: #bd2130;
         }
         
+        .btn-publish {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #218838;
+        }
+        
+        .btn-unpublish {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
         .btn-sm {
             padding: 5px 10px;
             font-size: 0.8rem;
@@ -420,6 +515,10 @@
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
         }
         
         .song-mobile-artist {
@@ -460,12 +559,13 @@
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
         
         .song-mobile-actions .action-btn {
-            width: 40px;
-            height: 40px;
-            font-size: 1rem;
+            width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
         }
         
         .songs-table-container {
@@ -480,7 +580,7 @@
         .songs-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 700px;
+            min-width: 800px;
         }
         
         .songs-table th {
@@ -538,10 +638,10 @@
         .song-details h4 {
             font-size: 0.9rem;
             margin-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
         }
         
         .song-details span {
@@ -922,6 +1022,13 @@
                 </div>
             </div>
 
+            <!-- Status Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
+                <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
+                <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
+            </div>
+
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-music"></i></div>
@@ -931,24 +1038,24 @@
                     </div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
+                    <div class="stat-info">
+                        <h3>Drafts</h3>
+                        <div class="stat-number" id="totalDrafts">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                    <div class="stat-info">
+                        <h3>Published</h3>
+                        <div class="stat-number" id="totalPublished">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-headphones"></i></div>
                     <div class="stat-info">
                         <h3>Total Plays</h3>
                         <div class="stat-number" id="totalPlays">0</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-download"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Downloads</h3>
-                        <div class="stat-number" id="totalDownloads">0</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Views</h3>
-                        <div class="stat-number" id="totalViews">0</div>
                     </div>
                 </div>
             </div>
@@ -1062,6 +1169,7 @@
         let currentDeleteId = null;
         let selectedImageFile = null;
         let currentEditingSong = null;
+        let currentStatusFilter = 'all';
 
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
@@ -1123,17 +1231,86 @@
             return song.artists.map(a => a.name).join(' ');
         }
 
+        // NEW: Publish song
+        async function publishSong(id, title) {
+            if (!confirm(`Publish "${title}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/tracks/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${title}" published!`, 'success');
+                loadSongs();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // NEW: Unpublish song
+        async function unpublishSong(id, title) {
+            if (!confirm(`Unpublish "${title}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/tracks/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${title}" moved to drafts`, 'success');
+                loadSongs();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // NEW: Filter by status
+        window.filterByStatus = (status) => {
+            currentStatusFilter = status;
+            
+            // Update active tab styling
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                if (tab.dataset.status === status) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            applyFilters();
+        };
+
         async function loadSongs() {
             if (!checkAuth()) return;
             
             try {
-                const response = await fetch(`${API_BASE}/tracks`);
+                // Use admin endpoint to get ALL songs (including drafts)
+                const response = await fetch(`${API_BASE}/admin/tracks`);
                 if (!response.ok) throw new Error('Failed to load songs');
                 
                 allSongs = await response.json();
-                filteredSongs = [...allSongs];
                 
-                updateStats();
+                // Update stats
+                const draftCount = allSongs.filter(s => s.status === 'draft').length;
+                const publishedCount = allSongs.filter(s => s.status === 'published').length;
+                const totalPlays = allSongs.reduce((sum, song) => sum + (song.plays || 0), 0);
+                
+                document.getElementById('totalSongs').textContent = allSongs.length;
+                document.getElementById('totalDrafts').textContent = draftCount;
+                document.getElementById('totalPublished').textContent = publishedCount;
+                document.getElementById('totalPlays').textContent = formatNumber(totalPlays);
+                
                 populateGenreFilter();
                 applyFilters();
                 
@@ -1148,17 +1325,6 @@
                     </div>
                 `;
             }
-        }
-
-        function updateStats() {
-            const totalPlays = allSongs.reduce((sum, song) => sum + (song.plays || 0), 0);
-            const totalDownloads = allSongs.reduce((sum, song) => sum + (song.downloads || 0), 0);
-            const totalViews = allSongs.reduce((sum, song) => sum + (song.views || 0), 0);
-            
-            document.getElementById('totalSongs').textContent = allSongs.length;
-            document.getElementById('totalPlays').textContent = formatNumber(totalPlays);
-            document.getElementById('totalDownloads').textContent = formatNumber(totalDownloads);
-            document.getElementById('totalViews').textContent = formatNumber(totalViews);
         }
 
         function populateGenreFilter() {
@@ -1183,6 +1349,11 @@
             const sort = document.getElementById('sortFilter').value;
             
             filteredSongs = allSongs.filter(song => {
+                // Status filter
+                if (currentStatusFilter !== 'all' && song.status !== currentStatusFilter) {
+                    return false;
+                }
+                
                 const artistSearch = getArtistSearchString(song).toLowerCase();
                 const matchesSearch = song.title?.toLowerCase().includes(searchTerm) ||
                                      artistSearch.includes(searchTerm);
@@ -1247,14 +1418,18 @@
                                 <th>Artists</th>
                                 <th>Genre</th>
                                 <th>Stats</th>
+                                <th>Status</th>
                                 <th>Actions</th>
-                            </tr>
-                        </thead>
+                            </thead>
                         <tbody>
             `;
             
             songs.forEach(song => {
                 const artistsDisplay = formatArtistsDisplay(song);
+                const statusBadge = song.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
                 html += `
                     <tr>
                         <td>
@@ -1263,7 +1438,7 @@
                                     ${song.artwork_url ? `<img src="${song.artwork_url}" alt="${escapeHtml(song.title)}">` : '<i class="fas fa-music"></i>'}
                                 </div>
                                 <div class="song-details">
-                                    <h4>${escapeHtml(song.title) || 'Untitled'}</h4>
+                                    <h4>${escapeHtml(song.title) || 'Untitled'} ${statusBadge}</h4>
                                     <span>${formatDuration(song.duration)}</span>
                                 </div>
                             </div>
@@ -1274,8 +1449,13 @@
                             <div><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</div>
                             <div><i class="fas fa-download"></i> ${formatNumber(song.downloads)}</div>
                         </td>
+                        <td>${statusBadge}</td>
                         <td>
                             <div class="action-buttons">
+                                ${song.status === 'draft' 
+                                    ? `<button class="action-btn btn-publish" onclick="publishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
+                                    : `<button class="action-btn btn-unpublish" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
+                                }
                                 <button class="action-btn" onclick="editSong(${song.id})" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -1291,7 +1471,7 @@
                 `;
             });
             
-            html += '</tbody></table></div>';
+            html += '</tbody> </table></div>';
             container.innerHTML = html;
         }
 
@@ -1305,6 +1485,10 @@
                 if (song.featured) tags.push('<span class="badge featured">Featured</span>');
                 if (song.editor_pick) tags.push('<span class="badge editor">Editor</span>');
                 
+                const statusBadge = song.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
                 html += `
                     <div class="song-mobile-card">
                         <div class="song-mobile-header">
@@ -1312,7 +1496,7 @@
                                 ${song.artwork_url ? `<img src="${song.artwork_url}" alt="${escapeHtml(song.title)}">` : '<i class="fas fa-music"></i>'}
                             </div>
                             <div class="song-mobile-info">
-                                <div class="song-mobile-title">${escapeHtml(song.title) || 'Untitled'}</div>
+                                <div class="song-mobile-title">${escapeHtml(song.title) || 'Untitled'} ${statusBadge}</div>
                                 <div class="song-mobile-artist">${artistsDisplay}</div>
                             </div>
                         </div>
@@ -1327,6 +1511,10 @@
                         ${tags.length > 0 ? `<div class="song-mobile-tags">${tags.join(' ')}</div>` : ''}
                         
                         <div class="song-mobile-actions">
+                            ${song.status === 'draft' 
+                                ? `<button class="action-btn btn-publish" onclick="publishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
+                                : `<button class="action-btn btn-unpublish" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
+                            }
                             <button class="action-btn" onclick="editSong(${song.id})" title="Edit"><i class="fas fa-edit"></i></button>
                             <button class="action-btn" onclick="previewSong('${song.slug}')" title="Preview"><i class="fas fa-eye"></i></button>
                             <button class="action-btn delete" onclick="showDeleteModal(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
@@ -1551,7 +1739,6 @@
             currentDeleteId = null;
         };
 
-        // UPDATED: Changed from /api/delete/${id} to /api/admin/tracks/${id}
         window.confirmDelete = async () => {
             if (!currentDeleteId) return;
             
