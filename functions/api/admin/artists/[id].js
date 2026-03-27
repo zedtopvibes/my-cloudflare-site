@@ -3,7 +3,7 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
@@ -13,6 +13,31 @@ export async function onRequest(context) {
   }
 
   const id = params.id;
+
+  // ✅ NEW: GET - Fetch single artist for editing
+  if (request.method === 'GET') {
+    try {
+      const artist = await env.DB.prepare(`
+        SELECT * FROM artists WHERE id = ? AND deleted_at IS NULL
+      `).bind(id).first();
+      
+      if (!artist) {
+        return new Response(JSON.stringify({ error: 'Artist not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+      
+      return new Response(JSON.stringify(artist), { headers });
+      
+    } catch (error) {
+      console.error('Error fetching artist:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
 
   // PUT - Update artist
   if (request.method === 'PUT') {
@@ -69,7 +94,7 @@ export async function onRequest(context) {
         updates.push('image_url = ?');
         values.push(image_url);
       }
-      // NEW: Add status field
+      // Status field
       if (status !== undefined) {
         updates.push('status = ?');
         values.push(status);
