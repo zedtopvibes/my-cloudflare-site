@@ -16,6 +16,8 @@
             --primary-light: #2a4a8a;
             --primary-soft: #e8f0fe;
             --secondary: #00b4d8;
+            --success: #28a745;
+            --warning: #ffc107;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -105,7 +107,8 @@
         }
         
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--gray-200);
@@ -115,7 +118,8 @@
         }
         
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-soft);
@@ -166,6 +170,12 @@
             display: none;
         }
         
+        .status-hint {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+        
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -203,6 +213,30 @@
         .loading {
             text-align: center;
             padding: 40px;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
@@ -244,7 +278,8 @@
             }
             
             try {
-                const res = await fetch(`${API_BASE}/playlists/${playlistId}`);
+                // Use admin endpoint to get playlist with status
+                const res = await fetch(`${API_BASE}/admin/playlists/${playlistId}`);
                 if (!res.ok) throw new Error('Playlist not found');
                 const playlist = await res.json();
                 
@@ -265,6 +300,7 @@
         
         function renderForm(playlist) {
             const isEditing = !!playlist;
+            const currentStatus = playlist?.status || 'draft';
             
             document.getElementById('formCard').innerHTML = `
                 <form id="playlistForm">
@@ -295,6 +331,18 @@
                     <div class="form-group">
                         <label><i class="fas fa-align-left"></i> Description</label>
                         <textarea id="playlistDescription" rows="4" placeholder="What's this playlist about?">${escapeHtml(playlist?.description || '')}</textarea>
+                    </div>
+                    
+                    <!-- NEW: Status Field -->
+                    <div class="form-group">
+                        <label><i class="fas fa-flag"></i> Status</label>
+                        <select id="playlistStatus">
+                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
+                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
+                        </select>
+                        <div class="status-hint">
+                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
+                        </div>
                     </div>
                     
                     <div class="action-buttons">
@@ -331,7 +379,8 @@
             
             const playlistData = {
                 name: document.getElementById('playlistName').value.trim(),
-                description: document.getElementById('playlistDescription').value.trim() || null
+                description: document.getElementById('playlistDescription').value.trim() || null,
+                status: document.getElementById('playlistStatus').value  // NEW: Add status
             };
             
             if (!playlistData.name) {
@@ -383,7 +432,8 @@
                     }
                 }
                 
-                showToast(`Playlist ${isEditing ? 'updated' : 'created'}!`, 'success');
+                const statusText = playlistData.status === 'published' ? 'published' : 'saved as draft';
+                showToast(`Playlist ${isEditing ? 'updated' : 'created'} and ${statusText}!`, 'success');
                 
                 setTimeout(() => {
                     window.location.href = `/admin/playlists/profile.html?id=${playlistId}`;
@@ -398,19 +448,8 @@
         
         function showToast(message, type) {
             const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#10b981' : '#ef4444'};
-                color: white;
-                border-radius: 6px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 2000;
-                animation: slideIn 0.3s;
-            `;
-            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -423,10 +462,27 @@
         }
         
         // Auth check
-        if (localStorage.getItem('admin_logged_in') === 'true') {
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Initialize
+        if (checkAuth()) {
             loadPlaylistForEdit();
-        } else {
-            window.location.href = '/admin/login.html';
         }
         
         // Add animation style
