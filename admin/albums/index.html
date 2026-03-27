@@ -17,6 +17,7 @@
             --primary-soft: #e8f0fe;
             --secondary: #00b4d8;
             --success: #10b981;
+            --warning: #ffc107;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -180,32 +181,86 @@
             outline: none;
         }
         
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
         }
         
-        .btn-primary {
+        .stat-card {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 12px;
+        }
+        
+        .filter-tab {
+            padding: 6px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-tab:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+        
+        .filter-tab.active {
             background: var(--primary);
             color: white;
         }
         
-        .btn-primary:hover {
-            background: var(--primary-light);
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+            white-space: nowrap;
         }
         
-        .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 1px solid var(--gray-200);
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
         }
         
         /* Compact List View */
@@ -268,6 +323,10 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
         }
         
         .album-list-artist {
@@ -296,6 +355,46 @@
         .album-list-stat i {
             color: var(--primary);
             font-size: 0.8rem;
+        }
+        
+        .album-list-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: var(--gray-200);
+            color: var(--gray-600);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .action-icon:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .action-icon.publish:hover {
+            background: #28a745;
+            color: white;
+        }
+        
+        .action-icon.unpublish:hover {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .action-icon.delete:hover {
+            background: #dc3545;
+            color: white;
         }
         
         .album-list-featured {
@@ -352,8 +451,36 @@
             color: var(--gray-500);
         }
         
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: #dc3545; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
             .album-list-item {
                 flex-wrap: wrap;
             }
@@ -363,6 +490,11 @@
                 margin-left: 96px;
                 margin-top: 8px;
                 gap: 15px;
+            }
+            
+            .album-list-actions {
+                margin-left: 96px;
+                margin-top: 8px;
             }
             
             .album-list-featured {
@@ -406,8 +538,10 @@
                 <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
                 <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn active"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
         
@@ -430,6 +564,33 @@
                 </div>
             </div>
 
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAlbums">0</div>
+                    <div class="stat-label">Total Albums</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPublished">0</div>
+                    <div class="stat-label">Published</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalDrafts">0</div>
+                    <div class="stat-label">Drafts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTracks">0</div>
+                    <div class="stat-label">Total Tracks</div>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
+                <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
+                <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
+            </div>
+
             <!-- Albums List (Compact View) -->
             <div id="albumsList" class="albums-list">
                 <div class="loading">
@@ -447,6 +608,7 @@
         const API_BASE = '/api';
         let allAlbums = [];
         let currentPage = 1;
+        let currentStatusFilter = 'all';
         const itemsPerPage = 15;
 
         function logout() {
@@ -474,28 +636,100 @@
             return true;
         }
 
-        // Helper function to get artist display name (handles both new and old structure)
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Helper function to get artist display name
         function getArtistDisplayName(album) {
-            // New structure: artist_name field
             if (album.artist_name) return album.artist_name;
-            // Old structure: artist field
             if (album.artist) return album.artist;
             return 'Unknown Artist';
+        }
+
+        // Publish album
+        async function publishAlbum(id, title) {
+            if (!confirm(`Publish "${title}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${title}" published!`, 'success');
+                loadAlbums();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Unpublish album
+        async function unpublishAlbum(id, title) {
+            if (!confirm(`Unpublish "${title}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/albums/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${title}" moved to drafts`, 'success');
+                loadAlbums();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Filter by status
+        function filterByStatus(status) {
+            currentStatusFilter = status;
+            currentPage = 1;
+            
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                if (tab.dataset.status === status) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            renderAlbums();
         }
 
         async function loadAlbums() {
             if (!checkAuth()) return;
             
-            const startTime = performance.now();
-            
             try {
-                const res = await fetch(`${API_BASE}/albums`);
+                // Use admin endpoint to get all albums including drafts
+                const res = await fetch(`${API_BASE}/admin/albums`);
                 if (!res.ok) throw new Error('Failed to load albums');
                 
                 allAlbums = await res.json();
                 
-                const endTime = performance.now();
-                console.log(`Albums loaded in ${((endTime - startTime)/1000).toFixed(2)}s`);
+                // Update stats
+                const publishedCount = allAlbums.filter(a => a.status === 'published').length;
+                const draftCount = allAlbums.filter(a => a.status === 'draft').length;
+                const totalTracks = allAlbums.reduce((sum, a) => sum + (a.track_count || 0), 0);
+                
+                document.getElementById('totalAlbums').textContent = allAlbums.length;
+                document.getElementById('totalPublished').textContent = publishedCount;
+                document.getElementById('totalDrafts').textContent = draftCount;
+                document.getElementById('totalTracks').textContent = totalTracks;
                 
                 renderAlbums();
                 
@@ -516,6 +750,11 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
             let filtered = allAlbums.filter(album => {
+                // Status filter
+                if (currentStatusFilter !== 'all' && album.status !== currentStatusFilter) {
+                    return false;
+                }
+                
                 const artistName = getArtistDisplayName(album);
                 return album.title.toLowerCase().includes(searchTerm) ||
                        artistName.toLowerCase().includes(searchTerm);
@@ -544,8 +783,12 @@
             
             container.innerHTML = pageAlbums.map(album => {
                 const artistName = getArtistDisplayName(album);
+                const statusBadge = album.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
                 return `
-                    <a href="/admin/albums/profile.html?id=${album.id}" class="album-list-item">
+                    <div class="album-list-item">
                         <div class="album-list-cover">
                             ${album.cover_url 
                                 ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}" loading="lazy">`
@@ -553,7 +796,10 @@
                             }
                         </div>
                         <div class="album-list-info">
-                            <div class="album-list-title">${escapeHtml(album.title)}</div>
+                            <div class="album-list-title">
+                                ${escapeHtml(album.title)}
+                                ${statusBadge}
+                            </div>
                             <div class="album-list-artist">${escapeHtml(artistName)}</div>
                         </div>
                         <div class="album-list-stats">
@@ -564,8 +810,20 @@
                                 <i class="fas fa-headphones"></i> ${formatNumber(album.plays || 0)}
                             </div>
                         </div>
+                        <div class="album-list-actions">
+                            ${album.status === 'draft' 
+                                ? `<button class="action-icon publish" onclick="event.stopPropagation(); publishAlbum(${album.id}, '${escapeHtml(album.title).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
+                                : `<button class="action-icon unpublish" onclick="event.stopPropagation(); unpublishAlbum(${album.id}, '${escapeHtml(album.title).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
+                            }
+                            <a href="/admin/albums/edit.html?id=${album.id}" class="action-icon" onclick="event.stopPropagation()" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="/admin/albums/profile.html?id=${album.id}" class="action-icon" onclick="event.stopPropagation()" title="View">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
                         ${album.is_featured ? '<span class="album-list-featured">Featured</span>' : ''}
-                    </a>
+                    </div>
                 `;
             }).join('');
             
