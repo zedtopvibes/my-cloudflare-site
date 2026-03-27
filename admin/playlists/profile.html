@@ -17,6 +17,7 @@
             --primary-soft: #e8f0fe;
             --secondary: #00b4d8;
             --success: #10b981;
+            --warning: #ffc107;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -101,6 +102,29 @@
             border: 1px solid #fbbf24;
         }
         
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         /* Profile Card */
         .profile-card {
             background: white;
@@ -144,6 +168,10 @@
             font-weight: 700;
             color: var(--gray-800);
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
         .playlist-creator {
@@ -379,6 +407,24 @@
             background: #dc2626;
         }
         
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #0e8f3e;
+        }
+        
+        .btn-unpublish {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
         .loading {
             text-align: center;
             padding: 60px;
@@ -389,6 +435,30 @@
             font-size: 2.5rem;
             color: var(--primary);
             margin-bottom: 16px;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
         /* Responsive */
@@ -450,6 +520,51 @@
 
     <script>
         const API_BASE = '/api';
+        let currentPlaylist = null;
+        
+        // Publish playlist
+        async function publishPlaylist(id, name) {
+            if (!confirm(`Publish "${name}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${name}" published!`, 'success');
+                loadPlaylist(); // Reload to show updated status
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        // Unpublish playlist
+        async function unpublishPlaylist(id, name) {
+            if (!confirm(`Unpublish "${name}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${name}" moved to drafts`, 'success');
+                loadPlaylist(); // Reload to show updated status
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
         
         async function loadPlaylist() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -461,14 +576,15 @@
             }
             
             try {
-                // Fetch playlist details - this already includes tracks!
-                const res = await fetch(`${API_BASE}/playlists/${playlistId}`);
+                // Use admin endpoint to get playlist with status
+                const res = await fetch(`${API_BASE}/admin/playlists/${playlistId}`);
                 if (!res.ok) throw new Error('Playlist not found');
                 
                 const playlist = await res.json();
-                console.log('Playlist data:', playlist); // For debugging
+                currentPlaylist = playlist;
+                console.log('Playlist data:', playlist);
                 
-                // Tracks are already in playlist.tracks
+                // Tracks are in playlist.tracks
                 const tracks = playlist.tracks || [];
                 
                 // Calculate stats
@@ -492,6 +608,10 @@
                       })
                     : 'Unknown';
                 
+                const statusBadge = playlist.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
                 document.getElementById('profileContent').innerHTML = `
                     <div class="playlist-cover-large">
                         ${playlist.cover_url 
@@ -501,7 +621,10 @@
                     </div>
                     
                     <div class="playlist-info">
-                        <h1 class="playlist-name">${escapeHtml(playlist.name)}</h1>
+                        <h1 class="playlist-name">
+                            ${escapeHtml(playlist.name)}
+                            ${statusBadge}
+                        </h1>
                         <div class="playlist-creator">
                             <i class="fas fa-user-circle"></i>
                             Created by ${playlist.created_by || 'Zedtopvibes'} • ${createdDate}
@@ -581,6 +704,14 @@
                         <a href="/admin/playlists/edit.html?id=${playlist.id}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> Edit Playlist
                         </a>
+                        ${playlist.status === 'draft' 
+                            ? `<button class="btn btn-publish" onclick="publishPlaylist(${playlist.id}, '${escapeHtml(playlist.name).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-cloud-upload-alt"></i> Publish
+                               </button>`
+                            : `<button class="btn btn-unpublish" onclick="unpublishPlaylist(${playlist.id}, '${escapeHtml(playlist.name).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-eye-slash"></i> Unpublish
+                               </button>`
+                        }
                         <button class="btn btn-danger" onclick="deletePlaylist(${playlist.id})">
                             <i class="fas fa-trash"></i> Delete
                         </button>
@@ -642,7 +773,6 @@
             window.location.href = `/admin/playlists/add-tracks.html?id=${playlistId}`;
         }
         
-        // UPDATED: Changed to use soft delete endpoint
         async function deletePlaylist(id) {
             if (!confirm('Move this playlist to trash?')) return;
             
@@ -668,19 +798,8 @@
         
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
-                border-radius: 6px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 2000;
-                animation: slideIn 0.3s;
-            `;
-            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -705,10 +824,6 @@
             @keyframes fadeOut {
                 from { opacity: 1; transform: translateX(0); }
                 to { opacity: 0; transform: translateX(-10px); }
-            }
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
             }
         `;
         document.head.appendChild(style);
