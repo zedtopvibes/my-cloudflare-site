@@ -17,6 +17,7 @@
             --primary-soft: #e8f0fe;
             --secondary: #00b4d8;
             --success: #10b981;
+            --warning: #ffc107;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -208,6 +209,88 @@
             border: 1px solid var(--gray-200);
         }
         
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 12px;
+        }
+        
+        .filter-tab {
+            padding: 6px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-tab:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+        
+        .filter-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         /* Playlists Grid */
         .playlists-grid {
             display: grid;
@@ -222,10 +305,10 @@
             border-radius: var(--radius-lg);
             overflow: hidden;
             transition: all 0.2s;
-            cursor: pointer;
             text-decoration: none;
             color: inherit;
             display: block;
+            position: relative;
         }
         
         .playlist-card:hover {
@@ -267,6 +350,9 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         
         .playlist-meta {
@@ -294,6 +380,47 @@
             display: flex;
             align-items: center;
             gap: 4px;
+        }
+        
+        .playlist-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .playlist-card:hover .playlist-actions {
+            opacity: 1;
+        }
+        
+        .action-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .action-icon:hover {
+            background: var(--primary);
+        }
+        
+        .action-icon.publish:hover {
+            background: var(--success);
+        }
+        
+        .action-icon.unpublish:hover {
+            background: var(--warning);
+            color: #333;
         }
         
         /* Empty State */
@@ -344,7 +471,35 @@
             color: var(--gray-500);
         }
         
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
         @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
             .playlists-grid {
                 grid-template-columns: 1fr;
             }
@@ -382,9 +537,11 @@
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
                 <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
-                <a href="/admin/albums" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn active"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
         
@@ -407,6 +564,33 @@
                 </div>
             </div>
 
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPlaylists">0</div>
+                    <div class="stat-label">Total Playlists</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPublished">0</div>
+                    <div class="stat-label">Published</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalDrafts">0</div>
+                    <div class="stat-label">Drafts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTracks">0</div>
+                    <div class="stat-label">Total Tracks</div>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
+                <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
+                <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
+            </div>
+
             <!-- Playlists Grid -->
             <div id="playlistsGrid" class="playlists-grid">
                 <div class="loading">
@@ -425,6 +609,7 @@
         let allPlaylists = [];
         let allTracks = [];
         let currentPage = 1;
+        let currentStatusFilter = 'all';
         const itemsPerPage = 12;
 
         function logout() {
@@ -436,21 +621,112 @@
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            if (!isLoggedIn) window.location.href = '/admin/login.html';
-            return isLoggedIn;
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Publish playlist
+        async function publishPlaylist(id, name) {
+            if (!confirm(`Publish "${name}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${name}" published!`, 'success');
+                loadPlaylists();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Unpublish playlist
+        async function unpublishPlaylist(id, name) {
+            if (!confirm(`Unpublish "${name}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${name}" moved to drafts`, 'success');
+                loadPlaylists();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Filter by status
+        function filterByStatus(status) {
+            currentStatusFilter = status;
+            currentPage = 1;
+            
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                if (tab.dataset.status === status) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            renderPlaylists();
         }
 
         async function loadPlaylists() {
             if (!checkAuth()) return;
             
             try {
+                // Use admin endpoint to get all playlists including drafts
                 const [playlistsRes, tracksRes] = await Promise.all([
-                    fetch(`${API_BASE}/playlists`).catch(() => ({ ok: false })),
+                    fetch(`${API_BASE}/admin/playlists`).catch(() => ({ ok: false })),
                     fetch(`${API_BASE}/tracks`).catch(() => ({ ok: false }))
                 ]);
                 
                 allPlaylists = playlistsRes.ok ? await playlistsRes.json() : [];
                 allTracks = tracksRes.ok ? await tracksRes.json() : [];
+                
+                // Update stats
+                const publishedCount = allPlaylists.filter(p => p.status === 'published').length;
+                const draftCount = allPlaylists.filter(p => p.status === 'draft').length;
+                const totalTracks = allPlaylists.reduce((sum, p) => sum + (p.track_count || 0), 0);
+                
+                document.getElementById('totalPlaylists').textContent = allPlaylists.length;
+                document.getElementById('totalPublished').textContent = publishedCount;
+                document.getElementById('totalDrafts').textContent = draftCount;
+                document.getElementById('totalTracks').textContent = totalTracks;
                 
                 renderPlaylists();
             } catch (error) {
@@ -462,10 +738,15 @@
             const container = document.getElementById('playlistsGrid');
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
-            let filtered = allPlaylists.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) ||
-                (p.description && p.description.toLowerCase().includes(searchTerm))
-            );
+            let filtered = allPlaylists.filter(playlist => {
+                // Status filter
+                if (currentStatusFilter !== 'all' && playlist.status !== currentStatusFilter) {
+                    return false;
+                }
+                
+                return playlist.name.toLowerCase().includes(searchTerm) ||
+                       (playlist.description && playlist.description.toLowerCase().includes(searchTerm));
+            });
             
             if (filtered.length === 0) {
                 container.innerHTML = `
@@ -489,11 +770,12 @@
             const pagePlaylists = filtered.slice(start, end);
             
             container.innerHTML = pagePlaylists.map(playlist => {
-                // Get track count (this would ideally come from API)
-                const trackCount = 0; // You'd need an endpoint to get playlist tracks
+                const statusBadge = playlist.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
                 
                 return `
-                <a href="/admin/playlists/profile.html?id=${playlist.id}" class="playlist-card">
+                <div class="playlist-card">
                     <div class="playlist-cover">
                         ${playlist.cover_url 
                             ? `<img src="${playlist.cover_url}" alt="${escapeHtml(playlist.name)}">`
@@ -501,7 +783,10 @@
                         }
                     </div>
                     <div class="playlist-info">
-                        <div class="playlist-name">${escapeHtml(playlist.name)}</div>
+                        <div class="playlist-name">
+                            ${escapeHtml(playlist.name)}
+                            ${statusBadge}
+                        </div>
                         <div class="playlist-meta">
                             <span><i class="fas fa-music"></i> ${playlist.track_count || 0} tracks</span>
                             <span><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || 0)}</span>
@@ -510,7 +795,19 @@
                             <i class="fas fa-user"></i> ${playlist.created_by || 'Zedtopvibes'}
                         </div>
                     </div>
-                </a>
+                    <div class="playlist-actions">
+                        ${playlist.status === 'draft' 
+                            ? `<button class="action-icon publish" onclick="event.stopPropagation(); publishPlaylist(${playlist.id}, '${escapeHtml(playlist.name).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
+                            : `<button class="action-icon unpublish" onclick="event.stopPropagation(); unpublishPlaylist(${playlist.id}, '${escapeHtml(playlist.name).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
+                        }
+                        <a href="/admin/playlists/edit.html?id=${playlist.id}" class="action-icon" onclick="event.stopPropagation()" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="/admin/playlists/profile.html?id=${playlist.id}" class="action-icon" onclick="event.stopPropagation()" title="View">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                </div>
             `}).join('');
             
             renderPagination(totalPages);
