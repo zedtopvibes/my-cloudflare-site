@@ -3,7 +3,7 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
@@ -13,6 +13,31 @@ export async function onRequest(context) {
   }
 
   const id = params.id;
+
+  // ✅ NEW: GET - Fetch single playlist for editing
+  if (request.method === 'GET') {
+    try {
+      const playlist = await env.DB.prepare(`
+        SELECT * FROM playlists WHERE id = ? AND deleted_at IS NULL
+      `).bind(id).first();
+      
+      if (!playlist) {
+        return new Response(JSON.stringify({ error: 'Playlist not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+      
+      return new Response(JSON.stringify(playlist), { headers });
+      
+    } catch (error) {
+      console.error('Error fetching playlist:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
 
   // PUT - Update playlist
   if (request.method === 'PUT') {
@@ -59,7 +84,7 @@ export async function onRequest(context) {
       updates.push('cover_emoji = ?');
       values.push(cover_emoji || existing.cover_emoji);
       
-      // NEW: Add status field
+      // Add status field
       if (status !== undefined) {
         updates.push('status = ?');
         values.push(status);
