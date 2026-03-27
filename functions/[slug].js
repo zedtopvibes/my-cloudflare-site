@@ -2,7 +2,12 @@ export async function onRequest(context) {
     const { request, env, params } = context;
     const slug = params.slug;
     
-    // Skip API routes - let them be handled by their own functions
+    // ✅ Skip empty slug (root path /)
+    if (!slug || slug === '') {
+        return context.next();
+    }
+    
+    // Skip API routes
     if (slug === 'api') {
         return context.next();
     }
@@ -12,7 +17,13 @@ export async function onRequest(context) {
         return context.next();
     }
     
-    // Skip static files with extensions (images, css, js, etc.)
+    // Skip existing content routes (song, album, ep, artist, playlist)
+    const contentRoutes = ['song', 'album', 'ep', 'artist', 'playlist', 'page'];
+    if (contentRoutes.includes(slug)) {
+        return context.next();
+    }
+    
+    // Skip static files with extensions
     if (slug.includes('.') && !slug.endsWith('.html')) {
         return context.next();
     }
