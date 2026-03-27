@@ -20,6 +20,7 @@
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
             --success: #28a745;
+            --warning: #ffc107;
             --error: #dc3545;
         }
         
@@ -156,7 +157,8 @@
         }
         
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #ddd;
@@ -166,7 +168,8 @@
         }
         
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--primary-blue);
             box-shadow: 0 0 0 2px rgba(31, 111, 159, 0.1);
@@ -179,6 +182,7 @@
             padding: 15px;
             background: var(--light-gray);
             border-radius: 8px;
+            flex-wrap: wrap;
         }
         
         .checkbox-label {
@@ -237,6 +241,12 @@
             background: #e0e0e0;
         }
         
+        .status-hint {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        
         .loading {
             text-align: center;
             padding: 40px;
@@ -247,6 +257,36 @@
             font-size: 2rem;
             margin-bottom: 10px;
             color: var(--primary-blue);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); color: #333; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
         
         @media (max-width: 768px) {
@@ -300,31 +340,11 @@
             }
             
             try {
-                // Try to fetch artist data
-                let artist = null;
+                // Use admin endpoint to get artist with status
+                const res = await fetch(`${API_BASE}/admin/artists/${artistId}`);
+                if (!res.ok) throw new Error('Artist not found');
                 
-                // Try direct endpoint
-                try {
-                    const res = await fetch(`${API_BASE}/admin/artists/${artistId}`);
-                    if (res.ok) {
-                        artist = await res.json();
-                    }
-                } catch (e) {
-                    console.log('Direct endpoint failed');
-                }
-                
-                // If direct fails, try all artists
-                if (!artist) {
-                    const allRes = await fetch(`${API_BASE}/admin/artists`);
-                    if (allRes.ok) {
-                        const allArtists = await allRes.json();
-                        artist = allArtists.find(a => a.id == artistId);
-                    }
-                }
-                
-                if (!artist) {
-                    throw new Error('Artist not found');
-                }
+                const artist = await res.json();
                 
                 pageTitle.textContent = `Edit Artist: ${artist.name}`;
                 renderForm(artist);
@@ -344,6 +364,7 @@
 
         function renderForm(artist) {
             const isEditing = !!artist;
+            const currentStatus = artist?.status || 'draft';
             const formContainer = document.getElementById('formContainer');
             
             formContainer.innerHTML = `
@@ -381,6 +402,18 @@
                     <div class="form-group">
                         <label><i class="fas fa-align-left"></i> Bio</label>
                         <textarea id="artistBio" rows="4" placeholder="Artist biography...">${escapeHtml(artist?.bio || '')}</textarea>
+                    </div>
+                    
+                    <!-- NEW: Status Field -->
+                    <div class="form-group">
+                        <label><i class="fas fa-flag"></i> Status</label>
+                        <select id="artistStatus">
+                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
+                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
+                        </select>
+                        <div class="status-hint">
+                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
+                        </div>
                     </div>
                     
                     <div class="checkbox-group">
@@ -437,7 +470,8 @@
                 country: document.getElementById('artistCountry').value.trim() || null,
                 bio: document.getElementById('artistBio').value.trim() || null,
                 is_featured: document.getElementById('artistFeatured').checked,
-                is_zambian_legend: document.getElementById('artistLegend').checked
+                is_zambian_legend: document.getElementById('artistLegend').checked,
+                status: document.getElementById('artistStatus').value  // NEW: Add status
             };
             
             // Validate
@@ -492,7 +526,8 @@
                     }
                 }
                 
-                showToast(`Artist ${isEditing ? 'updated' : 'created'} successfully!`, 'success');
+                const statusText = artistData.status === 'published' ? 'published' : 'saved as draft';
+                showToast(`Artist ${isEditing ? 'updated' : 'created'} and ${statusText}!`, 'success');
                 
                 // Redirect to profile after short delay
                 setTimeout(() => {
@@ -509,19 +544,8 @@
 
         function showToast(message, type) {
             const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#ffc107'};
-                color: ${type === 'warning' ? '#333' : 'white'};
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 2000;
-                animation: slideIn 0.3s;
-            `;
-            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i> ${message}`;
             document.body.appendChild(toast);
             
             setTimeout(() => {
