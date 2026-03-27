@@ -28,6 +28,8 @@
             --radius-sm: 6px;
             --radius-md: 8px;
             --radius-lg: 12px;
+            --success: #28a745;
+            --warning: #ffc107;
         }
         
         body {
@@ -146,7 +148,8 @@
         }
         
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--gray-200);
@@ -156,7 +159,8 @@
         }
         
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-soft);
@@ -208,6 +212,26 @@
             background: var(--gray-100);
             color: var(--gray-700);
             border: 1px solid var(--gray-200);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
         }
         
         .loading {
@@ -394,6 +418,7 @@
         
         function renderForm(album) {
             const isEditing = !!album;
+            const currentStatus = album?.status || 'draft';
             
             // Find the artist name for display
             const artistDisplayName = selectedArtistName || '';
@@ -472,6 +497,18 @@
                     <div class="form-group">
                         <label><i class="fas fa-align-left"></i> Description</label>
                         <textarea id="albumDescription" rows="3" placeholder="Album description...">${escapeHtml(album?.description || '')}</textarea>
+                    </div>
+                    
+                    <!-- NEW: Status Field -->
+                    <div class="form-group">
+                        <label><i class="fas fa-flag"></i> Status</label>
+                        <select id="albumStatus">
+                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
+                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
+                        </select>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
+                        </div>
                     </div>
                     
                     <div class="checkbox-label">
@@ -602,7 +639,8 @@
                 release_date: document.getElementById('albumReleaseDate').value || null,
                 genre: document.getElementById('albumGenre').value.trim() || null,
                 description: document.getElementById('albumDescription').value.trim() || null,
-                is_featured: document.getElementById('albumFeatured').checked
+                is_featured: document.getElementById('albumFeatured').checked,
+                status: document.getElementById('albumStatus').value  // NEW: Add status
             };
             
             if (!albumData.title) {
@@ -654,7 +692,8 @@
                     }
                 }
                 
-                showToast(`Album ${isEditing ? 'updated' : 'created'}!`, 'success');
+                const statusText = albumData.status === 'published' ? 'published' : 'saved as draft';
+                showToast(`Album ${isEditing ? 'updated' : 'created'} and ${statusText}!`, 'success');
                 
                 setTimeout(() => {
                     window.location.href = `/admin/albums/profile.html?id=${albumId}`;
