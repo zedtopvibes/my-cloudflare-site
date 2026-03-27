@@ -18,6 +18,7 @@
             --secondary: #00b4d8;
             --accent: #f59e0b;
             --success: #10b981;
+            --warning: #ffc107;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -94,6 +95,29 @@
             background: var(--gray-200);
         }
         
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         /* Profile Card */
         .profile-card {
             background: white;
@@ -159,6 +183,10 @@
             font-weight: 700;
             color: var(--gray-800);
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
         .artist-slug {
@@ -439,6 +467,24 @@
             background: #dc2626;
         }
         
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #0e8f3e;
+        }
+        
+        .btn-unpublish {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
         .loading {
             text-align: center;
             padding: 40px;
@@ -487,6 +533,7 @@
             
             .artist-name {
                 font-size: 1.5rem;
+                justify-content: center;
             }
             
             .badge-group {
@@ -557,6 +604,50 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // Publish artist
+        async function publishArtist(id, name) {
+            if (!confirm(`Publish "${name}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${name}" published!`, 'success');
+                loadArtistProfile(); // Reload to show updated status
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        // Unpublish artist
+        async function unpublishArtist(id, name) {
+            if (!confirm(`Unpublish "${name}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${name}" moved to drafts`, 'success');
+                loadArtistProfile(); // Reload to show updated status
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
         // Helper function to check if track belongs to artist (using track_artists)
         function trackBelongsToArtist(track, artistId) {
             if (!track.artists || track.artists.length === 0) {
@@ -576,23 +667,11 @@
             }
             
             try {
-                // Fetch artist data
-                let artist = null;
+                // Fetch artist data using admin endpoint to get status
+                const res = await fetch(`${API_BASE}/admin/artists/${artistId}`);
+                if (!res.ok) throw new Error('Artist not found');
                 
-                try {
-                    const res = await fetch(`${API_BASE}/admin/artists/${artistId}`);
-                    if (res.ok) artist = await res.json();
-                } catch (e) {}
-                
-                if (!artist) {
-                    const allRes = await fetch(`${API_BASE}/admin/artists`);
-                    if (allRes.ok) {
-                        const allArtists = await allRes.json();
-                        artist = allArtists.find(a => a.id == artistId);
-                    }
-                }
-                
-                if (!artist) throw new Error('Artist not found');
+                const artist = await res.json();
                 
                 // Fetch tracks, albums, EPs
                 const [tracksRes, albumsRes, epsRes] = await Promise.all([
@@ -638,6 +717,10 @@
                     return t.artists.some(a => a.id === artist.id && a.is_primary === 0);
                 });
                 
+                const statusBadge = artist.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
                 document.getElementById('profileContent').innerHTML = `
                     <div class="profile-cover"></div>
                     
@@ -651,7 +734,10 @@
                             </div>
                         </div>
                         <div class="artist-title">
-                            <h1 class="artist-name">${escapeHtml(artist.name)}</h1>
+                            <h1 class="artist-name">
+                                ${escapeHtml(artist.name)}
+                                ${statusBadge}
+                            </h1>
                             <div class="artist-slug">${artist.slug || ''}</div>
                             <div class="badge-group">
                                 ${artist.is_featured ? '<span class="badge featured"><i class="fas fa-star" style="margin-right: 4px;"></i>Featured</span>' : ''}
@@ -755,6 +841,14 @@
                         <a href="/admin/artists/edit.html?id=${artist.id}" class="btn btn-primary">
                             <i class="fas fa-edit"></i> Edit Profile
                         </a>
+                        ${artist.status === 'draft' 
+                            ? `<button class="btn btn-publish" onclick="publishArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-cloud-upload-alt"></i> Publish
+                               </button>`
+                            : `<button class="btn btn-unpublish" onclick="unpublishArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-eye-slash"></i> Unpublish
+                               </button>`
+                        }
                         <button class="btn btn-danger" onclick="deleteArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}', ${artistTracks.length})">
                             <i class="fas fa-trash"></i> Delete
                         </button>
@@ -773,7 +867,7 @@
             }
         }
         
-        // NEW: Delete artist function with soft delete
+        // Delete artist function with soft delete
         async function deleteArtist(id, name, trackCount) {
             if (trackCount > 0) {
                 showToast(`❌ Cannot delete artist with ${trackCount} track(s). Remove all tracks first or reassign to another artist.`, 'error');
