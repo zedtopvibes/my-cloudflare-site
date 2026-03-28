@@ -197,13 +197,19 @@
             transform: translateY(-2px);
         }
         
+        .action-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         .play-btn {
             background: #ff4b2b;
             color: white;
             box-shadow: 0 2px 8px rgba(255, 75, 43, 0.3);
         }
         
-        .play-btn:hover {
+        .play-btn:hover:not(:disabled) {
             background: #ff6a4b;
         }
         
@@ -213,7 +219,7 @@
             box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
         }
         
-        .download-btn:hover {
+        .download-btn:hover:not(:disabled) {
             background: #34ce57;
         }
         
@@ -701,26 +707,48 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
-        // ===== UPDATED: Download Song - Track via API then Redirect to R2 =====
+        // ===== UPDATED: Download Song with Loading Feedback =====
         function downloadSong() {
-            if (!currentSong || !currentSong.r2_key) {
+            if (!currentSong || !currentSong.id) {
                 alert('Download not available');
                 return;
             }
             
-            // Track download in background, then download
-            fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' })
-                .catch(() => {})
-                .finally(() => {
-                    // Direct R2 URL for download
-                    const downloadUrl = `${R2_PUBLIC_URL}/${currentSong.r2_key}`;
-                    const link = document.createElement('a');
-                    link.href = downloadUrl;
-                    link.download = currentSong.filename || `${currentSong.title} - ${getArtistDisplayName(currentSong)}.mp3`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                });
+            // Show loading state on button
+            const btn = document.getElementById('download-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
+            btn.disabled = true;
+            
+            // Optional: Show a quick toast for better feedback
+            const toast = document.createElement('div');
+            toast.textContent = 'Preparing download...';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #28a745;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 8px;
+                z-index: 9999;
+                font-size: 13px;
+                animation: fadeOut 2s forwards;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+            
+            // Redirect to download API (handles tracking + file delivery)
+            window.location.href = `/api/download/${currentSong.id}`;
+            
+            // Reset button if page doesn't redirect quickly (fallback)
+            setTimeout(() => {
+                if (btn && document.body.contains(btn)) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }, 3000);
         }
         
         function goToArtistFromPlayer() {
