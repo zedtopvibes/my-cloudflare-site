@@ -573,6 +573,9 @@
     <script>
         const API_BASE = '/api';
         
+        // R2 Public URL - UPDATE WITH YOUR ACTUAL R2 URL
+        const R2_PUBLIC_URL = 'https://pub-fec6ab79d63347f48cfcfc5af6928ff0.r2.dev';
+        
         let currentSong = null;
         let audioPlayer = null;
         let isPlaying = false;
@@ -623,12 +626,19 @@
             return 'Unknown Artist';
         }
         
-        // Play Song - using stream endpoint
+        // ===== UPDATED: Play Song - Direct R2 URL with Background Tracking =====
         async function playSong() {
             if (!currentSong) return;
             
             try {
-                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
+                // 1. Track play in background (fire and forget)
+                fetch(`${API_BASE}/tracks/${currentSong.id}/play`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(() => {});
+                
+                // 2. Direct R2 URL for instant playback
+                const audioUrl = `${R2_PUBLIC_URL}/${currentSong.r2_key}`;
                 
                 if (audioPlayer && isPlaying) {
                     document.getElementById('floatingPlayer').style.display = 'flex';
@@ -638,8 +648,6 @@
                 if (audioPlayer) {
                     audioPlayer.pause();
                 }
-                
-                fetch(`${API_BASE}/tracks/${currentSong.id}/play`, { method: 'POST' }).catch(() => {});
                 
                 audioPlayer = new Audio(audioUrl);
                 await audioPlayer.play();
@@ -693,21 +701,26 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
+        // ===== UPDATED: Download Song - Track via API then Redirect to R2 =====
         function downloadSong() {
             if (!currentSong || !currentSong.r2_key) {
                 alert('Download not available');
                 return;
             }
             
-            const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
-            const link = document.createElement('a');
-            link.href = audioUrl;
-            link.download = currentSong.filename || `${currentSong.title} - ${getArtistDisplayName(currentSong)}.mp3`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
+            // Track download in background, then download
+            fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' })
+                .catch(() => {})
+                .finally(() => {
+                    // Direct R2 URL for download
+                    const downloadUrl = `${R2_PUBLIC_URL}/${currentSong.r2_key}`;
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = currentSong.filename || `${currentSong.title} - ${getArtistDisplayName(currentSong)}.mp3`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
         }
         
         function goToArtistFromPlayer() {
@@ -876,7 +889,7 @@
                     document.getElementById('song-description').style.display = 'none';
                 }
                 
-                // ===== UPDATED: Show Album, EP, or Single badge =====
+                // Show Album, EP, or Single badge
                 const releaseInfoDiv = document.getElementById('song-release-info');
                 
                 if (song.release_type === 'album' && song.release_name) {
