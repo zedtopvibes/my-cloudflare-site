@@ -29,7 +29,7 @@ export async function onRequest(context) {
             LEFT JOIN artists a ON ta.artist_id = a.id
             WHERE t.deleted_at IS NULL 
                 AND t.status = 'published'
-                AND t.genre = ?
+                AND LOWER(t.genre) = LOWER(?)
             GROUP BY t.id
             ORDER BY t.plays DESC
             LIMIT 20
