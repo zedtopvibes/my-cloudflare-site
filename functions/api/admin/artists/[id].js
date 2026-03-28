@@ -18,7 +18,7 @@ export async function onRequest(context) {
   if (request.method === 'GET') {
     try {
       const artist = await env.DB.prepare(`
-        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at, updated_at
+        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at
         FROM artists WHERE id = ? AND deleted_at IS NULL
       `).bind(id).first();
       
@@ -79,7 +79,7 @@ export async function onRequest(context) {
         updates.push('country = ?');
         values.push(country);
       }
-      // NEW: Genre field
+      // Genre field
       if (genre !== undefined) {
         updates.push('genre = ?');
         values.push(genre);
@@ -118,7 +118,7 @@ export async function onRequest(context) {
       await env.DB.prepare(query).bind(...values).run();
 
       const updated = await env.DB.prepare(`
-        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at, updated_at
+        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at
         FROM artists WHERE id = ? AND deleted_at IS NULL
       `).bind(id).first();
 
