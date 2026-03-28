@@ -1,9 +1,9 @@
 export async function onRequest(context) {
-    const { request, env, params } = context;
+    const { request, env } = context;
     
     const headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
         'Content-Type': 'application/json'
     };
@@ -12,51 +12,62 @@ export async function onRequest(context) {
         return new Response(null, { headers });
     }
     
-    const id = params.id;
-    
-    // GET - Fetch single genre
+    // GET - List all genres with stats
     if (request.method === 'GET') {
         try {
-            const genre = await env.DB.prepare(`
-                SELECT id, name, slug, description, cover_url, is_featured, created_at, updated_at
-                FROM genres WHERE id = ? AND deleted_at IS NULL
-            `).bind(id).first();
+            // First, check if genres table exists
+            const tableCheck = await env.DB.prepare(`
+                SELECT name FROM sqlite_master WHERE type='table' AND name='genres'
+            `).first();
             
-            if (!genre) {
-                return new Response(JSON.stringify({ error: 'Genre not found' }), { 
-                    status: 404, 
-                    headers 
-                });
+            if (!tableCheck) {
+                // Table doesn't exist - return empty array
+                return new Response(JSON.stringify([]), { headers });
             }
             
-            // Get stats
-            const artistsCount = await env.DB.prepare(`
-                SELECT COUNT(*) as count FROM artists 
-                WHERE deleted_at IS NULL AND status = 'published' AND genre = ?
-            `).bind(genre.name).first();
+            // Get all genres from the genres table
+            const { results: genres } = await env.DB.prepare(`
+                SELECT id, name, slug, description, cover_url, is_featured, created_at, updated_at
+                FROM genres
+                WHERE deleted_at IS NULL
+                ORDER BY is_featured DESC, name ASC
+            `).all();
             
-            const albumsCount = await env.DB.prepare(`
-                SELECT COUNT(*) as count FROM albums 
-                WHERE deleted_at IS NULL AND status = 'published' AND genre = ?
-            `).bind(genre.name).first();
+            // For each genre, get counts from content tables
+            const genresWithStats = await Promise.all(genres.map(async (genre) => {
+                // Count artists with this genre
+                const artistsCount = await env.DB.prepare(`
+                    SELECT COUNT(*) as count FROM artists 
+                    WHERE deleted_at IS NULL AND status = 'published' AND genre = ?
+                `).bind(genre.name).first();
+                
+                // Count albums with this genre
+                const albumsCount = await env.DB.prepare(`
+                    SELECT COUNT(*) as count FROM albums 
+                    WHERE deleted_at IS NULL AND status = 'published' AND genre = ?
+                `).bind(genre.name).first();
+                
+                // Count EPs with this genre
+                const epsCount = await env.DB.prepare(`
+                    SELECT COUNT(*) as count FROM eps 
+                    WHERE deleted_at IS NULL AND status = 'published' AND genre = ?
+                `).bind(genre.name).first();
+                
+                return {
+                    ...genre,
+                    stats: {
+                        artists: artistsCount?.count || 0,
+                        albums: albumsCount?.count || 0,
+                        eps: epsCount?.count || 0,
+                        total: (artistsCount?.count || 0) + (albumsCount?.count || 0) + (epsCount?.count || 0)
+                    }
+                };
+            }));
             
-            const epsCount = await env.DB.prepare(`
-                SELECT COUNT(*) as count FROM eps 
-                WHERE deleted_at IS NULL AND status = 'published' AND genre = ?
-            `).bind(genre.name).first();
-            
-            return new Response(JSON.stringify({
-                ...genre,
-                stats: {
-                    artists: artistsCount?.count || 0,
-                    albums: albumsCount?.count || 0,
-                    eps: epsCount?.count || 0,
-                    total: (artistsCount?.count || 0) + (albumsCount?.count || 0) + (epsCount?.count || 0)
-                }
-            }), { headers });
+            return new Response(JSON.stringify(genresWithStats), { headers });
             
         } catch (error) {
-            console.error('Error fetching genre:', error);
+            console.error('Error fetching admin genres:', error);
             return new Response(JSON.stringify({ error: error.message }), { 
                 status: 500, 
                 headers 
@@ -64,8 +75,8 @@ export async function onRequest(context) {
         }
     }
     
-    // PUT - Update genre
-    if (request.method === 'PUT') {
+    // POST - Create new genre
+    if (request.method === 'POST') {
         try {
             const { name, description, cover_url, is_featured } = await request.json();
             
@@ -84,72 +95,42 @@ export async function onRequest(context) {
                 .replace(/--+/g, '-')
                 .replace(/^-+|-+$/g, '');
             
-            // Check if slug already exists for different genre
+            // Check if genre already exists
             const existing = await env.DB.prepare(`
-                SELECT id FROM genres WHERE (name = ? OR slug = ?) AND id != ? AND deleted_at IS NULL
-            `).bind(name, slug, id).first();
+                SELECT id FROM genres WHERE name = ? OR slug = ?
+            `).bind(name, slug).first();
             
             if (existing) {
-                return new Response(JSON.stringify({ error: 'Genre with this name or slug already exists' }), { 
+                return new Response(JSON.stringify({ error: 'Genre already exists' }), { 
                     status: 400, 
                     headers 
                 });
             }
             
-            await env.DB.prepare(`
-                UPDATE genres 
-                SET name = ?, slug = ?, description = ?, cover_url = ?, is_featured = ?, updated_at = CURRENT_TIMESTAMP
-                WHERE id = ?
+            const result = await env.DB.prepare(`
+                INSERT INTO genres (name, slug, description, cover_url, is_featured, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                RETURNING id
             `).bind(
                 name,
                 slug,
                 description || null,
                 cover_url || null,
-                is_featured ? 1 : 0,
-                id
+                is_featured ? 1 : 0
             ).run();
             
-            const updated = await env.DB.prepare(`
+            const newGenre = await env.DB.prepare(`
                 SELECT id, name, slug, description, cover_url, is_featured, created_at, updated_at
                 FROM genres WHERE id = ?
-            `).bind(id).first();
+            `).bind(result.results[0].id).first();
             
-            return new Response(JSON.stringify(updated), { headers });
-            
-        } catch (error) {
-            console.error('Error updating genre:', error);
-            return new Response(JSON.stringify({ error: error.message }), { 
-                status: 500, 
+            return new Response(JSON.stringify(newGenre), { 
+                status: 201, 
                 headers 
             });
-        }
-    }
-    
-    // DELETE - Soft delete genre
-    if (request.method === 'DELETE') {
-        try {
-            const genre = await env.DB.prepare(`
-                SELECT id FROM genres WHERE id = ? AND deleted_at IS NULL
-            `).bind(id).first();
-            
-            if (!genre) {
-                return new Response(JSON.stringify({ error: 'Genre not found' }), { 
-                    status: 404, 
-                    headers 
-                });
-            }
-            
-            await env.DB.prepare(`
-                UPDATE genres SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?
-            `).bind(id).run();
-            
-            return new Response(JSON.stringify({ 
-                success: true, 
-                message: 'Genre moved to trash'
-            }), { headers });
             
         } catch (error) {
-            console.error('Error deleting genre:', error);
+            console.error('Error creating genre:', error);
             return new Response(JSON.stringify({ error: error.message }), { 
                 status: 500, 
                 headers 
