@@ -1,8 +1,90 @@
 export async function onRequest(context) {
-    return new Response(JSON.stringify({ 
-        message: "Genres API is working!",
-        timestamp: new Date().toISOString()
-    }), {
-        headers: { 'Content-Type': 'application/json' }
-    });
+  const { request, env } = context;
+  
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
+  };
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers });
+  }
+
+  // GET - List all genres with stats (ADMIN)
+  if (request.method === 'GET') {
+    try {
+      // Get genres from artists
+      const artistGenres = await env.DB.prepare(`
+        SELECT genre, COUNT(*) as count FROM artists 
+        WHERE deleted_at IS NULL AND genre IS NOT NULL AND genre != ''
+        GROUP BY genre
+      `).all();
+      
+      // Get genres from albums
+      const albumGenres = await env.DB.prepare(`
+        SELECT genre, COUNT(*) as count FROM albums 
+        WHERE deleted_at IS NULL AND genre IS NOT NULL AND genre != ''
+        GROUP BY genre
+      `).all();
+      
+      // Get genres from eps
+      const epGenres = await env.DB.prepare(`
+        SELECT genre, COUNT(*) as count FROM eps 
+        WHERE deleted_at IS NULL AND genre IS NOT NULL AND genre != ''
+        GROUP BY genre
+      `).all();
+      
+      // Combine all genres
+      const allGenres = new Map();
+      
+      artistGenres.results.forEach(g => {
+        allGenres.set(g.genre, { 
+          name: g.genre, 
+          artists: g.count, 
+          albums: 0, 
+          eps: 0 
+        });
+      });
+      
+      albumGenres.results.forEach(g => {
+        const existing = allGenres.get(g.genre) || { name: g.genre, artists: 0, albums: 0, eps: 0 };
+        existing.albums = g.count;
+        allGenres.set(g.genre, existing);
+      });
+      
+      epGenres.results.forEach(g => {
+        const existing = allGenres.get(g.genre) || { name: g.genre, artists: 0, albums: 0, eps: 0 };
+        existing.eps = g.count;
+        allGenres.set(g.genre, existing);
+      });
+      
+      const results = Array.from(allGenres.values()).map(genre => ({
+        id: genre.name,
+        name: genre.name,
+        slug: genre.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
+        stats: {
+          artists: genre.artists || 0,
+          albums: genre.albums || 0,
+          eps: genre.eps || 0,
+          total: (genre.artists || 0) + (genre.albums || 0) + (genre.eps || 0)
+        }
+      })).sort((a, b) => b.stats.total - a.stats.total);
+      
+      return new Response(JSON.stringify(results), { headers });
+      
+    } catch (error) {
+      console.error('Error fetching admin genres:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
+
+  return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
+    status: 405, 
+    headers 
+  });
 }
