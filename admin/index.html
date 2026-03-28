@@ -16,20 +16,16 @@
             --primary-light: #2f8ed0;
             --primary-lighter: #70c8ff;
             --primary-dark: #1f4c73;
-            --deep-bg: #0b0f1c;
-            --dark: #1a1a1a;
             --gray: #666;
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --card-bg: rgba(22, 28, 40, 0.03);
             --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
             
-            /* Playlists - distinct blue-purple */
             --playlist-start: #5f3dc7;
             --playlist-end: #8a6de0;
-            
-            /* EPs - orange gradient */
             --ep-start: #ff5722;
             --ep-end: #ff8c00;
         }
@@ -103,7 +99,6 @@
             color: #666;
             transition: all 0.3s;
             padding: 6px 10px;
-            text-decoration: none;
             background: rgba(255, 255, 255, 0.5);
             border: none;
             font-size: 0.9rem;
@@ -113,7 +108,6 @@
             gap: 4px;
             border-radius: 30px;
             height: 28px;
-            margin-left: 2px;
         }
         
         .logout-btn:hover {
@@ -147,19 +141,9 @@
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 6px;
             text-decoration: none;
-            line-height: 1;
             height: 40px !important;
-            min-height: 40px !important;
-            max-height: 40px !important;
-            box-sizing: border-box;
-        }
-        
-        .tab-btn i {
-            font-size: 1rem !important;
-            width: 16px;
         }
         
         .tab-btn:hover {
@@ -175,22 +159,46 @@
         .admin-content {
             background: var(--white);
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
+        }
+        
+        .section-header h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .section-header i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+        }
+        
+        /* Stats Grid - 5 columns on desktop, 2 on mobile */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
         }
         
         .stat-card {
             background: var(--light-gray);
-            padding: 15px;
-            border-radius: 10px;
+            padding: 16px 12px;
+            border-radius: 12px;
             border: 1px solid rgba(31, 111, 159, 0.15);
             text-align: center;
             transition: all 0.3s ease;
@@ -216,6 +224,7 @@
         
         .stat-card:hover {
             border-color: var(--primary-blue);
+            transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
         }
         
@@ -224,39 +233,35 @@
             100% { transform: rotate(360deg); }
         }
         
-        .stat-card h3 {
-            font-size: 0.8rem;
-            color: var(--primary-dark);
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 600;
+        .stat-card .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
         }
         
-        .stat-card .number {
+        .stat-card .stat-value {
             font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary-blue);
             line-height: 1.2;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 4px;
         }
         
-        .stat-card .label {
+        .stat-card .stat-label {
             font-size: 0.7rem;
             color: #666;
-            margin-top: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
+        /* Gradient Cards */
         .stat-card.blue-gradient {
             background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
             border: none;
         }
         
-        .stat-card.blue-gradient h3,
-        .stat-card.blue-gradient .number,
-        .stat-card.blue-gradient .label {
+        .stat-card.blue-gradient .stat-value,
+        .stat-card.blue-gradient .stat-label,
+        .stat-card.blue-gradient .stat-icon {
             color: white !important;
         }
         
@@ -265,9 +270,9 @@
             border: none;
         }
         
-        .stat-card.purple-gradient h3,
-        .stat-card.purple-gradient .number,
-        .stat-card.purple-gradient .label {
+        .stat-card.purple-gradient .stat-value,
+        .stat-card.purple-gradient .stat-label,
+        .stat-card.purple-gradient .stat-icon {
             color: white !important;
         }
         
@@ -276,20 +281,9 @@
             border: none;
         }
         
-        .stat-card.teal-gradient h3,
-        .stat-card.teal-gradient .number,
-        .stat-card.teal-gradient .label {
-            color: white !important;
-        }
-        
-        .stat-card.playlist-gradient {
-            background: linear-gradient(135deg, #5f3dc7 0%, #8a6de0 100%);
-            border: none;
-        }
-        
-        .stat-card.playlist-gradient h3,
-        .stat-card.playlist-gradient .number,
-        .stat-card.playlist-gradient .label {
+        .stat-card.teal-gradient .stat-value,
+        .stat-card.teal-gradient .stat-label,
+        .stat-card.teal-gradient .stat-icon {
             color: white !important;
         }
         
@@ -298,16 +292,61 @@
             border: none;
         }
         
-        .stat-card.ep-gradient h3,
-        .stat-card.ep-gradient .number,
-        .stat-card.ep-gradient .label {
+        .stat-card.ep-gradient .stat-value,
+        .stat-card.ep-gradient .stat-label,
+        .stat-card.ep-gradient .stat-icon {
             color: white !important;
         }
         
+        .stat-card.playlist-gradient {
+            background: linear-gradient(135deg, #5f3dc7 0%, #8a6de0 100%);
+            border: none;
+        }
+        
+        .stat-card.playlist-gradient .stat-value,
+        .stat-card.playlist-gradient .stat-label,
+        .stat-card.playlist-gradient .stat-icon {
+            color: white !important;
+        }
+        
+        .stat-card.warning-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            border: none;
+        }
+        
+        .stat-card.warning-gradient .stat-value,
+        .stat-card.warning-gradient .stat-label,
+        .stat-card.warning-gradient .stat-icon {
+            color: white !important;
+        }
+        
+        .stat-card.success-gradient {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            border: none;
+        }
+        
+        .stat-card.success-gradient .stat-value,
+        .stat-card.success-gradient .stat-label,
+        .stat-card.success-gradient .stat-icon {
+            color: white !important;
+        }
+        
+        .stat-card.info-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            border: none;
+        }
+        
+        .stat-card.info-gradient .stat-value,
+        .stat-card.info-gradient .stat-label,
+        .stat-card.info-gradient .stat-icon {
+            color: white !important;
+        }
+        
+        /* Quick Actions */
         .quick-actions-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
             margin-top: 15px;
         }
         
@@ -316,16 +355,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 15px 8px;
+            padding: 12px 8px;
             background: #f8f9fa;
-            border-radius: 8px;
+            border-radius: 10px;
             text-decoration: none;
             color: #333;
             transition: all 0.3s;
             border: 1px solid rgba(31, 111, 159, 0.15);
             min-height: 80px;
-            position: relative;
-            overflow: hidden;
         }
         
         .quick-action-btn:hover {
@@ -337,76 +374,85 @@
         .quick-action-btn i {
             font-size: 1.5rem;
             color: var(--primary-blue);
-            margin-bottom: 5px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 6px;
         }
         
         .quick-action-btn span {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             text-align: center;
-            position: relative;
-            z-index: 1;
         }
         
-        .section-header {
+        /* Welcome Header */
+        .welcome-header {
+            margin-bottom: 24px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-bottom: 12px;
+        }
+        
+        .welcome-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+        }
+        
+        .welcome-header p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        /* Security Box */
+        .security-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(31, 111, 159, 0.15);
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 0;
-            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
-            margin-bottom: 15px;
-            position: relative;
+            gap: 15px;
         }
         
-        .section-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 5%, 
-                var(--primary-blue) 20%, 
-                var(--primary-lighter) 50%,
-                var(--primary-blue) 80%, 
-                transparent 95%
-            );
-        }
-        
-        .section-header h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
+        .security-box h4 {
             color: var(--primary-dark);
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .section-header h3 i {
-            color: var(--primary-blue);
-        }
-        
-        .view-all-link {
-            color: var(--primary-blue);
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 5px 12px;
-            border: 1px solid var(--primary-blue);
-            border-radius: 3px;
-            transition: all 0.2s ease;
-        }
-        
-        .view-all-link:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .mobile-cards {
+        .security-box ul {
             display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            list-style: none;
+        }
+        
+        .security-box li {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .security-box li i {
+            color: var(--primary-blue);
+        }
+        
+        /* Mobile Cards */
+        .mobile-cards {
+            display: none;
             flex-direction: column;
             gap: 8px;
             margin-top: 15px;
@@ -414,8 +460,8 @@
         
         .mobile-card {
             background: var(--light-gray);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 12px 16px;
             border: 1px solid rgba(31, 111, 159, 0.15);
             cursor: pointer;
             transition: all 0.3s;
@@ -424,7 +470,6 @@
         .mobile-card:hover {
             border-color: var(--primary-blue);
             transform: translateX(5px);
-            box-shadow: 0 2px 8px rgba(31, 111, 159, 0.1);
         }
         
         .mobile-card-row {
@@ -434,14 +479,16 @@
         }
         
         .mobile-card-label {
-            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-weight: 500;
             font-size: 0.9rem;
+            color: #666;
         }
         
         .mobile-card-label i {
             color: var(--primary-blue);
-            margin-right: 8px;
             width: 20px;
         }
         
@@ -449,73 +496,53 @@
             color: var(--primary-blue);
         }
         
-        .security-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            margin: 15px 0;
-            border-left: 4px solid var(--primary-blue);
-            border: 1px solid rgba(31, 111, 159, 0.15);
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .security-box {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .security-box ul {
+                flex-wrap: wrap;
+            }
         }
         
-        .security-box h4 {
-            color: var(--primary-dark);
-            margin-bottom: 8px;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .security-box ul {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .quick-actions-grid {
+                display: none;
+            }
+            
+            .mobile-cards {
+                display: flex;
+            }
         }
         
-        .security-box ul {
-            list-style: none;
-        }
-        
-        .security-box li {
-            padding: 6px 0;
-            color: #666;
-            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
-            font-size: 0.85rem;
-        }
-        
-        .security-box li:last-child {
-            border-bottom: none;
-        }
-        
-        .security-box li i {
-            color: var(--primary-blue);
-            width: 20px;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            background: var(--success);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            margin-bottom: 12px;
-        }
-        
-        @media (min-width: 768px) {
-            .admin-container { padding: 20px; }
-            .admin-header { padding: 20px 25px; }
-            .header-top h1 { font-size: 1.5rem; }
-            .stats-grid { grid-template-columns: repeat(5, 1fr); gap: 15px; }
-            .stat-card { padding: 20px; }
-            .stat-card h3 { font-size: 0.9rem; }
-            .stat-card .number { font-size: 2rem; }
-            .stat-card .label { font-size: 0.75rem; }
-            .quick-actions-grid { grid-template-columns: repeat(5, 1fr); gap: 10px; }
-            .quick-action-btn { padding: 20px 10px; min-height: 100px; }
-            .quick-action-btn i { font-size: 2rem; }
-            .quick-action-btn span { font-size: 0.9rem; }
-        }
-        
-        @media (max-width: 380px) {
-            .stat-card h3 { font-size: 0.7rem; }
-            .stat-card .number { font-size: 1.5rem; }
-            .stat-card .label { font-size: 0.6rem; }
+        @media (min-width: 641px) {
+            .mobile-cards {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -534,147 +561,132 @@
             </div>
             
             <div class="admin-tabs">
-                <a href="index.html" class="tab-btn active">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-                <a href="upload.html" class="tab-btn">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload
-                </a>
-                <a href="songs.html" class="tab-btn">
-                    <i class="fas fa-music"></i> Songs
-                </a>
-                <a href="albums.html" class="tab-btn">
-                    <i class="fas fa-compact-disc"></i> Albums
-                </a>
-                <a href="eps.html" class="tab-btn">
-                    <i class="fas fa-play-circle"></i> EPs
-                </a>
-                <a href="artists.html" class="tab-btn">
-                    <i class="fas fa-microphone"></i> Artists
-                </a>
-                <a href="playlists.html" class="tab-btn">
-                    <i class="fas fa-list"></i> Playlists
-                </a>
-                <a href="genres/index.html" class="tab-btn">
-                    <i class="fas fa-tag"></i> Genres
-                </a>
-                <a href="pages/index.html" class="tab-btn">
-                    <i class="fas fa-file-alt"></i> Pages
-                </a>
-                <a href="trash.html" class="tab-btn">
-                    <i class="fas fa-trash-alt"></i> Trash
-                </a>
+                <a href="index.html" class="tab-btn active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
         
         <div class="admin-content">
-            <div style="margin-bottom: 20px;">
+            <!-- Welcome Header -->
+            <div class="welcome-header">
                 <div class="status-badge">✓ ACTIVE SESSION</div>
-                <h2 style="font-size: 1.3rem; margin-bottom: 5px; color: var(--primary-dark);">Welcome back, Admin</h2>
-                <p style="color: #666; font-size: 0.9rem;" id="currentDate"></p>
+                <h2>Welcome back, Admin</h2>
+                <p id="currentDate"></p>
             </div>
             
-            <!-- Stats Grid - Real data from APIs -->
+            <!-- Row 1: Content Counts -->
+            <div class="section-header">
+                <i class="fas fa-database"></i>
+                <h3>Content Overview</h3>
+            </div>
             <div class="stats-grid">
                 <div class="stat-card blue-gradient">
-                    <h3>Total Songs</h3>
-                    <div class="number" id="totalSongs">0</div>
-                    <div class="label">songs</div>
+                    <div class="stat-icon"><i class="fas fa-music"></i></div>
+                    <div class="stat-value" id="totalSongs">0</div>
+                    <div class="stat-label">Total Songs</div>
                 </div>
                 <div class="stat-card purple-gradient">
-                    <h3>Total Albums</h3>
-                    <div class="number" id="totalAlbums">0</div>
-                    <div class="label">albums</div>
+                    <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
+                    <div class="stat-value" id="totalAlbums">0</div>
+                    <div class="stat-label">Total Albums</div>
                 </div>
                 <div class="stat-card ep-gradient">
-                    <h3>Total EPs</h3>
-                    <div class="number" id="totalEPs">0</div>
-                    <div class="label">eps</div>
+                    <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
+                    <div class="stat-value" id="totalEPs">0</div>
+                    <div class="stat-label">Total EPs</div>
                 </div>
                 <div class="stat-card teal-gradient">
-                    <h3>Total Artists</h3>
-                    <div class="number" id="totalArtists">0</div>
-                    <div class="label">artists</div>
+                    <div class="stat-icon"><i class="fas fa-microphone"></i></div>
+                    <div class="stat-value" id="totalArtists">0</div>
+                    <div class="stat-label">Total Artists</div>
                 </div>
                 <div class="stat-card playlist-gradient">
-                    <h3>Total Playlists</h3>
-                    <div class="number" id="totalPlaylists">0</div>
-                    <div class="label">playlists</div>
+                    <div class="stat-icon"><i class="fas fa-list"></i></div>
+                    <div class="stat-value" id="totalPlaylists">0</div>
+                    <div class="stat-label">Total Playlists</div>
                 </div>
             </div>
             
-            <!-- Additional Stats - Draft vs Published -->
-            <div class="stats-grid" style="margin-top: 10px;">
-                <div class="stat-card">
-                    <h3>Draft Songs</h3>
-                    <div class="number" id="draftSongs">0</div>
-                    <div class="label">waiting to publish</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Published Songs</h3>
-                    <div class="number" id="publishedSongs">0</div>
-                    <div class="label">live</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Plays</h3>
-                    <div class="number" id="totalPlays">0</div>
-                    <div class="label">all time</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Downloads</h3>
-                    <div class="number" id="totalDownloads">0</div>
-                    <div class="label">all time</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Views</h3>
-                    <div class="number" id="totalViews">0</div>
-                    <div class="label">all time</div>
-                </div>
-            </div>
-            
-            <!-- Quick Actions -->
+            <!-- Row 2: Status & Stats -->
             <div class="section-header">
-                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <i class="fas fa-chart-line"></i>
+                <h3>Status & Performance</h3>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card warning-gradient">
+                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
+                    <div class="stat-value" id="draftSongs">0</div>
+                    <div class="stat-label">Draft Songs</div>
+                </div>
+                <div class="stat-card success-gradient">
+                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                    <div class="stat-value" id="publishedSongs">0</div>
+                    <div class="stat-label">Published Songs</div>
+                </div>
+                <div class="stat-card info-gradient">
+                    <div class="stat-icon"><i class="fas fa-headphones"></i></div>
+                    <div class="stat-value" id="totalPlays">0</div>
+                    <div class="stat-label">Total Plays</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-download"></i></div>
+                    <div class="stat-value" id="totalDownloads">0</div>
+                    <div class="stat-label">Total Downloads</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                    <div class="stat-value" id="totalViews">0</div>
+                    <div class="stat-label">Total Views</div>
+                </div>
             </div>
             
+            <!-- Quick Actions - Desktop -->
+            <div class="section-header">
+                <i class="fas fa-bolt"></i>
+                <h3>Quick Actions</h3>
+            </div>
             <div class="quick-actions-grid">
                 <a href="upload.html" class="quick-action-btn">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>Upload Song</span>
                 </a>
-                <a href="albums/index.html" class="quick-action-btn">
+                <a href="albums/edit.html" class="quick-action-btn">
                     <i class="fas fa-compact-disc"></i>
                     <span>New Album</span>
                 </a>
-                <a href="eps/index.html" class="quick-action-btn">
+                <a href="eps/edit.html" class="quick-action-btn">
                     <i class="fas fa-play-circle"></i>
                     <span>New EP</span>
                 </a>
-                <a href="artists/index.html" class="quick-action-btn">
+                <a href="artists/edit.html" class="quick-action-btn">
                     <i class="fas fa-microphone"></i>
                     <span>New Artist</span>
                 </a>
-                <a href="playlists/index.html" class="quick-action-btn">
+                <a href="playlists/edit.html" class="quick-action-btn">
                     <i class="fas fa-list"></i>
                     <span>New Playlist</span>
                 </a>
             </div>
             
-            <!-- Security Info -->
+            <!-- Security Status -->
             <div class="security-box">
                 <h4><i class="fas fa-shield-alt"></i> Security Status</h4>
                 <ul>
-                    <li><i class="fas fa-check-circle"></i> Authentication: Cloudflare Secrets</li>
-                    <li><i class="fas fa-clock"></i> Session: Active (24h expiry)</li>
-                    <li><i class="fas fa-server"></i> Environment: Production ready</li>
+                    <li><i class="fas fa-check-circle"></i> Cloudflare Auth</li>
+                    <li><i class="fas fa-clock"></i> Session: 24h</li>
+                    <li><i class="fas fa-server"></i> Production Ready</li>
                 </ul>
             </div>
             
-            <!-- Mobile Navigation -->
-            <div class="section-header" style="margin-top: 10px;">
-                <h3><i class="fas fa-bars"></i> Quick Navigation</h3>
-            </div>
-            
+            <!-- Mobile Navigation Cards -->
             <div class="mobile-cards">
                 <div class="mobile-card" onclick="window.location='upload.html'">
                     <div class="mobile-card-row">
@@ -756,9 +768,15 @@
             }
         }
 
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
         async function loadStats() {
             try {
-                // Fetch all content
                 const [songsRes, albumsRes, epsRes, artistsRes, playlistsRes] = await Promise.all([
                     fetch(`${API_BASE}/admin/tracks`),
                     fetch(`${API_BASE}/admin/albums`),
@@ -773,20 +791,19 @@
                 const artists = await artistsRes.json();
                 const playlists = await playlistsRes.json();
                 
-                // Total counts
+                // Row 1: Content Counts
                 document.getElementById('totalSongs').textContent = songs.length || 0;
                 document.getElementById('totalAlbums').textContent = albums.length || 0;
                 document.getElementById('totalEPs').textContent = eps.length || 0;
                 document.getElementById('totalArtists').textContent = artists.length || 0;
                 document.getElementById('totalPlaylists').textContent = playlists.length || 0;
                 
-                // Draft vs Published
+                // Row 2: Status & Stats
                 const draftSongs = songs.filter(s => s.status === 'draft').length;
                 const publishedSongs = songs.filter(s => s.status === 'published').length;
                 document.getElementById('draftSongs').textContent = draftSongs;
                 document.getElementById('publishedSongs').textContent = publishedSongs;
                 
-                // Total plays, downloads, views
                 const totalPlays = songs.reduce((sum, s) => sum + (s.plays || 0), 0);
                 const totalDownloads = songs.reduce((sum, s) => sum + (s.downloads || 0), 0);
                 const totalViews = songs.reduce((sum, s) => sum + (s.views || 0), 0);
@@ -797,15 +814,7 @@
                 
             } catch (error) {
                 console.error('Error loading stats:', error);
-                // Keep zeros if error
             }
-        }
-        
-        function formatNumber(num) {
-            if (!num) return '0';
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
