@@ -22,7 +22,6 @@ export async function onRequest(context) {
   }
 
   try {
-    // Updated query - Added a.genre to SELECT
     const { results } = await env.DB.prepare(`
       SELECT 
         a.id,
@@ -32,16 +31,16 @@ export async function onRequest(context) {
         a.genre,
         a.created_at,
         
-        -- Track counts (counting all tracks this artist is associated with)
+        -- Track counts
         COUNT(DISTINCT ta.track_id) as track_count,
         
-        -- Primary tracks count (tracks where artist is primary)
+        -- Primary tracks count
         COUNT(DISTINCT CASE WHEN ta.is_primary = 1 THEN ta.track_id END) as primary_track_count,
         
-        -- Featured tracks count (tracks where artist is featured)
+        -- Featured tracks count
         COUNT(DISTINCT CASE WHEN ta.is_primary = 0 THEN ta.track_id END) as featured_track_count,
         
-        -- Play stats from all associated tracks
+        -- Play stats
         SUM(t.plays) as total_plays,
         AVG(t.plays) as avg_plays,
         MAX(t.plays) as most_played_single_plays,
@@ -60,13 +59,13 @@ export async function onRequest(context) {
         MIN(t.uploaded_at) as first_release,
         MAX(t.uploaded_at) as latest_release,
         
-        -- Genres (as JSON array from tracks)
+        -- Genres from tracks
         GROUP_CONCAT(DISTINCT t.genre) as genres,
         
-        -- Track IDs (for reference)
+        -- Track IDs
         GROUP_CONCAT(DISTINCT ta.track_id) as track_ids,
         
-        -- Track titles (for reference)
+        -- Track titles
         GROUP_CONCAT(DISTINCT t.title) as track_titles
         
       FROM artists a
@@ -78,16 +77,14 @@ export async function onRequest(context) {
       ORDER BY total_plays DESC
     `).all();
 
-    // Process results
     const artists = results.map(artist => ({
       id: artist.id,
       name: artist.name,
       slug: artist.slug,
       bio: artist.bio,
-      genre: artist.genre || null,  // NEW: Artist's default genre
+      genre: artist.genre || null,
       created_at: artist.created_at,
       
-      // Stats
       track_count: parseInt(artist.track_count) || 0,
       primary_track_count: parseInt(artist.primary_track_count) || 0,
       featured_track_count: parseInt(artist.featured_track_count) || 0,
@@ -110,14 +107,11 @@ export async function onRequest(context) {
         best: parseInt(artist.most_viewed_single_views) || 0
       },
       
-      // Dates
       first_release: artist.first_release,
       latest_release: artist.latest_release,
       
-      // Genres from tracks (for reference)
       genres: artist.genres ? [...new Set(artist.genres.split(',').filter(g => g && g !== 'null'))] : [],
       
-      // Track IDs (for reference)
       track_ids: artist.track_ids ? artist.track_ids.split(',').map(Number) : [],
       
       track_titles: artist.track_titles ? [...new Set(artist.track_titles.split(','))] : []
