@@ -8,12 +8,11 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
 
-  // GET - List all albums with artist info (ADMIN - shows all including drafts)
+  // GET - List all albums (ADMIN - shows all including drafts)
   if (request.method === 'GET') {
     try {
       const { results } = await env.DB.prepare(`
@@ -42,7 +41,6 @@ export async function onRequest(context) {
         ORDER BY a.created_at DESC
       `).all();
       
-      // Process results to add backward compatibility fields
       const processedResults = results.map(album => ({
         ...album,
         artist: album.artist_name || 'Unknown Artist'
@@ -58,12 +56,11 @@ export async function onRequest(context) {
     }
   }
 
-  // POST - Create new album with status support
+  // POST - Create new album with status and genre support
   if (request.method === 'POST') {
     try {
       const data = await request.json();
       
-      // Validate required fields
       if (!data.title || !data.artist_id) {
         return new Response(JSON.stringify({ 
           error: 'Title and artist_id are required' 
@@ -73,10 +70,9 @@ export async function onRequest(context) {
         });
       }
       
-      // Get status from request (default to draft)
-      const status = data.status || 'draft'; // 'draft' or 'published'
+      const status = data.status || 'draft';
+      const genre = data.genre || null;
       
-      // Verify artist exists
       const artist = await env.DB.prepare(`
         SELECT id FROM artists WHERE id = ?
       `).bind(data.artist_id).first();
@@ -90,7 +86,6 @@ export async function onRequest(context) {
         });
       }
       
-      // Generate slug from title
       const slug = data.title
         .toLowerCase()
         .replace(/\s+/g, '-')
@@ -119,7 +114,7 @@ export async function onRequest(context) {
         data.artist_id,
         data.description || null,
         data.release_date || null,
-        data.genre || null,
+        genre,
         data.label || null,
         data.is_featured || 0,
         slug,
@@ -152,7 +147,6 @@ export async function onRequest(context) {
         WHERE a.id = ?
       `).bind(result.results[0].id).first();
 
-      // Add backward compatibility field
       const albumData = {
         ...newAlbum,
         artist: newAlbum.artist_name || 'Unknown Artist'
@@ -172,7 +166,6 @@ export async function onRequest(context) {
     }
   }
 
-  // PUT - Update album (handled in [id].js)
   return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
     status: 405, 
     headers 
