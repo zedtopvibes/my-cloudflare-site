@@ -8,12 +8,10 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS request (CORS preflight)
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
 
-  // Only allow GET
   if (request.method !== 'GET') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
       status: 405, 
@@ -22,7 +20,6 @@ export async function onRequest(context) {
   }
 
   try {
-    // First, get all EPs with basic info - only published and not deleted
     const { results } = await env.DB.prepare(`
       SELECT 
         e.id,
@@ -31,6 +28,7 @@ export async function onRequest(context) {
         e.cover_url,
         e.slug,
         e.release_date,
+        e.genre,
         e.plays,
         e.created_at,
         e.updated_at,
@@ -50,10 +48,8 @@ export async function onRequest(context) {
       ORDER BY e.release_date DESC
     `).all();
     
-    // For each EP, fetch its tracks
     const epsWithTracks = await Promise.all(
       results.map(async (ep) => {
-        // Get tracks for this EP - only published tracks
         const tracksResult = await env.DB.prepare(`
           SELECT 
             t.id,
@@ -82,7 +78,6 @@ export async function onRequest(context) {
           ORDER BY et.track_number
         `).bind(ep.id).all();
         
-        // Process tracks to parse artists JSON
         const processedTracks = tracksResult.results.map(track => {
           const artists = track.artists ? JSON.parse(track.artists) : [];
           const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
