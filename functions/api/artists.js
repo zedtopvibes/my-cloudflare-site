@@ -22,14 +22,14 @@ export async function onRequest(context) {
   }
 
   try {
-    // Updated query - REMOVED: website, updated_at, social_links
-    // Added status filter to only show published artists
+    // Updated query - Added a.genre to SELECT
     const { results } = await env.DB.prepare(`
       SELECT 
         a.id,
         a.name,
         a.slug,
         a.bio,
+        a.genre,
         a.created_at,
         
         -- Track counts (counting all tracks this artist is associated with)
@@ -60,7 +60,7 @@ export async function onRequest(context) {
         MIN(t.uploaded_at) as first_release,
         MAX(t.uploaded_at) as latest_release,
         
-        -- Genres (as JSON array)
+        -- Genres (as JSON array from tracks)
         GROUP_CONCAT(DISTINCT t.genre) as genres,
         
         -- Track IDs (for reference)
@@ -78,12 +78,13 @@ export async function onRequest(context) {
       ORDER BY total_plays DESC
     `).all();
 
-    // Process results - REMOVED: website, social_links, updated_at
+    // Process results
     const artists = results.map(artist => ({
       id: artist.id,
       name: artist.name,
       slug: artist.slug,
       bio: artist.bio,
+      genre: artist.genre || null,  // NEW: Artist's default genre
       created_at: artist.created_at,
       
       // Stats
@@ -113,7 +114,7 @@ export async function onRequest(context) {
       first_release: artist.first_release,
       latest_release: artist.latest_release,
       
-      // Genres (split the concatenated string)
+      // Genres from tracks (for reference)
       genres: artist.genres ? [...new Set(artist.genres.split(',').filter(g => g && g !== 'null'))] : [],
       
       // Track IDs (for reference)
