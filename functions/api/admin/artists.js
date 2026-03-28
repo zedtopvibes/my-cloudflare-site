@@ -17,7 +17,7 @@ export async function onRequest(context) {
   if (request.method === 'GET') {
     try {
       const { results } = await env.DB.prepare(`
-        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at
+        SELECT id, name, slug, image_url, bio, country, genre, views, is_featured, is_zambian_legend, status, created_at
         FROM artists 
         WHERE deleted_at IS NULL 
         ORDER BY name ASC
@@ -70,8 +70,8 @@ export async function onRequest(context) {
 
       // Insert new artist with status and genre
       const result = await env.DB.prepare(`
-        INSERT INTO artists (name, slug, country, genre, bio, is_featured, is_zambian_legend, status, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        INSERT INTO artists (name, slug, country, genre, bio, is_featured, is_zambian_legend, status, views, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, CURRENT_TIMESTAMP)
         RETURNING id
       `).bind(
         name, 
@@ -85,7 +85,7 @@ export async function onRequest(context) {
       ).run();
 
       const newArtist = await env.DB.prepare(`
-        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at
+        SELECT id, name, slug, image_url, bio, country, genre, views, is_featured, is_zambian_legend, status, created_at
         FROM artists WHERE id = ?
       `).bind(result.results[0].id).first();
 
