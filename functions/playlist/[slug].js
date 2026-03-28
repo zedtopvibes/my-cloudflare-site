@@ -4,7 +4,7 @@ export async function onRequest(context) {
   try {
     const slug = params.slug;
     
-    // First, verify this playlist exists
+    // First, verify this playlist exists and get its ID
     const apiUrl = new URL(request.url);
     const apiReq = new Request(
       `${apiUrl.origin}/api/playlist/by-slug/${slug}`,
@@ -19,6 +19,16 @@ export async function onRequest(context) {
         status: 404,
         headers: { 'Content-Type': 'text/html' }
       });
+    }
+    
+    // Get the playlist data to get its ID
+    const playlist = await apiResponse.json();
+    
+    // Increment views asynchronously
+    if (playlist && playlist.id) {
+      env.DB.prepare(`
+        UPDATE playlists SET views = views + 1 WHERE id = ?
+      `).bind(playlist.id).run().catch(e => console.error('Error updating playlist views:', e));
     }
     
     // Get the playlist.html template
