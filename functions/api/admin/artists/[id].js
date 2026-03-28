@@ -14,11 +14,12 @@ export async function onRequest(context) {
 
   const id = params.id;
 
-  // ✅ NEW: GET - Fetch single artist for editing
+  // GET - Fetch single artist for editing
   if (request.method === 'GET') {
     try {
       const artist = await env.DB.prepare(`
-        SELECT * FROM artists WHERE id = ? AND deleted_at IS NULL
+        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at, updated_at
+        FROM artists WHERE id = ? AND deleted_at IS NULL
       `).bind(id).first();
       
       if (!artist) {
@@ -42,7 +43,7 @@ export async function onRequest(context) {
   // PUT - Update artist
   if (request.method === 'PUT') {
     try {
-      const { name, country, bio, is_featured, is_zambian_legend, image_url, status } = await request.json();
+      const { name, country, genre, bio, is_featured, is_zambian_legend, image_url, status } = await request.json();
       
       const existing = await env.DB.prepare(
         'SELECT * FROM artists WHERE id = ? AND deleted_at IS NULL'
@@ -78,6 +79,11 @@ export async function onRequest(context) {
         updates.push('country = ?');
         values.push(country);
       }
+      // NEW: Genre field
+      if (genre !== undefined) {
+        updates.push('genre = ?');
+        values.push(genre);
+      }
       if (bio !== undefined) {
         updates.push('bio = ?');
         values.push(bio);
@@ -111,9 +117,10 @@ export async function onRequest(context) {
       const query = `UPDATE artists SET ${updates.join(', ')} WHERE id = ?`;
       await env.DB.prepare(query).bind(...values).run();
 
-      const updated = await env.DB.prepare(
-        'SELECT * FROM artists WHERE id = ? AND deleted_at IS NULL'
-      ).bind(id).first();
+      const updated = await env.DB.prepare(`
+        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at, updated_at
+        FROM artists WHERE id = ? AND deleted_at IS NULL
+      `).bind(id).first();
 
       return new Response(JSON.stringify(updated), { headers });
 
