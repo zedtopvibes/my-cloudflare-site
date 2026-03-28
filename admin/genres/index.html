@@ -203,6 +203,11 @@
             border: 1px solid var(--gray-200);
         }
         
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.8rem;
+        }
+        
         /* Stats Grid */
         .stats-grid {
             display: grid;
@@ -234,7 +239,7 @@
         /* Genres Grid */
         .genres-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 16px;
         }
         
@@ -254,14 +259,15 @@
         }
         
         .genre-cover {
-            height: 120px;
+            height: 100px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 3rem;
+            font-size: 2.5rem;
             position: relative;
+            overflow: hidden;
         }
         
         .genre-cover img {
@@ -275,21 +281,24 @@
         }
         
         .genre-name {
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.2rem;
             color: var(--gray-800);
             margin-bottom: 8px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
             gap: 8px;
         }
         
         .genre-stats {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             font-size: 0.75rem;
             color: var(--gray-500);
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
         
         .genre-stats span {
@@ -306,6 +315,9 @@
             display: flex;
             gap: 8px;
             justify-content: flex-end;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-200);
         }
         
         .action-icon {
@@ -320,10 +332,21 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            text-decoration: none;
         }
         
         .action-icon:hover {
             background: var(--primary);
+            color: white;
+        }
+        
+        .action-icon.merge:hover {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .action-icon.delete:hover {
+            background: var(--error);
             color: white;
         }
         
@@ -363,6 +386,53 @@
         
         .toast.success { background: var(--success); }
         .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); color: #333; }
+        
+        /* Merge Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 16px;
+            color: var(--gray-800);
+        }
+        
+        .modal-content select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -376,6 +446,11 @@
             
             .genres-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .genre-name {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -412,7 +487,7 @@
             <div class="content-header">
                 <h2>
                     <i class="fas fa-tag"></i> All Genres
-                    <button onclick="loadGenres()" class="btn btn-secondary" style="margin-left: 8px;">
+                    <button onclick="loadGenres()" class="btn btn-secondary btn-sm" style="margin-left: 8px;">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </h2>
@@ -448,9 +523,23 @@
         </div>
     </div>
 
+    <!-- Merge Modal -->
+    <div id="mergeModal" class="modal">
+        <div class="modal-content">
+            <h3>Merge Genre</h3>
+            <p>Merge "<span id="mergeSourceName"></span>" into another genre:</p>
+            <select id="mergeTargetSelect"></select>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeMergeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmMerge()">Merge</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = '/api';
         let allGenres = [];
+        let pendingMerge = null;
 
         function logout() {
             if (confirm('Logout?')) {
@@ -480,7 +569,7 @@
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i> ${message}`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -489,6 +578,7 @@
             if (!checkAuth()) return;
             
             try {
+                // Use the working public endpoint
                 const response = await fetch(`${API_BASE}/genres`);
                 if (!response.ok) throw new Error('Failed to load genres');
                 
@@ -516,6 +606,105 @@
             }
         }
 
+        // Rename genre - calls the admin rename endpoint
+        async function renameGenre(oldName) {
+            const newName = prompt('Enter new genre name:', oldName);
+            if (!newName || newName === oldName) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/genres/rename`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old: oldName, new: newName })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to rename');
+                }
+                
+                showToast(`Genre "${oldName}" renamed to "${newName}"`, 'success');
+                loadGenres();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Open merge modal
+        function openMergeModal(sourceName) {
+            pendingMerge = sourceName;
+            document.getElementById('mergeSourceName').textContent = sourceName;
+            
+            const select = document.getElementById('mergeTargetSelect');
+            select.innerHTML = '<option value="">Select genre to merge into...</option>';
+            
+            allGenres.forEach(genre => {
+                if (genre.name !== sourceName) {
+                    const option = document.createElement('option');
+                    option.value = genre.name;
+                    option.textContent = `${genre.name} (${(genre.artists || 0) + (genre.albums || 0) + (genre.eps || 0)} items)`;
+                    select.appendChild(option);
+                }
+            });
+            
+            document.getElementById('mergeModal').classList.add('active');
+        }
+
+        function closeMergeModal() {
+            document.getElementById('mergeModal').classList.remove('active');
+            pendingMerge = null;
+        }
+
+        async function confirmMerge() {
+            const target = document.getElementById('mergeTargetSelect').value;
+            if (!target) {
+                showToast('Please select a target genre', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/genres/merge`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ source: pendingMerge, target })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to merge');
+                }
+                
+                showToast(`Merged "${pendingMerge}" into "${target}"`, 'success');
+                closeMergeModal();
+                loadGenres();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Delete genre (remove from all content)
+        async function deleteGenre(genreName) {
+            if (!confirm(`Remove genre "${genreName}" from ALL content? This will set genre to empty for all artists, albums, and EPs with this genre.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/genres/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ genre: genreName })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete');
+                }
+                
+                showToast(`Genre "${genreName}" removed from all content`, 'success');
+                loadGenres();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
         function renderGenres() {
             const container = document.getElementById('genresGrid');
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -529,7 +718,7 @@
                     <div class="empty-state">
                         <i class="fas fa-tag"></i>
                         <h3>No genres found</h3>
-                        <p>${searchTerm ? 'Try a different search' : 'Genres will appear as you add them to artists and albums'}</p>
+                        <p>${searchTerm ? 'Try a different search' : 'Genres will appear when you add them to artists, albums, or EPs'}</p>
                     </div>
                 `;
                 return;
@@ -542,14 +731,24 @@
                     </div>
                     <div class="genre-info">
                         <div class="genre-name">
-                            ${escapeHtml(genre.name)}
+                            <span>${escapeHtml(genre.name)}</span>
                         </div>
                         <div class="genre-stats">
-                            <span><i class="fas fa-microphone"></i> ${genre.artists} artists</span>
-                            <span><i class="fas fa-compact-disc"></i> ${genre.albums} albums</span>
-                            <span><i class="fas fa-play-circle"></i> ${genre.eps} EPs</span>
+                            <span><i class="fas fa-microphone"></i> ${genre.artists || 0} artists</span>
+                            <span><i class="fas fa-compact-disc"></i> ${genre.albums || 0} albums</span>
+                            <span><i class="fas fa-play-circle"></i> ${genre.eps || 0} EPs</span>
+                            <span><i class="fas fa-music"></i> Total: ${(genre.artists || 0) + (genre.albums || 0) + (genre.eps || 0)}</span>
                         </div>
                         <div class="genre-actions">
+                            <button class="action-icon" onclick="renameGenre('${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Rename">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-icon merge" onclick="openMergeModal('${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Merge into another genre">
+                                <i class="fas fa-code-branch"></i>
+                            </button>
+                            <button class="action-icon delete" onclick="deleteGenre('${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Remove from all content">
+                                <i class="fas fa-trash"></i>
+                            </button>
                             <a href="/genre/${genre.slug}" class="action-icon" target="_blank" title="View on site">
                                 <i class="fas fa-eye"></i>
                             </a>
