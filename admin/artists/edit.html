@@ -332,7 +332,6 @@
             const formContainer = document.getElementById('formContainer');
             const pageTitle = document.getElementById('pageTitle');
             
-            // If no ID, show add form
             if (!artistId) {
                 pageTitle.textContent = 'Add New Artist';
                 renderForm(null);
@@ -340,7 +339,6 @@
             }
             
             try {
-                // Use admin endpoint to get artist with status
                 const res = await fetch(`${API_BASE}/admin/artists/${artistId}`);
                 if (!res.ok) throw new Error('Artist not found');
                 
@@ -399,12 +397,20 @@
                         <input type="text" id="artistCountry" value="${escapeHtml(artist?.country || '')}" placeholder="e.g. Zambia">
                     </div>
                     
+                    <!-- NEW: Genre Field -->
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Default Genre</label>
+                        <input type="text" id="artistGenre" value="${escapeHtml(artist?.genre || '')}" placeholder="e.g. Hip-Hop, Gospel, R&B">
+                        <div class="status-hint">
+                            <i class="fas fa-music"></i> Songs by this artist will automatically use this genre when uploaded.
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
                         <label><i class="fas fa-align-left"></i> Bio</label>
                         <textarea id="artistBio" rows="4" placeholder="Artist biography...">${escapeHtml(artist?.bio || '')}</textarea>
                     </div>
                     
-                    <!-- NEW: Status Field -->
                     <div class="form-group">
                         <label><i class="fas fa-flag"></i> Status</label>
                         <select id="artistStatus">
@@ -436,7 +442,6 @@
                 </form>
             `;
             
-            // Add form submit handler
             document.getElementById('artistForm').addEventListener('submit', handleSubmit);
         }
 
@@ -449,7 +454,6 @@
                     preview.src = e.target.result;
                     preview.style.display = 'block';
                     
-                    // Hide current image when preview is shown
                     const currentImage = document.getElementById('currentImage');
                     if (currentImage) {
                         currentImage.style.opacity = '0.5';
@@ -468,13 +472,13 @@
             const artistData = {
                 name: document.getElementById('artistName').value.trim(),
                 country: document.getElementById('artistCountry').value.trim() || null,
+                genre: document.getElementById('artistGenre').value.trim() || null,
                 bio: document.getElementById('artistBio').value.trim() || null,
                 is_featured: document.getElementById('artistFeatured').checked,
                 is_zambian_legend: document.getElementById('artistLegend').checked,
-                status: document.getElementById('artistStatus').value  // NEW: Add status
+                status: document.getElementById('artistStatus').value
             };
             
-            // Validate
             if (!artistData.name) {
                 showToast('Artist name is required', 'error');
                 return;
@@ -487,7 +491,6 @@
             
             try {
                 let response;
-                let result;
                 
                 if (isEditing) {
                     response = await fetch(`${API_BASE}/admin/artists/${id}`, {
@@ -511,7 +514,6 @@
                 
                 const artistId = data.id || id;
                 
-                // Upload photo if selected
                 if (currentPhotoFile) {
                     const photoData = new FormData();
                     photoData.append('photo', currentPhotoFile);
@@ -529,7 +531,6 @@
                 const statusText = artistData.status === 'published' ? 'published' : 'saved as draft';
                 showToast(`Artist ${isEditing ? 'updated' : 'created'} and ${statusText}!`, 'success');
                 
-                // Redirect to profile after short delay
                 setTimeout(() => {
                     window.location.href = `/admin/artists/profile.html?id=${artistId}`;
                 }, 1500);
@@ -561,7 +562,6 @@
             return div.innerHTML;
         }
 
-        // Check authentication
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
@@ -578,14 +578,12 @@
                 return false;
             }
             return true;
-        } 
+        }
 
-        // Initialize
         if (checkAuth()) {
             loadArtistForEdit();
         }
 
-        // Add animation styles
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
