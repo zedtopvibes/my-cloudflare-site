@@ -191,6 +191,7 @@
             font-weight: 600;
             transition: all 0.2s ease;
             font-family: inherit;
+            position: relative;
         }
         
         .action-btn:hover {
@@ -417,65 +418,152 @@
             font-size: 14px;
         }
         
-        /* Download Toast Notification - New Feature */
-        .download-toast {
+        /* Modern Download Popup - New Design */
+        .download-popup-overlay {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #1e1e1e;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(2px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .download-popup {
+            background: white;
+            border-radius: 24px;
+            padding: 0;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+            overflow: hidden;
+        }
+        
+        .download-popup-content {
+            padding: 28px 24px 24px;
+            text-align: center;
+        }
+        
+        .popup-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #ff4b2b, #ff6a4b);
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1001;
-            animation: slideIn 0.3s ease;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(255, 75, 43, 0.3);
+        }
+        
+        .popup-icon i {
+            font-size: 32px;
+            color: white;
+        }
+        
+        .popup-icon.preparing {
+            background: linear-gradient(135deg, #ff4b2b, #ff6a4b);
+        }
+        
+        .popup-icon.success {
+            background: linear-gradient(135deg, #28a745, #34ce57);
+        }
+        
+        .popup-icon.error {
+            background: linear-gradient(135deg, #dc3545, #ff4757);
+        }
+        
+        .popup-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 8px;
+        }
+        
+        .popup-message {
             font-size: 14px;
-            font-weight: 500;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 24px;
         }
         
-        .download-toast i {
-            font-size: 18px;
+        .popup-progress {
+            margin: 20px 0;
+            display: none;
         }
         
-        .download-toast i.fa-spinner {
-            color: #ff4b2b;
+        .popup-progress-bar {
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
         }
         
-        .download-toast i.fa-check-circle {
-            color: #28a745;
+        .popup-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4b2b, #ff6a4b);
+            width: 0%;
+            animation: progressPulse 1.5s ease infinite;
+            border-radius: 2px;
         }
         
-        .download-toast i.fa-exclamation-circle {
-            color: #dc3545;
+        @keyframes progressPulse {
+            0%, 100% { width: 30%; opacity: 1; }
+            50% { width: 70%; opacity: 0.8; }
         }
         
-        @keyframes slideIn {
+        .popup-button {
+            background: #f0f0f0;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            font-family: inherit;
+            color: #666;
+        }
+        
+        .popup-button:hover {
+            background: #e0e0e0;
+            transform: translateY(-1px);
+        }
+        
+        .popup-button.primary {
+            background: #ff4b2b;
+            color: white;
+        }
+        
+        .popup-button.primary:hover {
+            background: #ff6a4b;
+        }
+        
+        @keyframes popIn {
             from {
-                transform: translateX(100%);
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
                 opacity: 0;
             }
             to {
-                transform: translateX(0);
                 opacity: 1;
             }
-        }
-        
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        
-        .download-toast.fade-out {
-            animation: slideOut 0.3s ease forwards;
         }
         
         @media (max-width: 768px) {
@@ -528,11 +616,25 @@
                 padding: 6px;
             }
             
-            .download-toast {
-                bottom: 20px;
-                right: 20px;
-                left: 20px;
-                padding: 10px 16px;
+            .download-popup {
+                max-width: 320px;
+            }
+            
+            .download-popup-content {
+                padding: 24px 20px 20px;
+            }
+            
+            .popup-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .popup-icon i {
+                font-size: 28px;
+            }
+            
+            .popup-title {
+                font-size: 20px;
             }
         }
         
@@ -644,12 +746,32 @@
         </div>
     </div>
 
+    <!-- Modern Download Popup -->
+    <div id="downloadPopup" class="download-popup-overlay">
+        <div class="download-popup">
+            <div class="download-popup-content">
+                <div class="popup-icon" id="popupIcon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="popup-title" id="popupTitle">Preparing Download</div>
+                <div class="popup-message" id="popupMessage">Getting your song ready...</div>
+                <div class="popup-progress" id="popupProgress">
+                    <div class="popup-progress-bar">
+                        <div class="popup-progress-fill"></div>
+                    </div>
+                </div>
+                <button class="popup-button" id="popupButton" onclick="closeDownloadPopup()">Got it</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = '/api';
         
         let currentSong = null;
         let audioPlayer = null;
         let isPlaying = false;
+        let downloadPopupTimeout = null;
         
         function formatDuration(seconds) {
             if (!seconds) return '0:00';
@@ -697,45 +819,64 @@
             return 'Unknown Artist';
         }
         
-        // Download Toast Functions - New Feature
-        function showDownloadToast(message, type = 'preparing') {
-            // Remove existing toast if any
-            const existingToast = document.querySelector('.download-toast');
-            if (existingToast) {
-                existingToast.remove();
+        // Modern Popup Functions
+        function showDownloadPopup(type, title, message, showProgress = false) {
+            const popup = document.getElementById('downloadPopup');
+            const icon = document.getElementById('popupIcon');
+            const popupTitle = document.getElementById('popupTitle');
+            const popupMessage = document.getElementById('popupMessage');
+            const progressDiv = document.getElementById('popupProgress');
+            const button = document.getElementById('popupButton');
+            
+            // Clear any existing timeout
+            if (downloadPopupTimeout) {
+                clearTimeout(downloadPopupTimeout);
+                downloadPopupTimeout = null;
             }
             
-            const toast = document.createElement('div');
-            toast.className = 'download-toast';
+            // Reset classes
+            icon.className = 'popup-icon';
+            icon.classList.add(type);
             
-            let icon = '<i class="fas fa-spinner fa-pulse"></i>';
-            if (type === 'success') {
-                icon = '<i class="fas fa-check-circle"></i>';
+            // Set icon based on type
+            if (type === 'preparing') {
+                icon.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
+                button.style.display = 'none';
+            } else if (type === 'success') {
+                icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                button.style.display = 'block';
             } else if (type === 'error') {
-                icon = '<i class="fas fa-exclamation-circle"></i>';
+                icon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                button.style.display = 'block';
             }
             
-            toast.innerHTML = `${icon} <span>${message}</span>`;
-            document.body.appendChild(toast);
+            popupTitle.textContent = title;
+            popupMessage.textContent = message;
             
-            // Auto remove after 3 seconds for success/error, keep preparing until download starts
+            // Handle progress bar
+            if (showProgress && type === 'preparing') {
+                progressDiv.style.display = 'block';
+            } else {
+                progressDiv.style.display = 'none';
+            }
+            
+            // Show popup
+            popup.style.display = 'flex';
+            
+            // Auto close for success/error after 2 seconds
             if (type !== 'preparing') {
-                setTimeout(() => {
-                    toast.classList.add('fade-out');
-                    setTimeout(() => {
-                        if (toast.parentNode) toast.remove();
-                    }, 300);
-                }, 3000);
+                downloadPopupTimeout = setTimeout(() => {
+                    closeDownloadPopup();
+                }, 2000);
             }
         }
         
-        function hideDownloadToast() {
-            const toast = document.querySelector('.download-toast');
-            if (toast) {
-                toast.classList.add('fade-out');
-                setTimeout(() => {
-                    if (toast.parentNode) toast.remove();
-                }, 300);
+        function closeDownloadPopup() {
+            const popup = document.getElementById('downloadPopup');
+            popup.style.display = 'none';
+            if (downloadPopupTimeout) {
+                clearTimeout(downloadPopupTimeout);
+                downloadPopupTimeout = null;
             }
         }
         
@@ -809,24 +950,24 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
-        // Updated download function with visual feedback
+        // Updated download function with modern popup
         async function downloadSong() {
             if (!currentSong || !currentSong.r2_key) {
-                showDownloadToast('Download not available', 'error');
+                showDownloadPopup('error', 'Download Failed', 'Sorry, this song is not available for download');
                 return;
             }
             
             const downloadBtn = document.getElementById('download-btn');
             const originalButtonHTML = downloadBtn.innerHTML;
             
-            // Show preparing state on button
+            // Show preparing popup with progress animation
+            showDownloadPopup('preparing', 'Preparing Your Download', 'Getting your song ready...', true);
+            
+            // Disable button during preparation
             downloadBtn.disabled = true;
             downloadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Preparing...';
             
-            // Show toast notification
-            showDownloadToast('Preparing your download...', 'preparing');
-            
-            // Simulate a small delay to show the preparing state (makes it feel more responsive)
+            // Simulate preparation (replace with actual preparation logic if needed)
             setTimeout(() => {
                 try {
                     const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
@@ -837,23 +978,21 @@
                     link.click();
                     document.body.removeChild(link);
                     
-                    // Hide preparing toast and show success
-                    hideDownloadToast();
-                    showDownloadToast('Download started!', 'success');
+                    // Show success popup
+                    showDownloadPopup('success', 'Download Started!', 'Your download has begun');
                     
                     // Track download
                     fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
                     
                 } catch (error) {
                     console.error('Download error:', error);
-                    hideDownloadToast();
-                    showDownloadToast('Failed to start download', 'error');
+                    showDownloadPopup('error', 'Download Failed', 'Something went wrong. Please try again.');
                 } finally {
                     // Restore button
                     downloadBtn.disabled = false;
                     downloadBtn.innerHTML = originalButtonHTML;
                 }
-            }, 300); // Small delay to show the preparing state
+            }, 800); // Slight delay to show the preparation state
         }
         
         function goToArtistFromPlayer() {
@@ -1102,6 +1241,7 @@
         window.togglePlayPause = togglePlayPause;
         window.closePlayer = closePlayer;
         window.goToArtistFromPlayer = goToArtistFromPlayer;
+        window.closeDownloadPopup = closeDownloadPopup;
         
         document.addEventListener('DOMContentLoaded', async () => {
             await loadHeaderAndFooter();
