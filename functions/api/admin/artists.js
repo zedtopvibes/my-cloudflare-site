@@ -17,12 +17,16 @@ export async function onRequest(context) {
   if (request.method === 'GET') {
     try {
       const { results } = await env.DB.prepare(`
-        SELECT * FROM artists WHERE deleted_at IS NULL ORDER BY name ASC
+        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at, updated_at
+        FROM artists 
+        WHERE deleted_at IS NULL 
+        ORDER BY name ASC
       `).all();
       
       return new Response(JSON.stringify(results), { headers });
       
     } catch (error) {
+      console.error('Error fetching artists:', error);
       return new Response(JSON.stringify({ error: error.message }), { 
         status: 500, 
         headers 
@@ -33,7 +37,7 @@ export async function onRequest(context) {
   // POST - Create new artist with status support
   if (request.method === 'POST') {
     try {
-      const { name, country, bio, is_featured, is_zambian_legend, status } = await request.json();
+      const { name, country, genre, bio, is_featured, is_zambian_legend, status } = await request.json();
       
       if (!name) {
         return new Response(JSON.stringify({ error: 'Artist name is required' }), { 
@@ -64,24 +68,26 @@ export async function onRequest(context) {
         }), { status: 400, headers });
       }
 
-      // Insert new artist with status
+      // Insert new artist with status and genre
       const result = await env.DB.prepare(`
-        INSERT INTO artists (name, slug, country, bio, is_featured, is_zambian_legend, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO artists (name, slug, country, genre, bio, is_featured, is_zambian_legend, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING id
       `).bind(
         name, 
         slug, 
-        country || null, 
+        country || null,
+        genre || null,
         bio || null, 
         is_featured ? 1 : 0, 
         is_zambian_legend ? 1 : 0,
         artistStatus
       ).run();
 
-      const newArtist = await env.DB.prepare(
-        'SELECT * FROM artists WHERE id = ?'
-      ).bind(result.results[0].id).first();
+      const newArtist = await env.DB.prepare(`
+        SELECT id, name, slug, image_url, bio, country, genre, is_featured, is_zambian_legend, status, created_at, updated_at
+        FROM artists WHERE id = ?
+      `).bind(result.results[0].id).first();
 
       return new Response(JSON.stringify(newArtist), { 
         status: 201, 
