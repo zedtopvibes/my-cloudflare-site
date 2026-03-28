@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Genre - ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #1e3c72;
+            --primary-light: #2a4a8a;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .genre-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .genre-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .genre-header .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .genre-header .stat {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 30px 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .card-image {
+            height: 160px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            overflow: hidden;
+        }
+        
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .card-info {
+            padding: 12px;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .card-subtitle {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-600);
+        }
+        
+        @media (max-width: 640px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .genre-header {
+                padding: 30px 20px;
+            }
+            
+            .genre-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    
+    <div class="container">
+        <div id="genreContent">
+            <div class="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <div>Loading genre...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script>
+        const API_BASE = '/api';
+        
+        // Get genre from URL
+        const path = window.location.pathname;
+        const genre = path.split('/').pop();
+        
+        async function loadHeaderFooter() {
+            try {
+                const [header, footer] = await Promise.all([
+                    fetch('/header.html').then(r => r.text()),
+                    fetch('/footer.html').then(r => r.text())
+                ]);
+                document.getElementById('header-placeholder').innerHTML = header;
+                document.getElementById('footer-placeholder').innerHTML = footer;
+            } catch (error) {
+                console.error('Error loading header/footer:', error);
+            }
+        }
+        
+        async function loadGenrePage() {
+            const container = document.getElementById('genreContent');
+            
+            try {
+                // Load genre stats
+                const statsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genre)}/stats`);
+                if (!statsRes.ok) throw new Error('Genre not found');
+                const statsData = await statsRes.json();
+                
+                // Load albums by genre
+                const albumsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genre)}/albums`);
+                const albums = await albumsRes.json();
+                
+                // Load EPs by genre
+                const epsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genre)}/eps`);
+                const eps = await epsRes.json();
+                
+                // Load artists by genre
+                const artistsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genre)}/artists`);
+                const artists = await artistsRes.json();
+                
+                document.title = `${statsData.genre} Music - ZEDTOPVIBES`;
+                
+                container.innerHTML = `
+                    <div class="genre-header">
+                        <h1>${escapeHtml(statsData.genre)} Music</h1>
+                        <div class="stats">
+                            <div class="stat"><i class="fas fa-microphone"></i> ${statsData.stats.artists} Artists</div>
+                            <div class="stat"><i class="fas fa-compact-disc"></i> ${statsData.stats.albums} Albums</div>
+                            <div class="stat"><i class="fas fa-play-circle"></i> ${statsData.stats.eps} EPs</div>
+                            <div class="stat"><i class="fas fa-music"></i> ${statsData.top_tracks.length}+ Tracks</div>
+                        </div>
+                    </div>
+                    
+                    ${artists.length > 0 ? `
+                        <div class="section-title">
+                            <i class="fas fa-microphone"></i> Artists
+                        </div>
+                        <div class="grid">
+                            ${artists.map(artist => `
+                                <a href="/artist/${artist.slug}" class="card">
+                                    <div class="card-image">
+                                        ${artist.image_url ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
+                                    </div>
+                                    <div class="card-info">
+                                        <div class="card-title">${escapeHtml(artist.name)}</div>
+                                        <div class="card-subtitle">${artist.track_count || 0} tracks</div>
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${albums.length > 0 ? `
+                        <div class="section-title">
+                            <i class="fas fa-compact-disc"></i> Albums
+                        </div>
+                        <div class="grid">
+                            ${albums.map(album => `
+                                <a href="/album/${album.slug}" class="card">
+                                    <div class="card-image">
+                                        ${album.cover_url ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}">` : '<i class="fas fa-compact-disc"></i>'}
+                                    </div>
+                                    <div class="card-info">
+                                        <div class="card-title">${escapeHtml(album.title)}</div>
+                                        <div class="card-subtitle">${escapeHtml(album.artist_name || 'Various Artists')}</div>
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${eps.length > 0 ? `
+                        <div class="section-title">
+                            <i class="fas fa-play-circle"></i> EPs
+                        </div>
+                        <div class="grid">
+                            ${eps.map(ep => `
+                                <a href="/ep/${ep.slug}" class="card">
+                                    <div class="card-image">
+                                        ${ep.cover_url ? `<img src="${ep.cover_url}" alt="${escapeHtml(ep.title)}">` : '<i class="fas fa-play-circle"></i>'}
+                                    </div>
+                                    <div class="card-info">
+                                        <div class="card-title">${escapeHtml(ep.title)}</div>
+                                        <div class="card-subtitle">${escapeHtml(ep.artist_name || 'Various Artists')}</div>
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${statsData.top_tracks.length > 0 ? `
+                        <div class="section-title">
+                            <i class="fas fa-music"></i> Top Tracks
+                        </div>
+                        <div class="grid">
+                            ${statsData.top_tracks.map(track => `
+                                <a href="/song/${track.slug}" class="card">
+                                    <div class="card-image">
+                                        ${track.artwork_url ? `<img src="${track.artwork_url}" alt="${escapeHtml(track.title)}">` : '<i class="fas fa-music"></i>'}
+                                    </div>
+                                    <div class="card-info">
+                                        <div class="card-title">${escapeHtml(track.title)}</div>
+                                        <div class="card-subtitle">${escapeHtml(track.artist || 'Unknown')}</div>
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `;
+                
+            } catch (error) {
+                console.error('Error loading genre:', error);
+                container.innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
+                        <h3>Genre Not Found</h3>
+                        <p>The genre "${escapeHtml(genre)}" doesn't exist or has no content.</p>
+                        <a href="/" class="btn btn-primary" style="margin-top: 16px;">Back to Home</a>
+                    </div>
+                `;
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Initialize
+        loadHeaderFooter();
+        loadGenrePage();
+    </script>
+</body>
+</html>
