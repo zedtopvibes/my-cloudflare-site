@@ -14,7 +14,7 @@ export async function onRequest(context) {
 
   const id = params.id;
 
-  // ✅ NEW: GET - Fetch single album for editing
+  // GET - Fetch single album
   if (request.method === 'GET') {
     try {
       const album = await env.DB.prepare(`
@@ -103,7 +103,6 @@ export async function onRequest(context) {
         updates.push('cover_url = ?');
         values.push(data.cover_url);
       }
-      // Add status field
       if (data.status !== undefined) {
         updates.push('status = ?');
         values.push(data.status);
@@ -177,7 +176,6 @@ export async function onRequest(context) {
         });
       }
       
-      // Check if album has tracks
       const trackCount = await env.DB.prepare(`
         SELECT COUNT(*) as count FROM album_tracks WHERE album_id = ?
       `).bind(id).first();
@@ -212,4 +210,4 @@ export async function onRequest(context) {
     status: 405, 
     headers 
   });
-} 
+}
