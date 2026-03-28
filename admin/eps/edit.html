@@ -239,7 +239,6 @@
             padding: 40px;
         }
         
-        /* Suggestions container */
         .suggestions-container {
             position: absolute;
             top: 100%;
@@ -383,7 +382,6 @@
             const pageTitle = document.getElementById('pageTitle');
             const formCard = document.getElementById('formCard');
             
-            // Load artists first
             await loadArtists();
             
             if (!epId) {
@@ -393,12 +391,10 @@
             }
             
             try {
-                // Use admin endpoint to get EP with status
                 const res = await fetch(`${API_BASE}/admin/eps/${epId}`);
                 if (!res.ok) throw new Error('EP not found');
                 const ep = await res.json();
                 
-                // Set selected artist from the EP data (handles both new and old structure)
                 selectedArtistId = ep.artist_id || null;
                 selectedArtistName = ep.artist_name || ep.artist || '';
                 
@@ -420,8 +416,6 @@
         function renderForm(ep) {
             const isEditing = !!ep;
             const currentStatus = ep?.status || 'draft';
-            
-            // Find the artist name for display
             const artistDisplayName = selectedArtistName || '';
             
             document.getElementById('formCard').innerHTML = `
@@ -450,32 +444,24 @@
                         <input type="text" id="epTitle" value="${escapeHtml(ep?.title || '')}" placeholder="e.g. Midnight Waves" required>
                     </div>
                     
-                    <!-- Artist Selection with Real-Time Search (using artist_id) -->
                     <div class="form-group">
                         <label><i class="fas fa-user"></i> Artist *</label>
                         <div style="position: relative;">
                             <input type="text" id="artistSearchInput" placeholder="Search or type artist name..." autocomplete="off" value="${escapeHtml(artistDisplayName)}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md);">
-                            
-                            <!-- Hidden select for form submission (stores artist_id) -->
                             <select id="artistSelect" style="display: none;">
                                 <option value="">Select Artist</option>
                                 ${allArtists.map(artist => 
                                     `<option value="${artist.id}" ${artist.id === selectedArtistId ? 'selected' : ''}>${escapeHtml(artist.name)}</option>`
                                 ).join('')}
                             </select>
-                            
-                            <!-- Floating suggestions -->
                             <div id="artistSuggestions" class="suggestions-container"></div>
                         </div>
-                        
-                        <!-- Selected artist badge -->
                         <div id="selectedArtistBadge" class="selected-badge" style="display: ${selectedArtistId ? 'inline-flex' : 'none'};">
                             <i class="fas fa-check-circle"></i> <span id="selectedArtistName">${escapeHtml(artistDisplayName)}</span>
                             <button type="button" onclick="clearArtistSelection()" style="background: none; border: none; color: var(--primary); margin-left: 5px; cursor: pointer;">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        
                         <div class="form-hint">
                             <a href="#" onclick="openNewArtistModal()">
                                 <i class="fas fa-plus-circle"></i> Add New Artist
@@ -491,7 +477,10 @@
                         
                         <div class="form-group">
                             <label><i class="fas fa-tag"></i> Genre</label>
-                            <input type="text" id="epGenre" value="${escapeHtml(ep?.genre || '')}" placeholder="e.g. Hip-Hop">
+                            <input type="text" id="epGenre" value="${escapeHtml(ep?.genre || '')}" placeholder="e.g. Hip-Hop, Gospel, R&B">
+                            <div class="form-hint">
+                                <i class="fas fa-info-circle"></i> Helps with recommendations. If left empty, will use artist's genre.
+                            </div>
                         </div>
                     </div>
                     
@@ -500,7 +489,6 @@
                         <textarea id="epDescription" rows="3" placeholder="EP description...">${escapeHtml(ep?.description || '')}</textarea>
                     </div>
                     
-                    <!-- NEW: Status Field -->
                     <div class="form-group">
                         <label><i class="fas fa-flag"></i> Status</label>
                         <select id="epStatus">
@@ -528,9 +516,7 @@
                 </form>
             `;
             
-            // Setup search listener for artist input
             setupArtistSearch();
-            
             document.getElementById('epForm').addEventListener('submit', handleSubmit);
         }
         
@@ -566,7 +552,6 @@
                 }, 300);
             });
             
-            // Close suggestions when clicking outside
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('#artistSearchInput') && !e.target.closest('#artistSuggestions')) {
                     document.getElementById('artistSuggestions').style.display = 'none';
@@ -591,7 +576,7 @@
             document.getElementById('artistSuggestions').style.display = 'block';
         }
         
-        window.selectArtist = (artistId, artistName) => {
+        window.selectArtist = async (artistId, artistName) => {
             selectedArtistId = artistId;
             selectedArtistName = artistName;
             document.getElementById('artistSearchInput').value = artistName;
@@ -600,6 +585,21 @@
             
             document.getElementById('selectedArtistName').textContent = artistName;
             document.getElementById('selectedArtistBadge').style.display = 'inline-flex';
+            
+            // Auto-fill genre from artist if EP genre is empty
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${artistId}`);
+                if (response.ok) {
+                    const artist = await response.json();
+                    const genreInput = document.getElementById('epGenre');
+                    if (artist.genre && artist.genre.trim() && genreInput && !genreInput.value) {
+                        genreInput.value = artist.genre;
+                        showToast(`Genre auto-filled: ${artist.genre}`, 'info');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching artist:', error);
+            }
         };
         
         window.clearArtistSelection = () => {
@@ -628,7 +628,6 @@
             const id = document.getElementById('epId').value;
             const isEditing = !!id;
             
-            // Validate artist selection (use artist_id)
             if (!selectedArtistId) {
                 alert('Please select an artist');
                 return;
@@ -636,12 +635,12 @@
             
             const epData = {
                 title: document.getElementById('epTitle').value.trim(),
-                artist_id: selectedArtistId,  // Use artist_id instead of artist name
+                artist_id: selectedArtistId,
                 release_date: document.getElementById('epReleaseDate').value || null,
                 genre: document.getElementById('epGenre').value.trim() || null,
                 description: document.getElementById('epDescription').value.trim() || null,
                 is_featured: document.getElementById('epFeatured').checked,
-                status: document.getElementById('epStatus').value  // NEW: Add status
+                status: document.getElementById('epStatus').value
             };
             
             if (!epData.title) {
@@ -678,19 +677,13 @@
                 
                 const epId = data.id || id;
                 
-                // Upload cover if selected
                 if (currentCoverFile) {
                     const coverData = new FormData();
                     coverData.append('cover', currentCoverFile);
-                    
-                    const coverRes = await fetch(`${API_BASE}/admin/eps/${epId}/cover`, {
+                    await fetch(`${API_BASE}/admin/eps/${epId}/cover`, {
                         method: 'POST',
                         body: coverData
-                    });
-                    
-                    if (!coverRes.ok) {
-                        console.warn('Cover upload failed');
-                    }
+                    }).catch(e => console.warn('Cover upload failed'));
                 }
                 
                 const statusText = epData.status === 'published' ? 'published' : 'saved as draft';
@@ -707,7 +700,6 @@
             }
         }
         
-        // New Artist Modal with full creation
         function openNewArtistModal() {
             const artistName = prompt('Enter new artist name:');
             if (artistName && artistName.trim()) {
@@ -735,18 +727,15 @@
                     throw new Error(data.error || 'Failed to create artist');
                 }
                 
-                // Add to local artists list
                 allArtists.push(data);
                 allArtists.sort((a, b) => a.name.localeCompare(b.name));
                 
-                // Update hidden select
                 const select = document.getElementById('artistSelect');
                 const option = document.createElement('option');
                 option.value = data.id;
                 option.textContent = data.name;
                 select.appendChild(option);
                 
-                // Select the new artist
                 selectArtist(data.id, data.name);
                 
                 showToast(`Artist "${name}" created!`, 'success');
@@ -763,7 +752,7 @@
                 top: 20px;
                 right: 20px;
                 padding: 12px 20px;
-                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
                 color: white;
                 border-radius: 6px;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -782,7 +771,6 @@
             return div.innerHTML;
         }
         
-        // Check authentication
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
@@ -801,12 +789,10 @@
             return true;
         }
         
-        // Initialize
         if (checkAuth()) {
             loadEPForEdit();
         }
         
-        // Add animation style
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
