@@ -262,7 +262,6 @@
             color: white;
             font-size: 3rem;
             position: relative;
-            overflow: hidden;
         }
         
         .genre-cover img {
@@ -282,18 +281,7 @@
             margin-bottom: 8px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
             gap: 8px;
-        }
-        
-        .featured-badge {
-            background: #fef3c7;
-            color: #92400e;
-            font-size: 0.65rem;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 600;
         }
         
         .genre-stats {
@@ -302,7 +290,6 @@
             font-size: 0.75rem;
             color: var(--gray-500);
             margin-bottom: 12px;
-            flex-wrap: wrap;
         }
         
         .genre-stats span {
@@ -315,20 +302,10 @@
             color: var(--primary);
         }
         
-        .genre-description {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            margin-top: 8px;
-            line-height: 1.4;
-        }
-        
         .genre-actions {
             display: flex;
             gap: 8px;
             justify-content: flex-end;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--gray-200);
         }
         
         .action-icon {
@@ -343,7 +320,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
-            text-decoration: none;
         }
         
         .action-icon:hover {
@@ -440,14 +416,9 @@
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </h2>
-                <div style="display: flex; gap: 10px;">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search genres..." onkeyup="searchGenres()">
-                    </div>
-                    <a href="/admin/genres/edit.html" class="btn btn-primary">
-                        <i class="fas fa-plus-circle"></i> New Genre
-                    </a>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search genres..." onkeyup="searchGenres()">
                 </div>
             </div>
 
@@ -518,14 +489,14 @@
             if (!checkAuth()) return;
             
             try {
-                const response = await fetch(`${API_BASE}/admin/genres`);
+                const response = await fetch(`${API_BASE}/genres`);
                 if (!response.ok) throw new Error('Failed to load genres');
                 
                 allGenres = await response.json();
                 
                 // Update stats
-                const totalArtists = allGenres.reduce((sum, g) => sum + (g.stats?.artists || 0), 0);
-                const totalAlbums = allGenres.reduce((sum, g) => sum + (g.stats?.albums || 0), 0);
+                const totalArtists = allGenres.reduce((sum, g) => sum + (g.artists || 0), 0);
+                const totalAlbums = allGenres.reduce((sum, g) => sum + (g.albums || 0), 0);
                 
                 document.getElementById('totalGenres').textContent = allGenres.length;
                 document.getElementById('totalArtists').textContent = totalArtists;
@@ -545,26 +516,6 @@
             }
         }
 
-        async function deleteGenre(id, name) {
-            if (!confirm(`Delete genre "${name}"? This will not delete content, only the genre metadata.`)) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/genres/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to delete');
-                }
-                
-                showToast(`Genre "${name}" deleted`, 'success');
-                loadGenres();
-            } catch (error) {
-                showToast(error.message, 'error');
-            }
-        }
-
         function renderGenres() {
             const container = document.getElementById('genresGrid');
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -578,10 +529,7 @@
                     <div class="empty-state">
                         <i class="fas fa-tag"></i>
                         <h3>No genres found</h3>
-                        <p>${searchTerm ? 'Try a different search' : 'Create your first genre'}</p>
-                        <a href="/admin/genres/edit.html" class="btn btn-primary" style="margin-top: 16px;">
-                            <i class="fas fa-plus-circle"></i> Create Genre
-                        </a>
+                        <p>${searchTerm ? 'Try a different search' : 'Genres will appear as you add them to artists and albums'}</p>
                     </div>
                 `;
                 return;
@@ -590,32 +538,21 @@
             container.innerHTML = filtered.map(genre => `
                 <div class="genre-card">
                     <div class="genre-cover">
-                        ${genre.cover_url 
-                            ? `<img src="${genre.cover_url}" alt="${escapeHtml(genre.name)}">`
-                            : `<i class="fas fa-tag"></i>`
-                        }
+                        <i class="fas fa-tag"></i>
                     </div>
                     <div class="genre-info">
                         <div class="genre-name">
-                            <span>${escapeHtml(genre.name)}</span>
-                            ${genre.is_featured ? '<span class="featured-badge"><i class="fas fa-star"></i> Featured</span>' : ''}
+                            ${escapeHtml(genre.name)}
                         </div>
                         <div class="genre-stats">
-                            <span><i class="fas fa-microphone"></i> ${genre.stats?.artists || 0} artists</span>
-                            <span><i class="fas fa-compact-disc"></i> ${genre.stats?.albums || 0} albums</span>
-                            <span><i class="fas fa-play-circle"></i> ${genre.stats?.eps || 0} EPs</span>
+                            <span><i class="fas fa-microphone"></i> ${genre.artists} artists</span>
+                            <span><i class="fas fa-compact-disc"></i> ${genre.albums} albums</span>
+                            <span><i class="fas fa-play-circle"></i> ${genre.eps} EPs</span>
                         </div>
-                        ${genre.description ? `<div class="genre-description">${escapeHtml(genre.description.substring(0, 100))}${genre.description.length > 100 ? '...' : ''}</div>` : ''}
                         <div class="genre-actions">
-                            <a href="/admin/genres/edit.html?id=${genre.id}" class="action-icon" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
                             <a href="/genre/${genre.slug}" class="action-icon" target="_blank" title="View on site">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <button class="action-icon" onclick="event.stopPropagation(); deleteGenre(${genre.id}, '${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
