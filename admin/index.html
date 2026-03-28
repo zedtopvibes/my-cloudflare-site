@@ -187,7 +187,7 @@
             font-size: 0.9rem;
         }
         
-        /* Stats Grid - 5 columns on desktop, 2 on mobile */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -340,6 +340,50 @@
         .stat-card.info-gradient .stat-label,
         .stat-card.info-gradient .stat-icon {
             color: white !important;
+        }
+        
+        /* View Stats Row */
+        .views-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .view-card {
+            background: var(--white);
+            padding: 14px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .view-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+        
+        .view-card .view-icon {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+        }
+        
+        .view-card .view-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .view-card .view-label {
+            font-size: 0.7rem;
+            color: #666;
+        }
+        
+        .view-card .view-total {
+            font-size: 0.65rem;
+            color: #999;
+            margin-top: 4px;
         }
         
         /* Quick Actions */
@@ -497,7 +541,7 @@
         }
         
         @media (max-width: 900px) {
-            .stats-grid {
+            .stats-grid, .views-grid {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 10px;
             }
@@ -517,7 +561,7 @@
         }
         
         @media (max-width: 640px) {
-            .stats-grid {
+            .stats-grid, .views-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             
@@ -615,10 +659,10 @@
                 </div>
             </div>
             
-            <!-- Row 2: Status & Stats -->
+            <!-- Row 2: Status -->
             <div class="section-header">
                 <i class="fas fa-chart-line"></i>
-                <h3>Status & Performance</h3>
+                <h3>Content Status</h3>
             </div>
             <div class="stats-grid">
                 <div class="stat-card warning-gradient">
@@ -631,20 +675,53 @@
                     <div class="stat-value" id="publishedSongs">0</div>
                     <div class="stat-label">Published Songs</div>
                 </div>
-                <div class="stat-card info-gradient">
-                    <div class="stat-icon"><i class="fas fa-headphones"></i></div>
-                    <div class="stat-value" id="totalPlays">0</div>
-                    <div class="stat-label">Total Plays</div>
-                </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-download"></i></div>
                     <div class="stat-value" id="totalDownloads">0</div>
                     <div class="stat-label">Total Downloads</div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-simple"></i></div>
+                    <div class="stat-value" id="totalPlays">0</div>
+                    <div class="stat-label">Total Plays</div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-eye"></i></div>
                     <div class="stat-value" id="totalViews">0</div>
                     <div class="stat-label">Total Views</div>
+                </div>
+            </div>
+            
+            <!-- Row 3: View Breakdown by Content Type -->
+            <div class="section-header">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Views by Content Type</h3>
+            </div>
+            <div class="views-grid">
+                <div class="view-card">
+                    <div class="view-icon"><i class="fas fa-music"></i></div>
+                    <div class="view-value" id="songViews">0</div>
+                    <div class="view-label">Song Views</div>
+                </div>
+                <div class="view-card">
+                    <div class="view-icon"><i class="fas fa-compact-disc"></i></div>
+                    <div class="view-value" id="albumViews">0</div>
+                    <div class="view-label">Album Views</div>
+                </div>
+                <div class="view-card">
+                    <div class="view-icon"><i class="fas fa-play-circle"></i></div>
+                    <div class="view-value" id="epViews">0</div>
+                    <div class="view-label">EP Views</div>
+                </div>
+                <div class="view-card">
+                    <div class="view-icon"><i class="fas fa-microphone"></i></div>
+                    <div class="view-value" id="artistViews">0</div>
+                    <div class="view-label">Artist Views</div>
+                </div>
+                <div class="view-card">
+                    <div class="view-icon"><i class="fas fa-list"></i></div>
+                    <div class="view-value" id="playlistViews">0</div>
+                    <div class="view-label">Playlist Views</div>
                 </div>
             </div>
             
@@ -806,10 +883,22 @@
                 
                 const totalPlays = songs.reduce((sum, s) => sum + (s.plays || 0), 0);
                 const totalDownloads = songs.reduce((sum, s) => sum + (s.downloads || 0), 0);
-                const totalViews = songs.reduce((sum, s) => sum + (s.views || 0), 0);
-                
                 document.getElementById('totalPlays').textContent = formatNumber(totalPlays);
                 document.getElementById('totalDownloads').textContent = formatNumber(totalDownloads);
+                
+                // Row 3: View Breakdown by Content Type
+                const songViews = songs.reduce((sum, s) => sum + (s.views || 0), 0);
+                const albumViews = albums.reduce((sum, a) => sum + (a.views || 0), 0);
+                const epViews = eps.reduce((sum, e) => sum + (e.views || 0), 0);
+                const artistViews = artists.reduce((sum, a) => sum + (a.views || 0), 0);
+                const playlistViews = playlists.reduce((sum, p) => sum + (p.views || 0), 0);
+                const totalViews = songViews + albumViews + epViews + artistViews + playlistViews;
+                
+                document.getElementById('songViews').textContent = formatNumber(songViews);
+                document.getElementById('albumViews').textContent = formatNumber(albumViews);
+                document.getElementById('epViews').textContent = formatNumber(epViews);
+                document.getElementById('artistViews').textContent = formatNumber(artistViews);
+                document.getElementById('playlistViews').textContent = formatNumber(playlistViews);
                 document.getElementById('totalViews').textContent = formatNumber(totalViews);
                 
             } catch (error) {
