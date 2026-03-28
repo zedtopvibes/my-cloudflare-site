@@ -14,14 +14,20 @@
         :root {
             --primary: #1e3c72;
             --primary-light: #2a4a8a;
+            --secondary: #00b4d8;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
             --gray-600: #4b5563;
             --gray-700: #374151;
             --gray-800: #1f2937;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius-sm: 6px;
             --radius-md: 8px;
             --radius-lg: 12px;
         }
@@ -33,86 +39,171 @@
             line-height: 1.5;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .genre-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        /* Genre Hero Section */
+        .genre-hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 40px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 30px;
+            padding: 60px 20px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         
-        .genre-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .genre-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
         }
         
-        .genre-header .stats {
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .genre-hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .genre-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+        
+        .genre-stats {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
+            gap: 32px;
+            margin-top: 24px;
             flex-wrap: wrap;
         }
         
-        .genre-header .stat {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-        }
-        
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin: 30px 0 15px;
+        .genre-stat {
             display: flex;
             align-items: center;
             gap: 8px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 40px;
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+            font-weight: 500;
         }
         
+        .genre-stat i {
+            font-size: 1rem;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Section Styles */
+        .section {
+            margin-bottom: 48px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--gray-200);
+            padding-bottom: 12px;
+        }
+        
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-header h2 i {
+            color: var(--primary);
+        }
+        
+        .section-header .count {
+            background: var(--gray-100);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+        
+        .see-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .see-all:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+        
+        /* Grid Layout */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
         }
         
+        /* Card Styles */
         .card {
             background: white;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            border: 1px solid var(--gray-200);
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             text-decoration: none;
             color: inherit;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
         }
         
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
         }
         
         .card-image {
-            height: 160px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 2.5rem;
             overflow: hidden;
+            position: relative;
         }
         
         .card-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover .card-image img {
+            transform: scale(1.05);
         }
         
         .card-info {
@@ -121,6 +212,8 @@
         
         .card-title {
             font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--gray-800);
             margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
@@ -128,30 +221,171 @@
         }
         
         .card-subtitle {
-            font-size: 0.8rem;
-            color: var(--gray-600);
+            font-size: 0.75rem;
+            color: var(--gray-500);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
+        .card-meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: var(--gray-500);
+        }
+        
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Track List (different style) */
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .track-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+        
+        .track-item:hover {
+            background: var(--gray-50);
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+        
+        .track-number {
+            width: 32px;
+            height: 32px;
+            background: var(--gray-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .track-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .track-artist {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        
+        .track-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 0.7rem;
+            color: var(--gray-500);
+        }
+        
+        .track-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            color: var(--gray-500);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--gray-300);
+            margin-bottom: 16px;
+        }
+        
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+        
+        /* Loading */
         .loading {
             text-align: center;
             padding: 60px;
-            color: var(--gray-600);
+            color: var(--gray-500);
         }
         
-        @media (max-width: 640px) {
+        .loading i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .genre-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .genre-stats {
+                gap: 16px;
+            }
+            
+            .genre-stat {
+                padding: 6px 14px;
+                font-size: 0.8rem;
+            }
+            
             .grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
             
-            .genre-header {
-                padding: 30px 20px;
+            .track-item {
+                flex-wrap: wrap;
             }
             
-            .genre-header h1 {
-                font-size: 1.8rem;
+            .track-stats {
+                width: 100%;
+                margin-left: 44px;
+                margin-top: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 12px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
         }
     </style>
@@ -159,23 +393,21 @@
 <body>
     <div id="header-placeholder"></div>
     
-    <div class="container">
-        <div id="genreContent">
-            <div class="loading">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <div>Loading genre...</div>
-            </div>
+    <div id="genreContent">
+        <div class="loading">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <div>Loading genre...</div>
         </div>
     </div>
     
     <div id="footer-placeholder"></div>
-    
+
     <script>
         const API_BASE = '/api';
         
-        // Get genre from URL
+        // Get genre from URL (e.g., /genre/boss -> genre = "boss")
         const path = window.location.pathname;
-        const genre = path.split('/').pop();
+        const genreSlug = path.split('/').pop();
         
         async function loadHeaderFooter() {
             try {
@@ -194,124 +426,181 @@
             const container = document.getElementById('genreContent');
             
             try {
-                // Load genre stats
-                const statsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genre)}/stats`);
+                // Fetch genre stats
+                const statsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genreSlug)}/stats`);
                 if (!statsRes.ok) throw new Error('Genre not found');
                 const statsData = await statsRes.json();
                 
-                // Load albums by genre
-                const albumsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genre)}/albums`);
-                const albums = await albumsRes.json();
+                // Fetch artists by genre
+                const artistsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genreSlug)}/artists`);
+                const artists = artistsRes.ok ? await artistsRes.json() : [];
                 
-                // Load EPs by genre
-                const epsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genre)}/eps`);
-                const eps = await epsRes.json();
+                // Fetch albums by genre
+                const albumsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genreSlug)}/albums`);
+                const albums = albumsRes.ok ? await albumsRes.json() : [];
                 
-                // Load artists by genre
-                const artistsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genre)}/artists`);
-                const artists = await artistsRes.json();
+                // Fetch EPs by genre
+                const epsRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genreSlug)}/eps`);
+                const eps = epsRes.ok ? await epsRes.json() : [];
+                
+                // Fetch top tracks by genre
+                const tracksRes = await fetch(`${API_BASE}/genres/${encodeURIComponent(genreSlug)}/tracks`);
+                const tracks = tracksRes.ok ? await tracksRes.json() : [];
                 
                 document.title = `${statsData.genre} Music - ZEDTOPVIBES`;
                 
+                // Build the page
                 container.innerHTML = `
-                    <div class="genre-header">
-                        <h1>${escapeHtml(statsData.genre)} Music</h1>
-                        <div class="stats">
-                            <div class="stat"><i class="fas fa-microphone"></i> ${statsData.stats.artists} Artists</div>
-                            <div class="stat"><i class="fas fa-compact-disc"></i> ${statsData.stats.albums} Albums</div>
-                            <div class="stat"><i class="fas fa-play-circle"></i> ${statsData.stats.eps} EPs</div>
-                            <div class="stat"><i class="fas fa-music"></i> ${statsData.top_tracks.length}+ Tracks</div>
+                    <!-- Hero Section -->
+                    <div class="genre-hero">
+                        <div class="genre-hero-content">
+                            <h1>${escapeHtml(statsData.genre)}</h1>
+                            <div class="genre-stats">
+                                <div class="genre-stat"><i class="fas fa-microphone"></i> ${statsData.stats.artists} Artists</div>
+                                <div class="genre-stat"><i class="fas fa-compact-disc"></i> ${statsData.stats.albums} Albums</div>
+                                <div class="genre-stat"><i class="fas fa-play-circle"></i> ${statsData.stats.eps} EPs</div>
+                                <div class="genre-stat"><i class="fas fa-music"></i> ${statsData.top_tracks?.length || 0}+ Tracks</div>
+                            </div>
                         </div>
                     </div>
                     
-                    ${artists.length > 0 ? `
-                        <div class="section-title">
-                            <i class="fas fa-microphone"></i> Artists
-                        </div>
-                        <div class="grid">
-                            ${artists.map(artist => `
-                                <a href="/artist/${artist.slug}" class="card">
-                                    <div class="card-image">
-                                        ${artist.image_url ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
-                                    </div>
-                                    <div class="card-info">
-                                        <div class="card-title">${escapeHtml(artist.name)}</div>
-                                        <div class="card-subtitle">${artist.track_count || 0} tracks</div>
-                                    </div>
-                                </a>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                    
-                    ${albums.length > 0 ? `
-                        <div class="section-title">
-                            <i class="fas fa-compact-disc"></i> Albums
-                        </div>
-                        <div class="grid">
-                            ${albums.map(album => `
-                                <a href="/album/${album.slug}" class="card">
-                                    <div class="card-image">
-                                        ${album.cover_url ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}">` : '<i class="fas fa-compact-disc"></i>'}
-                                    </div>
-                                    <div class="card-info">
-                                        <div class="card-title">${escapeHtml(album.title)}</div>
-                                        <div class="card-subtitle">${escapeHtml(album.artist_name || 'Various Artists')}</div>
-                                    </div>
-                                </a>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                    
-                    ${eps.length > 0 ? `
-                        <div class="section-title">
-                            <i class="fas fa-play-circle"></i> EPs
-                        </div>
-                        <div class="grid">
-                            ${eps.map(ep => `
-                                <a href="/ep/${ep.slug}" class="card">
-                                    <div class="card-image">
-                                        ${ep.cover_url ? `<img src="${ep.cover_url}" alt="${escapeHtml(ep.title)}">` : '<i class="fas fa-play-circle"></i>'}
-                                    </div>
-                                    <div class="card-info">
-                                        <div class="card-title">${escapeHtml(ep.title)}</div>
-                                        <div class="card-subtitle">${escapeHtml(ep.artist_name || 'Various Artists')}</div>
-                                    </div>
-                                </a>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                    
-                    ${statsData.top_tracks.length > 0 ? `
-                        <div class="section-title">
-                            <i class="fas fa-music"></i> Top Tracks
-                        </div>
-                        <div class="grid">
-                            ${statsData.top_tracks.map(track => `
-                                <a href="/song/${track.slug}" class="card">
-                                    <div class="card-image">
-                                        ${track.artwork_url ? `<img src="${track.artwork_url}" alt="${escapeHtml(track.title)}">` : '<i class="fas fa-music"></i>'}
-                                    </div>
-                                    <div class="card-info">
-                                        <div class="card-title">${escapeHtml(track.title)}</div>
-                                        <div class="card-subtitle">${escapeHtml(track.artist || 'Unknown')}</div>
-                                    </div>
-                                </a>
-                            `).join('')}
-                        </div>
-                    ` : ''}
+                    <div class="container">
+                        ${artists.length > 0 ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <h2><i class="fas fa-microphone"></i> Artists</h2>
+                                    <span class="count">${artists.length}</span>
+                                </div>
+                                <div class="grid">
+                                    ${artists.map(artist => `
+                                        <a href="/artist/${artist.slug}" class="card">
+                                            <div class="card-image">
+                                                ${artist.image_url ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
+                                            </div>
+                                            <div class="card-info">
+                                                <div class="card-title">${escapeHtml(artist.name)}</div>
+                                                <div class="card-subtitle">${artist.track_count || 0} tracks</div>
+                                                ${artist.is_featured ? '<div class="card-meta"><span><i class="fas fa-star" style="color: #f59e0b;"></i> Featured</span></div>' : ''}
+                                            </div>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${albums.length > 0 ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <h2><i class="fas fa-compact-disc"></i> Albums</h2>
+                                    <span class="count">${albums.length}</span>
+                                </div>
+                                <div class="grid">
+                                    ${albums.map(album => `
+                                        <a href="/album/${album.slug}" class="card">
+                                            <div class="card-image">
+                                                ${album.cover_url ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}">` : '<i class="fas fa-compact-disc"></i>'}
+                                            </div>
+                                            <div class="card-info">
+                                                <div class="card-title">${escapeHtml(album.title)}</div>
+                                                <div class="card-subtitle">${escapeHtml(album.artist_name || 'Various Artists')}</div>
+                                                <div class="card-meta">
+                                                    <span><i class="fas fa-music"></i> ${album.track_count || 0} tracks</span>
+                                                    <span><i class="fas fa-headphones"></i> ${formatNumber(album.plays)}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${eps.length > 0 ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <h2><i class="fas fa-play-circle"></i> EPs</h2>
+                                    <span class="count">${eps.length}</span>
+                                </div>
+                                <div class="grid">
+                                    ${eps.map(ep => `
+                                        <a href="/ep/${ep.slug}" class="card">
+                                            <div class="card-image">
+                                                ${ep.cover_url ? `<img src="${ep.cover_url}" alt="${escapeHtml(ep.title)}">` : '<i class="fas fa-play-circle"></i>'}
+                                            </div>
+                                            <div class="card-info">
+                                                <div class="card-title">${escapeHtml(ep.title)}</div>
+                                                <div class="card-subtitle">${escapeHtml(ep.artist_name || 'Various Artists')}</div>
+                                                <div class="card-meta">
+                                                    <span><i class="fas fa-music"></i> ${ep.track_count || 0} tracks</span>
+                                                    <span><i class="fas fa-headphones"></i> ${formatNumber(ep.plays)}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${tracks.length > 0 ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <h2><i class="fas fa-music"></i> Top Tracks</h2>
+                                    <span class="count">${tracks.length}</span>
+                                </div>
+                                <div class="track-list">
+                                    ${tracks.map((track, index) => `
+                                        <a href="/song/${track.slug}" class="track-item">
+                                            <div class="track-number">${index + 1}</div>
+                                            <div class="track-info">
+                                                <div class="track-title">${escapeHtml(track.title)}</div>
+                                                <div class="track-artist">${escapeHtml(track.artist || 'Unknown Artist')}</div>
+                                            </div>
+                                            <div class="track-stats">
+                                                <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays)}</span>
+                                                ${track.duration ? `<span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>` : ''}
+                                            </div>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${artists.length === 0 && albums.length === 0 && eps.length === 0 && tracks.length === 0 ? `
+                            <div class="empty-state">
+                                <i class="fas fa-tag"></i>
+                                <p>No content found for this genre yet.</p>
+                                <p style="margin-top: 8px; font-size: 0.8rem;">Check back soon!</p>
+                            </div>
+                        ` : ''}
+                    </div>
                 `;
                 
             } catch (error) {
-                console.error('Error loading genre:', error);
+                console.error('Error loading genre page:', error);
                 container.innerHTML = `
-                    <div class="loading">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
-                        <h3>Genre Not Found</h3>
-                        <p>The genre "${escapeHtml(genre)}" doesn't exist or has no content.</p>
-                        <a href="/" class="btn btn-primary" style="margin-top: 16px;">Back to Home</a>
+                    <div class="container">
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                            <h3 style="margin-top: 12px;">Genre Not Found</h3>
+                            <p>The genre "${escapeHtml(genreSlug)}" doesn't exist or has no content.</p>
+                            <a href="/" class="see-all" style="display: inline-block; margin-top: 16px;">← Back to Home</a>
+                        </div>
                     </div>
                 `;
             }
+        }
+        
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+        
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
         
         function escapeHtml(text) {
