@@ -209,7 +209,7 @@
             box-shadow: 0 2px 8px rgba(255, 75, 43, 0.3);
         }
         
-        .play-btn:hover:not(:disabled) {
+        .play-btn:hover {
             background: #ff6a4b;
         }
         
@@ -219,7 +219,7 @@
             box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
         }
         
-        .download-btn:hover:not(:disabled) {
+        .download-btn:hover {
             background: #34ce57;
         }
         
@@ -417,6 +417,67 @@
             font-size: 14px;
         }
         
+        /* Download Toast Notification - New Feature */
+        .download-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e1e1e;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .download-toast i {
+            font-size: 18px;
+        }
+        
+        .download-toast i.fa-spinner {
+            color: #ff4b2b;
+        }
+        
+        .download-toast i.fa-check-circle {
+            color: #28a745;
+        }
+        
+        .download-toast i.fa-exclamation-circle {
+            color: #dc3545;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .download-toast.fade-out {
+            animation: slideOut 0.3s ease forwards;
+        }
+        
         @media (max-width: 768px) {
             .song-header {
                 flex-direction: column;
@@ -465,6 +526,13 @@
             .player-btn {
                 font-size: 14px;
                 padding: 6px;
+            }
+            
+            .download-toast {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                padding: 10px 16px;
             }
         }
         
@@ -579,9 +647,6 @@
     <script>
         const API_BASE = '/api';
         
-        // R2 Public URL - UPDATE WITH YOUR ACTUAL R2 URL
-        const R2_PUBLIC_URL = 'https://pub-fec6ab79d63347f48cfcfc5af6928ff0.r2.dev';
-        
         let currentSong = null;
         let audioPlayer = null;
         let isPlaying = false;
@@ -632,19 +697,54 @@
             return 'Unknown Artist';
         }
         
-        // ===== UPDATED: Play Song - Direct R2 URL with Background Tracking =====
+        // Download Toast Functions - New Feature
+        function showDownloadToast(message, type = 'preparing') {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.download-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = 'download-toast';
+            
+            let icon = '<i class="fas fa-spinner fa-pulse"></i>';
+            if (type === 'success') {
+                icon = '<i class="fas fa-check-circle"></i>';
+            } else if (type === 'error') {
+                icon = '<i class="fas fa-exclamation-circle"></i>';
+            }
+            
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            document.body.appendChild(toast);
+            
+            // Auto remove after 3 seconds for success/error, keep preparing until download starts
+            if (type !== 'preparing') {
+                setTimeout(() => {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (toast.parentNode) toast.remove();
+                    }, 300);
+                }, 3000);
+            }
+        }
+        
+        function hideDownloadToast() {
+            const toast = document.querySelector('.download-toast');
+            if (toast) {
+                toast.classList.add('fade-out');
+                setTimeout(() => {
+                    if (toast.parentNode) toast.remove();
+                }, 300);
+            }
+        }
+        
+        // Play Song - using stream endpoint
         async function playSong() {
             if (!currentSong) return;
             
             try {
-                // 1. Track play in background (fire and forget)
-                fetch(`${API_BASE}/tracks/${currentSong.id}/play`, { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                }).catch(() => {});
-                
-                // 2. Direct R2 URL for instant playback
-                const audioUrl = `${R2_PUBLIC_URL}/${currentSong.r2_key}`;
+                const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
                 
                 if (audioPlayer && isPlaying) {
                     document.getElementById('floatingPlayer').style.display = 'flex';
@@ -654,6 +754,8 @@
                 if (audioPlayer) {
                     audioPlayer.pause();
                 }
+                
+                fetch(`${API_BASE}/tracks/${currentSong.id}/play`, { method: 'POST' }).catch(() => {});
                 
                 audioPlayer = new Audio(audioUrl);
                 await audioPlayer.play();
@@ -707,48 +809,51 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
-        // ===== UPDATED: Download Song with Loading Feedback =====
-        function downloadSong() {
-            if (!currentSong || !currentSong.id) {
-                alert('Download not available');
+        // Updated download function with visual feedback
+        async function downloadSong() {
+            if (!currentSong || !currentSong.r2_key) {
+                showDownloadToast('Download not available', 'error');
                 return;
             }
             
-            // Show loading state on button
-            const btn = document.getElementById('download-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
-            btn.disabled = true;
+            const downloadBtn = document.getElementById('download-btn');
+            const originalButtonHTML = downloadBtn.innerHTML;
             
-            // Optional: Show a quick toast for better feedback
-            const toast = document.createElement('div');
-            toast.textContent = 'Preparing download...';
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #28a745;
-                color: white;
-                padding: 8px 16px;
-                border-radius: 8px;
-                z-index: 9999;
-                font-size: 13px;
-                animation: fadeOut 2s forwards;
-            `;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            // Show preparing state on button
+            downloadBtn.disabled = true;
+            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Preparing...';
             
-            // Redirect to download API (handles tracking + file delivery)
-            window.location.href = `/api/download/${currentSong.id}`;
+            // Show toast notification
+            showDownloadToast('Preparing your download...', 'preparing');
             
-            // Reset button if page doesn't redirect quickly (fallback)
+            // Simulate a small delay to show the preparing state (makes it feel more responsive)
             setTimeout(() => {
-                if (btn && document.body.contains(btn)) {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
+                try {
+                    const audioUrl = `${API_BASE}/stream/${encodeURIComponent(currentSong.r2_key)}`;
+                    const link = document.createElement('a');
+                    link.href = audioUrl;
+                    link.download = currentSong.filename || `${currentSong.title} - ${getArtistDisplayName(currentSong)}.mp3`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Hide preparing toast and show success
+                    hideDownloadToast();
+                    showDownloadToast('Download started!', 'success');
+                    
+                    // Track download
+                    fetch(`${API_BASE}/tracks/${currentSong.id}/download`, { method: 'POST' }).catch(() => {});
+                    
+                } catch (error) {
+                    console.error('Download error:', error);
+                    hideDownloadToast();
+                    showDownloadToast('Failed to start download', 'error');
+                } finally {
+                    // Restore button
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = originalButtonHTML;
                 }
-            }, 3000);
+            }, 300); // Small delay to show the preparing state
         }
         
         function goToArtistFromPlayer() {
