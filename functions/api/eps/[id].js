@@ -8,12 +8,10 @@ export async function onRequest(context) {
     'Content-Type': 'application/json'
   };
 
-  // Handle OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
 
-  // Only allow GET
   if (request.method !== 'GET') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
       status: 405, 
@@ -24,7 +22,6 @@ export async function onRequest(context) {
   try {
     const id = params.id;
     
-    // Get EP details with artist info - only if published and not deleted
     const ep = await env.DB.prepare(`
       SELECT 
         e.id,
@@ -33,6 +30,7 @@ export async function onRequest(context) {
         e.cover_url,
         e.slug,
         e.release_date,
+        e.genre,
         e.plays,
         e.created_at,
         e.updated_at,
@@ -51,7 +49,6 @@ export async function onRequest(context) {
       });
     }
     
-    // Get tracks in EP with full artist information - only published tracks
     const { results: tracks } = await env.DB.prepare(`
       SELECT 
         t.id,
@@ -93,7 +90,6 @@ export async function onRequest(context) {
       ORDER BY et.disc_number, et.track_number
     `).bind(id).all();
     
-    // Process each track to parse the artists JSON and add backward compatibility fields
     const processedTracks = tracks.map(track => {
       const artists = track.artists ? JSON.parse(track.artists) : [];
       const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
@@ -101,14 +97,12 @@ export async function onRequest(context) {
       return {
         ...track,
         artists: artists,
-        // Add convenience fields for backward compatibility
         artist: primaryArtist ? primaryArtist.name : 'Unknown Artist',
         artist_id: primaryArtist ? primaryArtist.id : null,
         artist_slug: primaryArtist ? primaryArtist.slug : null
       };
     });
     
-    // Get EP stats - only from published tracks
     const stats = await env.DB.prepare(`
       SELECT 
         COUNT(*) as track_count,
@@ -120,7 +114,6 @@ export async function onRequest(context) {
       WHERE et.ep_id = ? AND t.deleted_at IS NULL AND t.status = 'published'
     `).bind(id).first();
     
-    // Add artist fields to EP for backward compatibility
     const epData = {
       ...ep,
       artist: ep.artist_name || 'Unknown Artist',
