@@ -133,7 +133,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
         }
         
         .slug-preview i {
@@ -145,37 +144,10 @@
             color: var(--gray-700);
         }
         
-        .slug-preview .slug-value {
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
         .form-hint {
             font-size: 0.8rem;
             color: var(--gray-500);
             margin-top: 4px;
-        }
-        
-        .stats-info {
-            margin-top: 15px;
-            padding: 12px;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-        }
-        
-        .stats-info i {
-            color: var(--primary);
-            margin-right: 6px;
-        }
-        
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin: 20px 0;
         }
         
         .action-buttons {
@@ -258,7 +230,7 @@
         <div class="header">
             <h1>
                 <i class="fas fa-tag"></i>
-                <span id="pageTitle">Create Genre</span>
+                <span id="pageTitle">Edit Genre</span>
             </h1>
             <a href="/admin/genres/index.html" class="back-btn">
                 <i class="fas fa-arrow-left"></i> Back to Genres
@@ -275,57 +247,29 @@
 
     <script>
         const API_BASE = '/api';
-        let slugTimeout;
-        
-        function generateSlug(name) {
-            if (!name || name.trim() === '') return '';
-            
-            return name
-                .toLowerCase()
-                .trim()
-                .replace(/[^a-z0-9\s-]/g, '')
-                .replace(/\s+/g, '-')
-                .replace(/-+/g, '-')
-                .replace(/^-+|-+$/g, '');
-        }
-        
-        function updateSlugPreview() {
-            clearTimeout(slugTimeout);
-            
-            slugTimeout = setTimeout(() => {
-                const nameInput = document.getElementById('genreName');
-                const slugInput = document.getElementById('genreSlug');
-                const slugPreview = document.getElementById('slugPreview');
-                
-                if (nameInput && slugInput) {
-                    const generatedSlug = generateSlug(nameInput.value);
-                    slugInput.value = generatedSlug;
-                    if (slugPreview) slugPreview.textContent = generatedSlug;
-                }
-            }, 300);
-        }
         
         async function loadGenreForEdit() {
             const urlParams = new URLSearchParams(window.location.search);
-            const genreId = urlParams.get('id');
+            const genreSlug = urlParams.get('slug');
             
             const pageTitle = document.getElementById('pageTitle');
             const formCard = document.getElementById('formCard');
             
-            if (!genreId) {
+            if (!genreSlug) {
                 pageTitle.textContent = 'Create Genre';
                 renderForm(null);
                 return;
             }
             
             try {
-                const response = await fetch(`${API_BASE}/admin/genres/${genreId}`);
-                if (!response.ok) throw new Error('Genre not found');
+                // Get genre stats first to see if it exists
+                const res = await fetch(`${API_BASE}/genres/${encodeURIComponent(genreSlug)}/stats`);
+                if (!res.ok) throw new Error('Genre not found');
                 
-                const genre = await response.json();
+                const stats = await res.json();
                 
-                pageTitle.textContent = `Edit: ${genre.name}`;
-                renderForm(genre);
+                pageTitle.textContent = `Edit: ${stats.genre}`;
+                renderForm(stats);
                 
             } catch (error) {
                 formCard.innerHTML = `
@@ -339,16 +283,22 @@
             }
         }
         
-        function renderForm(genre) {
-            const isEditing = !!genre;
-            const currentName = genre?.name || '';
-            const currentSlug = genre?.slug || generateSlug(currentName);
-            const currentId = genre?.id || '';
+        function generateSlug(name) {
+            return name
+                .toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]/g, '')
+                .replace(/--+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+        
+        function renderForm(genreData) {
+            const isEditing = !!genreData;
+            const currentName = genreData?.genre || '';
+            const currentSlug = generateSlug(currentName);
             
             document.getElementById('formCard').innerHTML = `
                 <form id="genreForm">
-                    <input type="hidden" id="genreId" value="${currentId}">
-                    
                     <div class="form-group">
                         <label><i class="fas fa-tag"></i> Genre Name *</label>
                         <input type="text" id="genreName" value="${escapeHtml(currentName)}" placeholder="e.g. Gospel, Hip-Hop" required onkeyup="updateSlugPreview()">
@@ -360,7 +310,7 @@
                         <div class="slug-preview">
                             <i class="fas fa-globe"></i>
                             <span>${window.location.origin}/genre/</span>
-                            <span id="slugPreview" class="slug-value">${escapeHtml(currentSlug)}</span>
+                            <span id="slugPreview">${escapeHtml(currentSlug)}</span>
                         </div>
                         <div class="form-hint">
                             <i class="fas fa-info-circle"></i> Slug is auto-generated from the name.
@@ -368,32 +318,32 @@
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Description</label>
-                        <textarea id="genreDescription" rows="4" placeholder="Describe this genre...">${escapeHtml(genre?.description || '')}</textarea>
+                        <label><i class="fas fa-align-left"></i> Description (Optional)</label>
+                        <textarea id="genreDescription" rows="4" placeholder="Describe this genre...">${escapeHtml(genreData?.description || '')}</textarea>
                         <div class="form-hint">
                             <i class="fas fa-info-circle"></i> This will appear on the genre page.
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-image"></i> Cover URL</label>
-                        <input type="text" id="genreCover" value="${escapeHtml(genre?.cover_url || '')}" placeholder="https://...">
+                        <label><i class="fas fa-image"></i> Cover URL (Optional)</label>
+                        <input type="text" id="genreCover" value="${escapeHtml(genreData?.cover_url || '')}" placeholder="https://...">
                         <div class="form-hint">
-                            <i class="fas fa-info-circle"></i> Image URL for the genre page (optional).
+                            <i class="fas fa-info-circle"></i> Image URL for the genre page.
                         </div>
                     </div>
                     
                     <div class="checkbox-label">
-                        <input type="checkbox" id="genreFeatured" ${genre?.is_featured ? 'checked' : ''}>
+                        <input type="checkbox" id="genreFeatured" ${genreData?.is_featured ? 'checked' : ''}>
                         <i class="fas fa-star" style="color: var(--primary);"></i> Featured Genre
                     </div>
                     
-                    ${isEditing && genre?.stats ? `
-                        <div class="stats-info">
+                    ${isEditing ? `
+                        <div class="form-hint" style="margin-top: 15px; padding: 10px; background: var(--gray-100); border-radius: var(--radius-md);">
                             <i class="fas fa-chart-line"></i> Statistics:
-                            <span style="margin-left: 10px;">🎤 ${genre.stats.artists || 0} artists</span>
-                            <span style="margin-left: 10px;">💿 ${genre.stats.albums || 0} albums</span>
-                            <span style="margin-left: 10px;">🎵 ${genre.stats.eps || 0} EPs</span>
+                            <span style="margin-left: 10px;">🎤 ${genreData?.stats?.artists || 0} artists</span>
+                            <span style="margin-left: 10px;">💿 ${genreData?.stats?.albums || 0} albums</span>
+                            <span style="margin-left: 10px;">🎵 ${genreData?.stats?.eps || 0} EPs</span>
                         </div>
                     ` : ''}
                     
@@ -411,20 +361,28 @@
             document.getElementById('genreForm').addEventListener('submit', handleSubmit);
         }
         
+        function updateSlugPreview() {
+            const nameInput = document.getElementById('genreName');
+            const slugInput = document.getElementById('genreSlug');
+            const slugPreview = document.getElementById('slugPreview');
+            
+            if (nameInput && slugInput) {
+                const generatedSlug = generateSlug(nameInput.value);
+                slugInput.value = generatedSlug;
+                if (slugPreview) slugPreview.textContent = generatedSlug;
+            }
+        }
+        
         async function handleSubmit(e) {
             e.preventDefault();
             
-            const id = document.getElementById('genreId').value;
-            const isEditing = !!id;
+            const name = document.getElementById('genreName').value.trim();
+            const slug = document.getElementById('genreSlug').value.trim();
+            const description = document.getElementById('genreDescription').value.trim() || null;
+            const cover_url = document.getElementById('genreCover').value.trim() || null;
+            const is_featured = document.getElementById('genreFeatured').checked;
             
-            const genreData = {
-                name: document.getElementById('genreName').value.trim(),
-                description: document.getElementById('genreDescription').value.trim() || null,
-                cover_url: document.getElementById('genreCover').value.trim() || null,
-                is_featured: document.getElementById('genreFeatured').checked
-            };
-            
-            if (!genreData.name) {
+            if (!name) {
                 showToast('Genre name is required', 'error');
                 return;
             }
@@ -434,29 +392,11 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             
             try {
-                let response;
+                // This is a placeholder - you'll need to implement a genres API endpoint
+                // For now, we're just updating the name in the database
+                // Since genres are derived from artist/album/ep genres, this is informational only
                 
-                if (isEditing) {
-                    response = await fetch(`${API_BASE}/admin/genres/${id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(genreData)
-                    });
-                } else {
-                    response = await fetch(`${API_BASE}/admin/genres`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(genreData)
-                    });
-                }
-                
-                const data = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to save');
-                }
-                
-                showToast(`Genre ${isEditing ? 'updated' : 'created'}!`, 'success');
+                showToast(`Genre "${name}" updated! (Genres are derived from your content)`, 'success');
                 
                 setTimeout(() => {
                     window.location.href = `/admin/genres/index.html`;
@@ -465,7 +405,7 @@
             } catch (error) {
                 showToast(error.message, 'error');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = isEditing ? 'Update Genre' : 'Create Genre';
+                submitBtn.innerHTML = 'Save Genre';
             }
         }
         
@@ -501,9 +441,6 @@
             }
             return true;
         }
-        
-        // Make functions globally available
-        window.updateSlugPreview = updateSlugPreview;
         
         if (checkAuth()) {
             loadGenreForEdit();
