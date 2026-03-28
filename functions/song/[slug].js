@@ -4,7 +4,7 @@ export async function onRequest(context) {
   try {
     const slug = params.slug;
     
-    // First, verify this track exists
+    // Get the song data
     const apiUrl = new URL(request.url);
     const apiReq = new Request(
       `${apiUrl.origin}/api/song/by-slug/${slug}`,
@@ -13,19 +13,25 @@ export async function onRequest(context) {
     
     const apiResponse = await fetch(apiReq);
     
-    // If track not found, return 404
     if (!apiResponse.ok) {
-      return new Response('Track not found', { 
+      return new Response('Song not found', { 
         status: 404,
         headers: { 'Content-Type': 'text/html' }
       });
     }
     
-    // Get the song.html template
+    const song = await apiResponse.json();
+    
+    // Increment views
+    if (song && song.id) {
+      env.DB.prepare(`
+        UPDATE tracks SET views = views + 1 WHERE id = ?
+      `).bind(song.id).run().catch(e => console.error('Error updating track views:', e));
+    }
+    
     const htmlResponse = await env.ASSETS.fetch(new URL('/song.html', request.url));
     let html = await htmlResponse.text();
     
-    // Inject the slug into the page
     html = html.replace(
       '<div class="main-content-container" id="content">',
       `<div class="main-content-container" id="content" data-song-slug="${slug}">`
