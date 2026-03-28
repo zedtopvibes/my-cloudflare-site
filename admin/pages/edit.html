@@ -249,6 +249,7 @@
 
     <script>
         const API_BASE = '/api';
+        let slugTimeout;
         
         async function loadPageForEdit() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -283,18 +284,42 @@
             }
         }
         
+        // Improved slug generation function
         function generateSlug(title) {
+            if (!title || title.trim() === '') return '';
+            
             return title
                 .toLowerCase()
-                .replace(/\s+/g, '-')
-                .replace(/[^\w-]/g, '')
-                .replace(/--+/g, '-')
-                .replace(/^-+|-+$/g, '');
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')      // Remove special characters except spaces and hyphens
+                .replace(/\s+/g, '-')               // Replace spaces with hyphens
+                .replace(/-+/g, '-')                // Replace multiple hyphens with single hyphen
+                .replace(/^-+|-+$/g, '');           // Remove leading/trailing hyphens
+        }
+        
+        // Debounced slug preview update
+        function updateSlugPreview() {
+            clearTimeout(slugTimeout);
+            
+            slugTimeout = setTimeout(() => {
+                const titleInput = document.getElementById('pageTitleInput');
+                const slugInput = document.getElementById('pageSlug');
+                const slugPreview = document.getElementById('slugPreview');
+                
+                if (titleInput && slugInput && !slugInput.value) {
+                    const generatedSlug = generateSlug(titleInput.value);
+                    slugInput.value = generatedSlug;
+                    if (slugPreview) slugPreview.textContent = generatedSlug;
+                } else if (slugInput && slugPreview) {
+                    slugPreview.textContent = slugInput.value;
+                }
+            }, 300);
         }
         
         function renderForm(page) {
             const isEditing = !!page;
             const currentStatus = page?.status || 'draft';
+            const currentSlug = page?.slug || '';
             
             document.getElementById('formCard').innerHTML = `
                 <form id="pageForm">
@@ -307,11 +332,11 @@
                     
                     <div class="form-group">
                         <label><i class="fas fa-link"></i> URL Slug *</label>
-                        <input type="text" id="pageSlug" value="${escapeHtml(page?.slug || '')}" placeholder="e.g. about-us" required>
+                        <input type="text" id="pageSlug" value="${escapeHtml(currentSlug)}" placeholder="e.g. about-us" required>
                         <div class="slug-preview">
                             <i class="fas fa-globe"></i>
-                            <span>${window.location.origin}/</span>
-                            <span id="slugPreview">${escapeHtml(page?.slug || '')}</span>
+                            <span>${window.location.origin}/page/</span>
+                            <span id="slugPreview">${escapeHtml(currentSlug)}</span>
                         </div>
                         <div class="form-hint">
                             <i class="fas fa-info-circle"></i> This will be the page URL. Use only lowercase letters, numbers, and hyphens.
@@ -348,21 +373,16 @@
                 </form>
             `;
             
-            document.getElementById('pageForm').addEventListener('submit', handleSubmit);
-        }
-        
-        function updateSlugPreview() {
-            const titleInput = document.getElementById('pageTitleInput');
-            const slugInput = document.getElementById('pageSlug');
-            const slugPreview = document.getElementById('slugPreview');
+            // Initialize slug preview after form is rendered
+            setTimeout(() => {
+                const slugInput = document.getElementById('pageSlug');
+                const slugPreview = document.getElementById('slugPreview');
+                if (slugInput && slugPreview) {
+                    slugPreview.textContent = slugInput.value || '';
+                }
+            }, 100);
             
-            if (titleInput && slugInput && !slugInput.value) {
-                const generatedSlug = generateSlug(titleInput.value);
-                slugInput.value = generatedSlug;
-                if (slugPreview) slugPreview.textContent = generatedSlug;
-            } else if (slugInput) {
-                if (slugPreview) slugPreview.textContent = slugInput.value;
-            }
+            document.getElementById('pageForm').addEventListener('submit', handleSubmit);
         }
         
         async function handleSubmit(e) {
@@ -469,6 +489,10 @@
             }
             return true;
         }
+        
+        // Make functions globally available for inline onkeyup
+        window.updateSlugPreview = updateSlugPreview;
+        window.generateSlug = generateSlug;
         
         // Initialize
         if (checkAuth()) {
