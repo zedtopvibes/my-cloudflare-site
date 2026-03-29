@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="/css/style.css">
     
     <style>
-        /* Song page styles - matches simple theme */
         .song-header {
             display: flex;
             gap: 30px;
@@ -171,7 +170,6 @@
             border-top: 1px solid #eee;
         }
         
-        /* Action Buttons */
         .song-actions {
             display: flex;
             gap: 15px;
@@ -217,7 +215,6 @@
             background: #34ce57;
         }
         
-        /* Floating Player Bar - Clean Design */
         .floating-player {
             position: fixed;
             bottom: 0;
@@ -299,7 +296,6 @@
             color: #ff4b2b;
         }
         
-        /* Share Dropdown */
         .share-dropdown {
             position: relative;
             display: inline-block;
@@ -549,7 +545,6 @@
 
     <div id="footer-placeholder"></div>
 
-    <!-- Floating Player Bar -->
     <div id="floatingPlayer" class="floating-player">
         <div class="player-info">
             <div class="player-thumb">
@@ -573,7 +568,7 @@
     <script>
         const API_BASE = '/api';
         
-        // Direct R2 URL - UPDATE WITH YOUR ACTUAL R2 URL
+        // Direct R2 URL for playback (fast)
         const R2_PUBLIC_URL = 'https://pub-fec6ab79d63347f48cfcfc5af6928ff0.r2.dev';
         
         let currentSong = null;
@@ -623,12 +618,11 @@
             return 'Unknown Artist';
         }
         
-        // ===== UPDATED: Direct R2 URL - NO TRACKING =====
+        // Play Song - Direct R2 URL (instant)
         async function playSong() {
             if (!currentSong) return;
             
             try {
-                // Direct R2 URL - instant playback
                 const audioUrl = `${R2_PUBLIC_URL}/${currentSong.r2_key}`;
                 
                 if (audioPlayer && isPlaying) {
@@ -692,15 +686,17 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
-        // ===== UPDATED: Direct R2 Download - NO TRACKING =====
+        // ===== UPDATED: Download Song using Download API (forces download) =====
         function downloadSong() {
             if (!currentSong || !currentSong.r2_key) {
                 alert('Download not available');
                 return;
             }
             
-            // Direct R2 download - instant
-            const downloadUrl = `${R2_PUBLIC_URL}/${currentSong.r2_key}`;
+            // Use the download API endpoint (same as ID3 uploader)
+            // This forces download instead of opening in browser
+            const downloadUrl = `/download/${encodeURIComponent(currentSong.r2_key)}`;
+            
             const link = document.createElement('a');
             link.href = downloadUrl;
             link.download = currentSong.filename || `${currentSong.title} - ${getArtistDisplayName(currentSong)}.mp3`;
