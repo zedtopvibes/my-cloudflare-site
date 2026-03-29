@@ -568,8 +568,8 @@
     <script>
         const API_BASE = '/api';
         
-        // Direct R2 URL for playback (fast)
-        const R2_PUBLIC_URL = 'https://pub-fec6ab79d63347f48cfcfc5af6928ff0.r2.dev';
+        // CDN URL for direct file access
+        const CDN_URL = 'https://files.zedtopvibes.com';
         
         let currentSong = null;
         let audioPlayer = null;
@@ -618,12 +618,13 @@
             return 'Unknown Artist';
         }
         
-        // Play Song - Direct R2 URL (instant)
+        // Play Song - Direct CDN URL (no API)
         async function playSong() {
             if (!currentSong) return;
             
             try {
-                const audioUrl = `${R2_PUBLIC_URL}/${currentSong.r2_key}`;
+                // Direct CDN URL for instant playback
+                const audioUrl = `${CDN_URL}/${encodeURIComponent(currentSong.filename)}`;
                 
                 if (audioPlayer && isPlaying) {
                     document.getElementById('floatingPlayer').style.display = 'flex';
@@ -686,23 +687,18 @@
             document.getElementById('floatingPlayer').style.display = 'none';
         }
         
-        // ===== UPDATED: Download Song using Download API (forces download) =====
+        // Download Song - Direct CDN URL with ?save parameter (Transform Rule forces download)
         function downloadSong() {
-            if (!currentSong || !currentSong.r2_key) {
+            if (!currentSong || !currentSong.filename) {
                 alert('Download not available');
                 return;
             }
             
-            // Use the download API endpoint (same as ID3 uploader)
-            // This forces download instead of opening in browser
-            const downloadUrl = `/download/${encodeURIComponent(currentSong.r2_key)}`;
+            // Direct CDN URL with ?save - Transform Rule adds Content-Disposition: attachment
+            const downloadUrl = `${CDN_URL}/${encodeURIComponent(currentSong.filename)}?save`;
             
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.download = currentSong.filename || `${currentSong.title} - ${getArtistDisplayName(currentSong)}.mp3`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Direct download - no API!
+            window.location.href = downloadUrl;
         }
         
         function goToArtistFromPlayer() {
