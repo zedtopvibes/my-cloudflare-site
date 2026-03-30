@@ -273,11 +273,11 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 2px 8px;
+            padding: 4px 8px;
             border-radius: 20px;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            margin-left: 8px;
+            margin-left: 10px;
             white-space: nowrap;
         }
         
@@ -423,6 +423,10 @@
             color: #333;
         }
         
+        .action-icon.add-track:hover {
+            background: #10b981;
+        }
+        
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -488,7 +492,7 @@
         }
         
         .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
+        .toast.error { background: #dc3545; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -541,6 +545,8 @@
                 <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn active"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -607,7 +613,6 @@
     <script>
         const API_BASE = '/api';
         let allPlaylists = [];
-        let allTracks = [];
         let currentPage = 1;
         let currentStatusFilter = 'all';
         const itemsPerPage = 12;
@@ -710,15 +715,12 @@
             
             try {
                 // Use admin endpoint to get all playlists including drafts
-                const [playlistsRes, tracksRes] = await Promise.all([
-                    fetch(`${API_BASE}/admin/playlists`).catch(() => ({ ok: false })),
-                    fetch(`${API_BASE}/tracks`).catch(() => ({ ok: false }))
-                ]);
+                const res = await fetch(`${API_BASE}/admin/playlists`);
+                if (!res.ok) throw new Error('Failed to load playlists');
                 
-                allPlaylists = playlistsRes.ok ? await playlistsRes.json() : [];
-                allTracks = tracksRes.ok ? await tracksRes.json() : [];
+                allPlaylists = await res.json();
                 
-                // Update stats
+                // Update stats - ensure track_count is a number
                 const publishedCount = allPlaylists.filter(p => p.status === 'published').length;
                 const draftCount = allPlaylists.filter(p => p.status === 'draft').length;
                 const totalTracks = allPlaylists.reduce((sum, p) => sum + (p.track_count || 0), 0);
@@ -730,7 +732,15 @@
                 
                 renderPlaylists();
             } catch (error) {
-                showError('Failed to load playlists');
+                console.error('Error loading playlists:', error);
+                document.getElementById('playlistsGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                        <h3>Failed to Load Playlists</h3>
+                        <p>${error.message}</p>
+                        <button onclick="loadPlaylists()" class="btn btn-primary" style="margin-top: 16px;">Try Again</button>
+                    </div>
+                `;
             }
         }
 
@@ -774,6 +784,9 @@
                     ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
                     : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
                 
+                const trackCount = playlist.track_count || 0;
+                const plays = playlist.plays || 0;
+                
                 return `
                 <div class="playlist-card">
                     <div class="playlist-cover">
@@ -788,8 +801,8 @@
                             ${statusBadge}
                         </div>
                         <div class="playlist-meta">
-                            <span><i class="fas fa-music"></i> ${playlist.track_count || 0} tracks</span>
-                            <span><i class="fas fa-headphones"></i> ${formatNumber(playlist.plays || 0)}</span>
+                            <span><i class="fas fa-music"></i> ${trackCount} tracks</span>
+                            <span><i class="fas fa-headphones"></i> ${formatNumber(plays)}</span>
                         </div>
                         <div class="playlist-creator">
                             <i class="fas fa-user"></i> ${playlist.created_by || 'Zedtopvibes'}
@@ -800,6 +813,9 @@
                             ? `<button class="action-icon publish" onclick="event.stopPropagation(); publishPlaylist(${playlist.id}, '${escapeHtml(playlist.name).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
                             : `<button class="action-icon unpublish" onclick="event.stopPropagation(); unpublishPlaylist(${playlist.id}, '${escapeHtml(playlist.name).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
                         }
+                        <a href="/admin/playlists/add-tracks.html?id=${playlist.id}" class="action-icon add-track" onclick="event.stopPropagation()" title="Add Tracks">
+                            <i class="fas fa-plus-circle"></i>
+                        </a>
                         <a href="/admin/playlists/edit.html?id=${playlist.id}" class="action-icon" onclick="event.stopPropagation()" title="Edit">
                             <i class="fas fa-edit"></i>
                         </a>
@@ -834,17 +850,6 @@
         function searchPlaylists() {
             currentPage = 1;
             renderPlaylists();
-        }
-
-        function showError(message) {
-            document.getElementById('playlistsGrid').innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
-                    <h3>Error</h3>
-                    <p>${message}</p>
-                    <button onclick="loadPlaylists()" class="btn btn-primary" style="margin-top: 16px;">Try Again</button>
-                </div>
-            `;
         }
 
         function escapeHtml(text) {
