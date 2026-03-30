@@ -224,7 +224,7 @@
         /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             border-bottom: 1px solid var(--gray-200);
         }
         
@@ -480,6 +480,7 @@
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
         .toast.success { background: var(--success); }
@@ -539,7 +540,6 @@
 
     <script>
         const API_BASE = '/api';
-        let currentAlbum = null;
         
         // Helper function to get artist display name from track
         function getTrackArtistDisplay(track) {
@@ -624,13 +624,19 @@
                 if (!res.ok) throw new Error('Album not found');
                 
                 const album = await res.json();
-                currentAlbum = album;
+                
+                // Get tracks for this album - use admin endpoint to get tracks with details
+                const tracksRes = await fetch(`${API_BASE}/albums/${albumId}`);
+                const albumData = await tracksRes.json();
+                const tracks = albumData.tracks || [];
                 
                 const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
-                const tracks = album.tracks || [];
                 
+                // Calculate stats
                 const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
                 const totalDuration = tracks.reduce((sum, t) => sum + (t.duration || 0), 0);
+                const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
+                const totalViews = tracks.reduce((sum, t) => sum + (t.views || 0), 0);
                 
                 const formatDuration = (seconds) => {
                     if (!seconds) return '0:00';
@@ -685,7 +691,11 @@
                             <div class="stat-label">Plays</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${formatNumber(album.views || 0)}</div>
+                            <div class="stat-value">${formatNumber(totalDownloads)}</div>
+                            <div class="stat-label">Downloads</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${formatNumber(totalViews)}</div>
                             <div class="stat-label">Views</div>
                         </div>
                         <div class="stat-card">
@@ -755,6 +765,7 @@
                 `;
                 
             } catch (error) {
+                console.error('Error loading album:', error);
                 document.getElementById('profileContent').innerHTML = `
                     <div style="text-align: center; padding: 60px;">
                         <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
@@ -796,7 +807,7 @@
                     const trackCountSpan = document.querySelector('.track-count');
                     if (trackCountSpan) trackCountSpan.textContent = trackCount + ' tracks';
                     
-                    const tracksStat = document.querySelector('.stat-card:first-child .stat-value');
+                    const tracksStat = document.querySelector('.stats-grid .stat-card:first-child .stat-value');
                     if (tracksStat) tracksStat.textContent = trackCount;
                     
                     if (trackCount === 0) {
@@ -818,13 +829,12 @@
         }
         
         async function deleteAlbum(id) {
-            // First check if album has tracks by getting track count from the page
+            // First check if album has tracks
             const trackCountElement = document.querySelector('.track-count');
             let trackCount = 0;
             if (trackCountElement) {
                 trackCount = parseInt(trackCountElement.textContent) || 0;
             } else {
-                // Fallback: count track items
                 trackCount = document.querySelectorAll('.track-item').length;
             }
             
