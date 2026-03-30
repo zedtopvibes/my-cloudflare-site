@@ -12,7 +12,7 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  // GET - List all EPs (ADMIN - shows all including drafts)
+  // GET - List all EPs with artist info (ADMIN - shows all including drafts)
   if (request.method === 'GET') {
     try {
       const { results } = await env.DB.prepare(`
@@ -33,6 +33,7 @@ export async function onRequest(context) {
           e.updated_at,
           e.artist_id,
           e.status,
+          (SELECT COUNT(*) FROM ep_tracks WHERE ep_id = e.id) as track_count,
           a.name as artist_name,
           a.slug as artist_slug
         FROM eps e
@@ -56,7 +57,7 @@ export async function onRequest(context) {
     }
   }
 
-  // POST - Create new EP with status and genre support
+  // POST - Create new EP with status support
   if (request.method === 'POST') {
     try {
       const data = await request.json();
@@ -140,6 +141,7 @@ export async function onRequest(context) {
           e.updated_at,
           e.artist_id,
           e.status,
+          (SELECT COUNT(*) FROM ep_tracks WHERE ep_id = e.id) as track_count,
           a.name as artist_name,
           a.slug as artist_slug
         FROM eps e
