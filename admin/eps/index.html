@@ -420,6 +420,11 @@
             color: #333;
         }
         
+        .action-icon.add-track:hover {
+            background: #10b981;
+            color: white;
+        }
+        
         .ep-list-featured {
             background: rgba(255, 193, 7, 0.2);
             color: #92400e;
@@ -439,6 +444,7 @@
             border-radius: 20px;
             font-size: 0.7rem;
             font-weight: 600;
+            margin-left: 10px;
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -509,7 +515,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        /* Responsive */
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -531,8 +536,7 @@
                 margin-top: 8px;
             }
             
-            .ep-list-featured,
-            .ep-badge {
+            .ep-list-featured {
                 margin-left: 96px;
                 margin-top: 8px;
             }
@@ -558,7 +562,7 @@
     <div class="admin-container">
         <div class="admin-header">
             <div class="header-top">
-                <h1><i class="fas fa-compact-disc"></i> EPs</h1>
+                <h1><i class="fas fa-play-circle"></i> EPs</h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
@@ -576,6 +580,8 @@
                 <a href="/admin/eps/index.html" class="tab-btn active"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -583,7 +589,7 @@
         <div class="admin-content">
             <div class="content-header">
                 <h2>
-                    <i class="fas fa-compact-disc"></i> All EPs
+                    <i class="fas fa-play-circle"></i> All EPs
                     <button onclick="loadEPs()" class="btn btn-secondary" style="margin-left: 8px;">
                         <i class="fas fa-sync-alt"></i>
                     </button>
@@ -756,7 +762,7 @@
                 
                 allEPs = await res.json();
                 
-                // Update stats
+                // Update stats - ensure track_count is a number
                 const publishedCount = allEPs.filter(e => e.status === 'published').length;
                 const draftCount = allEPs.filter(e => e.status === 'draft').length;
                 const totalTracks = allEPs.reduce((sum, e) => sum + (e.track_count || 0), 0);
@@ -769,6 +775,7 @@
                 renderEPs();
                 
             } catch (error) {
+                console.error('Error loading EPs:', error);
                 document.getElementById('epsList').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
@@ -798,7 +805,7 @@
             if (filtered.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-compact-disc"></i>
+                        <i class="fas fa-play-circle"></i>
                         <h3>No EPs found</h3>
                         <p>${searchTerm ? 'Try a different search' : 'Create your first EP'}</p>
                         <a href="/admin/eps/edit.html" class="btn btn-primary" style="margin-top: 16px;">
@@ -822,17 +829,21 @@
                     ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
                     : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
                 
+                // Ensure track_count is a number, default to 0
+                const trackCount = ep.track_count || 0;
+                const plays = ep.plays || 0;
+                
                 return `
                     <div class="ep-list-item">
                         <div class="ep-list-cover">
                             ${ep.cover_url 
                                 ? `<img src="${ep.cover_url}" alt="${escapeHtml(ep.title)}" loading="lazy">`
-                                : `<i class="fas fa-compact-disc"></i>`
+                                : `<i class="fas fa-play-circle"></i>`
                             }
                         </div>
                         <div class="ep-list-info">
                             <div class="ep-list-title">
-                                ${escapeHtml(ep.title)} 
+                                ${escapeHtml(ep.title)}
                                 <span class="ep-badge">EP</span>
                                 ${statusBadge}
                             </div>
@@ -840,10 +851,10 @@
                         </div>
                         <div class="ep-list-stats">
                             <div class="ep-list-stat">
-                                <i class="fas fa-music"></i> ${ep.track_count || 0}
+                                <i class="fas fa-music"></i> ${trackCount}
                             </div>
                             <div class="ep-list-stat">
-                                <i class="fas fa-headphones"></i> ${formatNumber(ep.plays || 0)}
+                                <i class="fas fa-headphones"></i> ${formatNumber(plays)}
                             </div>
                         </div>
                         <div class="ep-list-actions">
@@ -851,6 +862,9 @@
                                 ? `<button class="action-icon publish" onclick="event.stopPropagation(); publishEP(${ep.id}, '${escapeHtml(ep.title).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
                                 : `<button class="action-icon unpublish" onclick="event.stopPropagation(); unpublishEP(${ep.id}, '${escapeHtml(ep.title).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
                             }
+                            <a href="/admin/eps/add-tracks.html?id=${ep.id}" class="action-icon add-track" onclick="event.stopPropagation()" title="Add Tracks">
+                                <i class="fas fa-plus-circle"></i>
+                            </a>
                             <a href="/admin/eps/edit.html?id=${ep.id}" class="action-icon" onclick="event.stopPropagation()" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
