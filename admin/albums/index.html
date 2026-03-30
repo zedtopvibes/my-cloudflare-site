@@ -392,11 +392,6 @@
             color: #333;
         }
         
-        .action-icon.delete:hover {
-            background: #dc3545;
-            color: white;
-        }
-        
         .action-icon.add-track:hover {
             background: #10b981;
             color: white;
@@ -728,7 +723,7 @@
                 
                 allAlbums = await res.json();
                 
-                // Update stats
+                // Update stats - ensure track_count is a number
                 const publishedCount = allAlbums.filter(a => a.status === 'published').length;
                 const draftCount = allAlbums.filter(a => a.status === 'draft').length;
                 const totalTracks = allAlbums.reduce((sum, a) => sum + (a.track_count || 0), 0);
@@ -741,6 +736,7 @@
                 renderAlbums();
                 
             } catch (error) {
+                console.error('Error loading albums:', error);
                 document.getElementById('albumsList').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
@@ -794,6 +790,10 @@
                     ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
                     : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
                 
+                // Ensure track_count is a number, default to 0
+                const trackCount = album.track_count || 0;
+                const plays = album.plays || 0;
+                
                 return `
                     <div class="album-list-item">
                         <div class="album-list-cover">
@@ -811,10 +811,10 @@
                         </div>
                         <div class="album-list-stats">
                             <div class="album-list-stat">
-                                <i class="fas fa-music"></i> ${album.track_count || 0}
+                                <i class="fas fa-music"></i> ${trackCount}
                             </div>
                             <div class="album-list-stat">
-                                <i class="fas fa-headphones"></i> ${formatNumber(album.plays || 0)}
+                                <i class="fas fa-headphones"></i> ${formatNumber(plays)}
                             </div>
                         </div>
                         <div class="album-list-actions">
