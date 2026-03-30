@@ -522,6 +522,30 @@
         const API_BASE = '/api';
         let currentPlaylist = null;
         
+        // Helper function to get artist display name from track
+        function getTrackArtistDisplay(track) {
+            if (!track.artists || track.artists.length === 0) {
+                return escapeHtml(track.artist || 'Unknown Artist');
+            }
+            
+            const primaryArtist = track.artists.find(a => a.is_primary === 1) || track.artists[0];
+            const featuredArtists = track.artists.filter(a => a.is_primary === 0);
+            
+            let html = `<span class="artist-badge primary">${escapeHtml(primaryArtist.name)}</span>`;
+            if (featuredArtists.length > 0) {
+                html += featuredArtists.map(a => `<span class="artist-badge">${escapeHtml(a.name)}</span>`).join('');
+            }
+            return html;
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
         // Publish playlist
         async function publishPlaylist(id, name) {
             if (!confirm(`Publish "${name}"? It will become visible to the public.`)) return;
@@ -582,14 +606,17 @@
                 
                 const playlist = await res.json();
                 currentPlaylist = playlist;
-                console.log('Playlist data:', playlist);
                 
-                // Tracks are in playlist.tracks
-                const tracks = playlist.tracks || [];
+                // Get tracks for this playlist
+                const tracksRes = await fetch(`${API_BASE}/playlists/${playlistId}`);
+                const playlistData = await tracksRes.json();
+                const tracks = playlistData.tracks || [];
                 
                 // Calculate stats
                 const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
                 const totalDuration = tracks.reduce((sum, t) => sum + (t.duration || 0), 0);
+                const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
+                const totalViews = tracks.reduce((sum, t) => sum + (t.views || 0), 0);
                 
                 // Format duration
                 const formatDuration = (seconds) => {
@@ -645,12 +672,12 @@
                             <div class="stat-label">Plays</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${formatNumber(playlist.views || 0)}</div>
-                            <div class="stat-label">Views</div>
+                            <div class="stat-value">${formatNumber(totalDownloads)}</div>
+                            <div class="stat-label">Downloads</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${formatNumber(playlist.downloads || 0)}</div>
-                            <div class="stat-label">Downloads</div>
+                            <div class="stat-value">${formatNumber(totalViews)}</div>
+                            <div class="stat-label">Views</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${formatDuration(totalDuration)}</div>
@@ -742,7 +769,10 @@
                     method: 'DELETE'
                 });
                 
-                if (!res.ok) throw new Error('Failed to remove track');
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error || 'Failed to remove track');
+                }
                 
                 // Remove track from UI
                 const trackItem = button.closest('.track-item');
@@ -752,15 +782,20 @@
                     
                     // Update track count
                     const trackCount = document.querySelectorAll('.track-item').length;
-                    document.querySelector('.track-count').textContent = trackCount + ' tracks';
+                    const trackCountSpan = document.querySelector('.track-count');
+                    if (trackCountSpan) trackCountSpan.textContent = trackCount + ' tracks';
+                    
+                    // Update stats grid track count
+                    const tracksStat = document.querySelector('.stats-grid .stat-card:first-child .stat-value');
+                    if (tracksStat) tracksStat.textContent = trackCount;
                     
                     // If no tracks left, reload to show empty state
                     if (trackCount === 0) {
                         location.reload();
                     }
+                    
+                    showToast('Track removed from playlist', 'success');
                 }, 300);
-                
-                showToast('Track removed from playlist', 'success');
                 
             } catch (error) {
                 showToast(error.message, 'error');
@@ -794,14 +829,6 @@
             } catch (error) {
                 showToast(error.message, 'error');
             }
-        }
-        
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
         }
         
         function escapeHtml(text) {
@@ -850,8 +877,6 @@
         // Initialize
         if (checkAuth()) {
             loadPlaylist();
-        } else {
-            window.location.href = '/admin/login.html';
         }
     </script>
 </body>
