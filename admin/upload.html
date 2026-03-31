@@ -16,8 +16,6 @@
             --primary-light: #2f8ed0;
             --primary-lighter: #70c8ff;
             --primary-dark: #1f4c73;
-            --deep-bg: #0b0f1c;
-            --dark: #1a1a1a;
             --gray: #666;
             --light-gray: #f0f2f5;
             --white: #ffffff;
@@ -25,21 +23,24 @@
             --success: #28a745;
             --error: #dc3545;
             --warning: #ffc107;
+            --skeleton-bg: #e2e8f0;
         }
         
         body {
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background: var(--light-gray);
             min-height: 100vh;
-            line-height: 1.5;
             color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
         .admin-container {
-            width: 100%;
             max-width: 1400px;
             margin: 0 auto;
             padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
         .admin-header {
@@ -69,13 +70,34 @@
             gap: 8px;
         }
         
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .user-info i {
+            color: var(--primary-blue);
+        }
+        
+        .user-info span {
+            font-weight: 600;
+        }
+        
+        /* Tabs - Horizontal scroll with hidden scrollbar */
         .admin-tabs {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             overflow-x: auto;
             padding: 5px 0;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            -ms-overflow-style: none;
         }
         
         .admin-tabs::-webkit-scrollbar {
@@ -83,11 +105,11 @@
         }
         
         .tab-btn {
-            padding: 10px 15px !important;
+            padding: 8px 14px !important;
             background: transparent;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem !important;
+            font-size: 0.85rem !important;
             font-weight: 600 !important;
             color: #666;
             cursor: pointer;
@@ -97,7 +119,12 @@
             align-items: center;
             gap: 6px;
             text-decoration: none;
-            height: 40px !important;
+            height: 36px !important;
+            flex-shrink: 0;
+        }
+        
+        .tab-btn i {
+            font-size: 0.85rem !important;
         }
         
         .tab-btn:hover {
@@ -110,17 +137,23 @@
             color: white;
         }
         
-        .upload-form-container {
+        .admin-content {
             background: var(--white);
             border-radius: 12px;
-            padding: 25px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
             width: 100%;
-            min-height: 600px;
+            overflow-x: hidden;
+        }
+        
+        .upload-form-container {
+            width: 100%;
         }
         
         .upload-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 25px;
         }
         
@@ -137,14 +170,15 @@
         
         .section-header h3 {
             color: var(--primary-blue);
-            font-size: 1.2rem;
+            font-size: 1rem;
+            font-weight: 600;
         }
         
         .settings-btn {
             background: none;
             border: none;
             color: var(--primary-blue);
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
             padding: 5px 10px;
             border-radius: 5px;
@@ -156,10 +190,9 @@
         }
         
         .bottom-uploads {
-            grid-column: 1 / -1;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            grid-template-columns: 1fr;
+            gap: 20px;
             margin-top: 20px;
             padding-top: 20px;
             border-top: 2px solid #eee;
@@ -171,7 +204,7 @@
         
         .compact-upload label {
             display: block;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #444;
             margin-bottom: 6px;
@@ -184,10 +217,10 @@
         
         .compact-file-input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             background: white;
             cursor: pointer;
             font-family: 'Montserrat', sans-serif;
@@ -205,18 +238,18 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .compact-file-info i {
             color: var(--primary-blue);
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         
         .compact-file-details {
             flex: 1;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         
         .compact-file-name {
@@ -226,7 +259,7 @@
         
         .compact-file-size {
             color: #666;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             margin-left: 5px;
         }
         
@@ -236,7 +269,7 @@
             padding: 4px;
             border-radius: 50%;
             transition: all 0.3s;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         
         .remove-compact-file:hover {
@@ -250,10 +283,10 @@
         
         .form-group label {
             display: block;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #444;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .form-group label i {
@@ -265,10 +298,10 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-family: 'Montserrat', sans-serif;
             transition: all 0.3s;
         }
@@ -283,13 +316,13 @@
         
         .form-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 15px;
             margin-bottom: 0;
         }
         
         .form-hint {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #999;
             margin-top: 4px;
         }
@@ -306,12 +339,12 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         
         .track-number-container {
             margin-top: 15px;
-            padding: 15px;
+            padding: 12px;
             background: #f8f9fa;
             border-radius: 8px;
             border-left: 3px solid var(--primary-blue);
@@ -319,19 +352,19 @@
         
         .duration-display {
             margin-top: 8px;
-            padding: 10px 15px;
+            padding: 8px 12px;
             background: #f0f7ff;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-left: 3px solid var(--primary-blue);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .duration-display i {
             color: var(--primary-blue);
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         
         .duration-display span {
@@ -348,7 +381,7 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             margin-top: 4px;
-            max-height: 250px;
+            max-height: 200px;
             overflow-y: auto;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             display: none;
@@ -356,12 +389,12 @@
         }
         
         .suggestion-item {
-            padding: 10px 15px;
+            padding: 8px 12px;
             cursor: pointer;
             border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: background 0.2s;
         }
         
@@ -376,8 +409,9 @@
         
         .suggestion-icon {
             color: var(--primary-blue);
-            width: 24px;
+            width: 20px;
             text-align: center;
+            font-size: 0.85rem;
         }
         
         .suggestion-info {
@@ -386,10 +420,11 @@
         
         .suggestion-name {
             font-weight: 500;
+            font-size: 0.85rem;
         }
         
         .suggestion-meta {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #666;
         }
         
@@ -399,9 +434,9 @@
             gap: 5px;
             background: #e3f2fd;
             color: var(--primary-blue);
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             margin-top: 5px;
             margin-right: 5px;
         }
@@ -412,9 +447,34 @@
             color: var(--primary-blue);
             margin-left: 5px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         
+        /* Skeleton Loader */
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f0f0f0 50%, var(--skeleton-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-input {
+            height: 42px;
+            width: 100%;
+        }
+        
+        .skeleton-text {
+            height: 20px;
+            width: 100px;
+            margin-bottom: 8px;
+        }
+        
+        /* Overlay Styles */
         .overlay {
             display: none;
             position: fixed;
@@ -436,8 +496,8 @@
         
         .overlay-content {
             background: white;
-            border-radius: 24px;
-            padding: 40px;
+            border-radius: 20px;
+            padding: 30px;
             max-width: 500px;
             width: 100%;
             max-height: 90vh;
@@ -447,14 +507,8 @@
         }
         
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .upload-progress-overlay {
@@ -463,24 +517,20 @@
         
         .upload-progress-overlay h2 {
             color: var(--primary-blue);
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
         }
         
         .progress-circle {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 30px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 25px;
             position: relative;
         }
         
         .progress-circle svg {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             transform: rotate(-90deg);
         }
         
@@ -496,8 +546,8 @@
         
         .progress-circle .progress-circle-fill {
             stroke: var(--primary-blue);
-            stroke-dasharray: 314;
-            stroke-dashoffset: 314;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
             transition: stroke-dashoffset 0.3s;
         }
         
@@ -506,35 +556,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-blue);
-        }
-        
-        .file-info {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        
-        .file-info-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .file-info-item:last-child {
-            border-bottom: none;
-        }
-        
-        .file-info-item i {
-            color: var(--primary-blue);
-            width: 24px;
-            font-size: 1.1rem;
         }
         
         .success-overlay {
@@ -542,50 +566,43 @@
         }
         
         .success-overlay .success-icon {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background: var(--success);
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin: 0 auto 20px;
             animation: scaleIn 0.5s ease;
         }
         
         @keyframes scaleIn {
-            0% {
-                transform: scale(0);
-            }
-            70% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
         
         .success-overlay h2 {
             color: var(--success);
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
         }
         
         .artwork-thumbnail {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 3rem;
+            font-size: 2.5rem;
         }
         
         .artwork-thumbnail img {
@@ -597,8 +614,8 @@
         .song-details {
             background: #f8f9fa;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             text-align: left;
         }
         
@@ -606,8 +623,9 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid #eee;
+            font-size: 0.85rem;
         }
         
         .detail-item:last-child {
@@ -616,24 +634,24 @@
         
         .detail-item i {
             color: var(--primary-blue);
-            width: 24px;
-            font-size: 1.1rem;
+            width: 20px;
+            font-size: 0.9rem;
         }
         
         .playlist-badge {
             display: inline-block;
             background: #e3f2fd;
             color: var(--primary-blue);
-            padding: 4px 12px;
+            padding: 2px 8px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             margin: 2px;
         }
         
         .overlay-actions {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
         }
         
         .overlay-actions .btn {
@@ -641,10 +659,9 @@
         }
         
         .form-actions {
-            grid-column: 1 / -1;
             display: flex;
             justify-content: flex-end;
-            gap: 15px;
+            gap: 12px;
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid #eee;
@@ -654,11 +671,11 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 12px 25px;
+            gap: 6px;
+            padding: 10px 20px;
             border: none;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -712,13 +729,13 @@
         }
         
         .status-message {
-            grid-column: 1 / -1;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin: 20px 0 0;
+            margin: 15px 0 0;
             display: none;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-size: 0.85rem;
         }
         
         .status-success {
@@ -742,43 +759,6 @@
             display: flex;
         }
         
-        .action-indicator {
-            margin: 20px 0 0;
-            padding: 12px 16px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary-blue);
-        }
-        
-        .action-indicator-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .action-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .action-badge i {
-            font-size: 0.9rem;
-        }
-        
-        .action-badge.draft i {
-            color: #6c757d;
-        }
-        
-        .action-badge.publish i {
-            color: var(--primary-blue);
-        }
-        
-        .action-separator {
-            color: #999;
-        }
-        
         .modal {
             display: none;
             position: fixed;
@@ -796,7 +776,7 @@
         
         .modal-content {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 16px;
             width: 100%;
             max-width: 500px;
@@ -809,23 +789,23 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-bottom: 2px solid var(--light-gray);
-            padding-bottom: 15px;
+            padding-bottom: 12px;
         }
         
         .modal-header h3 {
             color: var(--primary-blue);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .close-btn {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             cursor: pointer;
             color: #999;
         }
@@ -836,12 +816,12 @@
         
         .image-upload {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .image-preview {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             margin: 0 auto 10px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             border-radius: 8px;
@@ -849,7 +829,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 2rem;
+            font-size: 1.8rem;
             overflow: hidden;
         }
         
@@ -863,20 +843,20 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #eee;
         }
         
         .settings-item span {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1rem;
+            gap: 8px;
+            font-size: 0.9rem;
         }
         
         .settings-item span i {
             color: var(--primary-blue);
-            width: 24px;
+            width: 20px;
         }
         
         .settings-item input[type="checkbox"] {
@@ -885,39 +865,60 @@
             cursor: pointer;
         }
         
-        @media (max-width: 768px) {
-            .upload-grid {
-                grid-template-columns: 1fr;
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Tablet Styles */
+        @media (min-width: 768px) {
+            .admin-container {
+                padding: 15px;
             }
             
-            .bottom-uploads {
-                grid-template-columns: 1fr;
+            .upload-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
             }
             
             .form-row {
-                grid-template-columns: 1fr;
-                gap: 20px;
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .bottom-uploads {
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
             }
             
             .form-actions {
-                flex-direction: column;
+                flex-direction: row;
             }
             
             .btn {
-                width: 100%;
+                width: auto;
             }
-            
-            .overlay-content {
+        }
+        
+        /* Desktop Styles */
+        @media (min-width: 1024px) {
+            .admin-container {
                 padding: 20px;
-            }
-            
-            .overlay-actions {
-                flex-direction: column;
-            }
-            
-            .action-indicator-content {
-                flex-direction: column;
-                align-items: flex-start;
             }
         }
     </style>
@@ -927,15 +928,23 @@
         <div class="admin-header">
             <div class="header-top">
                 <h1><i class="fas fa-cloud-upload-alt"></i> Upload Song</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
             </div>
+            
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/upload.html" class="tab-btn active"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
                 <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -998,7 +1007,7 @@
                                         <button type="button" onclick="clearAlbumSelection()"><i class="fas fa-times"></i></button>
                                     </div>
                                     <div id="trackNumberContainer" class="track-number-container" style="display: none;">
-                                        <label style="display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px;">
+                                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">
                                             <i class="fas fa-hashtag"></i> Track Number
                                         </label>
                                         <input type="number" id="trackNumber" min="1" value="1">
@@ -1052,17 +1061,17 @@
                         
                         <!-- Right Column -->
                         <div class="form-section">
-                            <h3 style="margin-bottom: 20px; color: var(--primary-blue);">
+                            <h3 style="margin-bottom: 15px; color: var(--primary-blue); font-size: 1rem;">
                                 <i class="fas fa-paint-brush"></i> Description
                             </h3>
                             
                             <div class="form-group">
                                 <label><i class="fas fa-align-left"></i> Description</label>
-                                <textarea id="description" rows="6" placeholder="Tell us about this track..."></textarea>
+                                <textarea id="description" rows="5" placeholder="Tell us about this track..."></textarea>
                             </div>
                             
                             <div id="optionsSection">
-                                <h3 style="margin: 20px 0 15px; color: var(--primary-blue);">
+                                <h3 style="margin: 15px 0 10px; color: var(--primary-blue); font-size: 1rem;">
                                     <i class="fas fa-check-circle"></i> Options
                                 </h3>
                                 <div class="checkbox-group">
@@ -1112,27 +1121,6 @@
                             </div>
                         </div>
                         
-                        <!-- Action Indicator -->
-                        <div class="action-indicator">
-                            <div class="action-indicator-content">
-                                <i class="fas fa-info-circle" style="color: var(--primary-blue);"></i>
-                                <span style="font-size: 0.9rem;">Choose action:</span>
-                                <span class="action-badge draft">
-                                    <i class="fas fa-save"></i>
-                                    <span style="font-size: 0.85rem;">Save as Draft</span>
-                                </span>
-                                <span class="action-separator">→</span>
-                                <span style="font-size: 0.85rem;">Content saved but not visible to public</span>
-                                <span class="action-separator">|</span>
-                                <span class="action-badge publish">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <span style="font-size: 0.85rem;">Publish Now</span>
-                                </span>
-                                <span class="action-separator">→</span>
-                                <span style="font-size: 0.85rem;">Content visible immediately</span>
-                            </div>
-                        </div>
-                        
                         <div id="statusMessage" class="status-message">
                             <i class="fas fa-info-circle"></i> <span></span>
                         </div>
@@ -1152,6 +1140,10 @@
                 </form>
             </div>
         </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
+        </div>
     </div>
 
     <!-- Upload Progress Overlay -->
@@ -1159,13 +1151,13 @@
         <div class="overlay-content upload-progress-overlay">
             <h2><i class="fas fa-cloud-upload-alt"></i> UPLOADING</h2>
             <div class="progress-circle">
-                <svg viewBox="0 0 120 120">
-                    <circle class="bg-circle" cx="60" cy="60" r="50"></circle>
-                    <circle class="progress-circle-fill" cx="60" cy="60" r="50"></circle>
+                <svg viewBox="0 0 100 100">
+                    <circle class="bg-circle" cx="50" cy="50" r="45"></circle>
+                    <circle class="progress-circle-fill" cx="50" cy="50" r="45"></circle>
                 </svg>
                 <div class="progress-percentage" id="progressPercentage">0%</div>
             </div>
-            <div class="file-info">
+            <div class="file-info" style="background: #f8f9fa; border-radius: 8px; padding: 12px;">
                 <div class="file-info-item"><i class="fas fa-music"></i><span id="progressFileName">-</span></div>
                 <div class="file-info-item"><i class="fas fa-weight-hanging"></i><span id="progressFileSize">-</span></div>
                 <div class="file-info-item"><i class="fas fa-clock"></i><span id="progressDuration">-</span></div>
@@ -1205,7 +1197,7 @@
             <div class="settings-item"><span><i class="fas fa-list"></i> Playlists</span><input type="checkbox" id="showPlaylists" checked onchange="applyFieldVisibility()"></div>
             <div class="settings-item"><span><i class="fas fa-music"></i> BPM</span><input type="checkbox" id="showBPM" checked onchange="applyFieldVisibility()"></div>
             <div class="settings-item"><span><i class="fas fa-check-circle"></i> Options</span><input type="checkbox" id="showOptions" checked onchange="applyFieldVisibility()"></div>
-            <div class="modal-actions" style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <div class="modal-actions" style="margin-top: 15px; display: flex; justify-content: flex-end;">
                 <button onclick="closeSettingsModal()" class="btn btn-primary">Done</button>
             </div>
         </div>
@@ -1220,15 +1212,15 @@
             </div>
             <div class="image-upload">
                 <div id="artistImagePreview" class="image-preview"><i class="fas fa-user"></i></div>
-                <button type="button" onclick="document.getElementById('artistImageFile').click()" class="btn btn-secondary"><i class="fas fa-camera"></i> Upload Photo</button>
+                <button type="button" onclick="document.getElementById('artistImageFile').click()" class="btn btn-secondary btn-sm"><i class="fas fa-camera"></i> Upload Photo</button>
                 <input type="file" id="artistImageFile" accept="image/*" style="display: none;" onchange="previewArtistImage(this)">
             </div>
             <div class="form-group"><label>Artist Name *</label><input type="text" id="artistName" placeholder="e.g. Slap Dee"></div>
             <div class="form-group"><label>Country</label><input type="text" id="artistCountry" placeholder="e.g. Zambia"></div>
-            <div class="form-group"><label>Bio</label><textarea id="artistBio" rows="3"></textarea></div>
+            <div class="form-group"><label>Bio</label><textarea id="artistBio" rows="2"></textarea></div>
             <div class="checkbox-group"><label class="checkbox-label"><input type="checkbox" id="artistFeatured"> Featured Artist</label><label class="checkbox-label"><input type="checkbox" id="artistLegend"> Zambian Legend</label></div>
             <div id="artistModalStatus" class="status-message" style="display: none;"></div>
-            <div class="modal-actions" style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <div class="modal-actions" style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="closeModal('artistModal')" class="btn btn-secondary">Cancel</button>
                 <button onclick="saveArtist()" class="btn btn-primary">Save Artist</button>
             </div>
@@ -1244,7 +1236,7 @@
             </div>
             <div class="image-upload">
                 <div id="albumImagePreview" class="image-preview"><i class="fas fa-compact-disc"></i></div>
-                <button type="button" onclick="document.getElementById('albumImageFile').click()" class="btn btn-secondary"><i class="fas fa-camera"></i> Upload Cover</button>
+                <button type="button" onclick="document.getElementById('albumImageFile').click()" class="btn btn-secondary btn-sm"><i class="fas fa-camera"></i> Upload Cover</button>
                 <input type="file" id="albumImageFile" accept="image/*" style="display: none;" onchange="previewAlbumImage(this)">
             </div>
             <div class="form-group"><label>Album Title *</label><input type="text" id="albumTitle"></div>
@@ -1253,10 +1245,10 @@
                 <div class="form-group"><label>Release Date</label><input type="date" id="albumReleaseDate"></div>
                 <div class="form-group"><label>Genre</label><input type="text" id="albumGenre"></div>
             </div>
-            <div class="form-group"><label>Description</label><textarea id="albumDescription" rows="3"></textarea></div>
+            <div class="form-group"><label>Description</label><textarea id="albumDescription" rows="2"></textarea></div>
             <div><label class="checkbox-label"><input type="checkbox" id="albumFeatured"> Featured Album</label></div>
             <div id="albumModalStatus" class="status-message" style="display: none;"></div>
-            <div class="modal-actions" style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <div class="modal-actions" style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="closeModal('albumModal')" class="btn btn-secondary">Cancel</button>
                 <button onclick="saveAlbum()" class="btn btn-primary">Create Album</button>
             </div>
@@ -1272,13 +1264,13 @@
             </div>
             <div class="image-upload">
                 <div id="playlistImagePreview" class="image-preview"><i class="fas fa-list"></i></div>
-                <button type="button" onclick="document.getElementById('playlistImageFile').click()" class="btn btn-secondary"><i class="fas fa-camera"></i> Upload Cover</button>
+                <button type="button" onclick="document.getElementById('playlistImageFile').click()" class="btn btn-secondary btn-sm"><i class="fas fa-camera"></i> Upload Cover</button>
                 <input type="file" id="playlistImageFile" accept="image/*" style="display: none;" onchange="previewPlaylistImage(this)">
             </div>
             <div class="form-group"><label>Playlist Name *</label><input type="text" id="playlistName"></div>
-            <div class="form-group"><label>Description</label><textarea id="playlistDescription" rows="3"></textarea></div>
+            <div class="form-group"><label>Description</label><textarea id="playlistDescription" rows="2"></textarea></div>
             <div id="playlistModalStatus" class="status-message" style="display: none;"></div>
-            <div class="modal-actions" style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <div class="modal-actions" style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="closeModal('playlistModal')" class="btn btn-secondary">Cancel</button>
                 <button onclick="savePlaylist()" class="btn btn-primary">Create Playlist</button>
             </div>
@@ -1289,7 +1281,6 @@
         const API_BASE = '/api';
         
         // DOM Elements
-        const submitBtn = document.getElementById('submitBtn');
         const fileInput = document.getElementById('fileInput');
         const titleInput = document.getElementById('title');
         const mainArtistInput = document.getElementById('mainArtistInput');
@@ -1438,7 +1429,7 @@
                     displayArtistSuggestions(matches);
                 } else {
                     document.getElementById('mainArtistSuggestions').innerHTML = 
-                        `<div style="padding: 15px; text-align: center;">No artists found. <a href="#" onclick="showModal('artistModal'); return false;">Add new?</a></div>`;
+                        `<div style="padding: 12px; text-align: center;">No artists found. <a href="#" onclick="showModal('artistModal'); return false;">Add new?</a></div>`;
                     document.getElementById('mainArtistSuggestions').style.display = 'block';
                 }
             });
@@ -1459,7 +1450,6 @@
             document.getElementById('mainArtistSuggestions').style.display = 'block';
         }
         
-        // UPDATED: Auto-fill genre when artist is selected
         window.selectMainArtist = async (artistId, artistName) => {
             selectedMainArtist = { id: parseInt(artistId), name: artistName };
             mainArtistInput.value = artistName;
@@ -1467,7 +1457,6 @@
             document.getElementById('selectedMainArtistName').textContent = artistName;
             document.getElementById('selectedMainArtistBadge').style.display = 'inline-flex';
             
-            // NEW: Fetch artist genre and auto-fill genre field
             try {
                 const response = await fetch(`${API_BASE}/admin/artists/${artistId}`);
                 if (response.ok) {
@@ -1591,7 +1580,7 @@
                     document.getElementById('albumSuggestions').style.display = 'block';
                 } else {
                     document.getElementById('albumSuggestions').innerHTML = 
-                        `<div style="padding: 15px; text-align: center;">No albums found. <a href="#" onclick="showModal('albumModal'); return false;">Create new?</a></div>`;
+                        `<div style="padding: 12px; text-align: center;">No albums found. <a href="#" onclick="showModal('albumModal'); return false;">Create new?</a></div>`;
                     document.getElementById('albumSuggestions').style.display = 'block';
                 }
             });
@@ -1911,7 +1900,7 @@
         
         function updateProgress(percentage) {
             const circle = document.querySelector('.progress-circle-fill');
-            const perimeter = 314;
+            const perimeter = 283;
             const offset = perimeter - (perimeter * percentage / 100);
             circle.style.strokeDashoffset = offset;
             document.getElementById('progressPercentage').textContent = percentage + '%';
@@ -1919,7 +1908,7 @@
         
         function hideUploadProgress() {
             document.getElementById('uploadProgressOverlay').classList.remove('active');
-            document.querySelector('.progress-circle-fill').style.strokeDashoffset = 314;
+            document.querySelector('.progress-circle-fill').style.strokeDashoffset = 283;
             document.getElementById('progressPercentage').textContent = '0%';
         }
         
@@ -1984,7 +1973,6 @@
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Get which button was clicked
             const action = e.submitter ? e.submitter.value : 'publish';
             
             if (!selectedFile) {
@@ -2049,7 +2037,6 @@
                 const result = await response.json();
                 const trackId = result.id;
                 
-                // Add to album if selected
                 if (selectedAlbumId && trackId) {
                     const albumBody = { track_id: trackId };
                     const trackNumber = document.getElementById('trackNumber').value;
@@ -2061,7 +2048,6 @@
                     }).catch(e => console.warn('Failed to add to album'));
                 }
                 
-                // Add to playlists if selected
                 if (selectedPlaylists.size > 0 && trackId) {
                     for (const playlistId of selectedPlaylists) {
                         await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks`, {
