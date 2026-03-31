@@ -160,10 +160,10 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid */
+        /* Stats Grid - Mobile first 2 columns, desktop 3 columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 30px;
         }
@@ -259,10 +259,10 @@
             font-family: 'Montserrat', sans-serif;
         }
         
-        /* Artist Cards - Mobile First */
-        .artists-list {
-            display: flex;
-            flex-direction: column;
+        /* Artist Cards - Mobile first grid */
+        .artists-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
         }
         
@@ -291,10 +291,6 @@
             font-weight: 700;
             font-size: 0.85rem;
             margin-bottom: 12px;
-        }
-        
-        .artist-info {
-            flex: 1;
         }
         
         .artist-name {
@@ -444,33 +440,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
-        .toast.info { background: var(--primary-blue); }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
         /* Tablet Styles */
         @media (min-width: 768px) {
             .admin-container {
@@ -496,6 +465,10 @@
             .filter-row {
                 flex: 1;
             }
+            
+            .artists-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         /* Desktop Styles */
@@ -506,12 +479,6 @@
             
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .artists-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
             }
         }
     </style>
@@ -540,6 +507,7 @@
                 <a href="/admin/analytics/albums.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
                 <a href="/admin/analytics/eps.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/analytics/artists.html" class="tab-btn active"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/analytics/playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -634,6 +602,14 @@
                 filteredArtists.sort((a, b) => (b.track_count || 0) - (a.track_count || 0));
             } else if (sortBy === 'tracks-asc') {
                 filteredArtists.sort((a, b) => (a.track_count || 0) - (b.track_count || 0));
+            } else if (sortBy === 'albums-desc') {
+                filteredArtists.sort((a, b) => (b.album_count || 0) - (a.album_count || 0));
+            } else if (sortBy === 'albums-asc') {
+                filteredArtists.sort((a, b) => (a.album_count || 0) - (b.album_count || 0));
+            } else if (sortBy === 'eps-desc') {
+                filteredArtists.sort((a, b) => (b.ep_count || 0) - (a.ep_count || 0));
+            } else if (sortBy === 'eps-asc') {
+                filteredArtists.sort((a, b) => (a.ep_count || 0) - (b.ep_count || 0));
             }
             
             currentPage = 1;
@@ -688,6 +664,10 @@
                             <option value="name-desc">Name Z-A</option>
                             <option value="tracks-desc">Most Tracks</option>
                             <option value="tracks-asc">Least Tracks</option>
+                            <option value="albums-desc">Most Albums</option>
+                            <option value="albums-asc">Least Albums</option>
+                            <option value="eps-desc">Most EPs</option>
+                            <option value="eps-asc">Least EPs</option>
                         </select>
                     </div>
                 </div>
@@ -704,7 +684,6 @@
             
             document.getElementById('analyticsContent').innerHTML = html;
             
-            // Add event listeners
             document.getElementById('searchInput').addEventListener('input', applyFilters);
             document.getElementById('sortFilter').addEventListener('change', applyFilters);
             
@@ -721,9 +700,6 @@
                         <i class="fas fa-microphone"></i>
                         <h3>No Artists Found</h3>
                         <p>Try adjusting your search or create some artists</p>
-                        <a href="/admin/artists/edit.html" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; display: inline-block; margin-top: 10px;">
-                            <i class="fas fa-plus"></i> Create Artist
-                        </a>
                     </div>
                 `;
                 paginationContainer.innerHTML = '';
@@ -735,13 +711,14 @@
             const pageArtists = filteredArtists.slice(start, end);
             const totalPages = Math.ceil(filteredArtists.length / itemsPerPage);
             
-            // Render artists as cards
-            let artistsHtml = '<div class="artists-list">';
+            let artistsHtml = '<div class="artists-grid">';
             
             pageArtists.forEach((artist, index) => {
                 const globalRank = start + index + 1;
                 const views = artist.views || 0;
                 const trackCount = artist.track_count || 0;
+                const albumCount = artist.album_count || 0;
+                const epCount = artist.ep_count || 0;
                 const country = artist.country || 'Unknown Location';
                 const isFeatured = artist.is_featured === 1 || artist.is_featured === true;
                 const isLegend = artist.is_zambian_legend === 1 || artist.is_zambian_legend === true;
@@ -749,27 +726,33 @@
                 artistsHtml += `
                     <div class="artist-card">
                         <div class="artist-rank">#${globalRank}</div>
-                        <div class="artist-info">
-                            <div class="artist-name">${escapeHtml(artist.name)}</div>
-                            <div class="artist-country">
-                                <i class="fas fa-map-marker-alt"></i>
-                                ${escapeHtml(country)}
+                        <div class="artist-name">${escapeHtml(artist.name)}</div>
+                        <div class="artist-country">
+                            <i class="fas fa-map-marker-alt"></i>
+                            ${escapeHtml(country)}
+                        </div>
+                        <div class="artist-stats">
+                            <div class="artist-stat-item">
+                                <i class="fas fa-music"></i>
+                                ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
                             </div>
-                            <div class="artist-stats">
-                                <div class="artist-stat-item">
-                                    <i class="fas fa-music"></i>
-                                    ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
-                                </div>
+                            <div class="artist-stat-item">
+                                <i class="fas fa-compact-disc"></i>
+                                ${albumCount} ${albumCount === 1 ? 'Album' : 'Albums'}
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                                <div class="artist-views">
-                                    <i class="fas fa-eye"></i>
-                                    ${formatNumber(views)} profile views
-                                </div>
-                                <div style="display: flex; gap: 8px;">
-                                    ${isFeatured ? '<span class="artist-badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
-                                    ${isLegend ? '<span class="artist-badge legend"><i class="fas fa-crown"></i> Legend</span>' : ''}
-                                </div>
+                            <div class="artist-stat-item">
+                                <i class="fas fa-play-circle"></i>
+                                ${epCount} ${epCount === 1 ? 'EP' : 'EPs'}
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div class="artist-views">
+                                <i class="fas fa-eye"></i>
+                                ${formatNumber(views)} profile views
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                ${isFeatured ? '<span class="artist-badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
+                                ${isLegend ? '<span class="artist-badge legend"><i class="fas fa-crown"></i> Legend</span>' : ''}
                             </div>
                         </div>
                     </div>
@@ -779,7 +762,6 @@
             artistsHtml += '</div>';
             container.innerHTML = artistsHtml;
             
-            // Render pagination
             if (totalPages > 1) {
                 let paginationHtml = '';
                 for (let i = 1; i <= totalPages; i++) {
