@@ -152,12 +152,7 @@
         }
         
         .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
         }
         
         .content-header h2 {
@@ -257,6 +252,11 @@
             color: white;
         }
         
+        .filter-tab.add-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+        
         /* Status Badge */
         .status-badge {
             display: inline-flex;
@@ -309,7 +309,7 @@
         }
         
         .page-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--primary-dark);
             margin-bottom: 4px;
@@ -607,15 +607,15 @@
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </h2>
-                <a href="/admin/pages/edit.html" class="btn btn-primary">
-                    <i class="fas fa-plus-circle"></i> Add New Page
-                </a>
             </div>
-
+            
             <div class="filter-tabs">
                 <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
                 <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
                 <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
+                <a href="/admin/pages/edit.html" class="filter-tab add-btn">
+                    <i class="fas fa-plus-circle"></i> Add New Page
+                </a>
             </div>
 
             <div class="stats-grid">
@@ -884,9 +884,6 @@
                         <i class="fas fa-file-alt"></i>
                         <h3>No Pages Found</h3>
                         <p>Create your first page</p>
-                        <a href="/admin/pages/edit.html" class="btn btn-primary">
-                            <i class="fas fa-plus-circle"></i> Create New Page
-                        </a>
                     </div>
                 `;
                 return;
