@@ -160,10 +160,10 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid */
+        /* Stats Grid - Mobile first 2 columns, desktop 3 columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 30px;
         }
@@ -259,10 +259,10 @@
             font-family: 'Montserrat', sans-serif;
         }
         
-        /* Album Cards - Mobile First */
-        .albums-list {
-            display: flex;
-            flex-direction: column;
+        /* Album Cards - Mobile first grid */
+        .albums-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
         }
         
@@ -291,10 +291,6 @@
             font-weight: 700;
             font-size: 0.85rem;
             margin-bottom: 12px;
-        }
-        
-        .album-info {
-            flex: 1;
         }
         
         .album-title {
@@ -440,33 +436,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
-        .toast.info { background: var(--primary-blue); }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
         /* Tablet Styles */
         @media (min-width: 768px) {
             .admin-container {
@@ -492,6 +461,10 @@
             .filter-row {
                 flex: 1;
             }
+            
+            .albums-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         /* Desktop Styles */
@@ -502,12 +475,6 @@
             
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .albums-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
             }
         }
     </style>
@@ -534,6 +501,9 @@
                 <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
                 <a href="/admin/analytics/tracks.html" class="tab-btn"><i class="fas fa-music"></i> Tracks</a>
                 <a href="/admin/analytics/albums.html" class="tab-btn active"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/analytics/eps.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/analytics/artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/analytics/playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -579,14 +549,6 @@
             return num.toString();
         }
         
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-        
         async function loadAlbums() {
             try {
                 const response = await fetch(`${API_BASE}/admin/albums`);
@@ -594,6 +556,9 @@
                 
                 albums = await response.json();
                 filteredAlbums = [...albums];
+                
+                // Default sort by most views
+                filteredAlbums.sort((a, b) => (b.views || 0) - (a.views || 0));
                 
                 renderAnalytics();
                 
@@ -620,23 +585,24 @@
                 return !searchTerm || titleMatch || artistMatch;
             });
             
-            // Sort
-            filteredAlbums.sort((a, b) => {
-                switch(sortBy) {
-                    case 'views-asc':
-                        return (a.views || 0) - (b.views || 0);
-                    case 'title-asc':
-                        return (a.title || '').localeCompare(b.title || '');
-                    case 'title-desc':
-                        return (b.title || '').localeCompare(a.title || '');
-                    case 'tracks-desc':
-                        return (b.tracks?.length || 0) - (a.tracks?.length || 0);
-                    case 'tracks-asc':
-                        return (a.tracks?.length || 0) - (b.tracks?.length || 0);
-                    default: // views-desc
-                        return (b.views || 0) - (a.views || 0);
-                }
-            });
+            // Apply sort
+            if (sortBy === 'views-desc') {
+                filteredAlbums.sort((a, b) => (b.views || 0) - (a.views || 0));
+            } else if (sortBy === 'views-asc') {
+                filteredAlbums.sort((a, b) => (a.views || 0) - (b.views || 0));
+            } else if (sortBy === 'title-asc') {
+                filteredAlbums.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+            } else if (sortBy === 'title-desc') {
+                filteredAlbums.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+            } else if (sortBy === 'tracks-desc') {
+                filteredAlbums.sort((a, b) => (b.tracks?.length || 0) - (a.tracks?.length || 0));
+            } else if (sortBy === 'tracks-asc') {
+                filteredAlbums.sort((a, b) => (a.tracks?.length || 0) - (b.tracks?.length || 0));
+            } else if (sortBy === 'year-desc') {
+                filteredAlbums.sort((a, b) => (b.release_date || '').localeCompare(a.release_date || ''));
+            } else if (sortBy === 'year-asc') {
+                filteredAlbums.sort((a, b) => (a.release_date || '').localeCompare(b.release_date || ''));
+            }
             
             currentPage = 1;
             renderAlbumsList();
@@ -690,6 +656,8 @@
                             <option value="title-desc">Title Z-A</option>
                             <option value="tracks-desc">Most Tracks</option>
                             <option value="tracks-asc">Least Tracks</option>
+                            <option value="year-desc">Newest First</option>
+                            <option value="year-asc">Oldest First</option>
                         </select>
                     </div>
                 </div>
@@ -706,7 +674,6 @@
             
             document.getElementById('analyticsContent').innerHTML = html;
             
-            // Add event listeners
             document.getElementById('searchInput').addEventListener('input', applyFilters);
             document.getElementById('sortFilter').addEventListener('change', applyFilters);
             
@@ -723,9 +690,6 @@
                         <i class="fas fa-compact-disc"></i>
                         <h3>No Albums Found</h3>
                         <p>Try adjusting your search or create some albums</p>
-                        <a href="/admin/albums/edit.html" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; display: inline-block; margin-top: 10px;">
-                            <i class="fas fa-plus"></i> Create Album
-                        </a>
                     </div>
                 `;
                 paginationContainer.innerHTML = '';
@@ -737,8 +701,7 @@
             const pageAlbums = filteredAlbums.slice(start, end);
             const totalPages = Math.ceil(filteredAlbums.length / itemsPerPage);
             
-            // Render albums as cards
-            let albumsHtml = '<div class="albums-list">';
+            let albumsHtml = '<div class="albums-grid">';
             
             pageAlbums.forEach((album, index) => {
                 const globalRank = start + index + 1;
@@ -751,31 +714,29 @@
                 albumsHtml += `
                     <div class="album-card">
                         <div class="album-rank">#${globalRank}</div>
-                        <div class="album-info">
-                            <div class="album-title">${escapeHtml(album.title)}</div>
-                            <div class="album-artist">
-                                <i class="fas fa-user"></i>
-                                ${escapeHtml(artistName)}
+                        <div class="album-title">${escapeHtml(album.title)}</div>
+                        <div class="album-artist">
+                            <i class="fas fa-user"></i>
+                            ${escapeHtml(artistName)}
+                        </div>
+                        <div class="album-meta">
+                            <div class="album-meta-item">
+                                <i class="fas fa-calendar"></i>
+                                ${releaseDate}
                             </div>
-                            <div class="album-meta">
-                                <div class="album-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    ${releaseDate}
-                                </div>
-                                <div class="album-meta-item">
-                                    <i class="fas fa-tag"></i>
-                                    ${escapeHtml(genre)}
-                                </div>
+                            <div class="album-meta-item">
+                                <i class="fas fa-tag"></i>
+                                ${escapeHtml(genre)}
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                                <div class="album-views">
-                                    <i class="fas fa-eye"></i>
-                                    ${formatNumber(views)} views
-                                </div>
-                                <div class="track-count-badge">
-                                    <i class="fas fa-music"></i>
-                                    ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
-                                </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div class="album-views">
+                                <i class="fas fa-eye"></i>
+                                ${formatNumber(views)} views
+                            </div>
+                            <div class="track-count-badge">
+                                <i class="fas fa-music"></i>
+                                ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
                             </div>
                         </div>
                     </div>
@@ -785,7 +746,6 @@
             albumsHtml += '</div>';
             container.innerHTML = albumsHtml;
             
-            // Render pagination
             if (totalPages > 1) {
                 let paginationHtml = '';
                 for (let i = 1; i <= totalPages; i++) {
