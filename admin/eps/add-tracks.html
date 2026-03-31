@@ -622,6 +622,9 @@
                 return;
             }
             
+            // Update back button to point to profile page
+            document.getElementById('backBtn').href = `/admin/eps/profile.html?id=${epId}`;
+            
             try {
                 // Load EP details, all tracks, all EPs, and all albums in parallel
                 const [epRes, tracksRes, epsRes, albumsRes] = await Promise.all([
@@ -979,9 +982,6 @@
                 timeout = setTimeout(later, wait);
             };
         }
-
-        // Update back button to return to profile
-        document.getElementById('backBtn').href = `/admin/eps/profile.html?id=${epId}`;
 
         // Check authentication
         function checkAuth() {
