@@ -20,9 +20,7 @@
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --success: #10b981;
-            --warning: #f59e0b;
-            --info: #3b82f6;
+            --skeleton-bg: #e2e8f0;
         }
         
         body {
@@ -212,7 +210,7 @@
             font-size: 0.9rem;
         }
         
-        /* Stats Grid - Same pattern as views grid */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -281,7 +279,7 @@
             opacity: 0.9;
         }
         
-        /* Views by Type Grid - Mobile first 2 columns */
+        /* Views by Type Grid */
         .views-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -328,40 +326,40 @@
             margin-top: 2px;
         }
         
-        /* Loading & Empty States */
-        .loading {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
+        /* Skeleton Loader Animation */
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f0f0f0 50%, var(--skeleton-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
         }
         
-        .loading i {
-            font-size: 2rem;
-            color: var(--primary-blue);
-            margin-bottom: 12px;
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
+        .skeleton-card {
+            height: 110px;
         }
         
-        .empty-state i {
-            font-size: 2.5rem;
-            color: var(--primary-blue);
-            margin-bottom: 12px;
-            opacity: 0.3;
+        .skeleton-value {
+            height: 32px;
+            width: 60%;
+            margin: 8px auto;
         }
         
-        .empty-state h3 {
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: var(--primary-dark);
+        .skeleton-label {
+            height: 14px;
+            width: 40%;
+            margin: 0 auto;
         }
         
-        .empty-state p {
-            font-size: 0.85rem;
+        .skeleton-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
         }
         
         /* Footer */
@@ -385,74 +383,23 @@
             text-decoration: underline;
         }
         
-        /* Tablet Styles (min-width: 600px) */
+        /* Tablet Styles */
         @media (min-width: 600px) {
-            .admin-container {
-                padding: 15px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .stat-card .stat-icon {
-                font-size: 1.8rem;
-            }
-            
-            .stat-card .stat-value {
-                font-size: 1.8rem;
-            }
-            
-            .total-views-card .views-value {
-                font-size: 2.2rem;
-            }
-            
-            .views-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .admin-container { padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .views-grid { grid-template-columns: repeat(3, 1fr); }
+            .stat-card .stat-value { font-size: 1.8rem; }
+            .total-views-card .views-value { font-size: 2.2rem; }
         }
         
-        /* Desktop Styles (min-width: 1024px) */
+        /* Desktop Styles */
         @media (min-width: 1024px) {
-            .admin-container {
-                padding: 20px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .stat-card {
-                padding: 20px;
-            }
-            
-            .stat-card .stat-icon {
-                font-size: 2rem;
-            }
-            
-            .stat-card .stat-value {
-                font-size: 2rem;
-            }
-            
-            .total-views-card .views-value {
-                font-size: 2.5rem;
-            }
-            
-            .views-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-            
-            .view-card {
-                padding: 16px 12px;
-            }
-            
-            .view-card .view-icon {
-                font-size: 1.5rem;
-            }
-            
-            .view-card .view-value {
-                font-size: 1.2rem;
-            }
+            .admin-container { padding: 20px; }
+            .views-grid { grid-template-columns: repeat(5, 1fr); }
+            .stat-card .stat-value { font-size: 2rem; }
+            .total-views-card .views-value { font-size: 2.5rem; }
+            .view-card .view-value { font-size: 1.2rem; }
+            .view-card .view-icon { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -486,9 +433,35 @@
         </div>
         
         <div class="admin-content" id="dashboardContent">
-            <div class="loading">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <div>Loading dashboard data...</div>
+            <!-- Skeleton Loaders - No layout shift -->
+            <div class="content-header">
+                <h2><i class="fas fa-smile"></i> <span class="skeleton" style="width: 180px; height: 24px; display: inline-block;"></span></h2>
+                <p><span class="skeleton" style="width: 200px; height: 16px; display: inline-block;"></span></p>
+            </div>
+            
+            <div class="section-header">
+                <i class="fas fa-database"></i>
+                <h3>Content Overview</h3>
+            </div>
+            <div class="stats-grid" id="statsGridSkeleton">
+                <div class="stat-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton"></div><div class="skeleton-label skeleton"></div></div>
+                <div class="stat-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton"></div><div class="skeleton-label skeleton"></div></div>
+                <div class="stat-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton"></div><div class="skeleton-label skeleton"></div></div>
+                <div class="stat-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton"></div><div class="skeleton-label skeleton"></div></div>
+            </div>
+            
+            <div class="total-views-card skeleton" style="height: 120px;"></div>
+            
+            <div class="section-header">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Views by Content Type</h3>
+            </div>
+            <div class="views-grid" id="viewsGridSkeleton">
+                <div class="view-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton" style="width: 50%;"></div><div class="skeleton-label skeleton" style="width: 60%;"></div></div>
+                <div class="view-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton" style="width: 50%;"></div><div class="skeleton-label skeleton" style="width: 60%;"></div></div>
+                <div class="view-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton" style="width: 50%;"></div><div class="skeleton-label skeleton" style="width: 60%;"></div></div>
+                <div class="view-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton" style="width: 50%;"></div><div class="skeleton-label skeleton" style="width: 60%;"></div></div>
+                <div class="view-card"><div class="skeleton-icon skeleton"></div><div class="skeleton-value skeleton" style="width: 50%;"></div><div class="skeleton-label skeleton" style="width: 60%;"></div></div>
             </div>
         </div>
         
@@ -499,12 +472,6 @@
 
     <script>
         const API_BASE = '/api';
-        
-        let tracks = [];
-        let albums = [];
-        let eps = [];
-        let artists = [];
-        let playlists = [];
         
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
@@ -538,136 +505,118 @@
             return num.toString();
         }
         
-        async function loadDashboardData() {
+        async function loadDashboard() {
             try {
-                const [tracksRes, albumsRes, epsRes, artistsRes, playlistsRes] = await Promise.all([
-                    fetch(`${API_BASE}/admin/tracks`),
-                    fetch(`${API_BASE}/admin/albums`),
-                    fetch(`${API_BASE}/admin/eps`),
-                    fetch(`${API_BASE}/admin/artists`),
-                    fetch(`${API_BASE}/admin/playlists`)
-                ]);
+                // Fetch only stats (lightweight!)
+                const response = await fetch(`${API_BASE}/admin/stats`);
+                const result = await response.json();
                 
-                tracks = await tracksRes.json();
-                albums = await albumsRes.json();
-                eps = await epsRes.json();
-                artists = await artistsRes.json();
-                playlists = await playlistsRes.json();
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to load stats');
+                }
                 
-                renderDashboard();
+                const stats = result.data;
+                
+                // Format date
+                const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const currentDate = new Date().toLocaleDateString('en-GB', dateOptions);
+                
+                // Build HTML with real data
+                const html = `
+                    <div class="content-header">
+                        <h2><i class="fas fa-smile"></i> Welcome back, Admin</h2>
+                        <p>${currentDate}</p>
+                    </div>
+                    
+                    <div class="section-header">
+                        <i class="fas fa-database"></i>
+                        <h3>Content Overview</h3>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-music"></i></div>
+                            <div class="stat-value">${stats.tracks.total}</div>
+                            <div class="stat-label">Total Songs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
+                            <div class="stat-value">${stats.albums.total}</div>
+                            <div class="stat-label">Total Albums</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
+                            <div class="stat-value">${stats.eps.total}</div>
+                            <div class="stat-label">Total EPs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-microphone"></i></div>
+                            <div class="stat-value">${stats.artists.total}</div>
+                            <div class="stat-label">Total Artists</div>
+                        </div>
+                    </div>
+                    
+                    <div class="total-views-card">
+                        <div class="views-icon"><i class="fas fa-eye"></i></div>
+                        <div class="views-value">${formatNumber(stats.total_views)}</div>
+                        <div class="views-label">Total Views Across All Content</div>
+                    </div>
+                    
+                    <div class="section-header">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Views by Content Type</h3>
+                    </div>
+                    <div class="views-grid">
+                        <div class="view-card" onclick="window.location.href='/admin/analytics/tracks.html'">
+                            <div class="view-icon"><i class="fas fa-music"></i></div>
+                            <div class="view-value">${formatNumber(stats.tracks.total_views)}</div>
+                            <div class="view-label">Tracks</div>
+                            <div class="view-sub">${stats.tracks.total} total</div>
+                        </div>
+                        <div class="view-card" onclick="window.location.href='/admin/analytics/albums.html'">
+                            <div class="view-icon"><i class="fas fa-compact-disc"></i></div>
+                            <div class="view-value">${formatNumber(stats.albums.total_views)}</div>
+                            <div class="view-label">Albums</div>
+                            <div class="view-sub">${stats.albums.total} total</div>
+                        </div>
+                        <div class="view-card" onclick="window.location.href='/admin/analytics/eps.html'">
+                            <div class="view-icon"><i class="fas fa-play-circle"></i></div>
+                            <div class="view-value">${formatNumber(stats.eps.total_views)}</div>
+                            <div class="view-label">EPs</div>
+                            <div class="view-sub">${stats.eps.total} total</div>
+                        </div>
+                        <div class="view-card" onclick="window.location.href='/admin/analytics/artists.html'">
+                            <div class="view-icon"><i class="fas fa-microphone"></i></div>
+                            <div class="view-value">${formatNumber(stats.artists.total_views)}</div>
+                            <div class="view-label">Artists</div>
+                            <div class="view-sub">${stats.artists.total} total</div>
+                        </div>
+                        <div class="view-card" onclick="window.location.href='/admin/analytics/playlists.html'">
+                            <div class="view-icon"><i class="fas fa-list"></i></div>
+                            <div class="view-value">${formatNumber(stats.playlists.total_views)}</div>
+                            <div class="view-label">Playlists</div>
+                            <div class="view-sub">${stats.playlists.total} total</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('dashboardContent').innerHTML = html;
                 
             } catch (error) {
                 console.error('Error loading dashboard:', error);
                 document.getElementById('dashboardContent').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                    <div class="empty-state" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i>
                         <h3>Failed to Load Dashboard</h3>
                         <p style="margin: 12px 0;">${error.message}</p>
-                        <button onclick="loadDashboardData()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; display: inline-block;">Try Again</button>
+                        <button onclick="loadDashboard()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; display: inline-block; padding: 10px 20px;">Try Again</button>
                     </div>
                 `;
             }
         }
         
-        function renderDashboard() {
-            const totalTracks = tracks.length;
-            const totalAlbums = albums.length;
-            const totalEps = eps.length;
-            const totalArtists = artists.length;
-            
-            const totalTrackViews = tracks.reduce((sum, t) => sum + (t.views || 0), 0);
-            const totalAlbumViews = albums.reduce((sum, a) => sum + (a.views || 0), 0);
-            const totalEPViews = eps.reduce((sum, e) => sum + (e.views || 0), 0);
-            const totalArtistViews = artists.reduce((sum, a) => sum + (a.views || 0), 0);
-            const totalPlaylistViews = playlists.reduce((sum, p) => sum + (p.views || 0), 0);
-            const totalViews = totalTrackViews + totalAlbumViews + totalEPViews + totalArtistViews + totalPlaylistViews;
-            
-            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const currentDate = new Date().toLocaleDateString('en-GB', dateOptions);
-            
-            const html = `
-                <div class="content-header">
-                    <h2><i class="fas fa-smile"></i> Welcome back, Admin</h2>
-                    <p>${currentDate}</p>
-                </div>
-                
-                <div class="section-header">
-                    <i class="fas fa-database"></i>
-                    <h3>Content Overview</h3>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-music"></i></div>
-                        <div class="stat-value">${totalTracks}</div>
-                        <div class="stat-label">Total Songs</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
-                        <div class="stat-value">${totalAlbums}</div>
-                        <div class="stat-label">Total Albums</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
-                        <div class="stat-value">${totalEps}</div>
-                        <div class="stat-label">Total EPs</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-microphone"></i></div>
-                        <div class="stat-value">${totalArtists}</div>
-                        <div class="stat-label">Total Artists</div>
-                    </div>
-                </div>
-                
-                <div class="total-views-card">
-                    <div class="views-icon"><i class="fas fa-eye"></i></div>
-                    <div class="views-value">${formatNumber(totalViews)}</div>
-                    <div class="views-label">Total Views Across All Content</div>
-                </div>
-                
-                <div class="section-header">
-                    <i class="fas fa-chart-bar"></i>
-                    <h3>Views by Content Type</h3>
-                </div>
-                <div class="views-grid">
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/tracks.html'">
-                        <div class="view-icon"><i class="fas fa-music"></i></div>
-                        <div class="view-value">${formatNumber(totalTrackViews)}</div>
-                        <div class="view-label">Tracks</div>
-                        <div class="view-sub">${totalTracks} total</div>
-                    </div>
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/albums.html'">
-                        <div class="view-icon"><i class="fas fa-compact-disc"></i></div>
-                        <div class="view-value">${formatNumber(totalAlbumViews)}</div>
-                        <div class="view-label">Albums</div>
-                        <div class="view-sub">${totalAlbums} total</div>
-                    </div>
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/eps.html'">
-                        <div class="view-icon"><i class="fas fa-play-circle"></i></div>
-                        <div class="view-value">${formatNumber(totalEPViews)}</div>
-                        <div class="view-label">EPs</div>
-                        <div class="view-sub">${totalEps} total</div>
-                    </div>
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/artists.html'">
-                        <div class="view-icon"><i class="fas fa-microphone"></i></div>
-                        <div class="view-value">${formatNumber(totalArtistViews)}</div>
-                        <div class="view-label">Artists</div>
-                        <div class="view-sub">${totalArtists} total</div>
-                    </div>
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/playlists.html'">
-                        <div class="view-icon"><i class="fas fa-list"></i></div>
-                        <div class="view-value">${formatNumber(totalPlaylistViews)}</div>
-                        <div class="view-label">Playlists</div>
-                        <div class="view-sub">${playlists.length} total</div>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('dashboardContent').innerHTML = html;
-        }
-        
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
-                loadDashboardData();
+                loadDashboard();
             }
         });
     </script>
