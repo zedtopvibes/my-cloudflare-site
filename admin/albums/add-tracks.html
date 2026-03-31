@@ -177,6 +177,10 @@
             color: var(--success);
         }
         
+        .stats-badge.in-ep i {
+            color: var(--warning);
+        }
+        
         /* Search Section */
         .search-section {
             padding: 20px;
@@ -387,6 +391,12 @@
             color: var(--gray-700);
         }
         
+        .track-badge.in-ep {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+        
         .track-badge.available {
             background: var(--success);
             color: white;
@@ -494,7 +504,7 @@
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(0%); opacity: 1; }
         }
         
         @media (max-width: 768px) {
@@ -560,7 +570,9 @@
         let albumId = null;
         let album = null;
         let allTracks = [];
+        let allEPs = [];
         let albumTrackIds = new Set();
+        let tracksInEPs = new Map(); // track_id -> {epId, epTitle}
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
@@ -601,19 +613,34 @@
             document.getElementById('backBtn').href = `/admin/albums/profile.html?id=${albumId}`;
             
             try {
-                // Load album details and all tracks in parallel
-                const [albumRes, tracksRes] = await Promise.all([
+                // Load album details, all tracks, and all EPs in parallel
+                const [albumRes, tracksRes, epsRes] = await Promise.all([
                     fetch(`${API_BASE}/albums/${albumId}`),
-                    fetch(`${API_BASE}/tracks`)
+                    fetch(`${API_BASE}/tracks`),
+                    fetch(`${API_BASE}/eps`)
                 ]);
                 
                 if (!albumRes.ok) throw new Error('Album not found');
                 
                 album = await albumRes.json();
                 allTracks = await tracksRes.json();
+                allEPs = await epsRes.json();
                 
                 // Get IDs of tracks already in THIS album
                 albumTrackIds = new Set((album.tracks || []).map(t => t.id));
+                
+                // Build map of tracks in EPs
+                tracksInEPs.clear();
+                for (const ep of allEPs) {
+                    if (ep.tracks && ep.tracks.length > 0) {
+                        for (const track of ep.tracks) {
+                            tracksInEPs.set(track.id, {
+                                epId: ep.id,
+                                epTitle: ep.title
+                            });
+                        }
+                    }
+                }
                 
                 renderPage();
                 
@@ -632,8 +659,11 @@
 
         function renderPage() {
             // Calculate stats
-            const availableCount = allTracks.filter(t => !albumTrackIds.has(t.id)).length;
             const inThisAlbumCount = albumTrackIds.size;
+            const inEPsCount = tracksInEPs.size;
+            const availableCount = allTracks.filter(t => 
+                !albumTrackIds.has(t.id) && !tracksInEPs.has(t.id)
+            ).length;
             
             // Apply search and filter
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -647,9 +677,13 @@
             
             // Then apply category filter
             if (currentFilter === 'available') {
-                filteredTracks = filteredTracks.filter(t => !albumTrackIds.has(t.id));
+                filteredTracks = filteredTracks.filter(t => 
+                    !albumTrackIds.has(t.id) && !tracksInEPs.has(t.id)
+                );
             } else if (currentFilter === 'in-this-album') {
                 filteredTracks = filteredTracks.filter(t => albumTrackIds.has(t.id));
+            } else if (currentFilter === 'in-eps') {
+                filteredTracks = filteredTracks.filter(t => tracksInEPs.has(t.id));
             }
 
             const contentCard = document.getElementById('contentCard');
@@ -690,12 +724,17 @@
                             <i class="fas fa-music"></i>
                             ${inThisAlbumCount} In this Album
                         </span>
+                        <span class="stats-badge in-ep">
+                            <i class="fas fa-play-circle"></i>
+                            ${inEPsCount} In EPs
+                        </span>
                     </div>
                     
                     <div class="filter-bar">
                         <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
                         <button class="filter-btn ${currentFilter === 'available' ? 'active' : ''}" onclick="setFilter('available')">Available</button>
                         <button class="filter-btn ${currentFilter === 'in-this-album' ? 'active' : ''}" onclick="setFilter('in-this-album')">In This Album</button>
+                        <button class="filter-btn ${currentFilter === 'in-eps' ? 'active' : ''}" onclick="setFilter('in-eps')">In EPs</button>
                     </div>
                 </div>
                 
@@ -703,13 +742,16 @@
                     ${filteredTracks.length > 0 
                         ? filteredTracks.map(track => {
                             const isInThisAlbum = albumTrackIds.has(track.id);
-                            const isDisabled = isInThisAlbum;
+                            const inEP = tracksInEPs.get(track.id);
+                            const isDisabled = isInThisAlbum || inEP;
                             const isSelected = selectedTracks.has(track.id);
                             const artistsDisplay = formatArtistsDisplay(track);
                             
                             let badgeHtml = '';
                             if (isInThisAlbum) {
                                 badgeHtml = '<span class="track-badge in-this-album">✓ Already in this Album</span>';
+                            } else if (inEP) {
+                                badgeHtml = `<span class="track-badge in-ep">🎵 In EP: "${escapeHtml(inEP.epTitle)}"</span>`;
                             } else {
                                 badgeHtml = '<span class="track-badge available">✓ Available</span>';
                             }
@@ -781,8 +823,8 @@
             if (selectedTracks.has(trackId)) {
                 selectedTracks.delete(trackId);
             } else {
-                // Check if track is available (not in this album)
-                if (!albumTrackIds.has(trackId)) {
+                // Check if track is available (not in this album and not in any EP)
+                if (!albumTrackIds.has(trackId) && !tracksInEPs.has(trackId)) {
                     selectedTracks.add(trackId);
                 }
             }
@@ -807,12 +849,25 @@
 
             let successCount = 0;
             let errorCount = 0;
+            let conflictMessages = [];
 
             // Get current tracks to determine next track number
             const currentTracks = album.tracks || [];
             let nextTrackNumber = currentTracks.length + 1;
 
             for (const trackId of selectedTracks) {
+                // Double-check track is still available
+                if (albumTrackIds.has(trackId) || tracksInEPs.has(trackId)) {
+                    errorCount++;
+                    const inEP = tracksInEPs.get(trackId);
+                    if (inEP) {
+                        conflictMessages.push(`Track is already in EP: "${inEP.epTitle}"`);
+                    } else {
+                        conflictMessages.push(`Track is already in this album`);
+                    }
+                    continue;
+                }
+                
                 try {
                     const res = await fetch(`${API_BASE}/admin/albums/${albumId}/tracks`, {
                         method: 'POST',
@@ -827,12 +882,15 @@
                         successCount++;
                         albumTrackIds.add(trackId);
                     } else {
+                        const data = await res.json();
                         errorCount++;
-                        console.error('Failed to add track');
+                        if (data.error) conflictMessages.push(data.error);
+                        console.error('Failed to add track:', data.error);
                     }
                 } catch (error) {
                     console.error('Error adding track:', error);
                     errorCount++;
+                    conflictMessages.push(error.message);
                 }
             }
 
@@ -845,11 +903,16 @@
                 }, 1500);
             } else if (successCount > 0) {
                 showToast(`⚠️ Added ${successCount} tracks (${errorCount} failed)`, 'warning');
+                if (conflictMessages.length > 0) {
+                    setTimeout(() => {
+                        alert(conflictMessages.join('\n'));
+                    }, 500);
+                }
                 setTimeout(() => {
                     window.location.href = `/admin/albums/profile.html?id=${albumId}`;
                 }, 1500);
             } else {
-                showToast(`❌ Failed to add tracks`, 'error');
+                showToast(`❌ Failed to add tracks. ${conflictMessages[0] || 'Unknown error'}`, 'error');
                 addButtons.forEach(btn => btn.disabled = false);
                 renderPage();
             }
