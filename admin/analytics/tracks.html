@@ -160,10 +160,10 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid */
+        /* Stats Grid - Mobile first 2 columns, tablet 2 columns, desktop 3 columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 30px;
         }
@@ -259,10 +259,10 @@
             font-family: 'Montserrat', sans-serif;
         }
         
-        /* Track Cards - Mobile First */
-        .tracks-list {
-            display: flex;
-            flex-direction: column;
+        /* Track Cards - Mobile first grid */
+        .tracks-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
         }
         
@@ -291,10 +291,6 @@
             font-weight: 700;
             font-size: 0.85rem;
             margin-bottom: 12px;
-        }
-        
-        .track-info {
-            flex: 1;
         }
         
         .track-title {
@@ -444,33 +440,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
-        .toast.info { background: var(--primary-blue); }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
         /* Tablet Styles */
         @media (min-width: 768px) {
             .admin-container {
@@ -496,6 +465,10 @@
             .filter-row {
                 flex: 1;
             }
+            
+            .tracks-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         /* Desktop Styles */
@@ -506,12 +479,6 @@
             
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .tracks-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
             }
         }
     </style>
@@ -537,6 +504,10 @@
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
                 <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
                 <a href="/admin/analytics/tracks.html" class="tab-btn active"><i class="fas fa-music"></i> Tracks</a>
+                <a href="/admin/analytics/albums.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/analytics/eps.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/analytics/artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/analytics/playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -582,12 +553,11 @@
             return num.toString();
         }
         
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
         
         function getArtistName(track) {
@@ -605,6 +575,9 @@
                 
                 tracks = await response.json();
                 filteredTracks = [...tracks];
+                
+                // Default sort by most views
+                filteredTracks.sort((a, b) => (b.views || 0) - (a.views || 0));
                 
                 renderAnalytics();
                 
@@ -627,30 +600,27 @@
             const sortBy = document.getElementById('sortFilter')?.value || 'views-desc';
             
             filteredTracks = tracks.filter(track => {
-                // Search filter
                 const titleMatch = track.title?.toLowerCase().includes(searchTerm);
                 const artistMatch = getArtistName(track).toLowerCase().includes(searchTerm);
                 const matchesSearch = !searchTerm || titleMatch || artistMatch;
-                
-                // Status filter
                 const matchesStatus = statusFilter === 'all' || track.status === statusFilter;
-                
                 return matchesSearch && matchesStatus;
             });
             
-            // Sort
-            filteredTracks.sort((a, b) => {
-                switch(sortBy) {
-                    case 'views-asc':
-                        return (a.views || 0) - (b.views || 0);
-                    case 'title-asc':
-                        return (a.title || '').localeCompare(b.title || '');
-                    case 'title-desc':
-                        return (b.title || '').localeCompare(a.title || '');
-                    default: // views-desc
-                        return (b.views || 0) - (a.views || 0);
-                }
-            });
+            // Apply sort
+            if (sortBy === 'views-desc') {
+                filteredTracks.sort((a, b) => (b.views || 0) - (a.views || 0));
+            } else if (sortBy === 'views-asc') {
+                filteredTracks.sort((a, b) => (a.views || 0) - (b.views || 0));
+            } else if (sortBy === 'title-asc') {
+                filteredTracks.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+            } else if (sortBy === 'title-desc') {
+                filteredTracks.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+            } else if (sortBy === 'duration-asc') {
+                filteredTracks.sort((a, b) => (a.duration || 0) - (b.duration || 0));
+            } else if (sortBy === 'duration-desc') {
+                filteredTracks.sort((a, b) => (b.duration || 0) - (a.duration || 0));
+            }
             
             currentPage = 1;
             renderTracksList();
@@ -707,6 +677,8 @@
                             <option value="views-asc">Least Views</option>
                             <option value="title-asc">Title A-Z</option>
                             <option value="title-desc">Title Z-A</option>
+                            <option value="duration-desc">Longest</option>
+                            <option value="duration-asc">Shortest</option>
                         </select>
                     </div>
                 </div>
@@ -723,7 +695,6 @@
             
             document.getElementById('analyticsContent').innerHTML = html;
             
-            // Add event listeners
             document.getElementById('searchInput').addEventListener('input', applyFilters);
             document.getElementById('statusFilter').addEventListener('change', applyFilters);
             document.getElementById('sortFilter').addEventListener('change', applyFilters);
@@ -752,8 +723,7 @@
             const pageTracks = filteredTracks.slice(start, end);
             const totalPages = Math.ceil(filteredTracks.length / itemsPerPage);
             
-            // Render tracks as cards
-            let tracksHtml = '<div class="tracks-list">';
+            let tracksHtml = '<div class="tracks-grid">';
             
             pageTracks.forEach((track, index) => {
                 const globalRank = start + index + 1;
@@ -766,36 +736,30 @@
                 tracksHtml += `
                     <div class="track-card">
                         <div class="track-rank">#${globalRank}</div>
-                        <div class="track-info">
-                            <div class="track-title">${escapeHtml(track.title || 'Untitled')}</div>
-                            <div class="track-artist">
-                                <i class="fas fa-user"></i>
-                                ${escapeHtml(artistName)}
+                        <div class="track-title">${escapeHtml(track.title || 'Untitled')}</div>
+                        <div class="track-artist">
+                            <i class="fas fa-user"></i>
+                            ${escapeHtml(artistName)}
+                        </div>
+                        <div class="track-meta">
+                            <div class="track-meta-item">
+                                <i class="fas fa-clock"></i>
+                                ${formatDuration(track.duration)}
                             </div>
-                            <div class="track-meta">
-                                <div class="track-meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    ${formatDuration(track.duration)}
-                                </div>
-                                <div class="track-meta-item">
-                                    <i class="fas fa-tag"></i>
-                                    ${escapeHtml(track.genre) || 'No Genre'}
-                                </div>
-                                <div class="track-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    ${track.release_date || 'No Date'}
-                                </div>
+                            <div class="track-meta-item">
+                                <i class="fas fa-tag"></i>
+                                ${escapeHtml(track.genre) || 'No Genre'}
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                                <div class="track-views">
-                                    <i class="fas fa-eye"></i>
-                                    ${formatNumber(views)} views
-                                </div>
-                                <span class="status-badge ${statusClass}">
-                                    <i class="fas ${statusIcon}"></i>
-                                    ${statusText}
-                                </span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div class="track-views">
+                                <i class="fas fa-eye"></i>
+                                ${formatNumber(views)} views
                             </div>
+                            <span class="status-badge ${statusClass}">
+                                <i class="fas ${statusIcon}"></i>
+                                ${statusText}
+                            </span>
                         </div>
                     </div>
                 `;
@@ -804,7 +768,6 @@
             tracksHtml += '</div>';
             container.innerHTML = tracksHtml;
             
-            // Render pagination
             if (totalPages > 1) {
                 let paginationHtml = '';
                 for (let i = 1; i <= totalPages; i++) {
@@ -820,13 +783,6 @@
             currentPage = page;
             renderTracksList();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        function formatDuration(seconds) {
-            if (!seconds) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
         
         function escapeHtml(text) {
