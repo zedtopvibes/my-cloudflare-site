@@ -244,17 +244,6 @@
             font-size: 0.85rem;
         }
         
-        .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: var(--white);
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-family: 'Montserrat', sans-serif;
-            flex: 1;
-        }
-        
         /* Filter Tabs */
         .filter-tabs {
             display: flex;
@@ -296,148 +285,100 @@
             color: white;
         }
         
-        /* Status Badge */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: 600;
-        }
-        
-        .status-badge.published {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-badge.draft {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        /* Desktop Table */
-        .genres-table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #eee;
-            display: block;
-        }
-        
-        .genres-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-        
-        .genres-table th {
-            background: var(--light-gray);
-            padding: 10px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--primary-dark);
-            border-bottom: 2px solid #ddd;
-            font-size: 0.8rem;
-        }
-        
-        .genres-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-            font-size: 0.8rem;
-        }
-        
-        .genres-table tr:hover td {
-            background: rgba(31, 111, 159, 0.02);
-        }
-        
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        
-        .action-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 5px;
-            border: none;
-            background: var(--light-gray);
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-        }
-        
-        .action-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .action-btn.delete:hover {
-            background: var(--error);
-            color: white;
-        }
-        
-        /* Mobile Cards */
-        .genres-mobile-grid {
-            display: none;
-            flex-direction: column;
+        /* Genres Grid */
+        .genres-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
         }
         
-        .genre-mobile-card {
+        .genre-card {
             background: var(--light-gray);
             border-radius: 12px;
-            padding: 12px;
+            padding: 15px;
             border: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.3s ease;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
         
-        .genre-mobile-info {
+        .genre-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+        
+        .genre-info {
             flex: 1;
         }
         
-        .genre-mobile-name {
-            font-size: 0.9rem;
+        .genre-name {
+            font-size: 1rem;
             font-weight: 600;
             color: var(--primary-dark);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
             gap: 8px;
             flex-wrap: wrap;
         }
         
-        .genre-mobile-stats {
+        .genre-stats {
             display: flex;
-            gap: 12px;
+            flex-wrap: wrap;
+            gap: 15px;
             font-size: 0.7rem;
             color: var(--gray);
         }
         
-        .genre-mobile-stats i {
+        .genre-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .genre-stats i {
             color: var(--primary-blue);
             width: 14px;
+            font-size: 0.7rem;
         }
         
-        .genre-mobile-actions {
+        .genre-actions {
             display: flex;
             gap: 8px;
+            flex-shrink: 0;
         }
         
-        .genre-mobile-actions .action-btn {
+        .action-icon {
             width: 32px;
             height: 32px;
+            border-radius: 6px;
+            border: none;
+            background: white;
+            color: var(--gray);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+        }
+        
+        .action-icon:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .action-icon.merge:hover {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .action-icon.delete:hover {
+            background: var(--error);
+            color: white;
         }
         
         /* Buttons */
@@ -494,38 +435,6 @@
             font-size: 0.7rem;
         }
         
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .page-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.8rem;
-        }
-        
-        .page-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
-        .page-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -562,30 +471,121 @@
             overflow-y: auto;
         }
         
+        .modal.active {
+            display: flex;
+        }
+        
         .modal-content {
             background: white;
             padding: 20px;
             border-radius: 12px;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             max-height: 90vh;
             overflow-y: auto;
         }
         
-        .modal h3 {
+        .modal-header {
             margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .modal-header h3 {
+            color: var(--primary-blue);
             font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .modal p {
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+        .modal-body {
+            margin-bottom: 15px;
         }
         
-        .modal-actions {
+        .modal-footer {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+            padding-top: 12px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .form-group label i {
+            color: var(--primary-blue);
+            margin-right: 5px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .stats-preview {
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .stats-preview-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        
+        .stats-preview-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+        
+        .stat-pill i {
+            color: var(--primary-blue);
+        }
+        
+        .warning-box {
+            background: #fef3c7;
+            border-left: 3px solid var(--warning);
+            padding: 10px;
+            border-radius: 6px;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: #92400e;
+        }
+        
+        .warning-box i {
+            color: #d97706;
         }
         
         /* Toast */
@@ -608,7 +608,7 @@
         
         .toast.success { background: #28a745; }
         .toast.error { background: #dc3545; }
-        .toast.info { background: var(--primary-blue); }
+        .toast.warning { background: var(--warning); color: #333; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -617,11 +617,11 @@
         
         /* Skeleton */
         .skeleton-row {
-            height: 50px;
+            height: 70px;
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
-            border-radius: 4px;
+            border-radius: 8px;
             margin-bottom: 8px;
         }
         
@@ -654,18 +654,18 @@
         /* Responsive */
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
-            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
             .stat-card .stat-value { font-size: 1.8rem; }
+            .genres-grid { grid-template-columns: repeat(2, 1fr); }
             .toast { left: auto; right: 20px; min-width: 300px; }
         }
         
         @media (max-width: 767px) {
-            .genres-table-container { display: none; }
-            .genres-mobile-grid { display: flex; }
             .search-section { flex-direction: column; }
             .search-box { width: 100%; }
-            .filter-select { width: 100%; }
             .filter-tabs { justify-content: center; }
+            .genre-card { flex-direction: column; align-items: flex-start; }
+            .genre-actions { align-self: flex-end; }
         }
         
         @media (max-width: 480px) {
@@ -673,6 +673,7 @@
             .stat-card { padding: 12px; }
             .stat-icon { font-size: 1.2rem; }
             .stat-value { font-size: 1.2rem; }
+            .genres-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -717,18 +718,10 @@
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Search genres...">
                 </div>
-                <select id="sortFilter" class="filter-select">
-                    <option value="name">Name A-Z</option>
-                    <option value="name-desc">Name Z-A</option>
-                    <option value="tracks">Most Tracks</option>
-                    <option value="albums">Most Albums</option>
-                </select>
             </div>
 
             <div class="filter-tabs">
                 <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
-                <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
-                <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
                 <a href="/admin/genres/edit.html" class="filter-tab add-btn">
                     <i class="fas fa-plus-circle"></i> Add New Genre
                 </a>
@@ -741,31 +734,22 @@
                     <div class="stat-label">Total Genres</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
-                    <div class="stat-value" id="totalDrafts">0</div>
-                    <div class="stat-label">Drafts</div>
+                    <div class="stat-icon"><i class="fas fa-microphone"></i></div>
+                    <div class="stat-value" id="totalArtists">0</div>
+                    <div class="stat-label">Artists with Genre</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
-                    <div class="stat-value" id="totalPublished">0</div>
-                    <div class="stat-label">Published</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-music"></i></div>
-                    <div class="stat-value" id="totalTracks">0</div>
-                    <div class="stat-label">Total Tracks</div>
+                    <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
+                    <div class="stat-value" id="totalAlbums">0</div>
+                    <div class="stat-label">Albums with Genre</div>
                 </div>
             </div>
 
-            <div id="genresTableContainer">
+            <div id="genresContainer">
                 <div class="skeleton-row"></div>
                 <div class="skeleton-row"></div>
                 <div class="skeleton-row"></div>
             </div>
-
-            <div id="genresMobileGrid" class="genres-mobile-grid"></div>
-
-            <div class="pagination" id="pagination"></div>
         </div>
         
         <div class="admin-footer">
@@ -773,24 +757,83 @@
         </div>
     </div>
 
-    <!-- Confirm Modal -->
-    <div id="confirmModal" class="modal">
+    <!-- Rename Modal -->
+    <div id="renameModal" class="modal">
         <div class="modal-content">
-            <h3 id="confirmModalTitle" style="color: var(--primary-blue);">Confirm Action</h3>
-            <p id="confirmModalMessage">Are you sure?</p>
-            <div class="modal-actions">
-                <button id="confirmModalCancel" class="btn btn-secondary">Cancel</button>
-                <button id="confirmModalConfirm" class="btn btn-primary">Confirm</button>
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Rename Genre</h3>
+            </div>
+            <div class="modal-body">
+                <div class="stats-preview" id="renameStats"></div>
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Current Name</label>
+                    <input type="text" id="renameCurrentName" readonly style="background: var(--light-gray);">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-pencil-alt"></i> New Name</label>
+                    <input type="text" id="renameNewName" placeholder="Enter new genre name...">
+                </div>
+                <div class="warning-box">
+                    <i class="fas fa-info-circle"></i>
+                    <span>This will update ALL artists, albums, and EPs with this genre.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeRenameModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmRename()">Rename</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Merge Modal -->
+    <div id="mergeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-code-branch"></i> Merge Genres</h3>
+            </div>
+            <div class="modal-body">
+                <div class="stats-preview" id="mergeSourceStats"></div>
+                <div class="form-group">
+                    <label><i class="fas fa-arrow-right"></i> Merge Into</label>
+                    <select id="mergeTargetSelect"></select>
+                </div>
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>This will move ALL content from the source genre into the target genre, then remove the source genre.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMergeModal()">Cancel</button>
+                <button class="btn btn-warning" onclick="confirmMerge()">Merge</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-trash-alt"></i> Delete Genre</h3>
+            </div>
+            <div class="modal-body">
+                <div class="stats-preview" id="deleteStats"></div>
+                <div class="warning-box" style="background: #fee2e2;">
+                    <i class="fas fa-exclamation-triangle" style="color: #dc2626;"></i>
+                    <span style="color: #991b1b;">This will remove this genre from ALL artists, albums, and EPs. This action cannot be undone!</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
             </div>
         </div>
     </div>
 
     <script>
         const API_BASE = '/api';
-        let currentPage = 1;
-        const itemsPerPage = 10;
         let allGenres = [];
         let filteredGenres = [];
+        let pendingAction = null;
         let currentStatusFilter = 'all';
 
         function checkAuth() {
@@ -811,140 +854,16 @@
             return true;
         }
 
-        function showToast(message, type = 'info') {
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
 
-        function showConfirmModal(options) {
-            const modal = document.getElementById('confirmModal');
-            const titleEl = document.getElementById('confirmModalTitle');
-            const messageEl = document.getElementById('confirmModalMessage');
-            const confirmBtn = document.getElementById('confirmModalConfirm');
-            const cancelBtn = document.getElementById('confirmModalCancel');
-            
-            titleEl.textContent = options.title;
-            messageEl.textContent = options.message;
-            
-            if (options.type === 'danger') {
-                confirmBtn.className = 'btn btn-danger';
-                titleEl.style.color = 'var(--error)';
-            } else if (options.type === 'warning') {
-                confirmBtn.className = 'btn btn-warning';
-                titleEl.style.color = 'var(--warning)';
-            } else {
-                confirmBtn.className = 'btn btn-primary';
-                titleEl.style.color = 'var(--primary-blue)';
-            }
-            
-            window.confirmModalCallback = options.onConfirm;
-            
-            modal.style.display = 'flex';
-            
-            confirmBtn.onclick = () => {
-                modal.style.display = 'none';
-                if (window.confirmModalCallback) {
-                    window.confirmModalCallback();
-                    window.confirmModalCallback = null;
-                }
-            };
-            
-            cancelBtn.onclick = () => {
-                modal.style.display = 'none';
-                window.confirmModalCallback = null;
-            };
-            
-            modal.onclick = (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    window.confirmModalCallback = null;
-                }
-            };
-        }
-
-        async function publishGenre(id, name) {
-            showConfirmModal({
-                title: 'Publish Genre',
-                message: `Are you sure you want to publish "${name}"? It will become visible to the public.`,
-                type: 'success',
-                onConfirm: async () => {
-                    try {
-                        const response = await fetch(`${API_BASE}/admin/genres/${id}/publish`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.error || 'Failed to publish');
-                        }
-                        
-                        showToast(`"${name}" published!`, 'success');
-                        loadGenres();
-                    } catch (error) {
-                        showToast(error.message, 'error');
-                    }
-                }
-            });
-        }
-
-        async function unpublishGenre(id, name) {
-            showConfirmModal({
-                title: 'Unpublish Genre',
-                message: `Are you sure you want to unpublish "${name}"? It will become a draft and hidden from public.`,
-                type: 'warning',
-                onConfirm: async () => {
-                    try {
-                        const response = await fetch(`${API_BASE}/admin/genres/${id}/unpublish`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.error || 'Failed to unpublish');
-                        }
-                        
-                        showToast(`"${name}" moved to drafts`, 'success');
-                        loadGenres();
-                    } catch (error) {
-                        showToast(error.message, 'error');
-                    }
-                }
-            });
-        }
-
-        async function deleteGenre(id, name) {
-            showConfirmModal({
-                title: 'Delete Genre',
-                message: `Are you sure you want to delete "${name}"? This will move it to trash.`,
-                type: 'danger',
-                onConfirm: async () => {
-                    try {
-                        const response = await fetch(`${API_BASE}/admin/genres/${id}`, {
-                            method: 'DELETE'
-                        });
-                        
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.error || 'Delete failed');
-                        }
-                        
-                        showToast('Genre moved to trash!', 'success');
-                        loadGenres();
-                    } catch (error) {
-                        showToast('Failed to delete genre: ' + error.message, 'error');
-                    }
-                }
-            });
-        }
-
         window.filterByStatus = (status) => {
             currentStatusFilter = status;
-            
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 if (tab.dataset.status === status) {
                     tab.classList.add('active');
@@ -952,7 +871,6 @@
                     tab.classList.remove('active');
                 }
             });
-            
             applyFilters();
         };
 
@@ -960,30 +878,27 @@
             if (!checkAuth()) return;
             
             try {
-                const response = await fetch(`${API_BASE}/admin/genres`);
+                const response = await fetch(`${API_BASE}/genres`);
                 if (!response.ok) throw new Error('Failed to load genres');
                 
                 allGenres = await response.json();
                 
-                const draftCount = allGenres.filter(g => g.status === 'draft').length;
-                const publishedCount = allGenres.filter(g => g.status === 'published').length;
-                const totalTracks = allGenres.reduce((sum, genre) => sum + (genre.track_count || 0), 0);
+                const totalArtists = allGenres.reduce((sum, g) => sum + (g.artists || 0), 0);
+                const totalAlbums = allGenres.reduce((sum, g) => sum + (g.albums || 0), 0);
                 
                 document.getElementById('totalGenres').textContent = allGenres.length;
-                document.getElementById('totalDrafts').textContent = draftCount;
-                document.getElementById('totalPublished').textContent = publishedCount;
-                document.getElementById('totalTracks').textContent = totalTracks;
+                document.getElementById('totalArtists').textContent = totalArtists;
+                document.getElementById('totalAlbums').textContent = totalAlbums;
                 
                 applyFilters();
-                
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('genresTableContainer').innerHTML = `
+                console.error('Error loading genres:', error);
+                document.getElementById('genresContainer').innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <h3>Error Loading Genres</h3>
+                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                        <h3>Failed to Load Genres</h3>
                         <p>${error.message}</p>
-                        <button onclick="loadGenres()" class="btn btn-primary">Try Again</button>
+                        <button onclick="loadGenres()" class="btn btn-primary" style="margin-top: 16px;">Try Again</button>
                     </div>
                 `;
             }
@@ -991,142 +906,218 @@
 
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const sort = document.getElementById('sortFilter').value;
             
             filteredGenres = allGenres.filter(genre => {
                 if (currentStatusFilter !== 'all' && genre.status !== currentStatusFilter) {
                     return false;
                 }
-                
-                const matchesSearch = genre.name?.toLowerCase().includes(searchTerm);
-                return matchesSearch;
+                return genre.name.toLowerCase().includes(searchTerm);
             });
             
-            filteredGenres.sort((a, b) => {
-                switch(sort) {
-                    case 'name-desc':
-                        return (b.name || '').localeCompare(a.name || '');
-                    case 'tracks':
-                        return (b.track_count || 0) - (a.track_count || 0);
-                    case 'albums':
-                        return (b.album_count || 0) - (a.album_count || 0);
-                    default:
-                        return (a.name || '').localeCompare(b.name || '');
-                }
-            });
-            
-            currentPage = 1;
             renderGenres();
         }
 
         function renderGenres() {
-            const tableContainer = document.getElementById('genresTableContainer');
-            const mobileContainer = document.getElementById('genresMobileGrid');
+            const container = document.getElementById('genresContainer');
             
             if (filteredGenres.length === 0) {
-                const emptyHtml = `
+                container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-tag"></i>
-                        <h3>No Genres Found</h3>
-                        <p>Try adjusting your filters or create some genres</p>
-                        <a href="/admin/genres/edit.html" class="btn btn-primary">
-                            <i class="fas fa-plus-circle"></i> Create New Genre
-                        </a>
+                        <h3>No genres found</h3>
+                        <p>${document.getElementById('searchInput').value ? 'Try a different search' : 'Genres will appear when you add them to artists, albums, or EPs'}</p>
                     </div>
                 `;
-                tableContainer.innerHTML = emptyHtml;
-                mobileContainer.innerHTML = '';
-                document.getElementById('pagination').innerHTML = '';
                 return;
             }
             
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageGenres = filteredGenres.slice(start, end);
-            
-            renderDesktopTable(tableContainer, pageGenres);
-            renderMobileCards(mobileContainer, pageGenres);
-            renderPagination();
-        }
-
-        function renderDesktopTable(container, genres) {
-            let html = `
-                <div class="genres-table-container">
-                    <table class="genres-table">
-                        <thead>
-                            <tr>
-                                <th>Genre</th>
-                                <th>Tracks</th>
-                                <th>Albums</th>
-                                <th>EPs</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </thead>
-                        <tbody>
+            container.innerHTML = `
+                <div class="genres-grid">
+                    ${filteredGenres.map(genre => `
+                        <div class="genre-card">
+                            <div class="genre-info">
+                                <div class="genre-name">
+                                    <span>${escapeHtml(genre.name)}</span>
+                                </div>
+                                <div class="genre-stats">
+                                    <span><i class="fas fa-microphone"></i> ${genre.artists || 0} artists</span>
+                                    <span><i class="fas fa-compact-disc"></i> ${genre.albums || 0} albums</span>
+                                    <span><i class="fas fa-play-circle"></i> ${genre.eps || 0} EPs</span>
+                                    <span><i class="fas fa-music"></i> Total: ${(genre.artists || 0) + (genre.albums || 0) + (genre.eps || 0)}</span>
+                                </div>
+                            </div>
+                            <div class="genre-actions">
+                                <button class="action-icon" onclick="openRenameModal(${JSON.stringify(genre).replace(/"/g, '&quot;')})" title="Rename">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-icon merge" onclick="openMergeModal(${JSON.stringify(genre).replace(/"/g, '&quot;')})" title="Merge into another genre">
+                                    <i class="fas fa-code-branch"></i>
+                                </button>
+                                <button class="action-icon delete" onclick="openDeleteModal(${JSON.stringify(genre).replace(/"/g, '&quot;')})" title="Remove from all content">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <a href="/genre/${genre.slug}" class="action-icon" target="_blank" title="View on site">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
             `;
-            
-            genres.forEach(genre => {
-                const statusBadge = genre.status === 'published' 
-                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
-                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
-                
-                html += `
-                    <tr>
-                        <td><strong>${escapeHtml(genre.name)}</strong></td>
-                        <td><i class="fas fa-music"></i> ${genre.track_count || 0}</td>
-                        <td><i class="fas fa-compact-disc"></i> ${genre.album_count || 0}</td>
-                        <td><i class="fas fa-play-circle"></i> ${genre.ep_count || 0}</td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            <div class="action-buttons">
-                                ${genre.status === 'draft' 
-                                    ? `<button class="action-btn" onclick="publishGenre(${genre.id}, '${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
-                                    : `<button class="action-btn" onclick="unpublishGenre(${genre.id}, '${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
-                                }
-                                <a href="/admin/genres/edit.html?id=${genre.id}" class="action-btn" title="Edit"><i class="fas fa-edit"></i></a>
-                                <button class="action-btn delete" onclick="deleteGenre(${genre.id}, '${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
-                            </div>
-                         </tr>
-                `;
-            });
-            
-            html += '</tbody> </table> </div>';
-            container.innerHTML = html;
         }
 
-        function renderMobileCards(container, genres) {
-            let html = '';
+        function openRenameModal(genre) {
+            pendingAction = genre;
+            document.getElementById('renameCurrentName').value = genre.name;
+            document.getElementById('renameNewName').value = genre.name;
             
-            genres.forEach(genre => {
-                const statusBadge = genre.status === 'published' 
-                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
-                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+            const statsHtml = `
+                <div class="stats-preview-title">Genre Statistics</div>
+                <div class="stats-preview-items">
+                    <span class="stat-pill"><i class="fas fa-microphone"></i> ${genre.artists || 0} artists</span>
+                    <span class="stat-pill"><i class="fas fa-compact-disc"></i> ${genre.albums || 0} albums</span>
+                    <span class="stat-pill"><i class="fas fa-play-circle"></i> ${genre.eps || 0} EPs</span>
+                </div>
+            `;
+            document.getElementById('renameStats').innerHTML = statsHtml;
+            document.getElementById('renameModal').classList.add('active');
+        }
+
+        function closeRenameModal() {
+            document.getElementById('renameModal').classList.remove('active');
+            pendingAction = null;
+        }
+
+        async function confirmRename() {
+            const newName = document.getElementById('renameNewName').value.trim();
+            if (!newName) {
+                showToast('Please enter a new genre name', 'warning');
+                return;
+            }
+            if (newName === pendingAction.name) {
+                closeRenameModal();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/genres/rename`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old: pendingAction.name, new: newName })
+                });
                 
-                html += `
-                    <div class="genre-mobile-card">
-                        <div class="genre-mobile-info">
-                            <div class="genre-mobile-name">
-                                ${escapeHtml(genre.name)} ${statusBadge}
-                            </div>
-                            <div class="genre-mobile-stats">
-                                <span><i class="fas fa-music"></i> ${genre.track_count || 0} tracks</span>
-                                <span><i class="fas fa-compact-disc"></i> ${genre.album_count || 0} albums</span>
-                                <span><i class="fas fa-play-circle"></i> ${genre.ep_count || 0} EPs</span>
-                            </div>
-                        </div>
-                        <div class="genre-mobile-actions">
-                            ${genre.status === 'draft' 
-                                ? `<button class="action-btn" onclick="publishGenre(${genre.id}, '${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
-                                : `<button class="action-btn" onclick="unpublishGenre(${genre.id}, '${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
-                            }
-                            <a href="/admin/genres/edit.html?id=${genre.id}" class="action-btn" title="Edit"><i class="fas fa-edit"></i></a>
-                            <button class="action-btn delete" onclick="deleteGenre(${genre.id}, '${escapeHtml(genre.name).replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to rename');
+                }
+                
+                showToast(`Genre "${pendingAction.name}" renamed to "${newName}"`, 'success');
+                closeRenameModal();
+                loadGenres();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        function openMergeModal(genre) {
+            pendingAction = genre;
+            
+            const statsHtml = `
+                <div class="stats-preview-title">Source: ${escapeHtml(genre.name)}</div>
+                <div class="stats-preview-items">
+                    <span class="stat-pill"><i class="fas fa-microphone"></i> ${genre.artists || 0} artists</span>
+                    <span class="stat-pill"><i class="fas fa-compact-disc"></i> ${genre.albums || 0} albums</span>
+                    <span class="stat-pill"><i class="fas fa-play-circle"></i> ${genre.eps || 0} EPs</span>
+                </div>
+            `;
+            document.getElementById('mergeSourceStats').innerHTML = statsHtml;
+            
+            const select = document.getElementById('mergeTargetSelect');
+            select.innerHTML = '<option value="">Select genre to merge into...</option>';
+            
+            allGenres.forEach(g => {
+                if (g.name !== genre.name) {
+                    const option = document.createElement('option');
+                    option.value = g.name;
+                    option.textContent = `${g.name} (${(g.artists || 0) + (g.albums || 0) + (g.eps || 0)} items)`;
+                    select.appendChild(option);
+                }
             });
             
-            container.innerHTML = html;
+            document.getElementById('mergeModal').classList.add('active');
+        }
+
+        function closeMergeModal() {
+            document.getElementById('mergeModal').classList.remove('active');
+            pendingAction = null;
+        }
+
+        async function confirmMerge() {
+            const target = document.getElementById('mergeTargetSelect').value;
+            if (!target) {
+                showToast('Please select a target genre', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/genres/merge`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ source: pendingAction.name, target })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to merge');
+                }
+                
+                showToast(`Merged "${pendingAction.name}" into "${target}"`, 'success');
+                closeMergeModal();
+                loadGenres();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        function openDeleteModal(genre) {
+            pendingAction = genre;
+            
+            const statsHtml = `
+                <div class="stats-preview-title">Genre: ${escapeHtml(genre.name)}</div>
+                <div class="stats-preview-items">
+                    <span class="stat-pill"><i class="fas fa-microphone"></i> ${genre.artists || 0} artists</span>
+                    <span class="stat-pill"><i class="fas fa-compact-disc"></i> ${genre.albums || 0} albums</span>
+                    <span class="stat-pill"><i class="fas fa-play-circle"></i> ${genre.eps || 0} EPs</span>
+                </div>
+            `;
+            document.getElementById('deleteStats').innerHTML = statsHtml;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            pendingAction = null;
+        }
+
+        async function confirmDelete() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/genres/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ genre: pendingAction.name })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete');
+                }
+                
+                showToast(`Genre "${pendingAction.name}" removed from all content`, 'success');
+                closeDeleteModal();
+                loadGenres();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
         }
 
         function escapeHtml(text) {
@@ -1136,27 +1127,7 @@
             return div.innerHTML;
         }
 
-        function renderPagination() {
-            const totalPages = Math.ceil(filteredGenres.length / itemsPerPage);
-            if (totalPages <= 1) {
-                document.getElementById('pagination').innerHTML = '';
-                return;
-            }
-            
-            let html = '';
-            for (let i = 1; i <= totalPages; i++) {
-                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-            }
-            document.getElementById('pagination').innerHTML = html;
-        }
-
-        window.goToPage = (page) => {
-            currentPage = page;
-            renderGenres();
-        };
-
         document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('sortFilter').addEventListener('change', applyFilters);
 
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
