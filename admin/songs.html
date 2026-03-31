@@ -9,113 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Keep all existing styles, add artist badge styles */
-        .artist-badge {
-            display: inline-block;
-            background: #e3f2fd;
-            color: var(--primary-blue);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            margin: 2px;
-            white-space: nowrap;
-        }
-        
-        .artist-badge.primary {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .artist-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            align-items: center;
-        }
-        
-        .artist-list .separator {
-            color: #999;
-            font-size: 0.7rem;
-        }
-        
-        /* Status badge styles */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-right: 8px;
-        }
-        
-        .status-badge.published {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .status-badge.draft {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
-        
-        .status-badge i {
-            font-size: 0.65rem;
-        }
-        
-        .btn-publish {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-publish:hover {
-            background: #218838;
-        }
-        
-        .btn-unpublish {
-            background: #ffc107;
-            color: #333;
-        }
-        
-        .btn-unpublish:hover {
-            background: #e0a800;
-        }
-        
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-        
-        .filter-tab {
-            padding: 8px 16px;
-            background: transparent;
-            border: none;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .filter-tab:hover {
-            background: var(--light-gray);
-            color: var(--primary-blue);
-        }
-        
-        .filter-tab.active {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        /* Rest of existing styles remain the same */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
@@ -123,14 +16,15 @@
             --primary-light: #2f8ed0;
             --primary-lighter: #70c8ff;
             --primary-dark: #1f4c73;
-            --dark: #1a1a1a;
             --gray: #666;
+            --gray-light: #999;
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
             --success: #28a745;
             --error: #dc3545;
             --warning: #ffc107;
+            --skeleton-bg: #e2e8f0;
         }
         
         body {
@@ -138,18 +32,19 @@
             background: var(--light-gray);
             min-height: 100vh;
             color: #333;
-            overflow-x: hidden;
-            width: 100%;
+            display: flex;
+            flex-direction: column;
         }
         
         .admin-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 10px;
+            flex: 1;
             width: 100%;
-            overflow-x: hidden;
         }
         
+        /* Header Styles */
         .admin-header {
             background: var(--white);
             border-radius: 12px;
@@ -157,7 +52,6 @@
             margin-bottom: 15px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
-            width: 100%;
         }
         
         .header-top {
@@ -186,42 +80,30 @@
             padding: 8px 15px;
             border-radius: 30px;
             font-size: 0.9rem;
-            margin-left: auto;
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .user-info i {
             color: var(--primary-blue);
+            font-size: 0.9rem;
         }
         
         .user-info span {
             font-weight: 600;
+            font-size: 0.9rem;
         }
         
-        .logout-btn {
-            color: #666;
-            transition: color 0.3s;
-            padding: 8px;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-        }
+        /* No logout button on this page */
         
-        .logout-btn:hover {
-            color: var(--primary-blue);
-        }
-        
+        /* Tabs */
         .admin-tabs {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             overflow-x: auto;
             padding: 5px 0;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            width: 100%;
+            -ms-overflow-style: none;
         }
         
         .admin-tabs::-webkit-scrollbar {
@@ -229,32 +111,25 @@
         }
         
         .tab-btn {
-            padding: 10px 15px !important;
+            padding: 8px 14px;
             background: transparent;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem !important;
-            font-weight: 600 !important;
+            font-size: 0.85rem;
+            font-weight: 600;
             color: #666;
             cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 6px;
             text-decoration: none;
-            line-height: 1;
-            height: 40px !important;
-            min-height: 40px !important;
-            max-height: 40px !important;
-            box-sizing: border-box;
-            flex-shrink: 0;
+            height: 36px;
         }
         
         .tab-btn i {
-            font-size: 1rem !important;
-            width: 16px;
+            font-size: 0.85rem;
         }
         
         .tab-btn:hover {
@@ -267,13 +142,13 @@
             color: white;
         }
         
+        /* Content Area */
         .admin-content {
             background: var(--white);
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
-            min-height: 500px;
             width: 100%;
             overflow-x: hidden;
         }
@@ -285,7 +160,6 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
-            width: 100%;
         }
         
         .content-header h2 {
@@ -294,18 +168,61 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
         }
         
         .content-header h2 i {
             color: var(--primary-blue);
         }
         
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+        }
+        
+        .stat-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Search Section */
         .search-section {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            width: 100%;
+            margin-bottom: 20px;
         }
         
         .search-box {
@@ -313,25 +230,24 @@
             align-items: center;
             background: var(--light-gray);
             border-radius: 8px;
-            padding: 5px 12px;
+            padding: 8px 12px;
             border: 1px solid #ddd;
-            flex: 1;
+            flex: 2;
             min-width: 200px;
         }
         
         .search-box i {
             color: var(--primary-blue);
             margin-right: 8px;
-            font-size: 0.9rem;
         }
         
         .search-box input {
             border: none;
             background: transparent;
-            padding: 8px 0;
+            padding: 6px 0;
             width: 100%;
             outline: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .filter-select {
@@ -339,11 +255,340 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             background: var(--white);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            min-width: 130px;
+            font-family: 'Montserrat', sans-serif;
+            flex: 1;
         }
         
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .filter-tab {
+            padding: 6px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-tab:hover {
+            background: var(--light-gray);
+            color: var(--primary-blue);
+        }
+        
+        .filter-tab.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        /* Artist Badges */
+        .artist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
+        }
+        
+        .artist-badge.primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .artist-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Desktop Table */
+        .songs-table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            display: block;
+        }
+        
+        .songs-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+        
+        .songs-table th {
+            background: var(--light-gray);
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary-dark);
+            border-bottom: 2px solid #ddd;
+            font-size: 0.8rem;
+        }
+        
+        .songs-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+            font-size: 0.8rem;
+        }
+        
+        .songs-table tr:hover td {
+            background: rgba(31, 111, 159, 0.02);
+        }
+        
+        .song-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .song-thumb {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .song-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .song-details h4 {
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        
+        .song-details span {
+            font-size: 0.65rem;
+            color: var(--gray);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            border: none;
+            background: var(--light-gray);
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .action-btn.delete:hover {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #218838;
+        }
+        
+        .btn-unpublish {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
+        /* Mobile Cards */
+        .songs-mobile-grid {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .song-mobile-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .song-mobile-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .song-mobile-thumb {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .song-mobile-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .song-mobile-info {
+            flex: 1;
+        }
+        
+        .song-mobile-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .song-mobile-artist {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .song-mobile-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .song-mobile-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .song-mobile-stat i {
+            color: var(--primary-blue);
+            font-size: 0.7rem;
+        }
+        
+        .song-mobile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .song-mobile-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        
+        .song-mobile-actions .action-btn {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            background: var(--light-gray);
+            color: var(--gray);
+        }
+        
+        .badge.featured {
+            background: rgba(255, 193, 7, 0.2);
+            color: #856404;
+        }
+        
+        .badge.editor {
+            background: rgba(40, 167, 69, 0.2);
+            color: #155724;
+        }
+        
+        .badge.explicit {
+            background: rgba(220, 53, 69, 0.2);
+            color: #721c24;
+        }
+        
+        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -352,7 +597,7 @@
             padding: 8px 16px;
             border: none;
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -383,372 +628,29 @@
             color: white;
         }
         
-        .btn-danger:hover {
-            background: #bd2130;
-        }
-        
-        .btn-publish {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-publish:hover {
-            background: #218838;
-        }
-        
-        .btn-unpublish {
-            background: #ffc107;
-            color: #333;
-        }
-        
-        .btn-unpublish:hover {
-            background: #e0a800;
-        }
-        
         .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.8rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-        
-        .stat-card {
-            background: var(--light-gray);
-            border-radius: 10px;
-            padding: 15px 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-            width: 100%;
-        }
-        
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-blue);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-        
-        .stat-info {
-            min-width: 0;
-            flex: 1;
-        }
-        
-        .stat-info h3 {
-            font-size: 0.75rem;
-            color: var(--gray);
-            margin-bottom: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .stat-info .stat-number {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .songs-mobile-grid {
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
-        
-        .song-mobile-card {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #eee;
-            width: 100%;
-        }
-        
-        .song-mobile-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .song-mobile-thumb {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.3rem;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        
-        .song-mobile-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .song-mobile-info {
-            flex: 1;
-        }
-        
-        .song-mobile-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        
-        .song-mobile-artist {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-        
-        .song-mobile-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .song-mobile-stat {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-        
-        .song-mobile-stat i {
-            color: var(--primary-blue);
-            width: 16px;
-        }
-        
-        .song-mobile-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-        
-        .song-mobile-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-        
-        .song-mobile-actions .action-btn {
-            width: 36px;
-            height: 36px;
-            font-size: 0.9rem;
-        }
-        
-        .songs-table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #eee;
-            width: 100%;
-            -webkit-overflow-scrolling: touch;
-            display: block;
-        }
-        
-        .songs-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-        
-        .songs-table th {
-            background: var(--light-gray);
-            padding: 12px 10px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--primary-dark);
-            border-bottom: 2px solid #ddd;
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-        
-        .songs-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-            font-size: 0.85rem;
-        }
-        
-        .songs-table tr:hover td {
-            background: rgba(31, 111, 159, 0.02);
-        }
-        
-        .song-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .song-thumb {
-            width: 35px;
-            height: 35px;
-            border-radius: 6px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1rem;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        
-        .song-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .song-details {
-            min-width: 0;
-        }
-        
-        .song-details h4 {
-            font-size: 0.9rem;
-            margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        
-        .song-details span {
+            padding: 4px 10px;
             font-size: 0.7rem;
-            color: var(--gray);
         }
         
-        .badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            background: var(--light-gray);
-            color: var(--gray);
-            margin-right: 3px;
-            white-space: nowrap;
-        }
-        
-        .badge.featured {
-            background: rgba(255, 193, 7, 0.2);
-            color: #856404;
-        }
-        
-        .badge.editor {
-            background: rgba(40, 167, 69, 0.2);
-            color: #155724;
-        }
-        
-        .badge.explicit {
-            background: rgba(220, 53, 69, 0.2);
-            color: #721c24;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        
-        .action-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 5px;
-            border: none;
-            background: var(--light-gray);
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-        }
-        
-        .action-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .action-btn.delete:hover {
-            background: var(--error);
-            color: white;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 15px;
-            color: #666;
-        }
-        
-        .empty-state i {
-            font-size: 3rem;
-            color: var(--primary-blue);
-            margin-bottom: 15px;
-            opacity: 0.3;
-        }
-        
-        .empty-state h3 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            color: var(--primary-dark);
-        }
-        
-        .empty-state p {
-            font-size: 0.9rem;
-            color: #999;
-            margin-bottom: 20px;
-        }
-        
+        /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 5px;
+            gap: 8px;
             margin-top: 20px;
             flex-wrap: wrap;
         }
         
         .page-btn {
-            width: 35px;
-            height: 35px;
+            width: 32px;
+            height: 32px;
             border: 1px solid #ddd;
             border-radius: 6px;
             background: white;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         
         .page-btn:hover {
@@ -763,67 +665,27 @@
             border-color: var(--primary-blue);
         }
         
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 4px;
-            height: 20px;
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
         }
         
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        .skeleton-row {
-            height: 60px;
-            margin-bottom: 8px;
-        }
-        
-        .skeleton-card {
-            height: 120px;
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary-blue);
             margin-bottom: 15px;
-            border-radius: 12px;
+            opacity: 0.3;
         }
         
-        .toast {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            left: 10px;
-            padding: 12px 15px;
-            border-radius: 8px;
-            font-weight: 500;
-            z-index: 2000;
-            animation: slideIn 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
         }
         
-        .toast.success {
-            background: #28a745;
-            color: white;
-        }
-        
-        .toast.error {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .toast.info {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -852,52 +714,46 @@
         .modal h3 {
             margin-bottom: 15px;
             color: var(--primary-blue);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
         
         .modal .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .modal label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         
         .modal input,
         .modal select,
         .modal textarea {
             width: 100%;
-            padding: 10px;
+            padding: 8px 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 0.9rem;
-            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
         }
         
         .image-upload-area {
             border: 2px dashed var(--primary-blue);
             border-radius: 8px;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             cursor: pointer;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             background: var(--light-gray);
-            transition: all 0.3s;
-        }
-        
-        .image-upload-area:hover {
-            background: rgba(31, 111, 159, 0.05);
         }
         
         .image-preview {
             width: 100%;
-            max-height: 200px;
+            max-height: 150px;
             object-fit: contain;
-            border-radius: 8px;
-            margin-top: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
             display: none;
         }
         
@@ -908,66 +764,117 @@
         .remove-image {
             color: var(--error);
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             margin-top: 5px;
             display: inline-block;
         }
         
-        .modal .checkbox-group {
+        .checkbox-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin: 15px 0;
+            gap: 12px;
+            margin: 12px 0;
         }
         
-        .modal .checkbox-label {
+        .checkbox-label {
             display: flex;
             align-items: center;
             gap: 5px;
             font-weight: normal;
+            font-size: 0.8rem;
         }
         
-        .modal .modal-actions {
+        .modal-actions {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: var(--primary-blue); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Skeleton */
+        .skeleton-row {
+            height: 50px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
         @media (min-width: 768px) {
-            .admin-container { padding: 20px; }
-            .admin-header { padding: 20px; }
-            .admin-content { padding: 20px; }
+            .admin-container { padding: 15px; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); }
-            .stat-card { padding: 20px; }
-            .stat-icon { width: 50px; height: 50px; font-size: 1.5rem; }
-            .stat-info h3 { font-size: 0.9rem; }
-            .stat-info .stat-number { font-size: 1.5rem; }
+            .stat-card .stat-value { font-size: 1.8rem; }
             .toast { left: auto; right: 20px; min-width: 300px; }
         }
         
         @media (max-width: 767px) {
-            .songs-table-container {
-                display: none;
-            }
-            
-            .songs-mobile-grid {
-                display: flex;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header-top h1 { font-size: 1.1rem; }
-            .user-info { padding: 5px 10px; font-size: 0.8rem; }
-            .user-info span { display: none; }
+            .songs-table-container { display: none; }
+            .songs-mobile-grid { display: flex; }
             .search-section { flex-direction: column; }
             .search-box { width: 100%; }
             .filter-select { width: 100%; }
-            .content-header h2 .btn-sm { margin-left: 0 !important; margin-top: 5px; }
-            .stat-card { padding: 12px 8px; }
-            .stat-icon { width: 35px; height: 35px; font-size: 1rem; }
-            .stat-info h3 { font-size: 0.7rem; }
-            .stat-info .stat-number { font-size: 1rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-card { padding: 12px; }
+            .stat-icon { font-size: 1.2rem; }
+            .stat-value { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -979,21 +886,21 @@
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
-                    <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
                 </div>
             </div>
             
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs" class="tab-btn active"><i class="fas fa-music"></i> Songs</a>
-                <a href="/admin/albums" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="/admin/eps" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
-                <a href="/admin/artists" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="/admin/playlists" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
-                <a href="/admin/trash" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn active"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
         
@@ -1001,28 +908,28 @@
             <div class="content-header">
                 <h2>
                     <i class="fas fa-music"></i> Songs Management
-                    <button onclick="loadSongs()" class="btn btn-secondary btn-sm" style="margin-left: 5px;">
+                    <button onclick="loadSongs()" class="btn btn-secondary btn-sm">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </h2>
-                <div class="search-section">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search songs...">
-                    </div>
-                    <select id="genreFilter" class="filter-select">
-                        <option value="">All Genres</option>
-                    </select>
-                    <select id="sortFilter" class="filter-select">
-                        <option value="newest">Newest</option>
-                        <option value="oldest">Oldest</option>
-                        <option value="plays">Most Plays</option>
-                        <option value="title">Title A-Z</option>
-                    </select>
+            </div>
+            
+            <div class="search-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search songs by title or artist...">
                 </div>
+                <select id="genreFilter" class="filter-select">
+                    <option value="">All Genres</option>
+                </select>
+                <select id="sortFilter" class="filter-select">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="views">Most Views</option>
+                    <option value="title">Title A-Z</option>
+                </select>
             </div>
 
-            <!-- Status Filter Tabs -->
             <div class="filter-tabs">
                 <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
                 <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
@@ -1032,31 +939,23 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-music"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Songs</h3>
-                        <div class="stat-number" id="totalSongs">0</div>
-                    </div>
+                    <div class="stat-value" id="totalSongs">0</div>
+                    <div class="stat-label">Total Songs</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
-                    <div class="stat-info">
-                        <h3>Drafts</h3>
-                        <div class="stat-number" id="totalDrafts">0</div>
-                    </div>
+                    <div class="stat-value" id="totalDrafts">0</div>
+                    <div class="stat-label">Drafts</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-globe"></i></div>
-                    <div class="stat-info">
-                        <h3>Published</h3>
-                        <div class="stat-number" id="totalPublished">0</div>
-                    </div>
+                    <div class="stat-value" id="totalPublished">0</div>
+                    <div class="stat-label">Published</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-headphones"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Plays</h3>
-                        <div class="stat-number" id="totalPlays">0</div>
-                    </div>
+                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                    <div class="stat-value" id="totalViews">0</div>
+                    <div class="stat-label">Total Views</div>
                 </div>
             </div>
 
@@ -1069,6 +968,10 @@
             <div id="songsMobileGrid" class="songs-mobile-grid"></div>
 
             <div class="pagination" id="pagination"></div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
@@ -1083,9 +986,9 @@
                 <div class="form-group">
                     <label>Song Artwork</label>
                     <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 10px; display: block;"></i>
-                        <div>Click to upload or drag image</div>
-                        <div style="font-size: 0.8rem; color: var(--gray); margin-top: 5px;">PNG, JPG, WEBP (max 2MB)</div>
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem; color: var(--primary-blue); margin-bottom: 8px; display: block;"></i>
+                        <div style="font-size: 0.8rem;">Click to upload image</div>
+                        <div style="font-size: 0.7rem; color: var(--gray);">PNG, JPG, WEBP (max 2MB)</div>
                     </div>
                     <input type="file" id="imageInput" accept="image/*" style="display: none;">
                     <img id="imagePreview" class="image-preview" src="#" alt="Preview">
@@ -1099,8 +1002,8 @@
                 
                 <div class="form-group">
                     <label>Artists</label>
-                    <div id="editArtistsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; background: var(--light-gray); border-radius: 8px; min-height: 50px;"></div>
-                    <div class="form-hint" style="font-size: 0.8rem; color: #666; margin-top: 5px;">Main artist shown in blue, featured artists in light blue</div>
+                    <div id="editArtistsContainer" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; background: var(--light-gray); border-radius: 6px; min-height: 45px;"></div>
+                    <div class="form-hint" style="font-size: 0.7rem; color: #666; margin-top: 4px;">Main artist shown in blue, featured artists in light blue</div>
                 </div>
                 
                 <div class="form-group">
@@ -1125,7 +1028,7 @@
                 
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="editDescription" rows="3"></textarea>
+                    <textarea id="editDescription" rows="2"></textarea>
                 </div>
                 
                 <div class="checkbox-group">
@@ -1133,7 +1036,7 @@
                         <input type="checkbox" id="editExplicit"> Explicit
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" id="editFeatured"> Featured (Track)
+                        <input type="checkbox" id="editFeatured"> Featured
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="editEditorPick"> Editor's Pick
@@ -1150,9 +1053,9 @@
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-content" style="max-width: 350px;">
             <h3 style="color: var(--error);">Confirm Delete</h3>
-            <p style="margin-bottom: 25px;">Are you sure you want to delete "<span id="deleteSongTitle"></span>"? This will move it to trash.</p>
+            <p style="margin-bottom: 20px;">Are you sure you want to delete "<span id="deleteSongTitle"></span>"? This will move it to trash.</p>
             <div style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button onclick="closeDeleteModal()" class="btn btn-secondary">Cancel</button>
                 <button onclick="confirmDelete()" class="btn btn-danger">Delete</button>
@@ -1170,13 +1073,6 @@
         let selectedImageFile = null;
         let currentEditingSong = null;
         let currentStatusFilter = 'all';
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-            }
-        }
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
@@ -1199,15 +1095,11 @@
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                <span>${message}</span>
-            `;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Helper function to format artists display
         function formatArtistsDisplay(song) {
             if (!song.artists || song.artists.length === 0) {
                 return escapeHtml(song.artist || 'Unknown');
@@ -1223,7 +1115,6 @@
             return html;
         }
 
-        // Helper function to get artist names for search
         function getArtistSearchString(song) {
             if (!song.artists || song.artists.length === 0) {
                 return song.artist || '';
@@ -1231,7 +1122,6 @@
             return song.artists.map(a => a.name).join(' ');
         }
 
-        // NEW: Publish song
         async function publishSong(id, title) {
             if (!confirm(`Publish "${title}"? It will become visible to the public.`)) return;
             
@@ -1253,7 +1143,6 @@
             }
         }
 
-        // NEW: Unpublish song
         async function unpublishSong(id, title) {
             if (!confirm(`Unpublish "${title}"? It will become a draft and hidden from public.`)) return;
             
@@ -1275,11 +1164,9 @@
             }
         }
 
-        // NEW: Filter by status
         window.filterByStatus = (status) => {
             currentStatusFilter = status;
             
-            // Update active tab styling
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 if (tab.dataset.status === status) {
                     tab.classList.add('active');
@@ -1295,21 +1182,19 @@
             if (!checkAuth()) return;
             
             try {
-                // Use admin endpoint to get ALL songs (including drafts)
                 const response = await fetch(`${API_BASE}/admin/tracks`);
                 if (!response.ok) throw new Error('Failed to load songs');
                 
                 allSongs = await response.json();
                 
-                // Update stats
                 const draftCount = allSongs.filter(s => s.status === 'draft').length;
                 const publishedCount = allSongs.filter(s => s.status === 'published').length;
-                const totalPlays = allSongs.reduce((sum, song) => sum + (song.plays || 0), 0);
+                const totalViews = allSongs.reduce((sum, song) => sum + (song.views || 0), 0);
                 
                 document.getElementById('totalSongs').textContent = allSongs.length;
                 document.getElementById('totalDrafts').textContent = draftCount;
                 document.getElementById('totalPublished').textContent = publishedCount;
-                document.getElementById('totalPlays').textContent = formatNumber(totalPlays);
+                document.getElementById('totalViews').textContent = formatNumber(totalViews);
                 
                 populateGenreFilter();
                 applyFilters();
@@ -1349,7 +1234,6 @@
             const sort = document.getElementById('sortFilter').value;
             
             filteredSongs = allSongs.filter(song => {
-                // Status filter
                 if (currentStatusFilter !== 'all' && song.status !== currentStatusFilter) {
                     return false;
                 }
@@ -1365,8 +1249,8 @@
                 switch(sort) {
                     case 'oldest':
                         return new Date(a.uploaded_at) - new Date(b.uploaded_at);
-                    case 'plays':
-                        return (b.plays || 0) - (a.plays || 0);
+                    case 'views':
+                        return (b.views || 0) - (a.views || 0);
                     case 'title':
                         return (a.title || '').localeCompare(b.title || '');
                     default:
@@ -1388,7 +1272,7 @@
                         <i class="fas fa-music"></i>
                         <h3>No Songs Found</h3>
                         <p>Try adjusting your filters or upload some songs</p>
-                        <a href="/admin/upload" class="btn btn-primary">
+                        <a href="/admin/upload.html" class="btn btn-primary">
                             <i class="fas fa-cloud-upload-alt"></i> Upload New Song
                         </a>
                     </div>
@@ -1417,7 +1301,7 @@
                                 <th>Song</th>
                                 <th>Artists</th>
                                 <th>Genre</th>
-                                <th>Stats</th>
+                                <th>Views</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </thead>
@@ -1438,17 +1322,14 @@
                                     ${song.artwork_url ? `<img src="${song.artwork_url}" alt="${escapeHtml(song.title)}">` : '<i class="fas fa-music"></i>'}
                                 </div>
                                 <div class="song-details">
-                                    <h4>${escapeHtml(song.title) || 'Untitled'} ${statusBadge}</h4>
+                                    <h4>${escapeHtml(song.title) || 'Untitled'}</h4>
                                     <span>${formatDuration(song.duration)}</span>
                                 </div>
                             </div>
                         </td>
                         <td><div class="artist-list">${artistsDisplay}</div></td>
                         <td>${escapeHtml(song.genre) || '—'}</td>
-                        <td>
-                            <div><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</div>
-                            <div><i class="fas fa-download"></i> ${formatNumber(song.downloads)}</div>
-                        </td>
+                        <td><i class="fas fa-eye"></i> ${formatNumber(song.views)}</td>
                         <td>${statusBadge}</td>
                         <td>
                             <div class="action-buttons">
@@ -1456,22 +1337,16 @@
                                     ? `<button class="action-btn btn-publish" onclick="publishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
                                     : `<button class="action-btn btn-unpublish" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
                                 }
-                                <button class="action-btn" onclick="editSong(${song.id})" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="action-btn" onclick="previewSong('${song.slug}')" title="Preview">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn delete" onclick="showDeleteModal(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button class="action-btn" onclick="editSong(${song.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn" onclick="previewSong('${song.slug}')" title="Preview"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn delete" onclick="showDeleteModal(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
                 `;
             });
             
-            html += '</tbody> </table></div>';
+            html += '</tbody> </table> </div>';
             container.innerHTML = html;
         }
 
@@ -1503,9 +1378,7 @@
                         
                         <div class="song-mobile-details">
                             <div class="song-mobile-stat"><i class="fas fa-clock"></i> ${formatDuration(song.duration)}</div>
-                            <div class="song-mobile-stat"><i class="fas fa-headphones"></i> ${formatNumber(song.plays)}</div>
-                            <div class="song-mobile-stat"><i class="fas fa-download"></i> ${formatNumber(song.downloads)}</div>
-                            <div class="song-mobile-stat"><i class="fas fa-eye"></i> ${formatNumber(song.views)}</div>
+                            <div class="song-mobile-stat"><i class="fas fa-eye"></i> ${formatNumber(song.views)} views</div>
                         </div>
                         
                         ${tags.length > 0 ? `<div class="song-mobile-tags">${tags.join(' ')}</div>` : ''}
@@ -1596,7 +1469,7 @@
             let html = '';
             song.artists.forEach(artist => {
                 const badgeClass = artist.is_primary === 1 ? 'primary' : '';
-                html += `<span class="artist-badge ${badgeClass}" style="padding: 5px 12px; font-size: 0.85rem;">
+                html += `<span class="artist-badge ${badgeClass}" style="padding: 4px 10px; font-size: 0.75rem;">
                     ${escapeHtml(artist.name)} ${artist.is_primary === 1 ? '(Main)' : '(Featured)'}
                 </span>`;
             });
@@ -1774,7 +1647,7 @@
         }
 
         function formatDuration(seconds) {
-            if (!seconds) return '?:??';
+            if (!seconds) return '0:00';
             const mins = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${mins}:${secs.toString().padStart(2, '0')}`;
