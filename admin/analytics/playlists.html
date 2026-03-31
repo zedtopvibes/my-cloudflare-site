@@ -16,8 +16,6 @@
             --primary-light: #2f8ed0;
             --primary-lighter: #70c8ff;
             --primary-dark: #1f4c73;
-            --playlist-purple: #8b5cf6;
-            --playlist-light: #a78bfa;
             --gray: #666;
             --light-gray: #f0f2f5;
             --white: #ffffff;
@@ -162,10 +160,10 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid */
+        /* Stats Grid - Mobile first 2 columns, desktop 3 columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 30px;
         }
@@ -261,10 +259,10 @@
             font-family: 'Montserrat', sans-serif;
         }
         
-        /* Playlist Cards - Mobile First */
-        .playlists-list {
-            display: flex;
-            flex-direction: column;
+        /* Playlist Cards - Mobile first grid */
+        .playlists-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
         }
         
@@ -293,10 +291,6 @@
             font-weight: 700;
             font-size: 0.85rem;
             margin-bottom: 12px;
-        }
-        
-        .playlist-info {
-            flex: 1;
         }
         
         .playlist-name {
@@ -421,33 +415,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
-        .toast.info { background: var(--primary-blue); }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
         /* Tablet Styles */
         @media (min-width: 768px) {
             .admin-container {
@@ -473,6 +440,10 @@
             .filter-row {
                 flex: 1;
             }
+            
+            .playlists-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         /* Desktop Styles */
@@ -483,12 +454,6 @@
             
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .playlists-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
             }
         }
     </style>
@@ -682,7 +647,6 @@
             
             document.getElementById('analyticsContent').innerHTML = html;
             
-            // Add event listeners
             document.getElementById('searchInput').addEventListener('input', applyFilters);
             document.getElementById('sortFilter').addEventListener('change', applyFilters);
             
@@ -699,9 +663,6 @@
                         <i class="fas fa-list"></i>
                         <h3>No Playlists Found</h3>
                         <p>Try adjusting your search or create some playlists</p>
-                        <a href="/admin/playlists/edit.html" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; display: inline-block; margin-top: 10px;">
-                            <i class="fas fa-plus"></i> Create Playlist
-                        </a>
                     </div>
                 `;
                 paginationContainer.innerHTML = '';
@@ -713,8 +674,7 @@
             const pagePlaylists = filteredPlaylists.slice(start, end);
             const totalPages = Math.ceil(filteredPlaylists.length / itemsPerPage);
             
-            // Render playlists as cards
-            let playlistsHtml = '<div class="playlists-list">';
+            let playlistsHtml = '<div class="playlists-grid">';
             
             pagePlaylists.forEach((playlist, index) => {
                 const globalRank = start + index + 1;
@@ -725,19 +685,17 @@
                 playlistsHtml += `
                     <div class="playlist-card">
                         <div class="playlist-rank">#${globalRank}</div>
-                        <div class="playlist-info">
-                            <div class="playlist-name">${escapeHtml(playlist.name)}</div>
-                            <div class="playlist-description">${escapeHtml(description)}</div>
-                            <div class="playlist-stats">
-                                <div class="playlist-stat-item">
-                                    <i class="fas fa-music"></i>
-                                    ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
-                                </div>
+                        <div class="playlist-name">${escapeHtml(playlist.name)}</div>
+                        <div class="playlist-description">${escapeHtml(description)}</div>
+                        <div class="playlist-stats">
+                            <div class="playlist-stat-item">
+                                <i class="fas fa-music"></i>
+                                ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
                             </div>
-                            <div class="playlist-views">
-                                <i class="fas fa-eye"></i>
-                                ${formatNumber(views)} views
-                            </div>
+                        </div>
+                        <div class="playlist-views">
+                            <i class="fas fa-eye"></i>
+                            ${formatNumber(views)} views
                         </div>
                     </div>
                 `;
@@ -746,7 +704,6 @@
             playlistsHtml += '</div>';
             container.innerHTML = playlistsHtml;
             
-            // Render pagination
             if (totalPages > 1) {
                 let paginationHtml = '';
                 for (let i = 1; i <= totalPages; i++) {
