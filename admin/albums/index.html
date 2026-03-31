@@ -790,6 +790,9 @@
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Search albums by title or artist...">
                 </div>
+                <select id="genreFilter" class="filter-select">
+                    <option value="">All Genres</option>
+                </select>
                 <select id="sortFilter" class="filter-select">
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
@@ -1048,6 +1051,7 @@
                 document.getElementById('totalPublished').textContent = publishedCount;
                 document.getElementById('totalViews').textContent = formatNumber(totalViews);
                 
+                populateGenreFilter();
                 applyFilters();
                 
             } catch (error) {
@@ -1063,8 +1067,25 @@
             }
         }
 
+        function populateGenreFilter() {
+            const genres = [...new Set(allAlbums.map(album => album.genre).filter(g => g))];
+            const select = document.getElementById('genreFilter');
+            
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            genres.sort().forEach(genre => {
+                const option = document.createElement('option');
+                option.value = genre;
+                option.textContent = genre;
+                select.appendChild(option);
+            });
+        }
+
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const genre = document.getElementById('genreFilter').value;
             const sort = document.getElementById('sortFilter').value;
             
             filteredAlbums = allAlbums.filter(album => {
@@ -1074,7 +1095,8 @@
                 
                 const matchesSearch = album.title?.toLowerCase().includes(searchTerm) ||
                                      (album.artist_name || album.artist || '').toLowerCase().includes(searchTerm);
-                return matchesSearch;
+                const matchesGenre = !genre || album.genre === genre;
+                return matchesSearch && matchesGenre;
             });
             
             filteredAlbums.sort((a, b) => {
@@ -1134,6 +1156,7 @@
                             <tr>
                                 <th>Album</th>
                                 <th>Artist</th>
+                                <th>Genre</th>
                                 <th>Release Date</th>
                                 <th>Tracks</th>
                                 <th>Views</th>
@@ -1164,6 +1187,7 @@
                             </div>
                         </td>
                         <td>${escapeHtml(artistName)}</td>
+                        <td>${escapeHtml(album.genre) || '—'}</td>
                         <td>${releaseDate}</td>
                         <td><i class="fas fa-music"></i> ${trackCount}</td>
                         <td><i class="fas fa-eye"></i> ${formatNumber(album.views)}</td>
@@ -1184,7 +1208,7 @@
                 `;
             });
             
-            html += '</tbody> </table> </div>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
 
@@ -1212,6 +1236,7 @@
                         </div>
                         
                         <div class="album-mobile-details">
+                            <div class="album-mobile-stat"><i class="fas fa-tag"></i> ${escapeHtml(album.genre) || 'No Genre'}</div>
                             <div class="album-mobile-stat"><i class="fas fa-calendar"></i> ${releaseDate}</div>
                             <div class="album-mobile-stat"><i class="fas fa-music"></i> ${trackCount} tracks</div>
                             <div class="album-mobile-stat"><i class="fas fa-eye"></i> ${formatNumber(album.views)} views</div>
@@ -1268,6 +1293,7 @@
         }
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('genreFilter').addEventListener('change', applyFilters);
         document.getElementById('sortFilter').addEventListener('change', applyFilters);
 
         document.addEventListener('DOMContentLoaded', () => {
