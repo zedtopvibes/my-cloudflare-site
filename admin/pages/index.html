@@ -6,206 +6,214 @@
     <title>Pages - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --primary: #1e3c72;
-            --primary-light: #2a4a8a;
-            --primary-soft: #e8f0fe;
-            --secondary: #00b4d8;
-            --success: #10b981;
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --gray: #666;
+            --gray-light: #999;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #28a745;
+            --error: #dc3545;
             --warning: #ffc107;
-            --error: #ef4444;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --radius-sm: 6px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
+            --skeleton-bg: #e2e8f0;
         }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
-            line-height: 1.5;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
         .admin-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
+        /* Header Styles */
         .admin-header {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
         .header-top h1 {
+            color: var(--primary-blue);
             font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--gray-800);
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-        
-        .header-top h1 i {
-            color: var(--primary);
+            gap: 8px;
         }
         
         .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: var(--gray-100);
-            padding: 6px 14px;
+            gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
             border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .user-info i {
+            color: var(--primary-blue);
             font-size: 0.9rem;
         }
         
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--gray-600);
-            cursor: pointer;
-            font-size: 1rem;
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
         }
         
+        /* Tabs */
         .admin-tabs {
             display: flex;
-            gap: 4px;
+            gap: 8px;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
         }
         
         .tab-btn {
-            padding: 8px 16px;
+            padding: 8px 14px;
+            background: transparent;
             border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--gray-600);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
             cursor: pointer;
+            transition: all 0.3s;
             white-space: nowrap;
-            text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
+            height: 36px;
+        }
+        
+        .tab-btn i {
+            font-size: 0.85rem;
         }
         
         .tab-btn:hover {
-            background: var(--gray-100);
-            color: var(--primary);
+            background: #f0f0f0;
+            color: var(--primary-blue);
         }
         
         .tab-btn.active {
-            background: var(--primary);
+            background: var(--primary-blue);
             color: white;
         }
         
+        /* Content Area */
         .admin-content {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
         }
         
         .content-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 15px;
         }
         
         .content-header h2 {
             font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--gray-700);
+            color: var(--primary-dark);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-light);
-        }
-        
-        .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 1px solid var(--gray-200);
+        .content-header h2 i {
+            color: var(--primary-blue);
         }
         
         /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
         }
         
         .stat-card {
-            background: var(--gray-50);
-            border-radius: var(--radius-md);
+            background: var(--light-gray);
+            border-radius: 12px;
             padding: 16px;
-            border: 1px solid var(--gray-200);
             text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(31, 111, 159, 0.15);
         }
         
-        .stat-value {
-            font-size: 1.8rem;
+        .stat-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--primary-blue);
+            line-height: 1.2;
+            margin-bottom: 4px;
         }
         
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-            margin-top: 4px;
+        .stat-card .stat-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         /* Filter Tabs */
@@ -213,29 +221,39 @@
             display: flex;
             gap: 8px;
             margin-bottom: 20px;
-            border-bottom: 1px solid var(--gray-200);
-            padding-bottom: 12px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
         }
         
         .filter-tab {
-            padding: 6px 16px;
+            padding: 6px 14px;
             background: transparent;
             border: none;
             border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--gray-600);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #666;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
         }
         
         .filter-tab:hover {
-            background: var(--gray-100);
-            color: var(--primary);
+            background: var(--light-gray);
+            color: var(--primary-blue);
         }
         
         .filter-tab.active {
-            background: var(--primary);
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .filter-tab.add-btn {
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -244,12 +262,11 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 2px 8px;
+            padding: 3px 8px;
             border-radius: 20px;
             font-size: 0.65rem;
             font-weight: 600;
             margin-left: 8px;
-            white-space: nowrap;
         }
         
         .status-badge.published {
@@ -269,22 +286,22 @@
             gap: 8px;
         }
         
-        .page-row {
+        .page-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.3s ease;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
-            transition: all 0.2s;
-            text-decoration: none;
-            color: inherit;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         
-        .page-row:hover {
-            border-color: var(--primary);
-            box-shadow: var(--shadow-sm);
-            transform: translateX(2px);
+        .page-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
         }
         
         .page-info {
@@ -292,25 +309,26 @@
         }
         
         .page-title {
-            font-weight: 600;
             font-size: 1rem;
-            color: var(--gray-800);
+            font-weight: 600;
+            color: var(--primary-dark);
             margin-bottom: 4px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            flex-wrap: wrap;
+            gap: 6px;
         }
         
         .page-slug {
-            font-size: 0.75rem;
-            color: var(--gray-500);
+            font-size: 0.7rem;
+            color: var(--gray);
             font-family: monospace;
+            margin-bottom: 4px;
         }
         
         .page-meta {
-            font-size: 0.7rem;
-            color: var(--gray-500);
-            margin-top: 4px;
+            font-size: 0.65rem;
+            color: var(--gray-light);
         }
         
         .page-actions {
@@ -319,57 +337,164 @@
             flex-shrink: 0;
         }
         
-        .action-icon {
+        .action-btn {
             width: 32px;
             height: 32px;
-            border-radius: var(--radius-sm);
+            border-radius: 6px;
             border: none;
-            background: var(--gray-100);
-            color: var(--gray-600);
+            background: white;
+            color: var(--gray);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            font-size: 0.8rem;
         }
         
-        .action-icon:hover {
-            background: var(--primary);
+        .action-btn:hover {
+            background: var(--primary-blue);
             color: white;
         }
         
-        .action-icon.publish:hover {
+        .action-btn.publish:hover {
             background: var(--success);
             color: white;
         }
         
-        .action-icon.unpublish:hover {
+        .action-btn.unpublish:hover {
             background: var(--warning);
             color: #333;
         }
         
-        .action-icon.delete:hover {
+        .action-btn.delete:hover {
             background: var(--error);
             color: white;
         }
         
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.7rem;
+        }
+        
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--gray-500);
+            padding: 40px 20px;
+            color: var(--gray);
         }
         
         .empty-state i {
-            font-size: 4rem;
-            color: var(--gray-300);
-            margin-bottom: 16px;
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            opacity: 0.3;
         }
         
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        .modal-header h3 {
+            color: var(--primary-blue);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-body {
+            margin-bottom: 15px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding-top: 12px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 12px 20px;
+            left: 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             color: white;
             z-index: 2000;
@@ -377,37 +502,74 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--error); }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: var(--primary-blue); }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--gray-500);
+        /* Skeleton */
+        .skeleton-row {
+            height: 80px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+            margin-bottom: 8px;
         }
         
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .page-row {
-                flex-wrap: wrap;
-            }
-            
-            .page-actions {
-                margin-top: 8px;
-                margin-left: auto;
-            }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .stat-card .stat-value { font-size: 1.8rem; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+        }
+        
+        @media (max-width: 767px) {
+            .filter-tabs { justify-content: center; }
+            .page-card { flex-direction: column; align-items: flex-start; }
+            .page-actions { align-self: flex-end; }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-card { padding: 12px; }
+            .stat-icon { font-size: 1.2rem; }
+            .stat-value { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -419,21 +581,20 @@
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
-                    <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
                 </div>
             </div>
             
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
                 <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
                 <a href="/admin/pages/index.html" class="tab-btn active"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -441,45 +602,64 @@
         <div class="admin-content">
             <div class="content-header">
                 <h2>
-                    <i class="fas fa-file-alt"></i> All Pages
-                    <button onclick="loadPages()" class="btn btn-secondary" style="margin-left: 8px;">
+                    <i class="fas fa-file-alt"></i> Page Management
+                    <button onclick="loadPages()" class="btn btn-secondary btn-sm" title="Refresh">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </h2>
                 <a href="/admin/pages/edit.html" class="btn btn-primary">
-                    <i class="fas fa-plus-circle"></i> New Page
+                    <i class="fas fa-plus-circle"></i> Add New Page
                 </a>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalPages">0</div>
-                    <div class="stat-label">Total Pages</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalPublished">0</div>
-                    <div class="stat-label">Published</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalDrafts">0</div>
-                    <div class="stat-label">Drafts</div>
-                </div>
-            </div>
-
-            <!-- Filter Tabs -->
             <div class="filter-tabs">
                 <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
                 <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
                 <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
             </div>
 
-            <!-- Pages List -->
-            <div id="pagesList" class="pages-list">
-                <div class="loading">
-                    <i class="fas fa-circle-notch fa-spin"></i>
-                    <div>Loading pages...</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="stat-value" id="totalPages">0</div>
+                    <div class="stat-label">Total Pages</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                    <div class="stat-value" id="totalPublished">0</div>
+                    <div class="stat-label">Published</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
+                    <div class="stat-value" id="totalDrafts">0</div>
+                    <div class="stat-label">Drafts</div>
+                </div>
+            </div>
+
+            <div id="pagesContainer">
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+            </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle" style="color: var(--primary-blue);">Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage">Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmModalCancel" class="btn btn-secondary">Cancel</button>
+                <button id="confirmModalConfirm" class="btn btn-primary">Confirm</button>
             </div>
         </div>
     </div>
@@ -487,14 +667,9 @@
     <script>
         const API_BASE = '/api';
         let allPages = [];
+        let filteredPages = [];
         let currentStatusFilter = 'all';
-
-        function logout() {
-            if (confirm('Logout?')) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-            }
-        }
+        let pendingAction = null;
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
@@ -514,81 +689,138 @@
             return true;
         }
 
-        function showToast(message, type = 'success') {
+        function showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Publish page
+        function showConfirmModal(options) {
+            const modal = document.getElementById('confirmModal');
+            const titleEl = document.getElementById('confirmModalTitle');
+            const messageEl = document.getElementById('confirmModalMessage');
+            const confirmBtn = document.getElementById('confirmModalConfirm');
+            const cancelBtn = document.getElementById('confirmModalCancel');
+            
+            titleEl.textContent = options.title;
+            messageEl.textContent = options.message;
+            
+            if (options.type === 'danger') {
+                confirmBtn.className = 'btn btn-danger';
+                titleEl.style.color = 'var(--error)';
+            } else if (options.type === 'warning') {
+                confirmBtn.className = 'btn btn-warning';
+                titleEl.style.color = 'var(--warning)';
+            } else {
+                confirmBtn.className = 'btn btn-primary';
+                titleEl.style.color = 'var(--primary-blue)';
+            }
+            
+            window.confirmModalCallback = options.onConfirm;
+            
+            modal.classList.add('active');
+            
+            confirmBtn.onclick = () => {
+                modal.classList.remove('active');
+                if (window.confirmModalCallback) {
+                    window.confirmModalCallback();
+                    window.confirmModalCallback = null;
+                }
+            };
+            
+            cancelBtn.onclick = () => {
+                modal.classList.remove('active');
+                window.confirmModalCallback = null;
+            };
+            
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    window.confirmModalCallback = null;
+                }
+            };
+        }
+
         async function publishPage(id, title) {
-            if (!confirm(`Publish "${title}"? It will become visible to the public.`)) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/pages/${id}/publish`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to publish');
+            showConfirmModal({
+                title: 'Publish Page',
+                message: `Are you sure you want to publish "${title}"? It will become visible to the public.`,
+                type: 'success',
+                onConfirm: async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/admin/pages/${id}/publish`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to publish');
+                        }
+                        
+                        showToast(`"${title}" published!`, 'success');
+                        loadPages();
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
                 }
-                
-                showToast(`"${title}" published!`, 'success');
-                loadPages();
-            } catch (error) {
-                showToast(error.message, 'error');
-            }
+            });
         }
 
-        // Unpublish page
         async function unpublishPage(id, title) {
-            if (!confirm(`Unpublish "${title}"? It will become a draft and hidden from public.`)) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/pages/${id}/unpublish`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to unpublish');
+            showConfirmModal({
+                title: 'Unpublish Page',
+                message: `Are you sure you want to unpublish "${title}"? It will become a draft and hidden from public.`,
+                type: 'warning',
+                onConfirm: async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/admin/pages/${id}/unpublish`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to unpublish');
+                        }
+                        
+                        showToast(`"${title}" moved to drafts`, 'success');
+                        loadPages();
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
                 }
-                
-                showToast(`"${title}" moved to drafts`, 'success');
-                loadPages();
-            } catch (error) {
-                showToast(error.message, 'error');
-            }
+            });
         }
 
-        // Delete page
         async function deletePage(id, title) {
-            if (!confirm(`Move "${title}" to trash?`)) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/pages/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to delete');
+            showConfirmModal({
+                title: 'Delete Page',
+                message: `Are you sure you want to delete "${title}"? This will move it to trash.`,
+                type: 'danger',
+                onConfirm: async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/admin/pages/${id}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to delete');
+                        }
+                        
+                        showToast(`"${title}" moved to trash`, 'success');
+                        loadPages();
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
                 }
-                
-                showToast(`"${title}" moved to trash`, 'success');
-                loadPages();
-            } catch (error) {
-                showToast(error.message, 'error');
-            }
+            });
         }
 
-        // Filter by status
-        function filterByStatus(status) {
+        window.filterByStatus = (status) => {
             currentStatusFilter = status;
             
             document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -599,8 +831,8 @@
                 }
             });
             
-            renderPages();
-        }
+            applyFilters();
+        };
 
         async function loadPages() {
             if (!checkAuth()) return;
@@ -611,7 +843,6 @@
                 
                 allPages = await response.json();
                 
-                // Update stats
                 const publishedCount = allPages.filter(p => p.status === 'published').length;
                 const draftCount = allPages.filter(p => p.status === 'draft').length;
                 
@@ -619,76 +850,84 @@
                 document.getElementById('totalPublished').textContent = publishedCount;
                 document.getElementById('totalDrafts').textContent = draftCount;
                 
-                renderPages();
+                applyFilters();
             } catch (error) {
                 console.error('Error loading pages:', error);
-                document.getElementById('pagesList').innerHTML = `
+                document.getElementById('pagesContainer').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
                         <h3>Failed to Load Pages</h3>
                         <p>${error.message}</p>
-                        <button onclick="loadPages()" class="btn btn-primary" style="margin-top: 16px;">Try Again</button>
+                        <button onclick="loadPages()" class="btn btn-primary">Try Again</button>
                     </div>
                 `;
             }
         }
 
-        function renderPages() {
-            const container = document.getElementById('pagesList');
-            
-            let filtered = allPages.filter(page => {
+        function applyFilters() {
+            filteredPages = allPages.filter(page => {
                 if (currentStatusFilter !== 'all' && page.status !== currentStatusFilter) {
                     return false;
                 }
                 return true;
             });
             
-            if (filtered.length === 0) {
+            renderPages();
+        }
+
+        function renderPages() {
+            const container = document.getElementById('pagesContainer');
+            
+            if (filteredPages.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-file-alt"></i>
-                        <h3>No pages found</h3>
+                        <h3>No Pages Found</h3>
                         <p>Create your first page</p>
-                        <a href="/admin/pages/edit.html" class="btn btn-primary" style="margin-top: 16px;">
-                            <i class="fas fa-plus-circle"></i> Create Page
+                        <a href="/admin/pages/edit.html" class="btn btn-primary">
+                            <i class="fas fa-plus-circle"></i> Create New Page
                         </a>
                     </div>
                 `;
                 return;
             }
             
-            container.innerHTML = filtered.map(page => {
-                const statusBadge = page.status === 'published' 
-                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
-                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
-                
-                const date = new Date(page.created_at).toLocaleDateString();
-                
-                return `
-                    <div class="page-row">
-                        <div class="page-info">
-                            <div class="page-title">
-                                ${escapeHtml(page.title)}
-                                ${statusBadge}
+            container.innerHTML = `
+                <div class="pages-list">
+                    ${filteredPages.map(page => {
+                        const statusBadge = page.status === 'published' 
+                            ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                            : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                        
+                        const date = new Date(page.created_at).toLocaleDateString();
+                        
+                        return `
+                            <div class="page-card">
+                                <div class="page-info">
+                                    <div class="page-title">
+                                        ${escapeHtml(page.title)}
+                                        ${statusBadge}
+                                    </div>
+                                    <div class="page-slug">/${escapeHtml(page.slug)}</div>
+                                    <div class="page-meta">Created: ${date}</div>
+                                </div>
+                                <div class="page-actions">
+                                    ${page.status === 'draft' 
+                                        ? `<button class="action-btn publish" onclick="publishPage(${page.id}, '${escapeHtml(page.title).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
+                                        : `<button class="action-btn unpublish" onclick="unpublishPage(${page.id}, '${escapeHtml(page.title).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
+                                    }
+                                    <a href="/admin/pages/edit.html?id=${page.id}" class="action-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="action-btn delete" onclick="deletePage(${page.id}, '${escapeHtml(page.title).replace(/'/g, "\\'")}')" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="page-slug">/${escapeHtml(page.slug)}</div>
-                            <div class="page-meta">Created: ${date}</div>
-                        </div>
-                        <div class="page-actions">
-                            ${page.status === 'draft' 
-                                ? `<button class="action-icon publish" onclick="event.stopPropagation(); publishPage(${page.id}, '${escapeHtml(page.title).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
-                                : `<button class="action-icon unpublish" onclick="event.stopPropagation(); unpublishPage(${page.id}, '${escapeHtml(page.title).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
-                            }
-                            <a href="/admin/pages/edit.html?id=${page.id}" class="action-icon" onclick="event.stopPropagation()" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button class="action-icon delete" onclick="event.stopPropagation(); deletePage(${page.id}, '${escapeHtml(page.title).replace(/'/g, "\\'")}')" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                        `;
+                    }).join('')}
+                </div>
+            `;
         }
 
         function escapeHtml(text) {
@@ -698,7 +937,6 @@
             return div.innerHTML;
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
                 loadPages();
