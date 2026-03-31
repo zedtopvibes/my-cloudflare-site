@@ -160,10 +160,10 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid */
+        /* Stats Grid - Mobile first 2 columns, desktop 3 columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 30px;
         }
@@ -259,10 +259,10 @@
             font-family: 'Montserrat', sans-serif;
         }
         
-        /* EP Cards - Mobile First */
-        .eps-list {
-            display: flex;
-            flex-direction: column;
+        /* EP Cards - Mobile first grid */
+        .eps-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
         }
         
@@ -291,10 +291,6 @@
             font-weight: 700;
             font-size: 0.85rem;
             margin-bottom: 12px;
-        }
-        
-        .ep-info {
-            flex: 1;
         }
         
         .ep-title {
@@ -440,33 +436,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
-        .toast.info { background: var(--primary-blue); }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
         /* Tablet Styles */
         @media (min-width: 768px) {
             .admin-container {
@@ -492,6 +461,10 @@
             .filter-row {
                 flex: 1;
             }
+            
+            .eps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         /* Desktop Styles */
@@ -502,12 +475,6 @@
             
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .eps-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
             }
         }
     </style>
@@ -535,6 +502,8 @@
                 <a href="/admin/analytics/tracks.html" class="tab-btn"><i class="fas fa-music"></i> Tracks</a>
                 <a href="/admin/analytics/albums.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
                 <a href="/admin/analytics/eps.html" class="tab-btn active"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/analytics/artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/analytics/playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -629,6 +598,10 @@
                 filteredEps.sort((a, b) => (b.tracks?.length || 0) - (a.tracks?.length || 0));
             } else if (sortBy === 'tracks-asc') {
                 filteredEps.sort((a, b) => (a.tracks?.length || 0) - (b.tracks?.length || 0));
+            } else if (sortBy === 'year-desc') {
+                filteredEps.sort((a, b) => (b.release_date || '').localeCompare(a.release_date || ''));
+            } else if (sortBy === 'year-asc') {
+                filteredEps.sort((a, b) => (a.release_date || '').localeCompare(b.release_date || ''));
             }
             
             currentPage = 1;
@@ -683,6 +656,8 @@
                             <option value="title-desc">Title Z-A</option>
                             <option value="tracks-desc">Most Tracks</option>
                             <option value="tracks-asc">Least Tracks</option>
+                            <option value="year-desc">Newest First</option>
+                            <option value="year-asc">Oldest First</option>
                         </select>
                     </div>
                 </div>
@@ -699,7 +674,6 @@
             
             document.getElementById('analyticsContent').innerHTML = html;
             
-            // Add event listeners
             document.getElementById('searchInput').addEventListener('input', applyFilters);
             document.getElementById('sortFilter').addEventListener('change', applyFilters);
             
@@ -716,9 +690,6 @@
                         <i class="fas fa-play-circle"></i>
                         <h3>No EPs Found</h3>
                         <p>Try adjusting your search or create some EPs</p>
-                        <a href="/admin/eps/edit.html" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; display: inline-block; margin-top: 10px;">
-                            <i class="fas fa-plus"></i> Create EP
-                        </a>
                     </div>
                 `;
                 paginationContainer.innerHTML = '';
@@ -730,8 +701,7 @@
             const pageEps = filteredEps.slice(start, end);
             const totalPages = Math.ceil(filteredEps.length / itemsPerPage);
             
-            // Render EPs as cards
-            let epsHtml = '<div class="eps-list">';
+            let epsHtml = '<div class="eps-grid">';
             
             pageEps.forEach((ep, index) => {
                 const globalRank = start + index + 1;
@@ -744,31 +714,29 @@
                 epsHtml += `
                     <div class="ep-card">
                         <div class="ep-rank">#${globalRank}</div>
-                        <div class="ep-info">
-                            <div class="ep-title">${escapeHtml(ep.title)}</div>
-                            <div class="ep-artist">
-                                <i class="fas fa-user"></i>
-                                ${escapeHtml(artistName)}
+                        <div class="ep-title">${escapeHtml(ep.title)}</div>
+                        <div class="ep-artist">
+                            <i class="fas fa-user"></i>
+                            ${escapeHtml(artistName)}
+                        </div>
+                        <div class="ep-meta">
+                            <div class="ep-meta-item">
+                                <i class="fas fa-calendar"></i>
+                                ${releaseDate}
                             </div>
-                            <div class="ep-meta">
-                                <div class="ep-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    ${releaseDate}
-                                </div>
-                                <div class="ep-meta-item">
-                                    <i class="fas fa-tag"></i>
-                                    ${escapeHtml(genre)}
-                                </div>
+                            <div class="ep-meta-item">
+                                <i class="fas fa-tag"></i>
+                                ${escapeHtml(genre)}
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                                <div class="ep-views">
-                                    <i class="fas fa-eye"></i>
-                                    ${formatNumber(views)} views
-                                </div>
-                                <div class="track-count-badge">
-                                    <i class="fas fa-music"></i>
-                                    ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
-                                </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div class="ep-views">
+                                <i class="fas fa-eye"></i>
+                                ${formatNumber(views)} views
+                            </div>
+                            <div class="track-count-badge">
+                                <i class="fas fa-music"></i>
+                                ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
                             </div>
                         </div>
                     </div>
@@ -778,7 +746,6 @@
             epsHtml += '</div>';
             container.innerHTML = epsHtml;
             
-            // Render pagination
             if (totalPages > 1) {
                 let paginationHtml = '';
                 for (let i = 1; i <= totalPages; i++) {
