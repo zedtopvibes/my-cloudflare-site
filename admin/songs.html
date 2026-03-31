@@ -255,7 +255,7 @@
             flex: 1;
         }
         
-        /* Filter Tabs with Add New Button */
+        /* Filter Tabs - All same size, horizontal line */
         .filter-tabs {
             display: flex;
             gap: 8px;
@@ -278,6 +278,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
         }
         
         .filter-tab:hover {
@@ -293,13 +294,6 @@
         .filter-tab.add-btn {
             background: var(--primary-blue);
             color: white;
-            text-decoration: none;
-            margin-left: auto;
-        }
-        
-        .filter-tab.add-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-1px);
         }
         
         /* Artist Badges */
@@ -448,24 +442,6 @@
         .action-btn.delete:hover {
             background: var(--error);
             color: white;
-        }
-        
-        .btn-publish {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-publish:hover {
-            background: #218838;
-        }
-        
-        .btn-unpublish {
-            background: var(--warning);
-            color: #333;
-        }
-        
-        .btn-unpublish:hover {
-            background: #e0a800;
         }
         
         /* Mobile Cards */
@@ -633,6 +609,15 @@
             color: white;
         }
         
+        .btn-warning {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
         .btn-sm {
             padding: 4px 10px;
             font-size: 0.7rem;
@@ -690,7 +675,7 @@
             color: var(--primary-dark);
         }
         
-        /* Modal */
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -711,31 +696,42 @@
             padding: 20px;
             border-radius: 12px;
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             max-height: 90vh;
             overflow-y: auto;
         }
         
         .modal h3 {
             margin-bottom: 15px;
-            color: var(--primary-blue);
             font-size: 1.1rem;
         }
         
-        .modal .form-group {
+        .modal p {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        /* Edit Modal Specific */
+        .edit-modal .form-group {
             margin-bottom: 12px;
         }
         
-        .modal label {
+        .edit-modal label {
             display: block;
             margin-bottom: 4px;
             font-weight: 600;
             font-size: 0.8rem;
         }
         
-        .modal input,
-        .modal select,
-        .modal textarea {
+        .edit-modal input,
+        .edit-modal select,
+        .edit-modal textarea {
             width: 100%;
             padding: 8px 10px;
             border: 1px solid #ddd;
@@ -787,13 +783,6 @@
             gap: 5px;
             font-weight: normal;
             font-size: 0.8rem;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 15px;
         }
         
         /* Toast */
@@ -874,7 +863,6 @@
             .search-box { width: 100%; }
             .filter-select { width: 100%; }
             .filter-tabs { justify-content: center; }
-            .filter-tab.add-btn { margin-left: 0; }
         }
         
         @media (max-width: 480px) {
@@ -985,8 +973,20 @@
         </div>
     </div>
 
+    <!-- Confirm Modal (for publish/unpublish/delete) -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3 id="confirmModalTitle" style="color: var(--primary-blue);">Confirm Action</h3>
+            <p id="confirmModalMessage">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="confirmModalCancel" class="btn btn-secondary">Cancel</button>
+                <button id="confirmModalConfirm" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Song Modal -->
-    <div id="editModal" class="modal">
+    <div id="editModal" class="modal edit-modal">
         <div class="modal-content">
             <h3>Edit Song</h3>
             <form id="editForm">
@@ -1061,18 +1061,6 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content" style="max-width: 350px;">
-            <h3 style="color: var(--error);">Confirm Delete</h3>
-            <p style="margin-bottom: 20px;">Are you sure you want to delete "<span id="deleteSongTitle"></span>"? This will move it to trash.</p>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button onclick="closeDeleteModal()" class="btn btn-secondary">Cancel</button>
-                <button onclick="confirmDelete()" class="btn btn-danger">Delete</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const API_BASE = '/api';
         let currentPage = 1;
@@ -1110,6 +1098,52 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
+        function showConfirmModal(options) {
+            const modal = document.getElementById('confirmModal');
+            const titleEl = document.getElementById('confirmModalTitle');
+            const messageEl = document.getElementById('confirmModalMessage');
+            const confirmBtn = document.getElementById('confirmModalConfirm');
+            const cancelBtn = document.getElementById('confirmModalCancel');
+            
+            titleEl.textContent = options.title;
+            messageEl.textContent = options.message;
+            
+            if (options.type === 'danger') {
+                confirmBtn.className = 'btn btn-danger';
+                titleEl.style.color = 'var(--error)';
+            } else if (options.type === 'warning') {
+                confirmBtn.className = 'btn btn-warning';
+                titleEl.style.color = 'var(--warning)';
+            } else {
+                confirmBtn.className = 'btn btn-primary';
+                titleEl.style.color = 'var(--primary-blue)';
+            }
+            
+            window.confirmModalCallback = options.onConfirm;
+            
+            modal.style.display = 'flex';
+            
+            confirmBtn.onclick = () => {
+                modal.style.display = 'none';
+                if (window.confirmModalCallback) {
+                    window.confirmModalCallback();
+                    window.confirmModalCallback = null;
+                }
+            };
+            
+            cancelBtn.onclick = () => {
+                modal.style.display = 'none';
+                window.confirmModalCallback = null;
+            };
+            
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    window.confirmModalCallback = null;
+                }
+            };
+        }
+
         function formatArtistsDisplay(song) {
             if (!song.artists || song.artists.length === 0) {
                 return escapeHtml(song.artist || 'Unknown');
@@ -1133,45 +1167,55 @@
         }
 
         async function publishSong(id, title) {
-            if (!confirm(`Publish "${title}"? It will become visible to the public.`)) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/tracks/${id}/publish`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to publish');
+            showConfirmModal({
+                title: 'Publish Song',
+                message: `Are you sure you want to publish "${title}"? It will become visible to the public.`,
+                type: 'success',
+                onConfirm: async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/admin/tracks/${id}/publish`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to publish');
+                        }
+                        
+                        showToast(`"${title}" published!`, 'success');
+                        loadSongs();
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
                 }
-                
-                showToast(`"${title}" published!`, 'success');
-                loadSongs();
-            } catch (error) {
-                showToast(error.message, 'error');
-            }
+            });
         }
 
         async function unpublishSong(id, title) {
-            if (!confirm(`Unpublish "${title}"? It will become a draft and hidden from public.`)) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/tracks/${id}/unpublish`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Failed to unpublish');
+            showConfirmModal({
+                title: 'Unpublish Song',
+                message: `Are you sure you want to unpublish "${title}"? It will become a draft and hidden from public.`,
+                type: 'warning',
+                onConfirm: async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/admin/tracks/${id}/unpublish`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Failed to unpublish');
+                        }
+                        
+                        showToast(`"${title}" moved to drafts`, 'success');
+                        loadSongs();
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
                 }
-                
-                showToast(`"${title}" moved to drafts`, 'success');
-                loadSongs();
-            } catch (error) {
-                showToast(error.message, 'error');
-            }
+            });
         }
 
         window.filterByStatus = (status) => {
@@ -1344,8 +1388,8 @@
                         <td>
                             <div class="action-buttons">
                                 ${song.status === 'draft' 
-                                    ? `<button class="action-btn btn-publish" onclick="publishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
-                                    : `<button class="action-btn btn-unpublish" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
+                                    ? `<button class="action-btn" onclick="publishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
+                                    : `<button class="action-btn" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
                                 }
                                 <button class="action-btn" onclick="editSong(${song.id})" title="Edit"><i class="fas fa-edit"></i></button>
                                 <button class="action-btn" onclick="previewSong('${song.slug}')" title="Preview"><i class="fas fa-eye"></i></button>
@@ -1356,7 +1400,7 @@
                 `;
             });
             
-            html += '</tbody> </table> </div>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
 
@@ -1395,8 +1439,8 @@
                         
                         <div class="song-mobile-actions">
                             ${song.status === 'draft' 
-                                ? `<button class="action-btn btn-publish" onclick="publishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
-                                : `<button class="action-btn btn-unpublish" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
+                                ? `<button class="action-btn" onclick="publishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
+                                : `<button class="action-btn" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
                             }
                             <button class="action-btn" onclick="editSong(${song.id})" title="Edit"><i class="fas fa-edit"></i></button>
                             <button class="action-btn" onclick="previewSong('${song.slug}')" title="Preview"><i class="fas fa-eye"></i></button>
@@ -1612,37 +1656,28 @@
         });
 
         window.showDeleteModal = (id, title) => {
-            currentDeleteId = id;
-            document.getElementById('deleteSongTitle').textContent = title;
-            document.getElementById('deleteModal').style.display = 'flex';
-        };
-
-        window.closeDeleteModal = () => {
-            document.getElementById('deleteModal').style.display = 'none';
-            currentDeleteId = null;
-        };
-
-        window.confirmDelete = async () => {
-            if (!currentDeleteId) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/admin/tracks/${currentDeleteId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Delete failed');
+            showConfirmModal({
+                title: 'Delete Song',
+                message: `Are you sure you want to delete "${title}"? This will move it to trash.`,
+                type: 'danger',
+                onConfirm: async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/admin/tracks/${id}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            throw new Error(error.error || 'Delete failed');
+                        }
+                        
+                        showToast('Song moved to trash!', 'success');
+                        loadSongs();
+                    } catch (error) {
+                        showToast('Failed to delete song: ' + error.message, 'error');
+                    }
                 }
-                
-                closeDeleteModal();
-                await loadSongs();
-                showToast('Song moved to trash!', 'success');
-                
-            } catch (error) {
-                console.error('Error deleting song:', error);
-                showToast('Failed to delete song: ' + error.message, 'error');
-            }
+            });
         };
 
         window.previewSong = (slug) => {
