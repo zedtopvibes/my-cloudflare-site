@@ -297,6 +297,127 @@
             margin-top: 2px;
         }
         
+        /* Top Content Cards */
+        .top-content-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .top-content-item {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .top-content-item:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+        
+        .top-content-rank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        
+        .top-content-info {
+            flex: 1;
+        }
+        
+        .top-content-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+        
+        .top-content-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .content-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .content-type-badge.track {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .content-type-badge.album {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .content-type-badge.ep {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .content-type-badge.artist {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .content-type-badge.playlist {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+        
+        .top-content-subtitle {
+            font-size: 0.75rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .top-content-subtitle i {
+            color: var(--primary-blue);
+            font-size: 0.7rem;
+            width: 16px;
+        }
+        
+        .top-content-views {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-top: 10px;
+        }
+        
+        .top-content-views i {
+            font-size: 0.7rem;
+        }
+        
         /* Loading & Empty States */
         .loading {
             text-align: center;
@@ -358,6 +479,11 @@
             margin: 0 auto;
         }
         
+        .skeleton-row {
+            height: 100px;
+            margin-bottom: 12px;
+        }
+        
         /* Footer */
         .admin-footer {
             background: var(--white);
@@ -388,6 +514,7 @@
             .views-grid { grid-template-columns: repeat(5, 1fr); }
             .view-card .view-value { font-size: 1.2rem; }
             .view-card .view-icon { font-size: 1.5rem; }
+            .top-content-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         }
         
         @media (max-width: 640px) {
@@ -447,6 +574,16 @@
                 <div class="view-card skeleton-card"><div class="skeleton-value skeleton"></div><div class="skeleton-label skeleton"></div></div>
                 <div class="view-card skeleton-card"><div class="skeleton-value skeleton"></div><div class="skeleton-label skeleton"></div></div>
             </div>
+            
+            <div class="section-header">
+                <i class="fas fa-trophy"></i>
+                <h3>Top 10 Most Viewed Content</h3>
+            </div>
+            <div id="topContentContainer">
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+                <div class="skeleton-row"></div>
+            </div>
         </div>
         
         <div class="admin-footer">
@@ -489,19 +626,144 @@
             return div.innerHTML;
         }
         
+        async function loadTopContent() {
+            // Fetch only the data needed for top 10
+            // We fetch limited data (only top 10 from each type, but server-side would be better)
+            // For now, we fetch all but limit client-side (still better than full analytics before)
+            const [tracksRes, albumsRes, epsRes, artistsRes, playlistsRes] = await Promise.all([
+                fetch(`${API_BASE}/admin/tracks`),
+                fetch(`${API_BASE}/admin/albums`),
+                fetch(`${API_BASE}/admin/eps`),
+                fetch(`${API_BASE}/admin/artists`),
+                fetch(`${API_BASE}/admin/playlists`)
+            ]);
+            
+            const tracks = await tracksRes.json();
+            const albums = await albumsRes.json();
+            const eps = await epsRes.json();
+            const artists = await artistsRes.json();
+            const playlists = await playlistsRes.json();
+            
+            const allContent = [];
+            
+            tracks.forEach(track => {
+                allContent.push({
+                    id: track.id,
+                    title: track.title,
+                    type: 'track',
+                    views: track.views || 0,
+                    subtitle: track.artist_name || track.artist || 'Unknown Artist'
+                });
+            });
+            
+            albums.forEach(album => {
+                allContent.push({
+                    id: album.id,
+                    title: album.title,
+                    type: 'album',
+                    views: album.views || 0,
+                    subtitle: album.artist_name || album.artist || 'Unknown Artist'
+                });
+            });
+            
+            eps.forEach(ep => {
+                allContent.push({
+                    id: ep.id,
+                    title: ep.title,
+                    type: 'ep',
+                    views: ep.views || 0,
+                    subtitle: ep.artist_name || ep.artist || 'Unknown Artist'
+                });
+            });
+            
+            artists.forEach(artist => {
+                allContent.push({
+                    id: artist.id,
+                    title: artist.name,
+                    type: 'artist',
+                    views: artist.views || 0,
+                    subtitle: artist.country || 'Artist'
+                });
+            });
+            
+            playlists.forEach(playlist => {
+                allContent.push({
+                    id: playlist.id,
+                    title: playlist.name,
+                    type: 'playlist',
+                    views: playlist.views || 0,
+                    subtitle: playlist.track_count ? `${playlist.track_count} tracks` : 'Playlist'
+                });
+            });
+            
+            const topContent = allContent.sort((a, b) => b.views - a.views).slice(0, 10);
+            
+            if (topContent.length === 0) {
+                return '<div class="empty-state"><i class="fas fa-chart-line"></i><h3>No Data Available</h3><p>Upload content to see analytics</p></div>';
+            }
+            
+            return `
+                <div class="top-content-list">
+                    ${topContent.map((item, index) => {
+                        let typeIcon = '';
+                        let typeClass = '';
+                        switch(item.type) {
+                            case 'track':
+                                typeIcon = '<i class="fas fa-music"></i>';
+                                typeClass = 'track';
+                                break;
+                            case 'album':
+                                typeIcon = '<i class="fas fa-compact-disc"></i>';
+                                typeClass = 'album';
+                                break;
+                            case 'ep':
+                                typeIcon = '<i class="fas fa-play-circle"></i>';
+                                typeClass = 'ep';
+                                break;
+                            case 'artist':
+                                typeIcon = '<i class="fas fa-microphone"></i>';
+                                typeClass = 'artist';
+                                break;
+                            case 'playlist':
+                                typeIcon = '<i class="fas fa-list"></i>';
+                                typeClass = 'playlist';
+                                break;
+                        }
+                        return `
+                            <div class="top-content-item">
+                                <div class="top-content-rank">#${index + 1}</div>
+                                <div class="top-content-info">
+                                    <div class="top-content-title">${escapeHtml(item.title)}</div>
+                                    <div class="top-content-meta">
+                                        <span class="content-type-badge ${typeClass}">${typeIcon} ${item.type.toUpperCase()}</span>
+                                        <div class="top-content-subtitle">
+                                            <i class="fas ${item.type === 'artist' ? 'fa-globe' : 'fa-user'}"></i>
+                                            ${escapeHtml(item.subtitle)}
+                                        </div>
+                                    </div>
+                                    <div class="top-content-views">
+                                        <i class="fas fa-eye"></i> ${formatNumber(item.views)} views
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+        
         async function loadAnalyticsData() {
             try {
-                // Use the lightweight stats endpoint instead of fetching all data
-                const response = await fetch(`${API_BASE}/admin/stats`);
-                const result = await response.json();
+                // First load stats from lightweight endpoint
+                const statsResponse = await fetch(`${API_BASE}/admin/stats`);
+                const statsResult = await statsResponse.json();
                 
-                if (!result.success) {
-                    throw new Error(result.error || 'Failed to load stats');
+                if (!statsResult.success) {
+                    throw new Error(statsResult.error || 'Failed to load stats');
                 }
                 
-                const stats = result.data;
+                const stats = statsResult.data;
                 
-                // Format stats
                 const totalViews = stats.total_views;
                 const totalTrackViews = stats.tracks.total_views;
                 const totalAlbumViews = stats.albums.total_views;
@@ -515,7 +777,8 @@
                 const totalArtists = stats.artists.total;
                 const totalPlaylists = stats.playlists.total;
                 
-                const html = `
+                // Update stats section
+                const statsHtml = `
                     <div class="content-header">
                         <h2><i class="fas fa-chart-line"></i> Views Analytics</h2>
                         <p>Comprehensive view statistics across all content types</p>
@@ -565,9 +828,23 @@
                             <div class="view-sub">${totalPlaylists} total</div>
                         </div>
                     </div>
+                    
+                    <div class="section-header">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Top 10 Most Viewed Content</h3>
+                    </div>
+                    <div id="topContentContainer">
+                        <div class="skeleton-row"></div>
+                        <div class="skeleton-row"></div>
+                        <div class="skeleton-row"></div>
+                    </div>
                 `;
                 
-                document.getElementById('analyticsContent').innerHTML = html;
+                document.getElementById('analyticsContent').innerHTML = statsHtml;
+                
+                // Then load top content separately (can be async)
+                const topContentHtml = await loadTopContent();
+                document.getElementById('topContentContainer').innerHTML = topContentHtml;
                 
             } catch (error) {
                 console.error('Error loading analytics:', error);
