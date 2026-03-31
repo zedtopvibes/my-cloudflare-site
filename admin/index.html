@@ -39,6 +39,7 @@
             margin: 0 auto;
             padding: 10px;
             flex: 1;
+            width: 100%;
         }
         
         .admin-header {
@@ -103,25 +104,39 @@
             color: var(--primary-blue);
         }
         
+        /* Mobile-first tabs - horizontal scroll allowed for tabs only */
         .admin-tabs {
             display: flex;
-            gap: 5px;
+            gap: 8px;
             overflow-x: auto;
             padding: 5px 0;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            scrollbar-width: thin;
+            margin: 0 -5px;
+            padding-left: 5px;
+            padding-right: 5px;
         }
         
         .admin-tabs::-webkit-scrollbar {
-            display: none;
+            height: 4px;
+        }
+        
+        .admin-tabs::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: 10px;
+        }
+        
+        .admin-tabs::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 10px;
         }
         
         .tab-btn {
-            padding: 10px 15px !important;
+            padding: 8px 14px !important;
             background: transparent;
             border: none;
             border-radius: 8px;
-            font-size: 0.9rem !important;
+            font-size: 0.85rem !important;
             font-weight: 600 !important;
             color: #666;
             cursor: pointer;
@@ -131,11 +146,12 @@
             align-items: center;
             gap: 6px;
             text-decoration: none;
-            height: 40px !important;
+            height: 36px !important;
+            flex-shrink: 0;
         }
         
         .tab-btn i {
-            font-size: 1rem !important;
+            font-size: 0.85rem !important;
         }
         
         .tab-btn:hover {
@@ -154,6 +170,8 @@
             padding: 20px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
         }
         
         .content-header {
@@ -161,7 +179,7 @@
         }
         
         .content-header h2 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: var(--primary-dark);
             display: flex;
             align-items: center;
@@ -175,22 +193,49 @@
         
         .content-header p {
             color: var(--gray);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-top: 5px;
         }
         
-        /* Stats Grid - Mobile first 2 columns, desktop 4 columns */
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
+        }
+        
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+        
+        .section-header h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .section-header i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+        }
+        
+        /* Stats Grid - Mobile first single column */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         .stat-card {
             background: var(--light-gray);
             border-radius: 12px;
-            padding: 20px;
+            padding: 16px;
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid rgba(31, 111, 159, 0.15);
@@ -203,71 +248,48 @@
         }
         
         .stat-card .stat-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
         }
         
         .stat-card .stat-value {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-blue);
             line-height: 1.2;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         
         .stat-card .stat-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-        
-        /* Section Header */
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
-        }
-        
-        .section-header h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .section-header i {
-            color: var(--primary-blue);
-            font-size: 1rem;
         }
         
         /* Total Views Card */
         .total-views-card {
             background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
             border-radius: 12px;
-            padding: 25px;
+            padding: 20px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: white;
         }
         
         .total-views-card .views-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2rem;
+            margin-bottom: 8px;
         }
         
         .total-views-card .views-value {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         
         .total-views-card .views-label {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.9;
         }
         
@@ -275,13 +297,13 @@
         .views-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         
         .view-card {
             background: var(--light-gray);
-            padding: 16px 12px;
+            padding: 12px 8px;
             border-radius: 12px;
             border: 1px solid rgba(31, 111, 159, 0.15);
             text-align: center;
@@ -296,24 +318,24 @@
         }
         
         .view-card .view-icon {
-            font-size: 1.5rem;
-            margin-bottom: 6px;
+            font-size: 1.2rem;
+            margin-bottom: 4px;
         }
         
         .view-card .view-value {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--primary-blue);
         }
         
         .view-card .view-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--gray);
             margin-top: 2px;
         }
         
         .view-card .view-sub {
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             color: #999;
             margin-top: 2px;
         }
@@ -321,14 +343,14 @@
         /* Loading & Empty States */
         .loading {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: var(--gray);
         }
         
         .loading i {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--primary-blue);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         
         .empty-state {
@@ -338,28 +360,32 @@
         }
         
         .empty-state i {
-            font-size: 3rem;
+            font-size: 2.5rem;
             color: var(--primary-blue);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             opacity: 0.3;
         }
         
         .empty-state h3 {
-            font-size: 1.1rem;
+            font-size: 1rem;
             margin-bottom: 8px;
             color: var(--primary-dark);
+        }
+        
+        .empty-state p {
+            font-size: 0.85rem;
         }
         
         /* Footer */
         .admin-footer {
             background: var(--white);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             margin-top: 15px;
             text-align: center;
             border: 1px solid rgba(31, 111, 159, 0.1);
             color: var(--gray);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         
         .admin-footer a {
@@ -371,25 +397,73 @@
             text-decoration: underline;
         }
         
-        /* Tablet Styles */
-        @media (min-width: 768px) {
+        /* Tablet Styles (min-width: 600px) */
+        @media (min-width: 600px) {
             .admin-container {
                 padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-card .stat-icon {
+                font-size: 1.8rem;
+            }
+            
+            .stat-card .stat-value {
+                font-size: 1.8rem;
+            }
+            
+            .total-views-card .views-value {
+                font-size: 2.2rem;
+            }
+            
+            .views-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* Desktop Styles (min-width: 1024px) */
+        @media (min-width: 1024px) {
+            .admin-container {
+                padding: 20px;
             }
             
             .stats-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
             
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-card .stat-icon {
+                font-size: 2rem;
+            }
+            
+            .stat-card .stat-value {
+                font-size: 2rem;
+            }
+            
+            .total-views-card .views-value {
+                font-size: 2.5rem;
+            }
+            
             .views-grid {
                 grid-template-columns: repeat(5, 1fr);
             }
-        }
-        
-        /* Desktop Styles */
-        @media (min-width: 1024px) {
-            .admin-container {
-                padding: 20px;
+            
+            .view-card {
+                padding: 16px 12px;
+            }
+            
+            .view-card .view-icon {
+                font-size: 1.5rem;
+            }
+            
+            .view-card .view-value {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -410,8 +484,8 @@
             
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
                 <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
@@ -431,7 +505,7 @@
         </div>
         
         <div class="admin-footer">
-            <p>&copy; 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin Panel</a> | <a href="/">Visit Site</a></p>
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
@@ -501,7 +575,7 @@
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
                         <h3>Failed to Load Dashboard</h3>
                         <p style="margin: 12px 0;">${error.message}</p>
-                        <button onclick="loadDashboardData()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
+                        <button onclick="loadDashboardData()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; display: inline-block;">Try Again</button>
                     </div>
                 `;
             }
@@ -520,13 +594,15 @@
             const totalPlaylistViews = playlists.reduce((sum, p) => sum + (p.views || 0), 0);
             const totalViews = totalTrackViews + totalAlbumViews + totalEPViews + totalArtistViews + totalPlaylistViews;
             
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const currentDate = new Date().toLocaleDateString('en-GB', dateOptions);
+            
             const html = `
                 <div class="content-header">
                     <h2><i class="fas fa-smile"></i> Welcome back, Admin</h2>
-                    <p id="currentDate"></p>
+                    <p>${currentDate}</p>
                 </div>
                 
-                <!-- Content Overview -->
                 <div class="section-header">
                     <i class="fas fa-database"></i>
                     <h3>Content Overview</h3>
@@ -554,14 +630,12 @@
                     </div>
                 </div>
                 
-                <!-- Total Views -->
                 <div class="total-views-card">
                     <div class="views-icon"><i class="fas fa-eye"></i></div>
                     <div class="views-value">${formatNumber(totalViews)}</div>
                     <div class="views-label">Total Views Across All Content</div>
                 </div>
                 
-                <!-- Views by Content Type -->
                 <div class="section-header">
                     <i class="fas fa-chart-bar"></i>
                     <h3>Views by Content Type</h3>
@@ -601,12 +675,6 @@
             `;
             
             document.getElementById('dashboardContent').innerHTML = html;
-            
-            const dateElement = document.getElementById('currentDate');
-            if (dateElement) {
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                dateElement.textContent = new Date().toLocaleDateString('en-GB', options);
-            }
         }
         
         document.addEventListener('DOMContentLoaded', () => {
