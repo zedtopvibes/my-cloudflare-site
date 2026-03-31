@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Playlist Analytics - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --playlist-purple: #8b5cf6;
+            --playlist-light: #a78bfa;
+            --gray: #666;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .user-info i {
+            color: var(--primary-blue);
+        }
+        
+        .user-info span {
+            font-weight: 600;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 10px 15px !important;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            height: 40px !important;
+        }
+        
+        .tab-btn i {
+            font-size: 1rem !important;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .content-header {
+            margin-bottom: 24px;
+        }
+        
+        .content-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .content-header h2 i {
+            color: var(--primary-blue);
+        }
+        
+        .content-header p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+        }
+        
+        .stat-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card.primary-gradient {
+            background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
+        }
+        
+        .stat-card.primary-gradient .stat-value,
+        .stat-card.primary-gradient .stat-label,
+        .stat-card.primary-gradient .stat-icon {
+            color: white !important;
+        }
+        
+        /* Search & Filter Section */
+        .search-section {
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
+        
+        .search-box i {
+            color: var(--primary-blue);
+            margin-right: 10px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 5px 0;
+            width: 100%;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: var(--white);
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Playlist Cards - Mobile First */
+        .playlists-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .playlist-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .playlist-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+        
+        .playlist-rank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        
+        .playlist-info {
+            flex: 1;
+        }
+        
+        .playlist-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+        
+        .playlist-description {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .playlist-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .playlist-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .playlist-stat-item i {
+            color: var(--primary-blue);
+            font-size: 0.7rem;
+        }
+        
+        .playlist-views {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        
+        .playlist-views i {
+            font-size: 0.8rem;
+        }
+        
+        /* Loading & Empty States */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+        
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .page-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .page-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        .toast.info { background: var(--primary-blue); }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Tablet Styles */
+        @media (min-width: 768px) {
+            .admin-container {
+                padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .search-section {
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            
+            .search-box {
+                flex: 2;
+                margin-bottom: 0;
+            }
+            
+            .filter-row {
+                flex: 1;
+            }
+        }
+        
+        /* Desktop Styles */
+        @media (min-width: 1024px) {
+            .admin-container {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .playlists-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-chart-line"></i> Playlist Analytics</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/analytics/tracks.html" class="tab-btn"><i class="fas fa-music"></i> Tracks</a>
+                <a href="/admin/analytics/albums.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/analytics/eps.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/analytics/artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/analytics/playlists.html" class="tab-btn active"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
+        </div>
+        
+        <div class="admin-content" id="analyticsContent">
+            <div class="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <div>Loading playlist analytics...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        
+        let playlists = [];
+        let filteredPlaylists = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+        
+        async function loadPlaylists() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists`);
+                if (!response.ok) throw new Error('Failed to load playlists');
+                
+                playlists = await response.json();
+                filteredPlaylists = [...playlists];
+                
+                // Default sort by most views
+                filteredPlaylists.sort((a, b) => (b.views || 0) - (a.views || 0));
+                
+                renderAnalytics();
+                
+            } catch (error) {
+                console.error('Error loading playlists:', error);
+                document.getElementById('analyticsContent').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                        <h3>Failed to Load Playlists</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <button onclick="loadPlaylists()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const sortBy = document.getElementById('sortFilter')?.value || 'views-desc';
+            
+            filteredPlaylists = playlists.filter(playlist => {
+                const nameMatch = playlist.name?.toLowerCase().includes(searchTerm);
+                const descriptionMatch = playlist.description?.toLowerCase().includes(searchTerm);
+                return !searchTerm || nameMatch || descriptionMatch;
+            });
+            
+            // Apply sort
+            if (sortBy === 'views-desc') {
+                filteredPlaylists.sort((a, b) => (b.views || 0) - (a.views || 0));
+            } else if (sortBy === 'views-asc') {
+                filteredPlaylists.sort((a, b) => (a.views || 0) - (b.views || 0));
+            } else if (sortBy === 'name-asc') {
+                filteredPlaylists.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            } else if (sortBy === 'name-desc') {
+                filteredPlaylists.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+            } else if (sortBy === 'tracks-desc') {
+                filteredPlaylists.sort((a, b) => (b.track_count || 0) - (a.track_count || 0));
+            } else if (sortBy === 'tracks-asc') {
+                filteredPlaylists.sort((a, b) => (a.track_count || 0) - (b.track_count || 0));
+            }
+            
+            currentPage = 1;
+            renderPlaylistsList();
+        }
+        
+        function renderAnalytics() {
+            const totalViews = playlists.reduce((sum, p) => sum + (p.views || 0), 0);
+            const totalPlaylists = playlists.length;
+            const totalTracks = playlists.reduce((sum, p) => sum + (p.track_count || 0), 0);
+            const avgViews = totalPlaylists > 0 ? Math.round(totalViews / totalPlaylists) : 0;
+            
+            const html = `
+                <div class="content-header">
+                    <h2><i class="fas fa-list"></i> Playlist Views Analytics</h2>
+                    <p>Detailed view statistics for all playlists</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card primary-gradient">
+                        <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                        <div class="stat-value">${formatNumber(totalViews)}</div>
+                        <div class="stat-label">Total Playlist Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-list"></i></div>
+                        <div class="stat-value">${totalPlaylists}</div>
+                        <div class="stat-label">Total Playlists</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-music"></i></div>
+                        <div class="stat-value">${totalTracks}</div>
+                        <div class="stat-label">Total Tracks in Playlists</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-value">${formatNumber(avgViews)}</div>
+                        <div class="stat-label">Avg Views per Playlist</div>
+                    </div>
+                </div>
+                
+                <div class="search-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by playlist name or description...">
+                    </div>
+                    <div class="filter-row">
+                        <select id="sortFilter" class="filter-select">
+                            <option value="views-desc">Most Views</option>
+                            <option value="views-asc">Least Views</option>
+                            <option value="name-asc">Name A-Z</option>
+                            <option value="name-desc">Name Z-A</option>
+                            <option value="tracks-desc">Most Tracks</option>
+                            <option value="tracks-asc">Least Tracks</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="playlistsContainer">
+                    <div class="loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <div>Loading playlists...</div>
+                    </div>
+                </div>
+                
+                <div id="pagination" class="pagination"></div>
+            `;
+            
+            document.getElementById('analyticsContent').innerHTML = html;
+            
+            // Add event listeners
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('sortFilter').addEventListener('change', applyFilters);
+            
+            renderPlaylistsList();
+        }
+        
+        function renderPlaylistsList() {
+            const container = document.getElementById('playlistsContainer');
+            const paginationContainer = document.getElementById('pagination');
+            
+            if (filteredPlaylists.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-list"></i>
+                        <h3>No Playlists Found</h3>
+                        <p>Try adjusting your search or create some playlists</p>
+                        <a href="/admin/playlists/edit.html" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; display: inline-block; margin-top: 10px;">
+                            <i class="fas fa-plus"></i> Create Playlist
+                        </a>
+                    </div>
+                `;
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pagePlaylists = filteredPlaylists.slice(start, end);
+            const totalPages = Math.ceil(filteredPlaylists.length / itemsPerPage);
+            
+            // Render playlists as cards
+            let playlistsHtml = '<div class="playlists-list">';
+            
+            pagePlaylists.forEach((playlist, index) => {
+                const globalRank = start + index + 1;
+                const views = playlist.views || 0;
+                const trackCount = playlist.track_count || 0;
+                const description = playlist.description || 'No description available';
+                
+                playlistsHtml += `
+                    <div class="playlist-card">
+                        <div class="playlist-rank">#${globalRank}</div>
+                        <div class="playlist-info">
+                            <div class="playlist-name">${escapeHtml(playlist.name)}</div>
+                            <div class="playlist-description">${escapeHtml(description)}</div>
+                            <div class="playlist-stats">
+                                <div class="playlist-stat-item">
+                                    <i class="fas fa-music"></i>
+                                    ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
+                                </div>
+                            </div>
+                            <div class="playlist-views">
+                                <i class="fas fa-eye"></i>
+                                ${formatNumber(views)} views
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            playlistsHtml += '</div>';
+            container.innerHTML = playlistsHtml;
+            
+            // Render pagination
+            if (totalPages > 1) {
+                let paginationHtml = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                }
+                paginationContainer.innerHTML = paginationHtml;
+            } else {
+                paginationContainer.innerHTML = '';
+            }
+        }
+        
+        function goToPage(page) {
+            currentPage = page;
+            renderPlaylistsList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadPlaylists();
+            }
+        });
+    </script>
+</body>
+</html>
