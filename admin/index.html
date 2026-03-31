@@ -23,26 +23,22 @@
             --success: #10b981;
             --warning: #f59e0b;
             --info: #3b82f6;
-            
-            --playlist-start: #5f3dc7;
-            --playlist-end: #8a6de0;
-            --ep-start: #ff5722;
-            --ep-end: #ff8c00;
         }
         
         body {
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background: var(--light-gray);
             min-height: 100vh;
-            line-height: 1.5;
             color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
         .admin-container {
-            width: 100%;
             max-width: 1400px;
             margin: 0 auto;
             padding: 10px;
+            flex: 1;
         }
         
         .admin-header {
@@ -75,44 +71,36 @@
         .user-info {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             background: var(--light-gray);
-            padding: 4px 4px 4px 12px;
+            padding: 8px 15px;
             border-radius: 30px;
             font-size: 0.9rem;
-            margin-left: auto;
             border: 1px solid rgba(31, 111, 159, 0.1);
-            height: 36px;
         }
         
         .user-info i {
             color: var(--primary-blue);
-            font-size: 0.9rem;
         }
         
         .user-info span {
             font-weight: 600;
-            line-height: 1;
         }
         
         .logout-btn {
             color: #666;
-            transition: all 0.3s;
-            padding: 6px 10px;
-            background: rgba(255, 255, 255, 0.5);
+            transition: color 0.3s;
+            padding: 8px;
+            background: none;
             border: none;
-            font-size: 0.9rem;
+            font-size: 1rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            border-radius: 30px;
-            height: 28px;
         }
         
         .logout-btn:hover {
             color: var(--primary-blue);
-            background: white;
         }
         
         .admin-tabs {
@@ -146,6 +134,10 @@
             height: 40px !important;
         }
         
+        .tab-btn i {
+            font-size: 1rem !important;
+        }
+        
         .tab-btn:hover {
             background: #f0f0f0;
             color: var(--primary-blue);
@@ -164,62 +156,44 @@
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        /* Section Headers */
-        .section-header {
+        .content-header {
+            margin-bottom: 24px;
+        }
+        
+        .content-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
+            flex-wrap: wrap;
         }
         
-        .section-header h3 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .section-header i {
+        .content-header h2 i {
             color: var(--primary-blue);
-            font-size: 0.9rem;
         }
         
-        /* Stats Grid */
+        .content-header p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Stats Grid - Mobile first 2 columns, desktop 4 columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
         }
         
         .stat-card {
             background: var(--light-gray);
-            padding: 16px 12px;
             border-radius: 12px;
-            border: 1px solid rgba(31, 111, 159, 0.15);
+            padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(
-                circle at 30% 30%,
-                rgba(31, 111, 159, 0.03) 0%,
-                transparent 70%
-            );
-            pointer-events: none;
-            animation: rotate-light 20s linear infinite;
+            border: 1px solid rgba(31, 111, 159, 0.15);
         }
         
         .stat-card:hover {
@@ -228,14 +202,9 @@
             box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
         }
         
-        @keyframes rotate-light {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
         .stat-card .stat-icon {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
         
         .stat-card .stat-value {
@@ -243,349 +212,184 @@
             font-weight: 700;
             color: var(--primary-blue);
             line-height: 1.2;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
         
         .stat-card .stat-label {
-            font-size: 0.7rem;
-            color: #666;
+            font-size: 0.75rem;
+            color: var(--gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
-        /* Gradient Cards */
-        .stat-card.blue-gradient {
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
+        }
+        
+        .section-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .section-header i {
+            color: var(--primary-blue);
+            font-size: 1rem;
+        }
+        
+        /* Total Views Card */
+        .total-views-card {
             background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
-            border: none;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
         }
         
-        .stat-card.blue-gradient .stat-value,
-        .stat-card.blue-gradient .stat-label,
-        .stat-card.blue-gradient .stat-icon {
-            color: white !important;
+        .total-views-card .views-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
         
-        .stat-card.purple-gradient {
-            background: linear-gradient(135deg, #6b4f9f 0%, #a07dd0 100%);
-            border: none;
+        .total-views-card .views-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
         
-        .stat-card.purple-gradient .stat-value,
-        .stat-card.purple-gradient .stat-label,
-        .stat-card.purple-gradient .stat-icon {
-            color: white !important;
+        .total-views-card .views-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
         
-        .stat-card.teal-gradient {
-            background: linear-gradient(135deg, #1f6f5a 0%, #1d9f8f 100%);
-            border: none;
-        }
-        
-        .stat-card.teal-gradient .stat-value,
-        .stat-card.teal-gradient .stat-label,
-        .stat-card.teal-gradient .stat-icon {
-            color: white !important;
-        }
-        
-        .stat-card.ep-gradient {
-            background: linear-gradient(135deg, #ff5722 0%, #ff8c00 100%);
-            border: none;
-        }
-        
-        .stat-card.ep-gradient .stat-value,
-        .stat-card.ep-gradient .stat-label,
-        .stat-card.ep-gradient .stat-icon {
-            color: white !important;
-        }
-        
-        .stat-card.playlist-gradient {
-            background: linear-gradient(135deg, #5f3dc7 0%, #8a6de0 100%);
-            border: none;
-        }
-        
-        .stat-card.playlist-gradient .stat-value,
-        .stat-card.playlist-gradient .stat-label,
-        .stat-card.playlist-gradient .stat-icon {
-            color: white !important;
-        }
-        
-        .stat-card.warning-gradient {
-            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-            border: none;
-        }
-        
-        .stat-card.warning-gradient .stat-value,
-        .stat-card.warning-gradient .stat-label,
-        .stat-card.warning-gradient .stat-icon {
-            color: white !important;
-        }
-        
-        .stat-card.success-gradient {
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-            border: none;
-        }
-        
-        .stat-card.success-gradient .stat-value,
-        .stat-card.success-gradient .stat-label,
-        .stat-card.success-gradient .stat-icon {
-            color: white !important;
-        }
-        
-        .stat-card.info-gradient {
-            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
-            border: none;
-        }
-        
-        .stat-card.info-gradient .stat-value,
-        .stat-card.info-gradient .stat-label,
-        .stat-card.info-gradient .stat-icon {
-            color: white !important;
-        }
-        
-        /* View Stats Row */
+        /* Views by Type Grid - Mobile first 2 columns */
         .views-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
         }
         
         .view-card {
-            background: var(--white);
-            padding: 14px 10px;
+            background: var(--light-gray);
+            padding: 16px 12px;
             border-radius: 12px;
             border: 1px solid rgba(31, 111, 159, 0.15);
             text-align: center;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         
         .view-card:hover {
             border-color: var(--primary-blue);
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.1);
         }
         
         .view-card .view-icon {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             margin-bottom: 6px;
         }
         
         .view-card .view-value {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary-blue);
         }
         
         .view-card .view-label {
             font-size: 0.7rem;
-            color: #666;
+            color: var(--gray);
+            margin-top: 2px;
         }
         
-        .view-card .view-total {
-            font-size: 0.65rem;
+        .view-card .view-sub {
+            font-size: 0.6rem;
             color: #999;
-            margin-top: 4px;
+            margin-top: 2px;
         }
         
-        /* Quick Actions */
-        .quick-actions-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .quick-action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 8px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #333;
-            transition: all 0.3s;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-            min-height: 80px;
-        }
-        
-        .quick-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(31, 111, 159, 0.2);
-            border-color: var(--primary-blue);
-        }
-        
-        .quick-action-btn i {
-            font-size: 1.5rem;
-            color: var(--primary-blue);
-            margin-bottom: 6px;
-        }
-        
-        .quick-action-btn span {
-            font-size: 0.75rem;
-            font-weight: 600;
+        /* Loading & Empty States */
+        .loading {
             text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
         }
         
-        /* Welcome Header */
-        .welcome-header {
-            margin-bottom: 24px;
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
         }
         
-        .status-badge {
-            display: inline-block;
-            background: var(--success);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            margin-bottom: 12px;
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
         }
         
-        .welcome-header h2 {
-            font-size: 1.3rem;
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
             color: var(--primary-dark);
-            margin-bottom: 4px;
         }
         
-        .welcome-header p {
-            color: #666;
-            font-size: 0.85rem;
-        }
-        
-        /* Security Box */
-        .security-box {
-            background: #f8f9fa;
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
             border-radius: 12px;
-            padding: 15px 20px;
-            margin: 20px 0;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .security-box h4 {
-            color: var(--primary-dark);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .security-box ul {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            list-style: none;
-        }
-        
-        .security-box li {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .security-box li i {
-            color: var(--primary-blue);
-        }
-        
-        /* Mobile Cards */
-        .mobile-cards {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
+            padding: 20px;
             margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.8rem;
         }
         
-        .mobile-card {
-            background: var(--light-gray);
-            border-radius: 10px;
-            padding: 12px 16px;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .mobile-card:hover {
-            border-color: var(--primary-blue);
-            transform: translateX(5px);
-        }
-        
-        .mobile-card-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .mobile-card-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .mobile-card-label i {
+        .admin-footer a {
             color: var(--primary-blue);
-            width: 20px;
+            text-decoration: none;
         }
         
-        .mobile-card-value {
-            color: var(--primary-blue);
+        .admin-footer a:hover {
+            text-decoration: underline;
         }
         
-        @media (max-width: 900px) {
-            .stats-grid, .views-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+        /* Tablet Styles */
+        @media (min-width: 768px) {
+            .admin-container {
+                padding: 15px;
             }
             
-            .quick-actions-grid {
-                grid-template-columns: repeat(3, 1fr);
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
             }
             
-            .security-box {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .security-box ul {
-                flex-wrap: wrap;
+            .views-grid {
+                grid-template-columns: repeat(5, 1fr);
             }
         }
         
-        @media (max-width: 640px) {
-            .stats-grid, .views-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .quick-actions-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .security-box ul {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .quick-actions-grid {
-                display: none;
-            }
-            
-            .mobile-cards {
-                display: flex;
-            }
-        }
-        
-        @media (min-width: 641px) {
-            .mobile-cards {
-                display: none !important;
+        /* Desktop Styles */
+        @media (min-width: 1024px) {
+            .admin-container {
+                padding: 20px;
             }
         }
     </style>
@@ -594,267 +398,87 @@
     <div class="admin-container">
         <div class="admin-header">
             <div class="header-top">
-                <h1><i class="fas fa-cog"></i> Dashboard</h1>
+                <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
                     <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
             </div>
             
             <div class="admin-tabs">
-                <a href="index.html" class="tab-btn active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
-                <a href="albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
-                <a href="artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
-                <a href="genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
-                <a href="pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
-                <a href="trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+                <a href="/admin/" class="tab-btn active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
         
-        <div class="admin-content">
-            <!-- Welcome Header -->
-            <div class="welcome-header">
-                <div class="status-badge">✓ ACTIVE SESSION</div>
-                <h2>Welcome back, Admin</h2>
-                <p id="currentDate"></p>
+        <div class="admin-content" id="dashboardContent">
+            <div class="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <div>Loading dashboard data...</div>
             </div>
-            
-            <!-- Row 1: Content Counts -->
-            <div class="section-header">
-                <i class="fas fa-database"></i>
-                <h3>Content Overview</h3>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card blue-gradient">
-                    <div class="stat-icon"><i class="fas fa-music"></i></div>
-                    <div class="stat-value" id="totalSongs">0</div>
-                    <div class="stat-label">Total Songs</div>
-                </div>
-                <div class="stat-card purple-gradient">
-                    <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
-                    <div class="stat-value" id="totalAlbums">0</div>
-                    <div class="stat-label">Total Albums</div>
-                </div>
-                <div class="stat-card ep-gradient">
-                    <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
-                    <div class="stat-value" id="totalEPs">0</div>
-                    <div class="stat-label">Total EPs</div>
-                </div>
-                <div class="stat-card teal-gradient">
-                    <div class="stat-icon"><i class="fas fa-microphone"></i></div>
-                    <div class="stat-value" id="totalArtists">0</div>
-                    <div class="stat-label">Total Artists</div>
-                </div>
-                <div class="stat-card playlist-gradient">
-                    <div class="stat-icon"><i class="fas fa-list"></i></div>
-                    <div class="stat-value" id="totalPlaylists">0</div>
-                    <div class="stat-label">Total Playlists</div>
-                </div>
-            </div>
-            
-            <!-- Row 2: Status -->
-            <div class="section-header">
-                <i class="fas fa-chart-line"></i>
-                <h3>Content Status</h3>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card warning-gradient">
-                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
-                    <div class="stat-value" id="draftSongs">0</div>
-                    <div class="stat-label">Draft Songs</div>
-                </div>
-                <div class="stat-card success-gradient">
-                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
-                    <div class="stat-value" id="publishedSongs">0</div>
-                    <div class="stat-label">Published Songs</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-download"></i></div>
-                    <div class="stat-value" id="totalDownloads">0</div>
-                    <div class="stat-label">Total Downloads</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-chart-simple"></i></div>
-                    <div class="stat-value" id="totalPlays">0</div>
-                    <div class="stat-label">Total Plays</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Total Views</div>
-                </div>
-            </div>
-            
-            <!-- Row 3: View Breakdown by Content Type -->
-            <div class="section-header">
-                <i class="fas fa-chart-bar"></i>
-                <h3>Views by Content Type</h3>
-            </div>
-            <div class="views-grid">
-                <div class="view-card">
-                    <div class="view-icon"><i class="fas fa-music"></i></div>
-                    <div class="view-value" id="songViews">0</div>
-                    <div class="view-label">Song Views</div>
-                </div>
-                <div class="view-card">
-                    <div class="view-icon"><i class="fas fa-compact-disc"></i></div>
-                    <div class="view-value" id="albumViews">0</div>
-                    <div class="view-label">Album Views</div>
-                </div>
-                <div class="view-card">
-                    <div class="view-icon"><i class="fas fa-play-circle"></i></div>
-                    <div class="view-value" id="epViews">0</div>
-                    <div class="view-label">EP Views</div>
-                </div>
-                <div class="view-card">
-                    <div class="view-icon"><i class="fas fa-microphone"></i></div>
-                    <div class="view-value" id="artistViews">0</div>
-                    <div class="view-label">Artist Views</div>
-                </div>
-                <div class="view-card">
-                    <div class="view-icon"><i class="fas fa-list"></i></div>
-                    <div class="view-value" id="playlistViews">0</div>
-                    <div class="view-label">Playlist Views</div>
-                </div>
-            </div>
-            
-            <!-- Quick Actions - Desktop -->
-            <div class="section-header">
-                <i class="fas fa-bolt"></i>
-                <h3>Quick Actions</h3>
-            </div>
-            <div class="quick-actions-grid">
-                <a href="upload.html" class="quick-action-btn">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>Upload Song</span>
-                </a>
-                <a href="albums/edit.html" class="quick-action-btn">
-                    <i class="fas fa-compact-disc"></i>
-                    <span>New Album</span>
-                </a>
-                <a href="eps/edit.html" class="quick-action-btn">
-                    <i class="fas fa-play-circle"></i>
-                    <span>New EP</span>
-                </a>
-                <a href="artists/edit.html" class="quick-action-btn">
-                    <i class="fas fa-microphone"></i>
-                    <span>New Artist</span>
-                </a>
-                <a href="playlists/edit.html" class="quick-action-btn">
-                    <i class="fas fa-list"></i>
-                    <span>New Playlist</span>
-                </a>
-            </div>
-            
-            <!-- Security Status -->
-            <div class="security-box">
-                <h4><i class="fas fa-shield-alt"></i> Security Status</h4>
-                <ul>
-                    <li><i class="fas fa-check-circle"></i> Cloudflare Auth</li>
-                    <li><i class="fas fa-clock"></i> Session: 24h</li>
-                    <li><i class="fas fa-server"></i> Production Ready</li>
-                </ul>
-            </div>
-            
-            <!-- Mobile Navigation Cards -->
-            <div class="mobile-cards">
-                <div class="mobile-card" onclick="window.location='upload.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-cloud-upload-alt"></i> Upload Song</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='songs.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-music"></i> Manage Songs</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='albums/index.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-compact-disc"></i> Manage Albums</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='eps/index.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-play-circle"></i> Manage EPs</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='artists/index.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-microphone"></i> Manage Artists</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='playlists/index.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-list"></i> Manage Playlists</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='genres/index.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-tag"></i> Manage Genres</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-                <div class="mobile-card" onclick="window.location='pages/index.html'">
-                    <div class="mobile-card-row">
-                        <span class="mobile-card-label"><i class="fas fa-file-alt"></i> Manage Pages</span>
-                        <span class="mobile-card-value"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                </div>
-            </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>&copy; 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin Panel</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
     <script>
         const API_BASE = '/api';
         
+        let tracks = [];
+        let albums = [];
+        let eps = [];
+        let artists = [];
+        let playlists = [];
+        
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
             
             if (!isLoggedIn || !loginTime) {
-                window.location.href = '/';
+                window.location.href = '/admin/login.html';
                 return false;
             }
             
             const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
             if (hoursSince > 24) {
                 localStorage.clear();
-                window.location.href = '/';
+                window.location.href = '/admin/login.html';
                 return false;
             }
             return true;
         }
-
+        
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.clear();
-                window.location.href = '/';
+                window.location.href = '/admin/login.html';
             }
         }
-
+        
         function formatNumber(num) {
             if (!num) return '0';
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
-
-        async function loadStats() {
+        
+        async function loadDashboardData() {
             try {
-                const [songsRes, albumsRes, epsRes, artistsRes, playlistsRes] = await Promise.all([
+                const [tracksRes, albumsRes, epsRes, artistsRes, playlistsRes] = await Promise.all([
                     fetch(`${API_BASE}/admin/tracks`),
                     fetch(`${API_BASE}/admin/albums`),
                     fetch(`${API_BASE}/admin/eps`),
@@ -862,60 +486,133 @@
                     fetch(`${API_BASE}/admin/playlists`)
                 ]);
                 
-                const songs = await songsRes.json();
-                const albums = await albumsRes.json();
-                const eps = await epsRes.json();
-                const artists = await artistsRes.json();
-                const playlists = await playlistsRes.json();
+                tracks = await tracksRes.json();
+                albums = await albumsRes.json();
+                eps = await epsRes.json();
+                artists = await artistsRes.json();
+                playlists = await playlistsRes.json();
                 
-                // Row 1: Content Counts
-                document.getElementById('totalSongs').textContent = songs.length || 0;
-                document.getElementById('totalAlbums').textContent = albums.length || 0;
-                document.getElementById('totalEPs').textContent = eps.length || 0;
-                document.getElementById('totalArtists').textContent = artists.length || 0;
-                document.getElementById('totalPlaylists').textContent = playlists.length || 0;
-                
-                // Row 2: Status & Stats
-                const draftSongs = songs.filter(s => s.status === 'draft').length;
-                const publishedSongs = songs.filter(s => s.status === 'published').length;
-                document.getElementById('draftSongs').textContent = draftSongs;
-                document.getElementById('publishedSongs').textContent = publishedSongs;
-                
-                const totalPlays = songs.reduce((sum, s) => sum + (s.plays || 0), 0);
-                const totalDownloads = songs.reduce((sum, s) => sum + (s.downloads || 0), 0);
-                document.getElementById('totalPlays').textContent = formatNumber(totalPlays);
-                document.getElementById('totalDownloads').textContent = formatNumber(totalDownloads);
-                
-                // Row 3: View Breakdown by Content Type
-                const songViews = songs.reduce((sum, s) => sum + (s.views || 0), 0);
-                const albumViews = albums.reduce((sum, a) => sum + (a.views || 0), 0);
-                const epViews = eps.reduce((sum, e) => sum + (e.views || 0), 0);
-                const artistViews = artists.reduce((sum, a) => sum + (a.views || 0), 0);
-                const playlistViews = playlists.reduce((sum, p) => sum + (p.views || 0), 0);
-                const totalViews = songViews + albumViews + epViews + artistViews + playlistViews;
-                
-                document.getElementById('songViews').textContent = formatNumber(songViews);
-                document.getElementById('albumViews').textContent = formatNumber(albumViews);
-                document.getElementById('epViews').textContent = formatNumber(epViews);
-                document.getElementById('artistViews').textContent = formatNumber(artistViews);
-                document.getElementById('playlistViews').textContent = formatNumber(playlistViews);
-                document.getElementById('totalViews').textContent = formatNumber(totalViews);
+                renderDashboard();
                 
             } catch (error) {
-                console.error('Error loading stats:', error);
+                console.error('Error loading dashboard:', error);
+                document.getElementById('dashboardContent').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                        <h3>Failed to Load Dashboard</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <button onclick="loadDashboardData()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
+                    </div>
+                `;
             }
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!checkAuth()) return;
+        
+        function renderDashboard() {
+            const totalTracks = tracks.length;
+            const totalAlbums = albums.length;
+            const totalEps = eps.length;
+            const totalArtists = artists.length;
+            
+            const totalTrackViews = tracks.reduce((sum, t) => sum + (t.views || 0), 0);
+            const totalAlbumViews = albums.reduce((sum, a) => sum + (a.views || 0), 0);
+            const totalEPViews = eps.reduce((sum, e) => sum + (e.views || 0), 0);
+            const totalArtistViews = artists.reduce((sum, a) => sum + (a.views || 0), 0);
+            const totalPlaylistViews = playlists.reduce((sum, p) => sum + (p.views || 0), 0);
+            const totalViews = totalTrackViews + totalAlbumViews + totalEPViews + totalArtistViews + totalPlaylistViews;
+            
+            const html = `
+                <div class="content-header">
+                    <h2><i class="fas fa-smile"></i> Welcome back, Admin</h2>
+                    <p id="currentDate"></p>
+                </div>
+                
+                <!-- Content Overview -->
+                <div class="section-header">
+                    <i class="fas fa-database"></i>
+                    <h3>Content Overview</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-music"></i></div>
+                        <div class="stat-value">${totalTracks}</div>
+                        <div class="stat-label">Total Songs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
+                        <div class="stat-value">${totalAlbums}</div>
+                        <div class="stat-label">Total Albums</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
+                        <div class="stat-value">${totalEps}</div>
+                        <div class="stat-label">Total EPs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-microphone"></i></div>
+                        <div class="stat-value">${totalArtists}</div>
+                        <div class="stat-label">Total Artists</div>
+                    </div>
+                </div>
+                
+                <!-- Total Views -->
+                <div class="total-views-card">
+                    <div class="views-icon"><i class="fas fa-eye"></i></div>
+                    <div class="views-value">${formatNumber(totalViews)}</div>
+                    <div class="views-label">Total Views Across All Content</div>
+                </div>
+                
+                <!-- Views by Content Type -->
+                <div class="section-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Views by Content Type</h3>
+                </div>
+                <div class="views-grid">
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/tracks.html'">
+                        <div class="view-icon"><i class="fas fa-music"></i></div>
+                        <div class="view-value">${formatNumber(totalTrackViews)}</div>
+                        <div class="view-label">Tracks</div>
+                        <div class="view-sub">${totalTracks} total</div>
+                    </div>
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/albums.html'">
+                        <div class="view-icon"><i class="fas fa-compact-disc"></i></div>
+                        <div class="view-value">${formatNumber(totalAlbumViews)}</div>
+                        <div class="view-label">Albums</div>
+                        <div class="view-sub">${totalAlbums} total</div>
+                    </div>
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/eps.html'">
+                        <div class="view-icon"><i class="fas fa-play-circle"></i></div>
+                        <div class="view-value">${formatNumber(totalEPViews)}</div>
+                        <div class="view-label">EPs</div>
+                        <div class="view-sub">${totalEps} total</div>
+                    </div>
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/artists.html'">
+                        <div class="view-icon"><i class="fas fa-microphone"></i></div>
+                        <div class="view-value">${formatNumber(totalArtistViews)}</div>
+                        <div class="view-label">Artists</div>
+                        <div class="view-sub">${totalArtists} total</div>
+                    </div>
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/playlists.html'">
+                        <div class="view-icon"><i class="fas fa-list"></i></div>
+                        <div class="view-value">${formatNumber(totalPlaylistViews)}</div>
+                        <div class="view-label">Playlists</div>
+                        <div class="view-sub">${playlists.length} total</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('dashboardContent').innerHTML = html;
             
             const dateElement = document.getElementById('currentDate');
             if (dateElement) {
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 dateElement.textContent = new Date().toLocaleDateString('en-GB', options);
             }
-            
-            loadStats();
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadDashboardData();
+            }
         });
     </script>
 </body>
