@@ -93,8 +93,6 @@
             font-size: 0.9rem;
         }
         
-        /* No logout button on this page */
-        
         /* Tabs */
         .admin-tabs {
             display: flex;
@@ -154,12 +152,7 @@
         }
         
         .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
         }
         
         .content-header h2 {
@@ -167,7 +160,8 @@
             color: var(--primary-dark);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         
         .content-header h2 i {
@@ -261,7 +255,7 @@
             flex: 1;
         }
         
-        /* Filter Tabs */
+        /* Filter Tabs with Add New Button */
         .filter-tabs {
             display: flex;
             gap: 8px;
@@ -281,6 +275,9 @@
             color: #666;
             cursor: pointer;
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         
         .filter-tab:hover {
@@ -291,6 +288,18 @@
         .filter-tab.active {
             background: var(--primary-blue);
             color: white;
+        }
+        
+        .filter-tab.add-btn {
+            background: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            margin-left: auto;
+        }
+        
+        .filter-tab.add-btn:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
         }
         
         /* Artist Badges */
@@ -402,10 +411,6 @@
         .song-details h4 {
             font-size: 0.85rem;
             margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 4px;
         }
         
         .song-details span {
@@ -868,6 +873,8 @@
             .search-section { flex-direction: column; }
             .search-box { width: 100%; }
             .filter-select { width: 100%; }
+            .filter-tabs { justify-content: center; }
+            .filter-tab.add-btn { margin-left: 0; }
         }
         
         @media (max-width: 480px) {
@@ -908,7 +915,7 @@
             <div class="content-header">
                 <h2>
                     <i class="fas fa-music"></i> Songs Management
-                    <button onclick="loadSongs()" class="btn btn-secondary btn-sm">
+                    <button onclick="loadSongs()" class="btn btn-secondary btn-sm" title="Refresh">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </h2>
@@ -934,6 +941,9 @@
                 <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
                 <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
                 <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
+                <a href="/admin/upload.html" class="filter-tab add-btn">
+                    <i class="fas fa-plus-circle"></i> Add New Song
+                </a>
             </div>
 
             <div class="stats-grid">
