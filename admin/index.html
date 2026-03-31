@@ -20,6 +20,9 @@
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
             --skeleton-bg: #e2e8f0;
         }
         
@@ -40,6 +43,7 @@
             width: 100%;
         }
         
+        /* ========== MASTER HEADER STYLES ========== */
         .admin-header {
             background: var(--white);
             border-radius: 12px;
@@ -80,22 +84,25 @@
         
         .user-info i {
             color: var(--primary-blue);
+            font-size: 0.9rem;
         }
         
         .user-info span {
             font-weight: 600;
+            font-size: 0.9rem;
         }
         
         .logout-btn {
             color: #666;
             transition: color 0.3s;
-            padding: 8px;
+            padding: 0;
             background: none;
             border: none;
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
+            gap: 4px;
         }
         
         .logout-btn:hover {
@@ -118,12 +125,12 @@
         }
         
         .tab-btn {
-            padding: 8px 14px !important;
+            padding: 8px 14px;
             background: transparent;
             border: none;
             border-radius: 8px;
-            font-size: 0.85rem !important;
-            font-weight: 600 !important;
+            font-size: 0.85rem;
+            font-weight: 600;
             color: #666;
             cursor: pointer;
             transition: all 0.3s;
@@ -132,12 +139,11 @@
             align-items: center;
             gap: 6px;
             text-decoration: none;
-            height: 36px !important;
-            flex-shrink: 0;
+            height: 36px;
         }
         
         .tab-btn i {
-            font-size: 0.85rem !important;
+            font-size: 0.85rem;
         }
         
         .tab-btn:hover {
@@ -149,6 +155,7 @@
             background: var(--primary-blue);
             color: white;
         }
+        /* ========== END MASTER HEADER STYLES ========== */
         
         .admin-content {
             background: var(--white);
@@ -326,12 +333,12 @@
             margin-top: 2px;
         }
         
-        /* Skeleton Loader Animation */
+        /* Skeleton Loader */
         .skeleton {
             background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f0f0f0 50%, var(--skeleton-bg) 75%);
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
-            border-radius: 8px;
+            border-radius: 4px;
         }
         
         @keyframes loading {
@@ -385,21 +392,52 @@
         
         /* Tablet Styles */
         @media (min-width: 600px) {
-            .admin-container { padding: 15px; }
-            .stats-grid { grid-template-columns: repeat(4, 1fr); }
-            .views-grid { grid-template-columns: repeat(3, 1fr); }
-            .stat-card .stat-value { font-size: 1.8rem; }
-            .total-views-card .views-value { font-size: 2.2rem; }
+            .admin-container {
+                padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .views-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .stat-card .stat-value {
+                font-size: 1.8rem;
+            }
+            
+            .total-views-card .views-value {
+                font-size: 2.2rem;
+            }
         }
         
         /* Desktop Styles */
         @media (min-width: 1024px) {
-            .admin-container { padding: 20px; }
-            .views-grid { grid-template-columns: repeat(5, 1fr); }
-            .stat-card .stat-value { font-size: 2rem; }
-            .total-views-card .views-value { font-size: 2.5rem; }
-            .view-card .view-value { font-size: 1.2rem; }
-            .view-card .view-icon { font-size: 1.5rem; }
+            .admin-container {
+                padding: 20px;
+            }
+            
+            .views-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .stat-card .stat-value {
+                font-size: 2rem;
+            }
+            
+            .total-views-card .views-value {
+                font-size: 2.5rem;
+            }
+            
+            .view-card .view-value {
+                font-size: 1.2rem;
+            }
+            
+            .view-card .view-icon {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -412,7 +450,7 @@
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
                     <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
                 </div>
             </div>
@@ -433,7 +471,7 @@
         </div>
         
         <div class="admin-content" id="dashboardContent">
-            <!-- Skeleton Loaders - No layout shift -->
+            <!-- Skeleton Loaders -->
             <div class="content-header">
                 <h2><i class="fas fa-smile"></i> <span class="skeleton" style="width: 180px; height: 24px; display: inline-block;"></span></h2>
                 <p><span class="skeleton" style="width: 200px; height: 16px; display: inline-block;"></span></p>
@@ -507,7 +545,6 @@
         
         async function loadDashboard() {
             try {
-                // Fetch only stats (lightweight!)
                 const response = await fetch(`${API_BASE}/admin/stats`);
                 const result = await response.json();
                 
@@ -517,11 +554,9 @@
                 
                 const stats = result.data;
                 
-                // Format date
                 const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 const currentDate = new Date().toLocaleDateString('en-GB', dateOptions);
                 
-                // Build HTML with real data
                 const html = `
                     <div class="content-header">
                         <h2><i class="fas fa-smile"></i> Welcome back, Admin</h2>
