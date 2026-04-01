@@ -30,12 +30,16 @@
             background: var(--light-gray);
             min-height: 100vh;
             color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
         .admin-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
         .admin-header {
@@ -236,10 +240,10 @@
             font-size: 1rem;
         }
         
-        /* Views by Type Grid - Mobile First Grid */
+        /* Views by Type Grid - Mobile First Grid (2 columns mobile, 5 columns desktop) */
         .views-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 30px;
         }
@@ -463,6 +467,27 @@
             to { transform: translateY(0); opacity: 1; }
         }
         
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
         /* Tablet Styles */
         @media (min-width: 600px) {
             .admin-container {
@@ -470,10 +495,6 @@
             }
             
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .views-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -539,6 +560,10 @@
                 <i class="fas fa-circle-notch fa-spin"></i>
                 <div>Loading analytics data...</div>
             </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
