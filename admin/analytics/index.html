@@ -170,57 +170,31 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: var(--light-gray);
+        /* Total Views Card - Full Width */
+        .total-views-card {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-light) 100%);
             border-radius: 12px;
-            padding: 16px;
+            padding: 24px;
             text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(31, 111, 159, 0.15);
+            margin-bottom: 30px;
+            color: white;
+            width: 100%;
         }
         
-        .stat-card:hover {
-            border-color: var(--primary-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
+        .total-views-card .views-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
         }
         
-        .stat-card .stat-icon {
-            font-size: 1.5rem;
+        .total-views-card .views-value {
+            font-size: 2.5rem;
+            font-weight: 700;
             margin-bottom: 8px;
         }
         
-        .stat-card .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            line-height: 1.2;
-            margin-bottom: 4px;
-        }
-        
-        .stat-card .stat-label {
-            font-size: 0.7rem;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .stat-card.primary-gradient {
-            background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
-        }
-        
-        .stat-card.primary-gradient .stat-value,
-        .stat-card.primary-gradient .stat-label,
-        .stat-card.primary-gradient .stat-icon {
-            color: white !important;
+        .total-views-card .views-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
         
         /* Section Header */
@@ -508,9 +482,7 @@
         /* Responsive */
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
-            .stats-grid { grid-template-columns: repeat(5, 1fr); }
-            .stats-grid .stat-card:first-child { grid-column: span 1; }
-            .stat-card .stat-value { font-size: 1.8rem; }
+            .total-views-card .views-value { font-size: 3rem; }
             .views-grid { grid-template-columns: repeat(5, 1fr); }
             .view-card .view-value { font-size: 1.2rem; }
             .view-card .view-icon { font-size: 1.5rem; }
@@ -518,11 +490,8 @@
         }
         
         @media (max-width: 640px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .total-views-card .views-value { font-size: 2rem; }
             .views-grid { grid-template-columns: repeat(2, 1fr); }
-            .stat-card { padding: 12px; }
-            .stat-icon { font-size: 1.2rem; }
-            .stat-value { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -559,8 +528,11 @@
                 <p><span class="skeleton" style="width: 250px; height: 16px; display: inline-block;"></span></p>
             </div>
             
-            <div class="stats-grid">
-                <div class="stat-card skeleton-card"><div class="skeleton-value skeleton"></div><div class="skeleton-label skeleton"></div></div>
+            <!-- Total Views Card - Full Width -->
+            <div class="total-views-card skeleton">
+                <div class="skeleton-icon skeleton" style="width: 40px; height: 40px; margin: 0 auto 12px; border-radius: 50%;"></div>
+                <div class="skeleton-value skeleton" style="width: 150px; height: 40px; margin: 0 auto 8px;"></div>
+                <div class="skeleton-label skeleton" style="width: 120px; height: 16px; margin: 0 auto;"></div>
             </div>
             
             <div class="section-header">
@@ -628,8 +600,6 @@
         
         async function loadTopContent() {
             // Fetch only the data needed for top 10
-            // We fetch limited data (only top 10 from each type, but server-side would be better)
-            // For now, we fetch all but limit client-side (still better than full analytics before)
             const [tracksRes, albumsRes, epsRes, artistsRes, playlistsRes] = await Promise.all([
                 fetch(`${API_BASE}/admin/tracks`),
                 fetch(`${API_BASE}/admin/albums`),
@@ -784,12 +754,10 @@
                         <p>Comprehensive view statistics across all content types</p>
                     </div>
                     
-                    <div class="stats-grid">
-                        <div class="stat-card primary-gradient">
-                            <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                            <div class="stat-value">${formatNumber(totalViews)}</div>
-                            <div class="stat-label">Total Views</div>
-                        </div>
+                    <div class="total-views-card">
+                        <div class="views-icon"><i class="fas fa-eye"></i></div>
+                        <div class="views-value">${formatNumber(totalViews)}</div>
+                        <div class="views-label">Total Views Across All Content</div>
                     </div>
                     
                     <div class="section-header">
