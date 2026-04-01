@@ -17,14 +17,12 @@
             --primary-lighter: #70c8ff;
             --primary-dark: #1f4c73;
             --gray: #666;
-            --gray-light: #999;
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --success: #28a745;
-            --error: #dc3545;
-            --warning: #ffc107;
-            --skeleton-bg: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
         }
         
         body {
@@ -44,7 +42,6 @@
             width: 100%;
         }
         
-        /* Header Styles */
         .admin-header {
             background: var(--white);
             border-radius: 12px;
@@ -85,23 +82,19 @@
         
         .user-info i {
             color: var(--primary-blue);
-            font-size: 0.9rem;
         }
         
         .user-info span {
             font-weight: 600;
-            font-size: 0.9rem;
         }
         
-        /* Tabs */
         .admin-tabs {
             display: flex;
-            gap: 8px;
+            gap: 5px;
             overflow-x: auto;
             padding: 5px 0;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            -ms-overflow-style: none;
         }
         
         .admin-tabs::-webkit-scrollbar {
@@ -109,12 +102,12 @@
         }
         
         .tab-btn {
-            padding: 8px 14px;
+            padding: 10px 15px !important;
             background: transparent;
             border: none;
             border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
             color: #666;
             cursor: pointer;
             transition: all 0.3s;
@@ -123,11 +116,11 @@
             align-items: center;
             gap: 6px;
             text-decoration: none;
-            height: 36px;
+            height: 40px !important;
         }
         
         .tab-btn i {
-            font-size: 0.85rem;
+            font-size: 1rem !important;
         }
         
         .tab-btn:hover {
@@ -140,23 +133,20 @@
             color: white;
         }
         
-        /* Content Area */
         .admin-content {
             background: var(--white);
             border-radius: 12px;
             padding: 20px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
-            width: 100%;
-            overflow-x: hidden;
         }
         
         .content-header {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         .content-header h2 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--primary-dark);
             display: flex;
             align-items: center;
@@ -168,18 +158,24 @@
             color: var(--primary-blue);
         }
         
-        /* Stats Grid */
+        .content-header p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Stats Grid - Mobile First */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         
         .stat-card {
             background: var(--light-gray);
             border-radius: 12px;
-            padding: 16px;
+            padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
             border: 1px solid rgba(31, 111, 159, 0.15);
@@ -192,20 +188,20 @@
         }
         
         .stat-card .stat-icon {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
         
         .stat-card .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary-blue);
             line-height: 1.2;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
         
         .stat-card .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -221,101 +217,138 @@
             color: white !important;
         }
         
-        /* Search Section */
-        .search-section {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        
-        .search-box {
+        /* Section Header */
+        .section-header {
             display: flex;
             align-items: center;
-            background: var(--light-gray);
-            border-radius: 8px;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            flex: 2;
-            min-width: 200px;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
         }
         
-        .search-box i {
+        .section-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .section-header i {
             color: var(--primary-blue);
-            margin-right: 8px;
+            font-size: 1rem;
         }
         
-        .search-box input {
-            border: none;
-            background: transparent;
-            padding: 6px 0;
-            width: 100%;
-            outline: none;
-            font-size: 0.85rem;
+        /* Views by Type Grid - Mobile First Grid (2 columns mobile, 5 columns desktop) */
+        .views-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
         }
         
-        .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        .view-card {
             background: var(--white);
-            font-size: 0.85rem;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(31, 111, 159, 0.15);
+            text-align: center;
+            transition: all 0.3s ease;
             cursor: pointer;
-            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .view-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.1);
+        }
+        
+        .view-card .view-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .view-card .view-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .view-card .view-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        
+        .view-card .view-sub {
+            font-size: 0.65rem;
+            color: #999;
+            margin-top: 2px;
+        }
+        
+        /* Top Content Cards - Mobile First (no table) */
+        .top-content-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .top-content-item {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .top-content-item:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+        
+        .top-content-rank {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        
+        .top-content-info {
             flex: 1;
         }
         
-        /* Filter Tabs */
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
+        .top-content-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 6px;
+            word-break: break-word;
         }
         
-        .filter-tab {
-            padding: 6px 14px;
-            background: transparent;
-            border: none;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
+        .top-content-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .content-type-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            text-decoration: none;
-        }
-        
-        .filter-tab:hover {
-            background: var(--light-gray);
-            color: var(--primary-blue);
-        }
-        
-        .filter-tab.active {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .filter-tab.add-btn {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        /* Content Type Badge */
-        .content-type-badge {
-            display: inline-block;
-            background: #e3f2fd;
-            color: var(--primary-blue);
-            padding: 2px 8px;
-            border-radius: 12px;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
             font-size: 0.7rem;
-            margin: 2px;
-            white-space: nowrap;
+            font-weight: 600;
         }
         
         .content-type-badge.track {
@@ -343,169 +376,22 @@
             color: #c2185b;
         }
         
-        /* Desktop Table */
-        .analytics-table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #eee;
-            display: block;
-        }
-        
-        .analytics-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 700px;
-        }
-        
-        .analytics-table th {
-            background: var(--light-gray);
-            padding: 10px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--primary-dark);
-            border-bottom: 2px solid #ddd;
-            font-size: 0.8rem;
-        }
-        
-        .analytics-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-            font-size: 0.8rem;
-        }
-        
-        .analytics-table tr:hover td {
-            background: rgba(31, 111, 159, 0.02);
-        }
-        
-        .content-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .content-thumb {
-            width: 35px;
-            height: 35px;
-            border-radius: 6px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        
-        .content-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .content-details h4 {
-            font-size: 0.85rem;
-            margin-bottom: 2px;
-        }
-        
-        .content-details span {
-            font-size: 0.65rem;
+        .top-content-subtitle {
+            font-size: 0.75rem;
             color: var(--gray);
-        }
-        
-        /* Mobile Cards */
-        .analytics-mobile-grid {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .analytics-mobile-card {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .analytics-mobile-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .analytics-mobile-thumb {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        
-        .analytics-mobile-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .analytics-mobile-info {
-            flex: 1;
-        }
-        
-        .analytics-mobile-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
             gap: 5px;
-        }
-        
-        .analytics-mobile-subtitle {
-            font-size: 0.75rem;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .analytics-mobile-subtitle i {
-            color: var(--primary-blue);
-            font-size: 0.7rem;
-        }
-        
-        .analytics-mobile-details {
-            display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .analytics-mobile-stat {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-        
-        .analytics-mobile-stat i {
+        .top-content-subtitle i {
             color: var(--primary-blue);
             font-size: 0.7rem;
+            width: 16px;
         }
         
-        .analytics-mobile-views {
+        .top-content-views {
             display: inline-flex;
             align-items: center;
             gap: 5px;
@@ -515,86 +401,26 @@
             font-size: 0.8rem;
             font-weight: 600;
             color: var(--primary-blue);
-            margin-top: 8px;
+            margin-top: 10px;
         }
         
-        .analytics-mobile-views i {
+        .top-content-views i {
             font-size: 0.7rem;
         }
         
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
+        /* Loading & Empty States */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
         }
         
-        .btn-primary {
-            background: var(--primary-blue);
-            color: white;
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
         }
         
-        .btn-primary:hover {
-            background: var(--primary-light);
-        }
-        
-        .btn-secondary {
-            background: var(--light-gray);
-            color: #333;
-            border: 1px solid #ddd;
-        }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-        
-        .btn-sm {
-            padding: 4px 10px;
-            font-size: 0.7rem;
-        }
-        
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .page-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.8rem;
-        }
-        
-        .page-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
-        .page-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -614,19 +440,31 @@
             color: var(--primary-dark);
         }
         
-        /* Skeleton */
-        .skeleton-row {
-            height: 50px;
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 4px;
-            margin-bottom: 8px;
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
+        .toast.info { background: var(--primary-blue); }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         /* Footer */
@@ -650,28 +488,46 @@
             text-decoration: underline;
         }
         
-        /* Responsive */
-        @media (min-width: 768px) {
-            .admin-container { padding: 15px; }
-            .stats-grid { grid-template-columns: repeat(5, 1fr); }
-            .stat-card .stat-value { font-size: 1.8rem; }
-            .toast { left: auto; right: 20px; min-width: 300px; }
+        /* Tablet Styles */
+        @media (min-width: 600px) {
+            .admin-container {
+                padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
-        @media (max-width: 767px) {
-            .analytics-table-container { display: none; }
-            .analytics-mobile-grid { display: flex; }
-            .search-section { flex-direction: column; }
-            .search-box { width: 100%; }
-            .filter-select { width: 100%; }
-            .filter-tabs { justify-content: center; }
+        /* Desktop Styles */
+        @media (min-width: 1024px) {
+            .admin-container {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .stats-grid .stat-card:first-child {
+                grid-column: span 1;
+            }
+            
+            .views-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .top-content-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
         }
         
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .stat-card { padding: 12px; }
-            .stat-icon { font-size: 1.2rem; }
-            .stat-value { font-size: 1.2rem; }
+        @media (min-width: 1200px) {
+            .top-content-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -688,100 +544,22 @@
             
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
                 <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
-                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
-                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
                 <a href="/admin/analytics/index.html" class="tab-btn active"><i class="fas fa-chart-line"></i> Analytics</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
         
-        <div class="admin-content">
-            <div class="content-header">
-                <h2>
-                    <i class="fas fa-chart-line"></i> Views Analytics
-                    <button onclick="loadAnalyticsData()" class="btn btn-secondary btn-sm" title="Refresh">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </h2>
+        <div class="admin-content" id="analyticsContent">
+            <div class="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <div>Loading analytics data...</div>
             </div>
-            
-            <div class="search-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search content by title...">
-                </div>
-                <select id="typeFilter" class="filter-select">
-                    <option value="all">All Types</option>
-                    <option value="track">Tracks</option>
-                    <option value="album">Albums</option>
-                    <option value="ep">EPs</option>
-                    <option value="artist">Artists</option>
-                    <option value="playlist">Playlists</option>
-                </select>
-                <select id="sortFilter" class="filter-select">
-                    <option value="views">Most Views</option>
-                    <option value="views-asc">Least Views</option>
-                    <option value="title">Title A-Z</option>
-                </select>
-            </div>
-
-            <div class="filter-tabs">
-                <button class="filter-tab active" data-status="all" onclick="filterByType('all')">All Content</button>
-                <button class="filter-tab" data-status="track" onclick="filterByType('track')"><i class="fas fa-music"></i> Tracks</button>
-                <button class="filter-tab" data-status="album" onclick="filterByType('album')"><i class="fas fa-compact-disc"></i> Albums</button>
-                <button class="filter-tab" data-status="ep" onclick="filterByType('ep')"><i class="fas fa-play-circle"></i> EPs</button>
-                <button class="filter-tab" data-status="artist" onclick="filterByType('artist')"><i class="fas fa-microphone"></i> Artists</button>
-                <button class="filter-tab" data-status="playlist" onclick="filterByType('playlist')"><i class="fas fa-list"></i> Playlists</button>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card primary-gradient">
-                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Total Views</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-music"></i></div>
-                    <div class="stat-value" id="trackViews">0</div>
-                    <div class="stat-label">Tracks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
-                    <div class="stat-value" id="albumViews">0</div>
-                    <div class="stat-label">Albums</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
-                    <div class="stat-value" id="epViews">0</div>
-                    <div class="stat-label">EPs</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-microphone"></i></div>
-                    <div class="stat-value" id="artistViews">0</div>
-                    <div class="stat-label">Artists</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-list"></i></div>
-                    <div class="stat-value" id="playlistViews">0</div>
-                    <div class="stat-label">Playlists</div>
-                </div>
-            </div>
-
-            <div id="analyticsTableContainer">
-                <div class="skeleton-row"></div>
-                <div class="skeleton-row"></div>
-                <div class="skeleton-row"></div>
-            </div>
-
-            <div id="analyticsMobileGrid" class="analytics-mobile-grid"></div>
-
-            <div class="pagination" id="pagination"></div>
         </div>
         
         <div class="admin-footer">
@@ -791,12 +569,13 @@
 
     <script>
         const API_BASE = '/api';
-        let currentPage = 1;
-        const itemsPerPage = 10;
-        let allContent = [];
-        let filteredContent = [];
-        let currentTypeFilter = 'all';
-
+        
+        let tracks = [];
+        let albums = [];
+        let eps = [];
+        let artists = [];
+        let playlists = [];
+        
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
@@ -814,55 +593,24 @@
             }
             return true;
         }
-
+        
         function formatNumber(num) {
             if (!num) return '0';
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
-
-        window.filterByType = (type) => {
-            currentTypeFilter = type;
-            
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                if (tab.dataset.status === type) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-            
-            applyFilters();
-        };
-
+        
         async function loadAnalyticsData() {
             try {
-                // Load stats from lightweight endpoint
-                const statsResponse = await fetch(`${API_BASE}/admin/stats`);
-                const statsResult = await statsResponse.json();
-                
-                if (!statsResult.success) {
-                    throw new Error(statsResult.error || 'Failed to load stats');
-                }
-                
-                const stats = statsResult.data;
-                
-                document.getElementById('totalViews').textContent = formatNumber(stats.total_views);
-                document.getElementById('trackViews').textContent = formatNumber(stats.tracks.total_views);
-                document.getElementById('albumViews').textContent = formatNumber(stats.albums.total_views);
-                document.getElementById('epViews').textContent = formatNumber(stats.eps.total_views);
-                document.getElementById('artistViews').textContent = formatNumber(stats.artists.total_views);
-                document.getElementById('playlistViews').textContent = formatNumber(stats.playlists.total_views);
-                
-                // Load all content for the list
                 const [tracksRes, albumsRes, epsRes, artistsRes, playlistsRes] = await Promise.all([
                     fetch(`${API_BASE}/admin/tracks`),
                     fetch(`${API_BASE}/admin/albums`),
@@ -871,254 +619,210 @@
                     fetch(`${API_BASE}/admin/playlists`)
                 ]);
                 
-                const tracks = await tracksRes.json();
-                const albums = await albumsRes.json();
-                const eps = await epsRes.json();
-                const artists = await artistsRes.json();
-                const playlists = await playlistsRes.json();
+                tracks = await tracksRes.json();
+                albums = await albumsRes.json();
+                eps = await epsRes.json();
+                artists = await artistsRes.json();
+                playlists = await playlistsRes.json();
                 
-                allContent = [];
-                
-                tracks.forEach(track => {
-                    allContent.push({
-                        id: track.id,
-                        title: track.title,
-                        type: 'track',
-                        typeLabel: 'Track',
-                        views: track.views || 0,
-                        subtitle: track.artist_name || track.artist || 'Unknown Artist',
-                        thumb: track.artwork_url,
-                        badgeClass: 'track',
-                        badgeIcon: 'fa-music'
-                    });
-                });
-                
-                albums.forEach(album => {
-                    allContent.push({
-                        id: album.id,
-                        title: album.title,
-                        type: 'album',
-                        typeLabel: 'Album',
-                        views: album.views || 0,
-                        subtitle: album.artist_name || album.artist || 'Unknown Artist',
-                        thumb: album.cover_url,
-                        badgeClass: 'album',
-                        badgeIcon: 'fa-compact-disc'
-                    });
-                });
-                
-                eps.forEach(ep => {
-                    allContent.push({
-                        id: ep.id,
-                        title: ep.title,
-                        type: 'ep',
-                        typeLabel: 'EP',
-                        views: ep.views || 0,
-                        subtitle: ep.artist_name || ep.artist || 'Unknown Artist',
-                        thumb: ep.cover_url,
-                        badgeClass: 'ep',
-                        badgeIcon: 'fa-play-circle'
-                    });
-                });
-                
-                artists.forEach(artist => {
-                    allContent.push({
-                        id: artist.id,
-                        title: artist.name,
-                        type: 'artist',
-                        typeLabel: 'Artist',
-                        views: artist.views || 0,
-                        subtitle: artist.country || 'Artist',
-                        thumb: artist.photo_url,
-                        badgeClass: 'artist',
-                        badgeIcon: 'fa-microphone'
-                    });
-                });
-                
-                playlists.forEach(playlist => {
-                    allContent.push({
-                        id: playlist.id,
-                        title: playlist.name,
-                        type: 'playlist',
-                        typeLabel: 'Playlist',
-                        views: playlist.views || 0,
-                        subtitle: playlist.track_count ? `${playlist.track_count} tracks` : 'Playlist',
-                        thumb: playlist.cover_url,
-                        badgeClass: 'playlist',
-                        badgeIcon: 'fa-list'
-                    });
-                });
-                
-                applyFilters();
+                renderAnalytics();
                 
             } catch (error) {
                 console.error('Error loading analytics:', error);
-                document.getElementById('analyticsTableContainer').innerHTML = `
+                document.getElementById('analyticsContent').innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <h3>Error Loading Analytics</h3>
-                        <p>${error.message}</p>
-                        <button onclick="loadAnalyticsData()" class="btn btn-primary">Try Again</button>
+                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
+                        <h3>Failed to Load Analytics</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <button onclick="loadAnalyticsData()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
                     </div>
                 `;
             }
         }
-
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const type = document.getElementById('typeFilter').value;
-            const sort = document.getElementById('sortFilter').value;
-            
-            filteredContent = allContent.filter(item => {
-                if (currentTypeFilter !== 'all' && item.type !== currentTypeFilter) {
-                    return false;
-                }
-                if (type !== 'all' && item.type !== type) {
-                    return false;
-                }
-                const matchesSearch = item.title?.toLowerCase().includes(searchTerm) ||
-                                     item.subtitle?.toLowerCase().includes(searchTerm);
-                return matchesSearch;
-            });
-            
-            filteredContent.sort((a, b) => {
-                switch(sort) {
-                    case 'views-asc':
-                        return (a.views || 0) - (b.views || 0);
-                    case 'title':
-                        return (a.title || '').localeCompare(b.title || '');
-                    default:
-                        return (b.views || 0) - (a.views || 0);
-                }
-            });
-            
-            currentPage = 1;
-            renderAnalytics();
-        }
-
+        
         function renderAnalytics() {
-            const tableContainer = document.getElementById('analyticsTableContainer');
-            const mobileContainer = document.getElementById('analyticsMobileGrid');
+            const totalTrackViews = tracks.reduce((sum, t) => sum + (t.views || 0), 0);
+            const totalAlbumViews = albums.reduce((sum, a) => sum + (a.views || 0), 0);
+            const totalEPViews = eps.reduce((sum, e) => sum + (e.views || 0), 0);
+            const totalArtistViews = artists.reduce((sum, a) => sum + (a.views || 0), 0);
+            const totalPlaylistViews = playlists.reduce((sum, p) => sum + (p.views || 0), 0);
+            const totalViews = totalTrackViews + totalAlbumViews + totalEPViews + totalArtistViews + totalPlaylistViews;
             
-            if (filteredContent.length === 0) {
-                const emptyHtml = `
+            const allContent = [];
+            
+            tracks.forEach(track => {
+                allContent.push({
+                    id: track.id,
+                    title: track.title,
+                    type: 'track',
+                    views: track.views || 0,
+                    subtitle: track.artist_name || track.artist || 'Unknown Artist'
+                });
+            });
+            
+            albums.forEach(album => {
+                allContent.push({
+                    id: album.id,
+                    title: album.title,
+                    type: 'album',
+                    views: album.views || 0,
+                    subtitle: album.artist_name || album.artist || 'Unknown Artist'
+                });
+            });
+            
+            eps.forEach(ep => {
+                allContent.push({
+                    id: ep.id,
+                    title: ep.title,
+                    type: 'ep',
+                    views: ep.views || 0,
+                    subtitle: ep.artist_name || ep.artist || 'Unknown Artist'
+                });
+            });
+            
+            artists.forEach(artist => {
+                allContent.push({
+                    id: artist.id,
+                    title: artist.name,
+                    type: 'artist',
+                    views: artist.views || 0,
+                    subtitle: artist.country || 'Artist'
+                });
+            });
+            
+            playlists.forEach(playlist => {
+                allContent.push({
+                    id: playlist.id,
+                    title: playlist.name,
+                    type: 'playlist',
+                    views: playlist.views || 0,
+                    subtitle: playlist.track_count ? `${playlist.track_count} tracks` : 'Playlist'
+                });
+            });
+            
+            const topContent = allContent.sort((a, b) => b.views - a.views).slice(0, 10);
+            
+            const html = `
+                <div class="content-header">
+                    <h2><i class="fas fa-chart-line"></i> Views Analytics</h2>
+                    <p>Comprehensive view statistics across all content types</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card primary-gradient">
+                        <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                        <div class="stat-value">${formatNumber(totalViews)}</div>
+                        <div class="stat-label">Total Views</div>
+                    </div>
+                </div>
+                
+                <div class="section-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Views by Content Type</h3>
+                </div>
+                <div class="views-grid">
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/tracks.html'">
+                        <div class="view-icon"><i class="fas fa-music"></i></div>
+                        <div class="view-value">${formatNumber(totalTrackViews)}</div>
+                        <div class="view-label">Tracks</div>
+                        <div class="view-sub">${tracks.length} total</div>
+                    </div>
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/albums.html'">
+                        <div class="view-icon"><i class="fas fa-compact-disc"></i></div>
+                        <div class="view-value">${formatNumber(totalAlbumViews)}</div>
+                        <div class="view-label">Albums</div>
+                        <div class="view-sub">${albums.length} total</div>
+                    </div>
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/eps.html'">
+                        <div class="view-icon"><i class="fas fa-play-circle"></i></div>
+                        <div class="view-value">${formatNumber(totalEPViews)}</div>
+                        <div class="view-label">EPs</div>
+                        <div class="view-sub">${eps.length} total</div>
+                    </div>
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/artists.html'">
+                        <div class="view-icon"><i class="fas fa-microphone"></i></div>
+                        <div class="view-value">${formatNumber(totalArtistViews)}</div>
+                        <div class="view-label">Artists</div>
+                        <div class="view-sub">${artists.length} total</div>
+                    </div>
+                    <div class="view-card" onclick="window.location.href='/admin/analytics/playlists.html'">
+                        <div class="view-icon"><i class="fas fa-list"></i></div>
+                        <div class="view-value">${formatNumber(totalPlaylistViews)}</div>
+                        <div class="view-label">Playlists</div>
+                        <div class="view-sub">${playlists.length} total</div>
+                    </div>
+                </div>
+                
+                <div class="section-header">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Top 10 Most Viewed Content</h3>
+                </div>
+                ${topContent.length > 0 ? `
+                    <div class="top-content-list">
+                        ${topContent.map((item, index) => {
+                            let typeIcon = '';
+                            let typeClass = '';
+                            switch(item.type) {
+                                case 'track':
+                                    typeIcon = '<i class="fas fa-music"></i>';
+                                    typeClass = 'track';
+                                    break;
+                                case 'album':
+                                    typeIcon = '<i class="fas fa-compact-disc"></i>';
+                                    typeClass = 'album';
+                                    break;
+                                case 'ep':
+                                    typeIcon = '<i class="fas fa-play-circle"></i>';
+                                    typeClass = 'ep';
+                                    break;
+                                case 'artist':
+                                    typeIcon = '<i class="fas fa-microphone"></i>';
+                                    typeClass = 'artist';
+                                    break;
+                                case 'playlist':
+                                    typeIcon = '<i class="fas fa-list"></i>';
+                                    typeClass = 'playlist';
+                                    break;
+                            }
+                            return `
+                                <div class="top-content-item">
+                                    <div class="top-content-rank">#${index + 1}</div>
+                                    <div class="top-content-info">
+                                        <div class="top-content-title">${escapeHtml(item.title)}</div>
+                                        <div class="top-content-meta">
+                                            <span class="content-type-badge ${typeClass}">${typeIcon} ${item.type.toUpperCase()}</span>
+                                            <div class="top-content-subtitle">
+                                                <i class="fas ${item.type === 'artist' ? 'fa-globe' : 'fa-user'}"></i>
+                                                ${escapeHtml(item.subtitle)}
+                                            </div>
+                                        </div>
+                                        <div class="top-content-views">
+                                            <i class="fas fa-eye"></i> ${formatNumber(item.views)} views
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                ` : `
                     <div class="empty-state">
                         <i class="fas fa-chart-line"></i>
-                        <h3>No Content Found</h3>
-                        <p>Try adjusting your filters</p>
+                        <h3>No Data Available</h3>
+                        <p>Upload content to see analytics</p>
                     </div>
-                `;
-                tableContainer.innerHTML = emptyHtml;
-                mobileContainer.innerHTML = '';
-                document.getElementById('pagination').innerHTML = '';
-                return;
-            }
-            
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageContent = filteredContent.slice(start, end);
-            
-            renderDesktopTable(tableContainer, pageContent);
-            renderMobileCards(mobileContainer, pageContent);
-            renderPagination();
-        }
-
-        function renderDesktopTable(container, content) {
-            let html = `
-                <div class="analytics-table-container">
-                    <table class="analytics-table">
-                        <thead>
-                            <tr>
-                                <th>Content</th>
-                                <th>Type</th>
-                                <th>Artist / Info</th>
-                                <th>Views</th>
-                            </thead>
-                        <tbody>
+                `}
             `;
             
-            content.forEach(item => {
-                const badgeClass = `content-type-badge ${item.badgeClass}`;
-                html += `
-                    <tr>
-                        <td>
-                            <div class="content-info">
-                                <div class="content-thumb">
-                                    ${item.thumb ? `<img src="${item.thumb}" alt="${escapeHtml(item.title)}">` : `<i class="fas ${item.badgeIcon}"></i>`}
-                                </div>
-                                <div class="content-details">
-                                    <h4>${escapeHtml(item.title)}</h4>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="${badgeClass}"><i class="fas ${item.badgeIcon}"></i> ${item.typeLabel}</span></td>
-                        <td>${escapeHtml(item.subtitle)}</td>
-                        <td><i class="fas fa-eye"></i> ${formatNumber(item.views)}</td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody>  </table> </div>';
-            container.innerHTML = html;
+            document.getElementById('analyticsContent').innerHTML = html;
         }
-
-        function renderMobileCards(container, content) {
-            let html = '';
-            
-            content.forEach(item => {
-                const badgeClass = `content-type-badge ${item.badgeClass}`;
-                html += `
-                    <div class="analytics-mobile-card">
-                        <div class="analytics-mobile-header">
-                            <div class="analytics-mobile-thumb">
-                                ${item.thumb ? `<img src="${item.thumb}" alt="${escapeHtml(item.title)}">` : `<i class="fas ${item.badgeIcon}"></i>`}
-                            </div>
-                            <div class="analytics-mobile-info">
-                                <div class="analytics-mobile-title">${escapeHtml(item.title)}</div>
-                                <div class="analytics-mobile-subtitle">
-                                    <i class="fas ${item.type === 'artist' ? 'fa-globe' : 'fa-user'}"></i>
-                                    ${escapeHtml(item.subtitle)}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="analytics-mobile-details">
-                            <div class="analytics-mobile-stat">
-                                <span class="${badgeClass}"><i class="fas ${item.badgeIcon}"></i> ${item.typeLabel}</span>
-                            </div>
-                        </div>
-                        <div class="analytics-mobile-views">
-                            <i class="fas fa-eye"></i> ${formatNumber(item.views)} views
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
-
-        function renderPagination() {
-            const totalPages = Math.ceil(filteredContent.length / itemsPerPage);
-            if (totalPages <= 1) {
-                document.getElementById('pagination').innerHTML = '';
-                return;
-            }
-            
-            let html = '';
-            for (let i = 1; i <= totalPages; i++) {
-                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-            }
-            document.getElementById('pagination').innerHTML = html;
-        }
-
-        window.goToPage = (page) => {
-            currentPage = page;
-            renderAnalytics();
-        };
-
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('typeFilter').addEventListener('change', applyFilters);
-        document.getElementById('sortFilter').addEventListener('change', applyFilters);
-
+        
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
                 loadAnalyticsData();
