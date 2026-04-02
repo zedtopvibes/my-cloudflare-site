@@ -31,11 +31,11 @@ export async function onRequest(context) {
     const offset = (page - 1) * limit;
     
     // Build WHERE clause for search
-    let whereConditions = ['a.deleted_at IS NULL'];
+    let whereConditions = ['deleted_at IS NULL'];
     let params = [];
     
     if (search) {
-      whereConditions.push('(a.name LIKE ? OR a.country LIKE ?)');
+      whereConditions.push('(name LIKE ? OR country LIKE ?)');
       params.push(`%${search}%`, `%${search}%`);
     }
     
@@ -45,13 +45,13 @@ export async function onRequest(context) {
     let orderBy = '';
     switch(sort) {
       case 'views-asc':
-        orderBy = 'ORDER BY a.views ASC';
+        orderBy = 'ORDER BY views ASC';
         break;
       case 'name-asc':
-        orderBy = 'ORDER BY a.name ASC';
+        orderBy = 'ORDER BY name ASC';
         break;
       case 'name-desc':
-        orderBy = 'ORDER BY a.name DESC';
+        orderBy = 'ORDER BY name DESC';
         break;
       case 'tracks-desc':
         orderBy = 'ORDER BY track_count DESC';
@@ -60,22 +60,21 @@ export async function onRequest(context) {
         orderBy = 'ORDER BY track_count ASC';
         break;
       default:
-        orderBy = 'ORDER BY a.views DESC';
+        orderBy = 'ORDER BY views DESC';
     }
     
     // Get total count for pagination
-    const countQuery = `SELECT COUNT(*) as total FROM artists a WHERE ${whereClause}`;
+    const countQuery = `SELECT COUNT(*) as total FROM artists WHERE ${whereClause}`;
     const countResult = await env.DB.prepare(countQuery).bind(...params).first();
     const total = countResult.total;
     
-    // Get paginated artists with counts
+    // Get paginated artists with counts using subqueries
     const artistsQuery = `
       SELECT 
         a.id,
         a.name,
         a.country,
         a.image_url,
-        a.photo_url,
         a.views,
         a.status,
         a.is_featured,
@@ -123,7 +122,6 @@ export async function onRequest(context) {
       name: artist.name,
       country: artist.country || 'Unknown',
       image_url: artist.image_url,
-      photo_url: artist.photo_url,
       views: artist.views || 0,
       status: artist.status || 'draft',
       is_featured: artist.is_featured === 1,
