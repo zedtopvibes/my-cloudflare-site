@@ -654,6 +654,25 @@
                 if (!response.ok) throw new Error('Failed to load artists');
                 
                 artists = await response.json();
+                
+                // Calculate track, album, and EP counts for each artist
+                for (let artist of artists) {
+                    // Fetch tracks for this artist
+                    const tracksResponse = await fetch(`${API_BASE}/admin/tracks?artist_id=${artist.id}`);
+                    const tracks = await tracksResponse.json();
+                    artist.track_count = tracks.length || 0;
+                    
+                    // Fetch albums for this artist
+                    const albumsResponse = await fetch(`${API_BASE}/admin/albums?artist_id=${artist.id}`);
+                    const albums = await albumsResponse.json();
+                    artist.album_count = albums.length || 0;
+                    
+                    // Fetch EPs for this artist
+                    const epsResponse = await fetch(`${API_BASE}/admin/eps?artist_id=${artist.id}`);
+                    const eps = await epsResponse.json();
+                    artist.ep_count = eps.length || 0;
+                }
+                
                 filteredArtists = [...artists];
                 
                 // Default sort by most views
