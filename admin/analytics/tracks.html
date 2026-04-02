@@ -793,9 +793,14 @@
             
             document.getElementById('analyticsContent').innerHTML = html;
             
-            document.getElementById('searchInput').addEventListener('input', applyFilters);
-            document.getElementById('statusFilter').addEventListener('change', applyFilters);
-            document.getElementById('sortFilter').addEventListener('change', applyFilters);
+            // Add event listeners
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const sortFilter = document.getElementById('sortFilter');
+            
+            if (searchInput) searchInput.addEventListener('input', applyFilters);
+            if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+            if (sortFilter) sortFilter.addEventListener('change', applyFilters);
             
             renderTracksList();
         }
