@@ -165,7 +165,6 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid - Mobile first 2 columns, tablet 2 columns, desktop 3 columns */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -218,7 +217,6 @@
             color: white !important;
         }
         
-        /* Search & Filter Section */
         .search-section {
             margin-bottom: 20px;
         }
@@ -264,7 +262,6 @@
             font-family: 'Montserrat', sans-serif;
         }
         
-        /* Track Cards - Mobile first grid */
         .tracks-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -380,7 +377,6 @@
             color: #856404;
         }
         
-        /* Loading & Empty States */
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -412,7 +408,6 @@
             color: var(--primary-dark);
         }
         
-        /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
@@ -445,7 +440,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Skeleton Loader */
         .skeleton {
             background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
             background-size: 200% 100%;
@@ -475,18 +469,12 @@
             margin-bottom: 20px;
         }
         
-        .skeleton-card {
-            height: 200px;
-            border-radius: 12px;
-        }
-        
         .skeleton-row {
             height: 200px;
             margin-bottom: 12px;
             border-radius: 12px;
         }
         
-        /* Footer */
         .admin-footer {
             background: var(--white);
             border-radius: 12px;
@@ -507,7 +495,6 @@
             text-decoration: underline;
         }
         
-        /* Tablet Styles */
         @media (min-width: 768px) {
             .admin-container {
                 padding: 15px;
@@ -542,7 +529,6 @@
             }
         }
         
-        /* Desktop Styles */
         @media (min-width: 1024px) {
             .admin-container {
                 padding: 20px;
@@ -588,21 +574,13 @@
         </div>
         
         <div class="admin-content" id="analyticsContent">
-            <!-- Skeleton Loader -->
-            <div class="content-header">
-                <h2><i class="fas fa-music"></i> <span class="skeleton" style="width: 200px; height: 28px; display: inline-block;"></span></h2>
-                <p><span class="skeleton" style="width: 280px; height: 16px; display: inline-block;"></span></p>
-            </div>
-            
             <div class="skeleton-stats-grid">
                 <div class="skeleton-stat-card skeleton"></div>
                 <div class="skeleton-stat-card skeleton"></div>
                 <div class="skeleton-stat-card skeleton"></div>
                 <div class="skeleton-stat-card skeleton"></div>
             </div>
-            
             <div class="skeleton-search skeleton"></div>
-            
             <div class="tracks-grid">
                 <div class="skeleton-row skeleton"></div>
                 <div class="skeleton-row skeleton"></div>
@@ -683,7 +661,7 @@
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
                         <h3>Failed to Load Tracks</h3>
                         <p style="margin: 12px 0;">${error.message}</p>
-                        <button onclick="loadTracks()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
+                        <button onclick="loadTracks()" class="btn btn-primary" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; padding: 10px 20px; border-radius: 8px;">Try Again</button>
                     </div>
                     <div class="admin-footer">
                         <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
@@ -793,14 +771,14 @@
             
             document.getElementById('analyticsContent').innerHTML = html;
             
-            // Add event listeners
+            // Add event listeners after HTML is rendered (same as EP Analytics)
             const searchInput = document.getElementById('searchInput');
-            const statusFilter = document.getElementById('statusFilter');
-            const sortFilter = document.getElementById('sortFilter');
+            const statusFilterEl = document.getElementById('statusFilter');
+            const sortFilterEl = document.getElementById('sortFilter');
             
             if (searchInput) searchInput.addEventListener('input', applyFilters);
-            if (statusFilter) statusFilter.addEventListener('change', applyFilters);
-            if (sortFilter) sortFilter.addEventListener('change', applyFilters);
+            if (statusFilterEl) statusFilterEl.addEventListener('change', applyFilters);
+            if (sortFilterEl) sortFilterEl.addEventListener('change', applyFilters);
             
             renderTracksList();
         }
