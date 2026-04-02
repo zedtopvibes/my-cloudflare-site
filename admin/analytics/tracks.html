@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Analytics - Admin | ZEDTOPVIBES</title>
+    <title>Track Analytics - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -165,10 +165,10 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid - Mobile First */
+        /* Stats Grid - Mobile first 2 columns, tablet 2 columns, desktop 3 columns */
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 30px;
         }
@@ -218,84 +218,60 @@
             color: white !important;
         }
         
-        /* Section Header */
-        .section-header {
+        /* Search & Filter Section */
+        .search-section {
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(31, 111, 159, 0.2);
+            background: var(--light-gray);
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
         }
         
-        .section-header h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .section-header i {
+        .search-box i {
             color: var(--primary-blue);
-            font-size: 1rem;
+            margin-right: 10px;
         }
         
-        /* Views by Type Grid - Mobile First Grid (2 columns mobile, 5 columns desktop) */
-        .views-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
+        .search-box input {
+            border: none;
+            background: transparent;
+            padding: 5px 0;
+            width: 100%;
+            outline: none;
+            font-size: 0.9rem;
         }
         
-        .view-card {
-            background: var(--white);
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .view-card:hover {
-            border-color: var(--primary-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.1);
-        }
-        
-        .view-card .view-icon {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-        
-        .view-card .view-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        
-        .view-card .view-label {
-            font-size: 0.7rem;
-            color: var(--gray);
-            margin-top: 4px;
-        }
-        
-        .view-card .view-sub {
-            font-size: 0.65rem;
-            color: #999;
-            margin-top: 2px;
-        }
-        
-        /* Top Content Cards - Mobile First (no table) */
-        .top-content-list {
+        .filter-row {
             display: flex;
-            flex-direction: column;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: var(--white);
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Track Cards - Mobile first grid */
+        .tracks-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
         }
         
-        .top-content-item {
+        .track-card {
             background: var(--light-gray);
             border-radius: 12px;
             padding: 15px;
@@ -303,12 +279,12 @@
             transition: all 0.3s ease;
         }
         
-        .top-content-item:hover {
+        .track-card:hover {
             border-color: var(--primary-blue);
             transform: translateX(5px);
         }
         
-        .top-content-rank {
+        .track-rank {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -322,11 +298,7 @@
             margin-bottom: 12px;
         }
         
-        .top-content-info {
-            flex: 1;
-        }
-        
-        .top-content-title {
+        .track-title {
             font-size: 1rem;
             font-weight: 600;
             color: var(--primary-dark);
@@ -334,15 +306,61 @@
             word-break: break-word;
         }
         
-        .top-content-meta {
+        .track-artist {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 8px;
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 5px;
+            flex-wrap: wrap;
         }
         
-        .content-type-badge {
+        .track-artist i {
+            color: var(--primary-blue);
+            font-size: 0.7rem;
+            width: 16px;
+        }
+        
+        .track-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .track-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .track-meta-item i {
+            color: var(--primary-blue);
+            font-size: 0.7rem;
+        }
+        
+        .track-views {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        
+        .track-views i {
+            font-size: 0.8rem;
+        }
+        
+        .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
@@ -352,61 +370,14 @@
             font-weight: 600;
         }
         
-        .content-type-badge.track {
-            background: #e3f2fd;
-            color: #1976d2;
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
         }
         
-        .content-type-badge.album {
-            background: #f3e5f5;
-            color: #7b1fa2;
-        }
-        
-        .content-type-badge.ep {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-        
-        .content-type-badge.artist {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .content-type-badge.playlist {
-            background: #fce4ec;
-            color: #c2185b;
-        }
-        
-        .top-content-subtitle {
-            font-size: 0.75rem;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        
-        .top-content-subtitle i {
-            color: var(--primary-blue);
-            font-size: 0.7rem;
-            width: 16px;
-        }
-        
-        .top-content-views {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--primary-blue);
-            margin-top: 10px;
-        }
-        
-        .top-content-views i {
-            font-size: 0.7rem;
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
         }
         
         /* Loading & Empty States */
@@ -441,6 +412,39 @@
             color: var(--primary-dark);
         }
         
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .page-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .page-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
         /* Skeleton Loader */
         .skeleton {
             background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
@@ -456,7 +460,7 @@
         
         .skeleton-stats-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 30px;
         }
@@ -466,49 +470,20 @@
             border-radius: 12px;
         }
         
-        .skeleton-views-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 30px;
+        .skeleton-search {
+            height: 50px;
+            margin-bottom: 20px;
         }
         
-        .skeleton-view-card {
-            height: 120px;
+        .skeleton-card {
+            height: 200px;
             border-radius: 12px;
         }
         
-        .skeleton-top-item {
-            height: 140px;
-            border-radius: 12px;
+        .skeleton-row {
+            height: 200px;
             margin-bottom: 12px;
-        }
-        
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
-        .toast.info { background: var(--primary-blue); }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            border-radius: 12px;
         }
         
         /* Footer */
@@ -533,7 +508,7 @@
         }
         
         /* Tablet Styles */
-        @media (min-width: 600px) {
+        @media (min-width: 768px) {
             .admin-container {
                 padding: 15px;
             }
@@ -546,8 +521,24 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .skeleton-views-grid {
-                grid-template-columns: repeat(3, 1fr);
+            .search-section {
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            
+            .search-box {
+                flex: 2;
+                margin-bottom: 0;
+            }
+            
+            .filter-row {
+                flex: 1;
+            }
+            
+            .tracks-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
         
@@ -558,39 +549,11 @@
             }
             
             .stats-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-            
-            .stats-grid .stat-card:first-child {
-                grid-column: span 1;
+                grid-template-columns: repeat(3, 1fr);
             }
             
             .skeleton-stats-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-            
-            .views-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-            
-            .skeleton-views-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-            
-            .top-content-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-            
-            .skeleton-top-item {
-                height: 140px;
-            }
-        }
-        
-        @media (min-width: 1200px) {
-            .top-content-list {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
         }
     </style>
@@ -599,7 +562,7 @@
     <div class="admin-container">
         <div class="admin-header">
             <div class="header-top">
-                <h1><i class="fas fa-chart-line"></i> Analytics</h1>
+                <h1><i class="fas fa-chart-line"></i> Track Analytics</h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
@@ -614,7 +577,12 @@
                 <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
-                <a href="/admin/analytics/index.html" class="tab-btn active"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/analytics/tracks.html" class="tab-btn active"><i class="fas fa-music"></i> Tracks</a>
+                <a href="/admin/analytics/albums.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/analytics/eps.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/analytics/artists.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/analytics/playlists.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
@@ -622,34 +590,23 @@
         <div class="admin-content" id="analyticsContent">
             <!-- Skeleton Loader -->
             <div class="content-header">
-                <h2><i class="fas fa-chart-line"></i> <span class="skeleton" style="width: 180px; height: 28px; display: inline-block;"></span></h2>
+                <h2><i class="fas fa-music"></i> <span class="skeleton" style="width: 200px; height: 28px; display: inline-block;"></span></h2>
                 <p><span class="skeleton" style="width: 280px; height: 16px; display: inline-block;"></span></p>
             </div>
             
             <div class="skeleton-stats-grid">
                 <div class="skeleton-stat-card skeleton"></div>
+                <div class="skeleton-stat-card skeleton"></div>
+                <div class="skeleton-stat-card skeleton"></div>
+                <div class="skeleton-stat-card skeleton"></div>
             </div>
             
-            <div class="section-header">
-                <i class="fas fa-chart-bar"></i>
-                <h3>Views by Content Type</h3>
-            </div>
-            <div class="skeleton-views-grid">
-                <div class="skeleton-view-card skeleton"></div>
-                <div class="skeleton-view-card skeleton"></div>
-                <div class="skeleton-view-card skeleton"></div>
-                <div class="skeleton-view-card skeleton"></div>
-                <div class="skeleton-view-card skeleton"></div>
-            </div>
+            <div class="skeleton-search skeleton"></div>
             
-            <div class="section-header">
-                <i class="fas fa-trophy"></i>
-                <h3>Top 10 Most Viewed Content</h3>
-            </div>
-            <div id="topContentSkeleton">
-                <div class="skeleton-top-item skeleton"></div>
-                <div class="skeleton-top-item skeleton"></div>
-                <div class="skeleton-top-item skeleton"></div>
+            <div class="tracks-grid">
+                <div class="skeleton-row skeleton"></div>
+                <div class="skeleton-row skeleton"></div>
+                <div class="skeleton-row skeleton"></div>
             </div>
         </div>
         
@@ -662,10 +619,9 @@
         const API_BASE = '/api';
         
         let tracks = [];
-        let albums = [];
-        let eps = [];
-        let artists = [];
-        let playlists = [];
+        let filteredTracks = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
         
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
@@ -692,40 +648,42 @@
             return num.toString();
         }
         
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
         
-        async function loadAnalyticsData() {
+        function getArtistName(track) {
+            if (track.artists && track.artists.length > 0) {
+                const primary = track.artists.find(a => a.is_primary === 1) || track.artists[0];
+                return primary.name;
+            }
+            return track.artist_name || track.artist || 'Unknown Artist';
+        }
+        
+        async function loadTracks() {
             try {
-                const [tracksRes, albumsRes, epsRes, artistsRes, playlistsRes] = await Promise.all([
-                    fetch(`${API_BASE}/admin/tracks`),
-                    fetch(`${API_BASE}/admin/albums`),
-                    fetch(`${API_BASE}/admin/eps`),
-                    fetch(`${API_BASE}/admin/artists`),
-                    fetch(`${API_BASE}/admin/playlists`)
-                ]);
+                const response = await fetch(`${API_BASE}/admin/tracks`);
+                if (!response.ok) throw new Error('Failed to load tracks');
                 
-                tracks = await tracksRes.json();
-                albums = await albumsRes.json();
-                eps = await epsRes.json();
-                artists = await artistsRes.json();
-                playlists = await playlistsRes.json();
+                tracks = await response.json();
+                filteredTracks = [...tracks];
+                
+                // Default sort by most views
+                filteredTracks.sort((a, b) => (b.views || 0) - (a.views || 0));
                 
                 renderAnalytics();
                 
             } catch (error) {
-                console.error('Error loading analytics:', error);
+                console.error('Error loading tracks:', error);
                 document.getElementById('analyticsContent').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
-                        <h3>Failed to Load Analytics</h3>
+                        <h3>Failed to Load Tracks</h3>
                         <p style="margin: 12px 0;">${error.message}</p>
-                        <button onclick="loadAnalyticsData()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
+                        <button onclick="loadTracks()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
                     </div>
                     <div class="admin-footer">
                         <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
@@ -734,180 +692,200 @@
             }
         }
         
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+            const sortBy = document.getElementById('sortFilter')?.value || 'views-desc';
+            
+            filteredTracks = tracks.filter(track => {
+                const titleMatch = track.title?.toLowerCase().includes(searchTerm);
+                const artistMatch = getArtistName(track).toLowerCase().includes(searchTerm);
+                const matchesSearch = !searchTerm || titleMatch || artistMatch;
+                const matchesStatus = statusFilter === 'all' || track.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            });
+            
+            // Apply sort
+            if (sortBy === 'views-desc') {
+                filteredTracks.sort((a, b) => (b.views || 0) - (a.views || 0));
+            } else if (sortBy === 'views-asc') {
+                filteredTracks.sort((a, b) => (a.views || 0) - (b.views || 0));
+            } else if (sortBy === 'title-asc') {
+                filteredTracks.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+            } else if (sortBy === 'title-desc') {
+                filteredTracks.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+            } else if (sortBy === 'duration-asc') {
+                filteredTracks.sort((a, b) => (a.duration || 0) - (b.duration || 0));
+            } else if (sortBy === 'duration-desc') {
+                filteredTracks.sort((a, b) => (b.duration || 0) - (a.duration || 0));
+            }
+            
+            currentPage = 1;
+            renderTracksList();
+        }
+        
         function renderAnalytics() {
-            const totalTrackViews = tracks.reduce((sum, t) => sum + (t.views || 0), 0);
-            const totalAlbumViews = albums.reduce((sum, a) => sum + (a.views || 0), 0);
-            const totalEPViews = eps.reduce((sum, e) => sum + (e.views || 0), 0);
-            const totalArtistViews = artists.reduce((sum, a) => sum + (a.views || 0), 0);
-            const totalPlaylistViews = playlists.reduce((sum, p) => sum + (p.views || 0), 0);
-            const totalViews = totalTrackViews + totalAlbumViews + totalEPViews + totalArtistViews + totalPlaylistViews;
-            
-            const allContent = [];
-            
-            tracks.forEach(track => {
-                allContent.push({
-                    id: track.id,
-                    title: track.title,
-                    type: 'track',
-                    views: track.views || 0,
-                    subtitle: track.artist_name || track.artist || 'Unknown Artist'
-                });
-            });
-            
-            albums.forEach(album => {
-                allContent.push({
-                    id: album.id,
-                    title: album.title,
-                    type: 'album',
-                    views: album.views || 0,
-                    subtitle: album.artist_name || album.artist || 'Unknown Artist'
-                });
-            });
-            
-            eps.forEach(ep => {
-                allContent.push({
-                    id: ep.id,
-                    title: ep.title,
-                    type: 'ep',
-                    views: ep.views || 0,
-                    subtitle: ep.artist_name || ep.artist || 'Unknown Artist'
-                });
-            });
-            
-            artists.forEach(artist => {
-                allContent.push({
-                    id: artist.id,
-                    title: artist.name,
-                    type: 'artist',
-                    views: artist.views || 0,
-                    subtitle: artist.country || 'Artist'
-                });
-            });
-            
-            playlists.forEach(playlist => {
-                allContent.push({
-                    id: playlist.id,
-                    title: playlist.name,
-                    type: 'playlist',
-                    views: playlist.views || 0,
-                    subtitle: playlist.track_count ? `${playlist.track_count} tracks` : 'Playlist'
-                });
-            });
-            
-            const topContent = allContent.sort((a, b) => b.views - a.views).slice(0, 10);
+            const totalViews = tracks.reduce((sum, t) => sum + (t.views || 0), 0);
+            const totalTracks = tracks.length;
+            const publishedTracks = tracks.filter(t => t.status === 'published').length;
+            const avgViews = totalTracks > 0 ? Math.round(totalViews / totalTracks) : 0;
             
             const html = `
                 <div class="content-header">
-                    <h2><i class="fas fa-chart-line"></i> Views Analytics</h2>
-                    <p>Comprehensive view statistics across all content types</p>
+                    <h2><i class="fas fa-music"></i> Track Views Analytics</h2>
+                    <p>Detailed view statistics for all tracks</p>
                 </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card primary-gradient">
                         <div class="stat-icon"><i class="fas fa-eye"></i></div>
                         <div class="stat-value">${formatNumber(totalViews)}</div>
-                        <div class="stat-label">Total Views</div>
+                        <div class="stat-label">Total Track Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-music"></i></div>
+                        <div class="stat-value">${totalTracks}</div>
+                        <div class="stat-label">Total Tracks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                        <div class="stat-value">${publishedTracks}</div>
+                        <div class="stat-label">Published Tracks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-value">${formatNumber(avgViews)}</div>
+                        <div class="stat-label">Avg Views per Track</div>
                     </div>
                 </div>
                 
-                <div class="section-header">
-                    <i class="fas fa-chart-bar"></i>
-                    <h3>Views by Content Type</h3>
-                </div>
-                <div class="views-grid">
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/tracks.html'">
-                        <div class="view-icon"><i class="fas fa-music"></i></div>
-                        <div class="view-value">${formatNumber(totalTrackViews)}</div>
-                        <div class="view-label">Tracks</div>
-                        <div class="view-sub">${tracks.length} total</div>
+                <div class="search-section">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by title or artist...">
                     </div>
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/albums.html'">
-                        <div class="view-icon"><i class="fas fa-compact-disc"></i></div>
-                        <div class="view-value">${formatNumber(totalAlbumViews)}</div>
-                        <div class="view-label">Albums</div>
-                        <div class="view-sub">${albums.length} total</div>
-                    </div>
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/eps.html'">
-                        <div class="view-icon"><i class="fas fa-play-circle"></i></div>
-                        <div class="view-value">${formatNumber(totalEPViews)}</div>
-                        <div class="view-label">EPs</div>
-                        <div class="view-sub">${eps.length} total</div>
-                    </div>
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/artists.html'">
-                        <div class="view-icon"><i class="fas fa-microphone"></i></div>
-                        <div class="view-value">${formatNumber(totalArtistViews)}</div>
-                        <div class="view-label">Artists</div>
-                        <div class="view-sub">${artists.length} total</div>
-                    </div>
-                    <div class="view-card" onclick="window.location.href='/admin/analytics/playlists.html'">
-                        <div class="view-icon"><i class="fas fa-list"></i></div>
-                        <div class="view-value">${formatNumber(totalPlaylistViews)}</div>
-                        <div class="view-label">Playlists</div>
-                        <div class="view-sub">${playlists.length} total</div>
+                    <div class="filter-row">
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">All Status</option>
+                            <option value="published">Published</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                        <select id="sortFilter" class="filter-select">
+                            <option value="views-desc">Most Views</option>
+                            <option value="views-asc">Least Views</option>
+                            <option value="title-asc">Title A-Z</option>
+                            <option value="title-desc">Title Z-A</option>
+                            <option value="duration-desc">Longest</option>
+                            <option value="duration-asc">Shortest</option>
+                        </select>
                     </div>
                 </div>
                 
-                <div class="section-header">
-                    <i class="fas fa-trophy"></i>
-                    <h3>Top 10 Most Viewed Content</h3>
+                <div id="tracksContainer">
+                    <div class="loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <div>Loading tracks...</div>
+                    </div>
                 </div>
-                ${topContent.length > 0 ? `
-                    <div class="top-content-list">
-                        ${topContent.map((item, index) => {
-                            let typeIcon = '';
-                            let typeClass = '';
-                            switch(item.type) {
-                                case 'track':
-                                    typeIcon = '<i class="fas fa-music"></i>';
-                                    typeClass = 'track';
-                                    break;
-                                case 'album':
-                                    typeIcon = '<i class="fas fa-compact-disc"></i>';
-                                    typeClass = 'album';
-                                    break;
-                                case 'ep':
-                                    typeIcon = '<i class="fas fa-play-circle"></i>';
-                                    typeClass = 'ep';
-                                    break;
-                                case 'artist':
-                                    typeIcon = '<i class="fas fa-microphone"></i>';
-                                    typeClass = 'artist';
-                                    break;
-                                case 'playlist':
-                                    typeIcon = '<i class="fas fa-list"></i>';
-                                    typeClass = 'playlist';
-                                    break;
-                            }
-                            return `
-                                <div class="top-content-item">
-                                    <div class="top-content-rank">#${index + 1}</div>
-                                    <div class="top-content-info">
-                                        <div class="top-content-title">${escapeHtml(item.title)}</div>
-                                        <div class="top-content-meta">
-                                            <span class="content-type-badge ${typeClass}">${typeIcon} ${item.type.toUpperCase()}</span>
-                                            <div class="top-content-subtitle">
-                                                <i class="fas ${item.type === 'artist' ? 'fa-globe' : 'fa-user'}"></i>
-                                                ${escapeHtml(item.subtitle)}
-                                            </div>
-                                        </div>
-                                        <div class="top-content-views">
-                                            <i class="fas fa-eye"></i> ${formatNumber(item.views)} views
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                ` : `
-                    <div class="empty-state">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>No Data Available</h3>
-                        <p>Upload content to see analytics</p>
-                    </div>
-                `}
+                
+                <div id="pagination" class="pagination"></div>
             `;
             
             document.getElementById('analyticsContent').innerHTML = html;
+            
+            // Add event listeners
+            const searchInput = document.getElementById('searchInput');
+            const statusFilter = document.getElementById('statusFilter');
+            const sortFilter = document.getElementById('sortFilter');
+            
+            if (searchInput) searchInput.addEventListener('input', applyFilters);
+            if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+            if (sortFilter) sortFilter.addEventListener('change', applyFilters);
+            
+            renderTracksList();
+        }
+        
+        function renderTracksList() {
+            const container = document.getElementById('tracksContainer');
+            const paginationContainer = document.getElementById('pagination');
+            
+            if (filteredTracks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-music"></i>
+                        <h3>No Tracks Found</h3>
+                        <p>Try adjusting your search or filters</p>
+                    </div>
+                `;
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageTracks = filteredTracks.slice(start, end);
+            const totalPages = Math.ceil(filteredTracks.length / itemsPerPage);
+            
+            let tracksHtml = '<div class="tracks-grid">';
+            
+            pageTracks.forEach((track, index) => {
+                const globalRank = start + index + 1;
+                const views = track.views || 0;
+                const artistName = getArtistName(track);
+                const statusClass = track.status === 'published' ? 'published' : 'draft';
+                const statusIcon = track.status === 'published' ? 'fa-globe' : 'fa-pencil-alt';
+                const statusText = track.status === 'published' ? 'Published' : 'Draft';
+                
+                tracksHtml += `
+                    <div class="track-card">
+                        <div class="track-rank">#${globalRank}</div>
+                        <div class="track-title">${escapeHtml(track.title || 'Untitled')}</div>
+                        <div class="track-artist">
+                            <i class="fas fa-user"></i>
+                            ${escapeHtml(artistName)}
+                        </div>
+                        <div class="track-meta">
+                            <div class="track-meta-item">
+                                <i class="fas fa-clock"></i>
+                                ${formatDuration(track.duration)}
+                            </div>
+                            <div class="track-meta-item">
+                                <i class="fas fa-tag"></i>
+                                ${escapeHtml(track.genre) || 'No Genre'}
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div class="track-views">
+                                <i class="fas fa-eye"></i>
+                                ${formatNumber(views)} views
+                            </div>
+                            <span class="status-badge ${statusClass}">
+                                <i class="fas ${statusIcon}"></i>
+                                ${statusText}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            tracksHtml += '</div>';
+            container.innerHTML = tracksHtml;
+            
+            if (totalPages > 1) {
+                let paginationHtml = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                }
+                paginationContainer.innerHTML = paginationHtml;
+            } else {
+                paginationContainer.innerHTML = '';
+            }
+        }
+        
+        function goToPage(page) {
+            currentPage = page;
+            renderTracksList();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
         function escapeHtml(text) {
@@ -919,7 +897,7 @@
         
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
-                loadAnalyticsData();
+                loadTracks();
             }
         });
     </script>
