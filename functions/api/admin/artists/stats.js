@@ -56,13 +56,14 @@ export async function onRequest(context) {
     `).first();
     
     // Get individual artists with their track, album, and EP counts
+    // Using only columns that exist in your database
     const artists = await env.DB.prepare(`
       SELECT 
         a.id,
         a.name,
         a.slug,
         a.country,
-        a.photo_url,
+        a.image_url,
         a.views,
         a.status,
         a.is_featured,
@@ -114,7 +115,7 @@ export async function onRequest(context) {
           name: artist.name,
           slug: artist.slug,
           country: artist.country || 'Unknown',
-          photo_url: artist.photo_url,
+          image_url: artist.image_url,
           views: artist.views || 0,
           status: artist.status || 'draft',
           is_featured: artist.is_featured === 1,
