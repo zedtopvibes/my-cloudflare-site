@@ -218,7 +218,7 @@
             margin-top: 12px;
         }
         
-        /* Stats Grid */
+        /* Stats Grid - 4 cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -231,8 +231,17 @@
             border-right: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .stat-card:last-child {
+        .stat-card:nth-child(2) {
             border-right: none;
+        }
+        
+        .stat-card:nth-child(3) {
+            border-bottom: none;
+        }
+        
+        .stat-card:nth-child(4) {
+            border-right: none;
+            border-bottom: none;
         }
         
         .stat-value {
@@ -565,13 +574,15 @@
         .skeleton-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 0;
-            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .skeleton-stat {
             height: 80px;
             border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .skeleton-stat:last-child {
+            border-right: none;
         }
         
         .skeleton-track {
@@ -636,15 +647,16 @@
         /* Responsive */
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
-            .stats-grid { grid-template-columns: repeat(5, 1fr); }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
             .stat-card { padding: 20px; }
+            .stat-card:nth-child(2) { border-right: 1px solid rgba(31, 111, 159, 0.1); }
+            .stat-card:nth-child(4) { border-right: none; }
             .stat-value { font-size: 1.8rem; }
             .toast { left: auto; right: 20px; min-width: 300px; }
         }
         
         @media (max-width: 767px) {
             .album-name { font-size: 1.4rem; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .track-item { flex-wrap: wrap; }
             .track-stats { width: 100%; margin-left: 40px; margin-top: 8px; }
             .action-buttons { flex-direction: column; }
@@ -688,7 +700,6 @@
                     <div class="skeleton-text skeleton" style="width: 30%;"></div>
                 </div>
                 <div class="skeleton-stats">
-                    <div class="skeleton-stat skeleton"></div>
                     <div class="skeleton-stat skeleton"></div>
                     <div class="skeleton-stat skeleton"></div>
                     <div class="skeleton-stat skeleton"></div>
@@ -961,7 +972,7 @@
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${formatNumber(totalViews)}</div>
-                            <div class="stat-label">Views</div>
+                            <div class="stat-label">Track Views</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value">${formatNumber(album.views || 0)}</div>
@@ -970,10 +981,6 @@
                         <div class="stat-card">
                             <div class="stat-value">${formatDuration(totalDuration)}</div>
                             <div class="stat-label">Duration</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${formatNumber(album.downloads || 0)}</div>
-                            <div class="stat-label">Downloads</div>
                         </div>
                     </div>
                     
