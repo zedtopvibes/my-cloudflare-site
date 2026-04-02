@@ -2,118 +2,179 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Add Tracks - Album | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --primary: #1e3c72;
-            --primary-light: #2a4a8a;
-            --primary-soft: #e8f0fe;
-            --secondary: #00b4d8;
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --gray: #666;
+            --gray-light: #999;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
             --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --radius-sm: 6px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --skeleton-bg: #e2e8f0;
         }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
-            line-height: 1.5;
-            padding: 20px;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
-        .container {
-            max-width: 900px;
+        .admin-container {
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
-        .header {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
+        /* Header Styles */
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
-        .header h1 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--gray-800);
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .header h1 i {
-            color: var(--primary);
+        .user-info i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
         }
         
-        .back-btn {
-            padding: 6px 14px;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
-            color: var(--gray-700);
-            text-decoration: none;
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
             font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            border: 1px solid var(--gray-200);
+            text-decoration: none;
+            height: 36px;
         }
         
-        .back-btn:hover {
-            background: var(--gray-200);
+        .tab-btn i {
+            font-size: 0.85rem;
         }
         
-        /* Main Content */
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        /* Content Area */
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Content Card */
         .content-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
+            background: var(--white);
+            border-radius: 12px;
             overflow: hidden;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         /* Album Header */
         .album-header {
             padding: 20px;
-            background: linear-gradient(135deg, var(--primary-soft), white);
-            border-bottom: 1px solid var(--gray-200);
+            background: linear-gradient(135deg, var(--light-gray), var(--white));
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
             display: flex;
             align-items: center;
             gap: 16px;
+            flex-wrap: wrap;
         }
         
         .album-cover-small {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -125,19 +186,19 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: var(--radius-md);
+            border-radius: 8px;
         }
         
         .album-details h2 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--primary-dark);
             margin-bottom: 4px;
         }
         
         .album-artist {
-            font-size: 0.95rem;
-            color: var(--primary);
+            font-size: 0.85rem;
+            color: var(--primary-blue);
             font-weight: 500;
             margin-bottom: 4px;
         }
@@ -145,8 +206,8 @@
         .album-stats {
             display: flex;
             gap: 16px;
-            font-size: 0.85rem;
-            color: var(--gray-500);
+            font-size: 0.75rem;
+            color: var(--gray);
         }
         
         .album-stats span {
@@ -161,16 +222,16 @@
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            background: var(--gray-100);
+            background: var(--light-gray);
             border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--gray-700);
+            font-size: 0.75rem;
+            color: var(--gray);
             margin-right: 8px;
             margin-bottom: 8px;
         }
         
         .stats-badge i {
-            color: var(--primary);
+            color: var(--primary-blue);
         }
         
         .stats-badge.available i {
@@ -184,22 +245,21 @@
         /* Search Section */
         .search-section {
             padding: 20px;
-            border-bottom: 1px solid var(--gray-200);
-            background: white;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .search-box {
             display: flex;
             align-items: center;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
+            background: var(--light-gray);
+            border-radius: 8px;
             padding: 8px 16px;
-            border: 1px solid var(--gray-200);
+            border: 1px solid #ddd;
             width: 100%;
         }
         
         .search-box i {
-            color: var(--gray-400);
+            color: var(--gray-light);
             margin-right: 10px;
         }
         
@@ -209,53 +269,53 @@
             padding: 8px 0;
             width: 100%;
             outline: none;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
         }
         
         .filter-bar {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 12px;
             flex-wrap: wrap;
         }
         
         .filter-btn {
-            padding: 6px 14px;
-            background: var(--gray-100);
-            border: 1px solid var(--gray-200);
+            padding: 5px 12px;
+            background: var(--light-gray);
+            border: 1px solid #ddd;
             border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--gray-600);
+            font-size: 0.75rem;
+            color: var(--gray);
             cursor: pointer;
             transition: all 0.2s;
         }
         
         .filter-btn:hover {
             background: var(--primary-soft);
-            border-color: var(--primary);
-            color: var(--primary);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
         }
         
         .filter-btn.active {
-            background: var(--primary);
+            background: var(--primary-blue);
             color: white;
-            border-color: var(--primary);
+            border-color: var(--primary-blue);
         }
         
-        /* Artist badge styles */
+        /* Artist Badges */
         .artist-badge {
             display: inline-block;
             background: #e3f2fd;
-            color: var(--primary);
+            color: var(--primary-blue);
             padding: 2px 8px;
             border-radius: 12px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             margin: 2px;
             white-space: nowrap;
         }
         
         .artist-badge.primary {
-            background: var(--primary);
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -276,29 +336,29 @@
         .track-item {
             display: flex;
             align-items: center;
-            padding: 12px;
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            background: var(--light-gray);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            border-radius: 8px;
             margin-bottom: 8px;
             transition: all 0.2s;
         }
         
         .track-item:not(.disabled):hover {
             background: var(--primary-soft);
-            border-color: var(--primary);
+            border-color: var(--primary-blue);
             cursor: pointer;
         }
         
         .track-item.selected {
             background: var(--primary-soft);
-            border-color: var(--primary);
+            border-color: var(--primary-blue);
             border-width: 2px;
         }
         
         .track-item.disabled {
             opacity: 0.6;
-            background: var(--gray-100);
+            background: var(--light-gray);
             cursor: not-allowed;
         }
         
@@ -307,8 +367,8 @@
         }
         
         .track-checkbox input {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
         }
         
@@ -318,24 +378,25 @@
         }
         
         .track-cover {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-sm);
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1rem;
+            font-size: 0.9rem;
             margin-right: 12px;
             flex-shrink: 0;
+            overflow: hidden;
         }
         
         .track-cover img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: var(--radius-sm);
+            border-radius: 6px;
         }
         
         .track-info {
@@ -345,24 +406,25 @@
         
         .track-title {
             font-weight: 600;
-            color: var(--gray-800);
-            margin-bottom: 4px;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+            margin-bottom: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
         .track-artist {
-            font-size: 0.8rem;
-            color: var(--gray-500);
+            font-size: 0.7rem;
+            color: var(--gray);
         }
         
         .track-meta {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             margin-right: 12px;
-            font-size: 0.8rem;
-            color: var(--gray-500);
+            font-size: 0.7rem;
+            color: var(--gray);
             flex-shrink: 0;
         }
         
@@ -373,13 +435,13 @@
         }
         
         .track-meta i {
-            color: var(--primary);
-            font-size: 0.7rem;
+            color: var(--primary-blue);
+            font-size: 0.65rem;
         }
         
         .track-badge {
-            font-size: 0.7rem;
-            padding: 4px 8px;
+            font-size: 0.65rem;
+            padding: 2px 8px;
             border-radius: 12px;
             white-space: nowrap;
             margin-left: 8px;
@@ -405,20 +467,23 @@
         /* Selection Bar */
         .selection-bar {
             padding: 16px 20px;
-            background: var(--gray-100);
-            border-top: 1px solid var(--gray-200);
+            background: var(--light-gray);
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         
         .selected-count {
             font-weight: 500;
-            color: var(--gray-700);
+            font-size: 0.85rem;
+            color: var(--gray);
         }
         
         .selected-count span {
-            color: var(--primary);
+            color: var(--primary-blue);
             font-weight: 700;
         }
         
@@ -427,21 +492,24 @@
             gap: 12px;
         }
         
+        /* Buttons */
         .btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -455,113 +523,199 @@
         }
         
         .btn-secondary {
-            background: var(--gray-200);
-            color: var(--gray-700);
+            background: var(--light-gray);
+            color: #333;
+            border: 1px solid #ddd;
         }
         
         .btn-secondary:hover {
-            background: var(--gray-300);
+            background: #e0e0e0;
         }
         
+        /* Loading & Empty States */
         .loading {
             text-align: center;
-            padding: 60px;
-            color: var(--gray-500);
+            padding: 60px 20px;
+            color: var(--gray);
         }
         
         .loading i {
             font-size: 2.5rem;
-            color: var(--primary);
+            color: var(--primary-blue);
             margin-bottom: 16px;
         }
         
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: var(--gray-500);
+            padding: 40px 20px;
+            color: var(--gray);
         }
         
         .empty-state i {
-            font-size: 4rem;
-            color: var(--gray-300);
-            margin-bottom: 16px;
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            opacity: 0.3;
         }
         
+        .empty-state h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+        
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        .skeleton-header {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+        }
+        
+        .skeleton-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+        }
+        
+        .skeleton-title {
+            height: 20px;
+            width: 200px;
+            margin-bottom: 8px;
+        }
+        
+        .skeleton-text {
+            height: 14px;
+            width: 150px;
+        }
+        
+        .skeleton-search {
+            height: 50px;
+            margin: 20px;
+        }
+        
+        .skeleton-track {
+            height: 60px;
+            margin: 12px;
+            border-radius: 8px;
+        }
+        
+        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 12px 20px;
+            left: 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             color: white;
             z-index: 2000;
             animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
-        .toast.warning { background: var(--warning); }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.warning { background: var(--warning); color: #333; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0%); opacity: 1; }
+            to { transform: translateX(0); opacity: 1; }
         }
         
-        @media (max-width: 768px) {
-            .album-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .track-item {
-                flex-wrap: wrap;
-            }
-            
-            .track-meta {
-                width: 100%;
-                margin-left: 58px;
-                margin-top: 8px;
-            }
-            
-            .track-badge {
-                margin-left: 58px;
-                margin-top: 4px;
-            }
-            
-            .selection-bar {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .action-buttons {
-                width: 100%;
-            }
-            
-            .btn {
-                flex: 1;
-                justify-content: center;
-            }
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+        }
+        
+        @media (max-width: 767px) {
+            .album-header { flex-direction: column; text-align: center; }
+            .track-item { flex-wrap: wrap; }
+            .track-meta { width: 100%; margin-left: 55px; margin-top: 8px; }
+            .track-badge { margin-left: 55px; margin-top: 4px; }
+            .selection-bar { flex-direction: column; }
+            .action-buttons { width: 100%; }
+            .btn { flex: 1; justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>
-                <i class="fas fa-compact-disc"></i>
-                Add Tracks to Album
-            </h1>
-            <a href="/admin/albums/index.html" class="back-btn" id="backBtn">
-                <i class="fas fa-arrow-left"></i>
-                Back to Albums
-            </a>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-compact-disc"></i> Add Tracks to Album</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
         </div>
         
-        <div class="content-card" id="contentCard">
-            <div class="loading">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <div>Loading tracks...</div>
+        <div class="admin-content">
+            <div class="content-card" id="contentCard">
+                <!-- Skeleton Loader -->
+                <div class="skeleton-header">
+                    <div class="skeleton-cover skeleton"></div>
+                    <div>
+                        <div class="skeleton-title skeleton"></div>
+                        <div class="skeleton-text skeleton"></div>
+                    </div>
+                </div>
+                <div class="skeleton-search skeleton"></div>
+                <div class="skeleton-track skeleton"></div>
+                <div class="skeleton-track skeleton"></div>
+                <div class="skeleton-track skeleton"></div>
             </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
@@ -572,11 +726,10 @@
         let allTracks = [];
         let allEPs = [];
         let albumTrackIds = new Set();
-        let tracksInEPs = new Map(); // track_id -> {epId, epTitle}
+        let tracksInEPs = new Map();
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
-        // Helper function to format artists display
         function formatArtistsDisplay(track) {
             if (!track.artists || track.artists.length === 0) {
                 return escapeHtml(track.artist || 'Unknown Artist');
@@ -592,7 +745,6 @@
             return html;
         }
 
-        // Helper function to get artist names for search
         function getArtistSearchString(track) {
             if (!track.artists || track.artists.length === 0) {
                 return track.artist || '';
@@ -609,15 +761,11 @@
                 return;
             }
             
-            // Update back button to point to profile
-            document.getElementById('backBtn').href = `/admin/albums/profile.html?id=${albumId}`;
-            
             try {
-                // Load album details, all tracks, and all EPs in parallel
                 const [albumRes, tracksRes, epsRes] = await Promise.all([
-                    fetch(`${API_BASE}/albums/${albumId}`),
-                    fetch(`${API_BASE}/tracks`),
-                    fetch(`${API_BASE}/eps`)
+                    fetch(`${API_BASE}/admin/albums/${albumId}`),
+                    fetch(`${API_BASE}/admin/tracks`),
+                    fetch(`${API_BASE}/admin/eps`)
                 ]);
                 
                 if (!albumRes.ok) throw new Error('Album not found');
@@ -626,10 +774,8 @@
                 allTracks = await tracksRes.json();
                 allEPs = await epsRes.json();
                 
-                // Get IDs of tracks already in THIS album
                 albumTrackIds = new Set((album.tracks || []).map(t => t.id));
                 
-                // Build map of tracks in EPs
                 tracksInEPs.clear();
                 for (const ep of allEPs) {
                     if (ep.tracks && ep.tracks.length > 0) {
@@ -658,24 +804,20 @@
         }
 
         function renderPage() {
-            // Calculate stats
             const inThisAlbumCount = albumTrackIds.size;
             const inEPsCount = tracksInEPs.size;
             const availableCount = allTracks.filter(t => 
                 !albumTrackIds.has(t.id) && !tracksInEPs.has(t.id)
             ).length;
             
-            // Apply search and filter
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
             
-            // First filter by search
             let filteredTracks = allTracks.filter(track => {
                 const artistSearch = getArtistSearchString(track).toLowerCase();
                 return track.title.toLowerCase().includes(searchTerm) ||
                        artistSearch.includes(searchTerm);
             });
             
-            // Then apply category filter
             if (currentFilter === 'available') {
                 filteredTracks = filteredTracks.filter(t => 
                     !albumTrackIds.has(t.id) && !tracksInEPs.has(t.id)
@@ -686,17 +828,14 @@
                 filteredTracks = filteredTracks.filter(t => tracksInEPs.has(t.id));
             }
 
-            const contentCard = document.getElementById('contentCard');
-            
-            // Get album artist name
             const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
             
-            contentCard.innerHTML = `
+            const html = `
                 <div class="album-header">
                     <div class="album-cover-small">
                         ${album.cover_url 
                             ? `<img src="${album.cover_url}" alt="${escapeHtml(album.title)}">`
-                            : '💿'
+                            : '<i class="fas fa-compact-disc"></i>'
                         }
                     </div>
                     <div class="album-details">
@@ -704,7 +843,7 @@
                         <div class="album-artist">${escapeHtml(albumArtist)}</div>
                         <div class="album-stats">
                             <span><i class="fas fa-music"></i> ${album.tracks?.length || 0} tracks</span>
-                            <span><i class="fas fa-headphones"></i> ${formatNumber(album.plays || 0)} plays</span>
+                            <span><i class="fas fa-eye"></i> ${formatNumber(album.views || 0)} views</span>
                         </div>
                     </div>
                 </div>
@@ -776,7 +915,7 @@
                                     <div class="track-artist">${artistsDisplay}</div>
                                 </div>
                                 <div class="track-meta">
-                                    <span><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
+                                    <span><i class="fas fa-eye"></i> ${formatNumber(track.views || 0)}</span>
                                     <span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
                                 </div>
                                 ${badgeHtml}
@@ -806,13 +945,13 @@
                     </div>
                 </div>
             `;
-
-            // Add search listener
+            
+            document.getElementById('contentCard').innerHTML = html;
+            
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 const newSearchInput = searchInput.cloneNode(true);
                 searchInput.parentNode.replaceChild(newSearchInput, searchInput);
-                
                 newSearchInput.addEventListener('input', debounce(() => {
                     renderPage();
                 }, 300));
@@ -823,7 +962,6 @@
             if (selectedTracks.has(trackId)) {
                 selectedTracks.delete(trackId);
             } else {
-                // Check if track is available (not in this album and not in any EP)
                 if (!albumTrackIds.has(trackId) && !tracksInEPs.has(trackId)) {
                     selectedTracks.add(trackId);
                 }
@@ -851,12 +989,10 @@
             let errorCount = 0;
             let conflictMessages = [];
 
-            // Get current tracks to determine next track number
             const currentTracks = album.tracks || [];
             let nextTrackNumber = currentTracks.length + 1;
 
             for (const trackId of selectedTracks) {
-                // Double-check track is still available
                 if (albumTrackIds.has(trackId) || tracksInEPs.has(trackId)) {
                     errorCount++;
                     const inEP = tracksInEPs.get(trackId);
@@ -885,10 +1021,8 @@
                         const data = await res.json();
                         errorCount++;
                         if (data.error) conflictMessages.push(data.error);
-                        console.error('Failed to add track:', data.error);
                     }
                 } catch (error) {
-                    console.error('Error adding track:', error);
                     errorCount++;
                     conflictMessages.push(error.message);
                 }
@@ -897,12 +1031,12 @@
             selectedTracks.clear();
 
             if (errorCount === 0) {
-                showToast(`✅ Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
+                showToast(`Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
                 setTimeout(() => {
                     window.location.href = `/admin/albums/profile.html?id=${albumId}`;
                 }, 1500);
             } else if (successCount > 0) {
-                showToast(`⚠️ Added ${successCount} tracks (${errorCount} failed)`, 'warning');
+                showToast(`Added ${successCount} tracks (${errorCount} failed)`, 'warning');
                 if (conflictMessages.length > 0) {
                     setTimeout(() => {
                         alert(conflictMessages.join('\n'));
@@ -912,7 +1046,7 @@
                     window.location.href = `/admin/albums/profile.html?id=${albumId}`;
                 }, 1500);
             } else {
-                showToast(`❌ Failed to add tracks. ${conflictMessages[0] || 'Unknown error'}`, 'error');
+                showToast(`Failed to add tracks. ${conflictMessages[0] || 'Unknown error'}`, 'error');
                 addButtons.forEach(btn => btn.disabled = false);
                 renderPage();
             }
@@ -921,7 +1055,7 @@
         function showToast(message, type) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.textContent = message;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -959,7 +1093,6 @@
             };
         }
 
-        // Check authentication
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
@@ -978,7 +1111,6 @@
             return true;
         }
 
-        // Initialize
         if (checkAuth()) {
             loadPage();
         }
