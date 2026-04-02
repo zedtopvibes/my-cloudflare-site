@@ -24,7 +24,6 @@
             --success: #10b981;
             --error: #dc3545;
             --warning: #ffc107;
-            --skeleton-bg: #e2e8f0;
         }
         
         body {
@@ -440,8 +439,8 @@
         }
         
         .track-badge.in-this-album {
-            background: var(--gray-300);
-            color: var(--gray-700);
+            background: #d1d5db;
+            color: #374151;
         }
         
         .track-badge.in-ep {
@@ -696,14 +695,18 @@
                 return;
             }
             
-            // Update back button to point to profile
-            document.getElementById('backBtn')?.setAttribute('href', `/admin/albums/profile.html?id=${albumId}`);
+            // Update back button to point to profile (using the original API path)
+            const backBtn = document.querySelector('.tab-btn[href="/admin/albums/index.html"]')?.parentElement?.querySelector('.back-btn');
+            if (backBtn) {
+                backBtn.href = `/admin/albums/profile.html?id=${albumId}`;
+            }
             
             try {
+                // ORIGINAL API ENDPOINTS - DO NOT CHANGE
                 const [albumRes, tracksRes, epsRes] = await Promise.all([
-                    fetch(`${API_BASE}/admin/albums/${albumId}`),
-                    fetch(`${API_BASE}/admin/tracks`),
-                    fetch(`${API_BASE}/admin/eps`)
+                    fetch(`${API_BASE}/albums/${albumId}`),
+                    fetch(`${API_BASE}/tracks`),
+                    fetch(`${API_BASE}/eps`)
                 ]);
                 
                 if (!albumRes.ok) throw new Error('Album not found');
@@ -816,6 +819,7 @@
                         <button class="filter-btn ${currentFilter === 'in-eps' ? 'active' : ''}" onclick="setFilter('in-eps')">In EPs</button>
                     </div>
                 </div>
+                
                 <div class="tracks-container">
                     ${filteredTracks.length > 0 
                         ? filteredTracks.map(track => {
