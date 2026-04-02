@@ -165,7 +165,7 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid - Mobile first 2 columns, desktop 3 columns */
+        /* Stats Grid - Mobile first 2 columns, desktop 4 columns */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -475,11 +475,6 @@
             margin-bottom: 20px;
         }
         
-        .skeleton-card {
-            height: 200px;
-            border-radius: 12px;
-        }
-        
         .skeleton-row {
             height: 200px;
             margin-bottom: 12px;
@@ -549,11 +544,11 @@
             }
             
             .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
             }
             
             .skeleton-stats-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
             }
         }
     </style>
@@ -654,25 +649,6 @@
                 if (!response.ok) throw new Error('Failed to load artists');
                 
                 artists = await response.json();
-                
-                // Calculate track, album, and EP counts for each artist
-                for (let artist of artists) {
-                    // Fetch tracks for this artist
-                    const tracksResponse = await fetch(`${API_BASE}/admin/tracks?artist_id=${artist.id}`);
-                    const tracks = await tracksResponse.json();
-                    artist.track_count = tracks.length || 0;
-                    
-                    // Fetch albums for this artist
-                    const albumsResponse = await fetch(`${API_BASE}/admin/albums?artist_id=${artist.id}`);
-                    const albums = await albumsResponse.json();
-                    artist.album_count = albums.length || 0;
-                    
-                    // Fetch EPs for this artist
-                    const epsResponse = await fetch(`${API_BASE}/admin/eps?artist_id=${artist.id}`);
-                    const eps = await epsResponse.json();
-                    artist.ep_count = eps.length || 0;
-                }
-                
                 filteredArtists = [...artists];
                 
                 // Default sort by most views
@@ -719,14 +695,6 @@
                 filteredArtists.sort((a, b) => (b.track_count || 0) - (a.track_count || 0));
             } else if (sortBy === 'tracks-asc') {
                 filteredArtists.sort((a, b) => (a.track_count || 0) - (b.track_count || 0));
-            } else if (sortBy === 'albums-desc') {
-                filteredArtists.sort((a, b) => (b.album_count || 0) - (a.album_count || 0));
-            } else if (sortBy === 'albums-asc') {
-                filteredArtists.sort((a, b) => (a.album_count || 0) - (b.album_count || 0));
-            } else if (sortBy === 'eps-desc') {
-                filteredArtists.sort((a, b) => (b.ep_count || 0) - (a.ep_count || 0));
-            } else if (sortBy === 'eps-asc') {
-                filteredArtists.sort((a, b) => (a.ep_count || 0) - (b.ep_count || 0));
             }
             
             currentPage = 1;
@@ -781,10 +749,6 @@
                             <option value="name-desc">Name Z-A</option>
                             <option value="tracks-desc">Most Tracks</option>
                             <option value="tracks-asc">Least Tracks</option>
-                            <option value="albums-desc">Most Albums</option>
-                            <option value="albums-asc">Least Albums</option>
-                            <option value="eps-desc">Most EPs</option>
-                            <option value="eps-asc">Least EPs</option>
                         </select>
                     </div>
                 </div>
