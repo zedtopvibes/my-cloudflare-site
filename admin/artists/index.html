@@ -44,7 +44,6 @@
             width: 100%;
         }
         
-        /* Header Styles */
         .admin-header {
             background: var(--white);
             border-radius: 12px;
@@ -93,7 +92,6 @@
             font-size: 0.9rem;
         }
         
-        /* Tabs */
         .admin-tabs {
             display: flex;
             gap: 8px;
@@ -140,7 +138,6 @@
             color: white;
         }
         
-        /* Content Area */
         .admin-content {
             background: var(--white);
             border-radius: 12px;
@@ -168,7 +165,6 @@
             color: var(--primary-blue);
         }
         
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -211,7 +207,6 @@
             letter-spacing: 0.5px;
         }
         
-        /* Search Section */
         .search-section {
             display: flex;
             gap: 10px;
@@ -255,7 +250,6 @@
             flex: 1;
         }
         
-        /* Filter Tabs */
         .filter-tabs {
             display: flex;
             gap: 8px;
@@ -296,7 +290,6 @@
             color: white;
         }
         
-        /* Status Badge */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -317,7 +310,6 @@
             color: #856404;
         }
         
-        /* Artist Badges */
         .artist-badge {
             display: inline-block;
             background: #e3f2fd;
@@ -339,7 +331,6 @@
             color: white;
         }
         
-        /* Desktop Table */
         .artists-table-container {
             overflow-x: auto;
             border-radius: 8px;
@@ -410,7 +401,6 @@
             color: var(--gray);
         }
         
-        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 5px;
@@ -442,7 +432,6 @@
             color: white;
         }
         
-        /* Mobile Cards */
         .artists-mobile-grid {
             display: none;
             flex-direction: column;
@@ -538,7 +527,6 @@
             height: 32px;
         }
         
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -592,7 +580,6 @@
             font-size: 0.7rem;
         }
         
-        /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
@@ -624,7 +611,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -644,7 +630,6 @@
             color: var(--primary-dark);
         }
         
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -686,7 +671,6 @@
             justify-content: flex-end;
         }
         
-        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -713,7 +697,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        /* Skeleton */
         .skeleton-row {
             height: 50px;
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -728,7 +711,6 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Footer */
         .admin-footer {
             background: var(--white);
             border-radius: 12px;
@@ -749,7 +731,6 @@
             text-decoration: underline;
         }
         
-        /* Responsive */
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); }
@@ -824,6 +805,8 @@
                     <option value="views">Most Views</option>
                     <option value="name">Name A-Z</option>
                     <option value="tracks">Most Tracks</option>
+                    <option value="albums">Most Albums</option>
+                    <option value="eps">Most EPs</option>
                 </select>
             </div>
 
@@ -875,7 +858,6 @@
         </div>
     </div>
 
-    <!-- Confirm Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h3 id="confirmModalTitle" style="color: var(--primary-blue);">Confirm Action</h3>
@@ -1062,11 +1044,18 @@
             if (!checkAuth()) return;
             
             try {
-                const response = await fetch(`${API_BASE}/admin/artists`);
-                if (!response.ok) throw new Error('Failed to load artists');
+                // Use the new artist stats API that includes track_count, album_count, ep_count
+                const response = await fetch(`${API_BASE}/admin/artists/stats`);
+                const result = await response.json();
                 
-                allArtists = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to load artists');
+                }
                 
+                // Extract artists from the response
+                allArtists = result.data.artists || [];
+                
+                // Calculate stats
                 const draftCount = allArtists.filter(a => a.status === 'draft').length;
                 const publishedCount = allArtists.filter(a => a.status === 'published').length;
                 const totalViews = allArtists.reduce((sum, artist) => sum + (artist.views || 0), 0);
@@ -1134,6 +1123,10 @@
                         return (a.name || '').localeCompare(b.name || '');
                     case 'tracks':
                         return (b.track_count || 0) - (a.track_count || 0);
+                    case 'albums':
+                        return (b.album_count || 0) - (a.album_count || 0);
+                    case 'eps':
+                        return (b.ep_count || 0) - (a.ep_count || 0);
                     default:
                         return new Date(b.created_at) - new Date(a.created_at);
                 }
@@ -1201,12 +1194,15 @@
                 if (artist.is_zambian_legend) badges.push('<span class="artist-badge legend">Legend</span>');
                 const badgesHtml = badges.length ? `<div style="margin-top: 4px;">${badges.join(' ')}</div>` : '';
                 
+                // Use image_url or photo_url
+                const artistImage = artist.image_url || artist.photo_url;
+                
                 html += `
                     <tr>
                         <td>
                             <div class="artist-info">
                                 <div class="artist-thumb">
-                                    ${artist.photo_url ? `<img src="${artist.photo_url}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
+                                    ${artistImage ? `<img src="${artistImage}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
                                 </div>
                                 <div class="artist-details">
                                     <h4>${escapeHtml(artist.name)}</h4>
@@ -1252,11 +1248,13 @@
                 if (artist.is_zambian_legend) badges.push('<span class="artist-badge legend">Legend</span>');
                 const badgesHtml = badges.length ? `<div style="margin-top: 4px;">${badges.join(' ')}</div>` : '';
                 
+                const artistImage = artist.image_url || artist.photo_url;
+                
                 html += `
                     <div class="artist-mobile-card">
                         <div class="artist-mobile-header">
                             <div class="artist-mobile-thumb">
-                                ${artist.photo_url ? `<img src="${artist.photo_url}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
+                                ${artistImage ? `<img src="${artistImage}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
                             </div>
                             <div class="artist-mobile-info">
                                 <div class="artist-mobile-name">${escapeHtml(artist.name)} ${statusBadge}</div>
