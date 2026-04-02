@@ -165,7 +165,7 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid - Mobile first 2 columns, desktop 4 columns */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -264,7 +264,7 @@
             font-family: 'Montserrat', sans-serif;
         }
         
-        /* Artist Cards - Mobile first grid */
+        /* Artist Cards */
         .artists-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -380,6 +380,27 @@
             background: #10b981;
         }
         
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         /* Loading & Empty States */
         .loading {
             text-align: center;
@@ -476,7 +497,7 @@
         }
         
         .skeleton-row {
-            height: 200px;
+            height: 140px;
             margin-bottom: 12px;
             border-radius: 12px;
         }
@@ -502,18 +523,18 @@
             text-decoration: underline;
         }
         
-        /* Tablet Styles */
+        /* Responsive */
         @media (min-width: 768px) {
             .admin-container {
                 padding: 15px;
             }
             
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(4, 1fr);
             }
             
             .skeleton-stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(4, 1fr);
             }
             
             .search-section {
@@ -537,18 +558,9 @@
             }
         }
         
-        /* Desktop Styles */
-        @media (min-width: 1024px) {
-            .admin-container {
-                padding: 20px;
-            }
-            
+        @media (max-width: 640px) {
             .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .skeleton-stats-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -566,8 +578,8 @@
             
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
                 <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
@@ -645,16 +657,21 @@
         
         async function loadArtists() {
             try {
-                const response = await fetch(`${API_BASE}/admin/artists`);
-                if (!response.ok) throw new Error('Failed to load artists');
+                const response = await fetch(`${API_BASE}/admin/artists/stats`);
+                const result = await response.json();
                 
-                artists = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to load artist stats');
+                }
+                
+                const summary = result.data.summary;
+                artists = result.data.artists;
                 filteredArtists = [...artists];
                 
                 // Default sort by most views
                 filteredArtists.sort((a, b) => (b.views || 0) - (a.views || 0));
                 
-                renderAnalytics();
+                renderAnalytics(summary);
                 
             } catch (error) {
                 console.error('Error loading artists:', error);
@@ -663,7 +680,7 @@
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
                         <h3>Failed to Load Artists</h3>
                         <p style="margin: 12px 0;">${error.message}</p>
-                        <button onclick="loadArtists()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
+                        <button onclick="loadArtists()" class="btn btn-primary" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; padding: 10px 20px; border-radius: 8px;">Try Again</button>
                     </div>
                     <div class="admin-footer">
                         <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
@@ -672,40 +689,11 @@
             }
         }
         
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-            const sortBy = document.getElementById('sortFilter')?.value || 'views-desc';
-            
-            filteredArtists = artists.filter(artist => {
-                const nameMatch = artist.name?.toLowerCase().includes(searchTerm);
-                const countryMatch = artist.country?.toLowerCase().includes(searchTerm);
-                return !searchTerm || nameMatch || countryMatch;
-            });
-            
-            // Apply sort
-            if (sortBy === 'views-desc') {
-                filteredArtists.sort((a, b) => (b.views || 0) - (a.views || 0));
-            } else if (sortBy === 'views-asc') {
-                filteredArtists.sort((a, b) => (a.views || 0) - (b.views || 0));
-            } else if (sortBy === 'name-asc') {
-                filteredArtists.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-            } else if (sortBy === 'name-desc') {
-                filteredArtists.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
-            } else if (sortBy === 'tracks-desc') {
-                filteredArtists.sort((a, b) => (b.track_count || 0) - (a.track_count || 0));
-            } else if (sortBy === 'tracks-asc') {
-                filteredArtists.sort((a, b) => (a.track_count || 0) - (b.track_count || 0));
-            }
-            
-            currentPage = 1;
-            renderArtistsList();
-        }
-        
-        function renderAnalytics() {
-            const totalViews = artists.reduce((sum, a) => sum + (a.views || 0), 0);
-            const totalArtists = artists.length;
-            const totalTracks = artists.reduce((sum, a) => sum + (a.track_count || 0), 0);
-            const avgViews = totalArtists > 0 ? Math.round(totalViews / totalArtists) : 0;
+        function renderAnalytics(summary) {
+            const totalViews = summary.artists.total_views;
+            const totalArtists = summary.artists.total;
+            const totalTracks = summary.tracks.total;
+            const avgViews = summary.artists.avg_views;
             
             const html = `
                 <div class="content-header">
@@ -749,6 +737,10 @@
                             <option value="name-desc">Name Z-A</option>
                             <option value="tracks-desc">Most Tracks</option>
                             <option value="tracks-asc">Least Tracks</option>
+                            <option value="albums-desc">Most Albums</option>
+                            <option value="albums-asc">Least Albums</option>
+                            <option value="eps-desc">Most EPs</option>
+                            <option value="eps-asc">Least EPs</option>
                         </select>
                     </div>
                 </div>
@@ -768,6 +760,43 @@
             document.getElementById('searchInput').addEventListener('input', applyFilters);
             document.getElementById('sortFilter').addEventListener('change', applyFilters);
             
+            renderArtistsList();
+        }
+        
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const sortBy = document.getElementById('sortFilter')?.value || 'views-desc';
+            
+            filteredArtists = artists.filter(artist => {
+                const nameMatch = artist.name?.toLowerCase().includes(searchTerm);
+                const countryMatch = artist.country?.toLowerCase().includes(searchTerm);
+                return !searchTerm || nameMatch || countryMatch;
+            });
+            
+            // Apply sort
+            if (sortBy === 'views-desc') {
+                filteredArtists.sort((a, b) => (b.views || 0) - (a.views || 0));
+            } else if (sortBy === 'views-asc') {
+                filteredArtists.sort((a, b) => (a.views || 0) - (b.views || 0));
+            } else if (sortBy === 'name-asc') {
+                filteredArtists.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            } else if (sortBy === 'name-desc') {
+                filteredArtists.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+            } else if (sortBy === 'tracks-desc') {
+                filteredArtists.sort((a, b) => (b.track_count || 0) - (a.track_count || 0));
+            } else if (sortBy === 'tracks-asc') {
+                filteredArtists.sort((a, b) => (a.track_count || 0) - (b.track_count || 0));
+            } else if (sortBy === 'albums-desc') {
+                filteredArtists.sort((a, b) => (b.album_count || 0) - (a.album_count || 0));
+            } else if (sortBy === 'albums-asc') {
+                filteredArtists.sort((a, b) => (a.album_count || 0) - (b.album_count || 0));
+            } else if (sortBy === 'eps-desc') {
+                filteredArtists.sort((a, b) => (b.ep_count || 0) - (a.ep_count || 0));
+            } else if (sortBy === 'eps-asc') {
+                filteredArtists.sort((a, b) => (a.ep_count || 0) - (b.ep_count || 0));
+            }
+            
+            currentPage = 1;
             renderArtistsList();
         }
         
@@ -801,13 +830,16 @@
                 const albumCount = artist.album_count || 0;
                 const epCount = artist.ep_count || 0;
                 const country = artist.country || 'Unknown Location';
-                const isFeatured = artist.is_featured === 1 || artist.is_featured === true;
-                const isLegend = artist.is_zambian_legend === 1 || artist.is_zambian_legend === true;
+                const isFeatured = artist.is_featured === true;
+                const isLegend = artist.is_zambian_legend === true;
+                const statusBadge = artist.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
                 
                 artistsHtml += `
                     <div class="artist-card">
                         <div class="artist-rank">#${globalRank}</div>
-                        <div class="artist-name">${escapeHtml(artist.name)}</div>
+                        <div class="artist-name">${escapeHtml(artist.name)} ${statusBadge}</div>
                         <div class="artist-country">
                             <i class="fas fa-map-marker-alt"></i>
                             ${escapeHtml(country)}
