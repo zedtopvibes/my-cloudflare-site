@@ -13,55 +13,65 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  // GET - List all artists with track/album/ep counts (ADMIN - shows all including drafts)
+  // GET - List all artists (ADMIN - shows all including drafts)
   if (request.method === 'GET') {
     try {
-      const { results } = await env.DB.prepare(`
+      // First get all artists
+      const { results: artists } = await env.DB.prepare(`
         SELECT 
-          a.id, 
-          a.name, 
-          a.slug, 
-          a.image_url, 
-          a.photo_url,
-          a.bio, 
-          a.country, 
-          a.genre, 
-          a.views, 
-          a.is_featured, 
-          a.is_zambian_legend, 
-          a.status, 
-          a.created_at,
-          a.updated_at,
-          -- Count tracks (all tracks regardless of status)
-          (SELECT COUNT(DISTINCT ta.track_id) 
-           FROM track_artists ta 
-           WHERE ta.artist_id = a.id) as track_count,
-          -- Count albums
-          (SELECT COUNT(*) 
-           FROM albums al 
-           WHERE al.artist_id = a.id 
-           AND al.deleted_at IS NULL) as album_count,
-          -- Count EPs
-          (SELECT COUNT(*) 
-           FROM eps e 
-           WHERE e.artist_id = a.id 
-           AND e.deleted_at IS NULL) as ep_count
-        FROM artists a 
-        WHERE a.deleted_at IS NULL 
-        ORDER BY a.created_at DESC
+          id, 
+          name, 
+          slug, 
+          image_url, 
+          photo_url,
+          bio, 
+          country, 
+          genre, 
+          views, 
+          is_featured, 
+          is_zambian_legend, 
+          status, 
+          created_at,
+          updated_at
+        FROM artists 
+        WHERE deleted_at IS NULL 
+        ORDER BY created_at DESC
       `).all();
       
-      // Process results to ensure counts are numbers
-      const artists = results.map(artist => ({
-        ...artist,
-        track_count: parseInt(artist.track_count) || 0,
-        album_count: parseInt(artist.album_count) || 0,
-        ep_count: parseInt(artist.ep_count) || 0,
-        is_featured: artist.is_featured === 1,
-        is_zambian_legend: artist.is_zambian_legend === 1
+      // For each artist, get their counts
+      const artistsWithCounts = await Promise.all(artists.map(async (artist) => {
+        // Get track count
+        const trackResult = await env.DB.prepare(`
+          SELECT COUNT(DISTINCT ta.track_id) as count
+          FROM track_artists ta
+          WHERE ta.artist_id = ?
+        `).bind(artist.id).first();
+        
+        // Get album count
+        const albumResult = await env.DB.prepare(`
+          SELECT COUNT(*) as count
+          FROM albums al
+          WHERE al.artist_id = ? AND al.deleted_at IS NULL
+        `).bind(artist.id).first();
+        
+        // Get EP count
+        const epResult = await env.DB.prepare(`
+          SELECT COUNT(*) as count
+          FROM eps e
+          WHERE e.artist_id = ? AND e.deleted_at IS NULL
+        `).bind(artist.id).first();
+        
+        return {
+          ...artist,
+          track_count: parseInt(trackResult?.count) || 0,
+          album_count: parseInt(albumResult?.count) || 0,
+          ep_count: parseInt(epResult?.count) || 0,
+          is_featured: artist.is_featured === 1,
+          is_zambian_legend: artist.is_zambian_legend === 1
+        };
       }));
       
-      return new Response(JSON.stringify(artists), { headers });
+      return new Response(JSON.stringify(artistsWithCounts), { headers });
       
     } catch (error) {
       console.error('Error fetching artists:', error);
@@ -75,7 +85,7 @@ export async function onRequest(context) {
   // POST - Create new artist with status support
   if (request.method === 'POST') {
     try {
-      const { name, country, genre, bio, is_featured, is_zambian_legend, status } = await request.json();
+      const { name, country, genre, bio, is_featured, is_zambian_legend, status, photo_url, image_url } = await request.json();
       
       if (!name) {
         return new Response(JSON.stringify({ error: 'Artist name is required' }), { 
@@ -97,8 +107,8 @@ export async function onRequest(context) {
 
       // Check if artist already exists
       const existing = await env.DB.prepare(
-        'SELECT id FROM artists WHERE name = ? OR slug = ? AND deleted_at IS NULL'
-      ).bind(name, slug).first();
+        'SELECT id FROM artists WHERE name = ? AND deleted_at IS NULL'
+      ).bind(name).first();
 
       if (existing) {
         return new Response(JSON.stringify({ 
@@ -108,8 +118,8 @@ export async function onRequest(context) {
 
       // Insert new artist
       const result = await env.DB.prepare(`
-        INSERT INTO artists (name, slug, country, genre, bio, is_featured, is_zambian_legend, status, views, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        INSERT INTO artists (name, slug, country, genre, bio, is_featured, is_zambian_legend, status, views, photo_url, image_url, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         RETURNING id
       `).bind(
         name, 
@@ -119,7 +129,9 @@ export async function onRequest(context) {
         bio || null, 
         is_featured ? 1 : 0, 
         is_zambian_legend ? 1 : 0,
-        artistStatus
+        artistStatus,
+        photo_url || null,
+        image_url || null
       ).run();
 
       const newArtist = await env.DB.prepare(`
@@ -143,13 +155,146 @@ export async function onRequest(context) {
         FROM artists WHERE id = ?
       `).bind(result.results[0].id).first();
 
-      return new Response(JSON.stringify(newArtist), { 
+      return new Response(JSON.stringify({
+        ...newArtist,
+        is_featured: newArtist.is_featured === 1,
+        is_zambian_legend: newArtist.is_zambian_legend === 1
+      }), { 
         status: 201, 
         headers 
       });
 
     } catch (error) {
       console.error('Error creating artist:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
+
+  // PUT - Update artist
+  if (request.method === 'PUT') {
+    try {
+      const url = new URL(request.url);
+      const id = url.searchParams.get('id');
+      
+      if (!id) {
+        return new Response(JSON.stringify({ error: 'Artist ID is required' }), { 
+          status: 400, 
+          headers 
+        });
+      }
+      
+      const { name, country, genre, bio, is_featured, is_zambian_legend, status, photo_url, image_url } = await request.json();
+      
+      // Update artist
+      await env.DB.prepare(`
+        UPDATE artists 
+        SET name = COALESCE(?, name),
+            country = COALESCE(?, country),
+            genre = COALESCE(?, genre),
+            bio = COALESCE(?, bio),
+            is_featured = COALESCE(?, is_featured),
+            is_zambian_legend = COALESCE(?, is_zambian_legend),
+            status = COALESCE(?, status),
+            photo_url = COALESCE(?, photo_url),
+            image_url = COALESCE(?, image_url),
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ? AND deleted_at IS NULL
+      `).bind(
+        name || null,
+        country || null,
+        genre || null,
+        bio || null,
+        is_featured !== undefined ? (is_featured ? 1 : 0) : null,
+        is_zambian_legend !== undefined ? (is_zambian_legend ? 1 : 0) : null,
+        status || null,
+        photo_url || null,
+        image_url || null,
+        id
+      ).run();
+      
+      // Get updated artist
+      const updatedArtist = await env.DB.prepare(`
+        SELECT 
+          id, 
+          name, 
+          slug, 
+          image_url, 
+          photo_url,
+          bio, 
+          country, 
+          genre, 
+          views, 
+          is_featured, 
+          is_zambian_legend, 
+          status, 
+          created_at,
+          updated_at
+        FROM artists WHERE id = ? AND deleted_at IS NULL
+      `).bind(id).first();
+      
+      // Get counts
+      const trackResult = await env.DB.prepare(`
+        SELECT COUNT(DISTINCT ta.track_id) as count
+        FROM track_artists ta
+        WHERE ta.artist_id = ?
+      `).bind(id).first();
+      
+      const albumResult = await env.DB.prepare(`
+        SELECT COUNT(*) as count
+        FROM albums al
+        WHERE al.artist_id = ? AND al.deleted_at IS NULL
+      `).bind(id).first();
+      
+      const epResult = await env.DB.prepare(`
+        SELECT COUNT(*) as count
+        FROM eps e
+        WHERE e.artist_id = ? AND e.deleted_at IS NULL
+      `).bind(id).first();
+      
+      return new Response(JSON.stringify({
+        ...updatedArtist,
+        track_count: parseInt(trackResult?.count) || 0,
+        album_count: parseInt(albumResult?.count) || 0,
+        ep_count: parseInt(epResult?.count) || 0,
+        is_featured: updatedArtist.is_featured === 1,
+        is_zambian_legend: updatedArtist.is_zambian_legend === 1
+      }), { headers });
+      
+    } catch (error) {
+      console.error('Error updating artist:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
+
+  // DELETE - Soft delete artist
+  if (request.method === 'DELETE') {
+    try {
+      const url = new URL(request.url);
+      const id = url.searchParams.get('id');
+      
+      if (!id) {
+        return new Response(JSON.stringify({ error: 'Artist ID is required' }), { 
+          status: 400, 
+          headers 
+        });
+      }
+      
+      await env.DB.prepare(`
+        UPDATE artists 
+        SET deleted_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+      `).bind(id).run();
+      
+      return new Response(JSON.stringify({ success: true }), { headers });
+      
+    } catch (error) {
+      console.error('Error deleting artist:', error);
       return new Response(JSON.stringify({ error: error.message }), { 
         status: 500, 
         headers 
