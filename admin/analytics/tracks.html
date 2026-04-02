@@ -23,6 +23,7 @@
             --success: #10b981;
             --warning: #f59e0b;
             --info: #3b82f6;
+            --skeleton-bg: #e2e8f0;
         }
         
         body {
@@ -30,12 +31,16 @@
             background: var(--light-gray);
             min-height: 100vh;
             color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
         .admin-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
         .admin-header {
@@ -440,6 +445,68 @@
             border-color: var(--primary-blue);
         }
         
+        /* Skeleton Loader */
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .skeleton-stat-card {
+            height: 140px;
+            border-radius: 12px;
+        }
+        
+        .skeleton-search {
+            height: 50px;
+            margin-bottom: 20px;
+        }
+        
+        .skeleton-card {
+            height: 200px;
+            border-radius: 12px;
+        }
+        
+        .skeleton-row {
+            height: 200px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+        }
+        
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
         /* Tablet Styles */
         @media (min-width: 768px) {
             .admin-container {
@@ -447,6 +514,10 @@
             }
             
             .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .skeleton-stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
             
@@ -478,6 +549,10 @@
             }
             
             .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .skeleton-stats-grid {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
@@ -513,10 +588,30 @@
         </div>
         
         <div class="admin-content" id="analyticsContent">
-            <div class="loading">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <div>Loading track analytics...</div>
+            <!-- Skeleton Loader -->
+            <div class="content-header">
+                <h2><i class="fas fa-music"></i> <span class="skeleton" style="width: 200px; height: 28px; display: inline-block;"></span></h2>
+                <p><span class="skeleton" style="width: 280px; height: 16px; display: inline-block;"></span></p>
             </div>
+            
+            <div class="skeleton-stats-grid">
+                <div class="skeleton-stat-card skeleton"></div>
+                <div class="skeleton-stat-card skeleton"></div>
+                <div class="skeleton-stat-card skeleton"></div>
+                <div class="skeleton-stat-card skeleton"></div>
+            </div>
+            
+            <div class="skeleton-search skeleton"></div>
+            
+            <div class="tracks-grid">
+                <div class="skeleton-row skeleton"></div>
+                <div class="skeleton-row skeleton"></div>
+                <div class="skeleton-row skeleton"></div>
+            </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
@@ -589,6 +684,9 @@
                         <h3>Failed to Load Tracks</h3>
                         <p style="margin: 12px 0;">${error.message}</p>
                         <button onclick="loadTracks()" class="tab-btn active" style="background: var(--primary-blue); color: white; border: none; cursor: pointer;">Try Again</button>
+                    </div>
+                    <div class="admin-footer">
+                        <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
                     </div>
                 `;
             }
