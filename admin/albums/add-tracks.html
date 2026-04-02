@@ -44,7 +44,6 @@
             width: 100%;
         }
         
-        /* Header Styles */
         .admin-header {
             background: var(--white);
             border-radius: 12px;
@@ -93,7 +92,6 @@
             font-size: 0.9rem;
         }
         
-        /* Tabs */
         .admin-tabs {
             display: flex;
             gap: 8px;
@@ -140,7 +138,6 @@
             color: white;
         }
         
-        /* Content Area */
         .admin-content {
             background: var(--white);
             border-radius: 12px;
@@ -151,7 +148,6 @@
             overflow-x: hidden;
         }
         
-        /* Content Card */
         .content-card {
             background: var(--white);
             border-radius: 12px;
@@ -159,7 +155,6 @@
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        /* Album Header */
         .album-header {
             padding: 20px;
             background: linear-gradient(135deg, var(--light-gray), var(--white));
@@ -216,7 +211,6 @@
             gap: 4px;
         }
         
-        /* Stats Badges */
         .stats-badge {
             display: inline-flex;
             align-items: center;
@@ -242,7 +236,6 @@
             color: var(--warning);
         }
         
-        /* Search Section */
         .search-section {
             padding: 20px;
             border-bottom: 1px solid rgba(31, 111, 159, 0.1);
@@ -291,7 +284,7 @@
         }
         
         .filter-btn:hover {
-            background: var(--primary-soft);
+            background: #e8f0fe;
             border-color: var(--primary-blue);
             color: var(--primary-blue);
         }
@@ -302,7 +295,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Artist Badges */
         .artist-badge {
             display: inline-block;
             background: #e3f2fd;
@@ -326,7 +318,6 @@
             align-items: center;
         }
         
-        /* Tracks Container */
         .tracks-container {
             padding: 20px;
             max-height: 500px;
@@ -345,13 +336,13 @@
         }
         
         .track-item:not(.disabled):hover {
-            background: var(--primary-soft);
+            background: #e8f0fe;
             border-color: var(--primary-blue);
             cursor: pointer;
         }
         
         .track-item.selected {
-            background: var(--primary-soft);
+            background: #e8f0fe;
             border-color: var(--primary-blue);
             border-width: 2px;
         }
@@ -464,7 +455,6 @@
             color: white;
         }
         
-        /* Selection Bar */
         .selection-bar {
             padding: 16px 20px;
             background: var(--light-gray);
@@ -492,7 +482,6 @@
             gap: 12px;
         }
         
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -532,7 +521,6 @@
             background: #e0e0e0;
         }
         
-        /* Loading & Empty States */
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -564,49 +552,6 @@
             color: var(--primary-dark);
         }
         
-        /* Skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 4px;
-        }
-        
-        .skeleton-header {
-            display: flex;
-            gap: 16px;
-            padding: 20px;
-        }
-        
-        .skeleton-cover {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-        }
-        
-        .skeleton-title {
-            height: 20px;
-            width: 200px;
-            margin-bottom: 8px;
-        }
-        
-        .skeleton-text {
-            height: 14px;
-            width: 150px;
-        }
-        
-        .skeleton-search {
-            height: 50px;
-            margin: 20px;
-        }
-        
-        .skeleton-track {
-            height: 60px;
-            margin: 12px;
-            border-radius: 8px;
-        }
-        
-        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -633,7 +578,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        /* Footer */
         .admin-footer {
             background: var(--white);
             border-radius: 12px;
@@ -654,7 +598,6 @@
             text-decoration: underline;
         }
         
-        /* Responsive */
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
             .toast { left: auto; right: 20px; min-width: 300px; }
@@ -699,18 +642,10 @@
         
         <div class="admin-content">
             <div class="content-card" id="contentCard">
-                <!-- Skeleton Loader -->
-                <div class="skeleton-header">
-                    <div class="skeleton-cover skeleton"></div>
-                    <div>
-                        <div class="skeleton-title skeleton"></div>
-                        <div class="skeleton-text skeleton"></div>
-                    </div>
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <div>Loading tracks...</div>
                 </div>
-                <div class="skeleton-search skeleton"></div>
-                <div class="skeleton-track skeleton"></div>
-                <div class="skeleton-track skeleton"></div>
-                <div class="skeleton-track skeleton"></div>
             </div>
         </div>
         
@@ -760,6 +695,9 @@
                 window.location.href = '/admin/albums/index.html';
                 return;
             }
+            
+            // Update back button to point to profile
+            document.getElementById('backBtn')?.setAttribute('href', `/admin/albums/profile.html?id=${albumId}`);
             
             try {
                 const [albumRes, tracksRes, epsRes] = await Promise.all([
@@ -830,7 +768,9 @@
 
             const albumArtist = album.artist_name || album.artist || 'Unknown Artist';
             
-            const html = `
+            const contentCard = document.getElementById('contentCard');
+            
+            contentCard.innerHTML = `
                 <div class="album-header">
                     <div class="album-cover-small">
                         ${album.cover_url 
@@ -876,7 +816,6 @@
                         <button class="filter-btn ${currentFilter === 'in-eps' ? 'active' : ''}" onclick="setFilter('in-eps')">In EPs</button>
                     </div>
                 </div>
-                
                 <div class="tracks-container">
                     ${filteredTracks.length > 0 
                         ? filteredTracks.map(track => {
@@ -945,13 +884,12 @@
                     </div>
                 </div>
             `;
-            
-            document.getElementById('contentCard').innerHTML = html;
-            
+
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 const newSearchInput = searchInput.cloneNode(true);
                 searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+                
                 newSearchInput.addEventListener('input', debounce(() => {
                     renderPage();
                 }, 300));
@@ -1021,8 +959,10 @@
                         const data = await res.json();
                         errorCount++;
                         if (data.error) conflictMessages.push(data.error);
+                        console.error('Failed to add track:', data.error);
                     }
                 } catch (error) {
+                    console.error('Error adding track:', error);
                     errorCount++;
                     conflictMessages.push(error.message);
                 }
@@ -1031,12 +971,12 @@
             selectedTracks.clear();
 
             if (errorCount === 0) {
-                showToast(`Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
+                showToast(`✅ Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
                 setTimeout(() => {
                     window.location.href = `/admin/albums/profile.html?id=${albumId}`;
                 }, 1500);
             } else if (successCount > 0) {
-                showToast(`Added ${successCount} tracks (${errorCount} failed)`, 'warning');
+                showToast(`⚠️ Added ${successCount} tracks (${errorCount} failed)`, 'warning');
                 if (conflictMessages.length > 0) {
                     setTimeout(() => {
                         alert(conflictMessages.join('\n'));
@@ -1046,7 +986,7 @@
                     window.location.href = `/admin/albums/profile.html?id=${albumId}`;
                 }, 1500);
             } else {
-                showToast(`Failed to add tracks. ${conflictMessages[0] || 'Unknown error'}`, 'error');
+                showToast(`❌ Failed to add tracks. ${conflictMessages[0] || 'Unknown error'}`, 'error');
                 addButtons.forEach(btn => btn.disabled = false);
                 renderPage();
             }
