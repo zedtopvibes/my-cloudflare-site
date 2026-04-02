@@ -165,7 +165,6 @@
             margin-top: 5px;
         }
         
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -218,7 +217,6 @@
             color: white !important;
         }
         
-        /* Search & Filter Section */
         .search-section {
             margin-bottom: 20px;
         }
@@ -264,7 +262,6 @@
             font-family: 'Montserrat', sans-serif;
         }
         
-        /* Artist Cards */
         .artists-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -380,7 +377,6 @@
             background: #10b981;
         }
         
-        /* Status Badge */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -401,7 +397,6 @@
             color: #856404;
         }
         
-        /* Loading & Empty States */
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -433,7 +428,6 @@
             color: var(--primary-dark);
         }
         
-        /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
@@ -466,7 +460,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Skeleton Loader */
         .skeleton {
             background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
             background-size: 200% 100%;
@@ -502,7 +495,6 @@
             border-radius: 12px;
         }
         
-        /* Footer */
         .admin-footer {
             background: var(--white);
             border-radius: 12px;
@@ -523,7 +515,6 @@
             text-decoration: underline;
         }
         
-        /* Responsive */
         @media (min-width: 768px) {
             .admin-container {
                 padding: 15px;
@@ -578,8 +569,8 @@
             
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/upload" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
                 <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
@@ -595,21 +586,13 @@
         </div>
         
         <div class="admin-content" id="analyticsContent">
-            <!-- Skeleton Loader -->
-            <div class="content-header">
-                <h2><i class="fas fa-microphone"></i> <span class="skeleton" style="width: 200px; height: 28px; display: inline-block;"></span></h2>
-                <p><span class="skeleton" style="width: 300px; height: 16px; display: inline-block;"></span></p>
-            </div>
-            
             <div class="skeleton-stats-grid">
                 <div class="skeleton-stat-card skeleton"></div>
                 <div class="skeleton-stat-card skeleton"></div>
                 <div class="skeleton-stat-card skeleton"></div>
                 <div class="skeleton-stat-card skeleton"></div>
             </div>
-            
             <div class="skeleton-search skeleton"></div>
-            
             <div class="artists-grid">
                 <div class="skeleton-row skeleton"></div>
                 <div class="skeleton-row skeleton"></div>
@@ -625,10 +608,11 @@
     <script>
         const API_BASE = '/api';
         
-        let artists = [];
-        let filteredArtists = [];
         let currentPage = 1;
+        let totalPages = 1;
         const itemsPerPage = 10;
+        let currentSearchTerm = '';
+        let currentSort = 'views-desc';
         
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
@@ -655,32 +639,46 @@
             return num.toString();
         }
         
-        async function loadArtists() {
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function loadAnalytics() {
             try {
-                const response = await fetch(`${API_BASE}/admin/artists/stats`);
+                // Build URL with query parameters
+                let url = `${API_BASE}/admin/artists/analytics?page=${currentPage}&limit=${itemsPerPage}&sort=${currentSort}`;
+                
+                if (currentSearchTerm) {
+                    url += `&search=${encodeURIComponent(currentSearchTerm)}`;
+                }
+                
+                const response = await fetch(url);
                 const result = await response.json();
                 
                 if (!result.success) {
-                    throw new Error(result.error || 'Failed to load artist stats');
+                    throw new Error(result.error || 'Failed to load analytics');
                 }
                 
                 const summary = result.data.summary;
-                artists = result.data.artists;
-                filteredArtists = [...artists];
+                const artists = result.data.artists;
+                const pagination = result.pagination;
                 
-                // Default sort by most views
-                filteredArtists.sort((a, b) => (b.views || 0) - (a.views || 0));
+                totalPages = pagination.total_pages || 1;
                 
-                renderAnalytics(summary);
+                renderAnalytics(summary, artists);
+                renderPagination();
                 
             } catch (error) {
-                console.error('Error loading artists:', error);
+                console.error('Error loading analytics:', error);
                 document.getElementById('analyticsContent').innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
-                        <h3>Failed to Load Artists</h3>
+                        <h3>Failed to Load Analytics</h3>
                         <p style="margin: 12px 0;">${error.message}</p>
-                        <button onclick="loadArtists()" class="btn btn-primary" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; padding: 10px 20px; border-radius: 8px;">Try Again</button>
+                        <button onclick="loadAnalytics()" class="btn btn-primary" style="background: var(--primary-blue); color: white; border: none; cursor: pointer; padding: 10px 20px; border-radius: 8px;">Try Again</button>
                     </div>
                     <div class="admin-footer">
                         <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
@@ -689,11 +687,11 @@
             }
         }
         
-        function renderAnalytics(summary) {
-            const totalViews = summary.artists.total_views;
-            const totalArtists = summary.artists.total;
-            const totalTracks = summary.tracks.total;
-            const avgViews = summary.artists.avg_views;
+        function renderAnalytics(summary, artists) {
+            const totalViews = summary.total_views || 0;
+            const totalArtists = summary.total_artists || 0;
+            const totalTracks = summary.total_tracks || 0;
+            const avgViews = summary.avg_views || 0;
             
             const html = `
                 <div class="content-header">
@@ -727,28 +725,72 @@
                 <div class="search-section">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search by artist name or country...">
+                        <input type="text" id="searchInput" placeholder="Search by artist name or country..." value="${escapeHtml(currentSearchTerm)}">
                     </div>
                     <div class="filter-row">
                         <select id="sortFilter" class="filter-select">
-                            <option value="views-desc">Most Profile Views</option>
-                            <option value="views-asc">Least Profile Views</option>
-                            <option value="name-asc">Name A-Z</option>
-                            <option value="name-desc">Name Z-A</option>
-                            <option value="tracks-desc">Most Tracks</option>
-                            <option value="tracks-asc">Least Tracks</option>
-                            <option value="albums-desc">Most Albums</option>
-                            <option value="albums-asc">Least Albums</option>
-                            <option value="eps-desc">Most EPs</option>
-                            <option value="eps-asc">Least EPs</option>
+                            <option value="views-desc" ${currentSort === 'views-desc' ? 'selected' : ''}>Most Profile Views</option>
+                            <option value="views-asc" ${currentSort === 'views-asc' ? 'selected' : ''}>Least Profile Views</option>
+                            <option value="name-asc" ${currentSort === 'name-asc' ? 'selected' : ''}>Name A-Z</option>
+                            <option value="name-desc" ${currentSort === 'name-desc' ? 'selected' : ''}>Name Z-A</option>
+                            <option value="tracks-desc" ${currentSort === 'tracks-desc' ? 'selected' : ''}>Most Tracks</option>
+                            <option value="tracks-asc" ${currentSort === 'tracks-asc' ? 'selected' : ''}>Least Tracks</option>
                         </select>
                     </div>
                 </div>
                 
                 <div id="artistsContainer">
-                    <div class="loading">
-                        <i class="fas fa-circle-notch fa-spin"></i>
-                        <div>Loading artists...</div>
+                    <div class="artists-grid">
+                        ${artists.map((artist, index) => {
+                            const globalRank = ((currentPage - 1) * itemsPerPage) + index + 1;
+                            const views = artist.views || 0;
+                            const trackCount = artist.track_count || 0;
+                            const albumCount = artist.album_count || 0;
+                            const epCount = artist.ep_count || 0;
+                            const country = artist.country || 'Unknown Location';
+                            const isFeatured = artist.is_featured === true;
+                            const isLegend = artist.is_zambian_legend === true;
+                            const statusBadge = artist.status === 'published' 
+                                ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                                : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                            
+                            const artistImage = artist.image_url || artist.photo_url;
+                            
+                            return `
+                                <div class="artist-card">
+                                    <div class="artist-rank">#${globalRank}</div>
+                                    <div class="artist-name">${escapeHtml(artist.name)} ${statusBadge}</div>
+                                    <div class="artist-country">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        ${escapeHtml(country)}
+                                    </div>
+                                    <div class="artist-stats">
+                                        <div class="artist-stat-item">
+                                            <i class="fas fa-music"></i>
+                                            ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
+                                        </div>
+                                        <div class="artist-stat-item">
+                                            <i class="fas fa-compact-disc"></i>
+                                            ${albumCount} ${albumCount === 1 ? 'Album' : 'Albums'}
+                                        </div>
+                                        <div class="artist-stat-item">
+                                            <i class="fas fa-play-circle"></i>
+                                            ${epCount} ${epCount === 1 ? 'EP' : 'EPs'}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                        <div class="artist-views">
+                                            <i class="fas fa-eye"></i>
+                                            ${formatNumber(views)} profile views
+                                        </div>
+                                        <div style="display: flex; gap: 8px;">
+                                            ${isFeatured ? '<span class="artist-badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
+                                            ${isLegend ? '<span class="artist-badge legend"><i class="fas fa-crown"></i> Legend</span>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 </div>
                 
@@ -757,151 +799,56 @@
             
             document.getElementById('analyticsContent').innerHTML = html;
             
+            // Re-attach event listeners
             document.getElementById('searchInput').addEventListener('input', applyFilters);
             document.getElementById('sortFilter').addEventListener('change', applyFilters);
-            
-            renderArtistsList();
         }
         
         function applyFilters() {
-            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-            const sortBy = document.getElementById('sortFilter')?.value || 'views-desc';
-            
-            filteredArtists = artists.filter(artist => {
-                const nameMatch = artist.name?.toLowerCase().includes(searchTerm);
-                const countryMatch = artist.country?.toLowerCase().includes(searchTerm);
-                return !searchTerm || nameMatch || countryMatch;
-            });
-            
-            // Apply sort
-            if (sortBy === 'views-desc') {
-                filteredArtists.sort((a, b) => (b.views || 0) - (a.views || 0));
-            } else if (sortBy === 'views-asc') {
-                filteredArtists.sort((a, b) => (a.views || 0) - (b.views || 0));
-            } else if (sortBy === 'name-asc') {
-                filteredArtists.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-            } else if (sortBy === 'name-desc') {
-                filteredArtists.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
-            } else if (sortBy === 'tracks-desc') {
-                filteredArtists.sort((a, b) => (b.track_count || 0) - (a.track_count || 0));
-            } else if (sortBy === 'tracks-asc') {
-                filteredArtists.sort((a, b) => (a.track_count || 0) - (b.track_count || 0));
-            } else if (sortBy === 'albums-desc') {
-                filteredArtists.sort((a, b) => (b.album_count || 0) - (a.album_count || 0));
-            } else if (sortBy === 'albums-asc') {
-                filteredArtists.sort((a, b) => (a.album_count || 0) - (b.album_count || 0));
-            } else if (sortBy === 'eps-desc') {
-                filteredArtists.sort((a, b) => (b.ep_count || 0) - (a.ep_count || 0));
-            } else if (sortBy === 'eps-asc') {
-                filteredArtists.sort((a, b) => (a.ep_count || 0) - (b.ep_count || 0));
-            }
-            
+            currentSearchTerm = document.getElementById('searchInput').value;
+            currentSort = document.getElementById('sortFilter').value;
             currentPage = 1;
-            renderArtistsList();
+            loadAnalytics();
         }
         
-        function renderArtistsList() {
-            const container = document.getElementById('artistsContainer');
+        function renderPagination() {
             const paginationContainer = document.getElementById('pagination');
             
-            if (filteredArtists.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-microphone"></i>
-                        <h3>No Artists Found</h3>
-                        <p>Try adjusting your search or create some artists</p>
-                    </div>
-                `;
+            if (totalPages <= 1) {
                 paginationContainer.innerHTML = '';
                 return;
             }
             
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageArtists = filteredArtists.slice(start, end);
-            const totalPages = Math.ceil(filteredArtists.length / itemsPerPage);
+            let html = '';
             
-            let artistsHtml = '<div class="artists-grid">';
-            
-            pageArtists.forEach((artist, index) => {
-                const globalRank = start + index + 1;
-                const views = artist.views || 0;
-                const trackCount = artist.track_count || 0;
-                const albumCount = artist.album_count || 0;
-                const epCount = artist.ep_count || 0;
-                const country = artist.country || 'Unknown Location';
-                const isFeatured = artist.is_featured === true;
-                const isLegend = artist.is_zambian_legend === true;
-                const statusBadge = artist.status === 'published' 
-                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
-                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
-                
-                artistsHtml += `
-                    <div class="artist-card">
-                        <div class="artist-rank">#${globalRank}</div>
-                        <div class="artist-name">${escapeHtml(artist.name)} ${statusBadge}</div>
-                        <div class="artist-country">
-                            <i class="fas fa-map-marker-alt"></i>
-                            ${escapeHtml(country)}
-                        </div>
-                        <div class="artist-stats">
-                            <div class="artist-stat-item">
-                                <i class="fas fa-music"></i>
-                                ${trackCount} ${trackCount === 1 ? 'Track' : 'Tracks'}
-                            </div>
-                            <div class="artist-stat-item">
-                                <i class="fas fa-compact-disc"></i>
-                                ${albumCount} ${albumCount === 1 ? 'Album' : 'Albums'}
-                            </div>
-                            <div class="artist-stat-item">
-                                <i class="fas fa-play-circle"></i>
-                                ${epCount} ${epCount === 1 ? 'EP' : 'EPs'}
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                            <div class="artist-views">
-                                <i class="fas fa-eye"></i>
-                                ${formatNumber(views)} profile views
-                            </div>
-                            <div style="display: flex; gap: 8px;">
-                                ${isFeatured ? '<span class="artist-badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
-                                ${isLegend ? '<span class="artist-badge legend"><i class="fas fa-crown"></i> Legend</span>' : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            artistsHtml += '</div>';
-            container.innerHTML = artistsHtml;
-            
-            if (totalPages > 1) {
-                let paginationHtml = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-                }
-                paginationContainer.innerHTML = paginationHtml;
-            } else {
-                paginationContainer.innerHTML = '';
+            if (currentPage > 1) {
+                html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
             }
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += `<button class="page-btn" disabled>...</button>`;
+                }
+            }
+            
+            if (currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
+            }
+            
+            paginationContainer.innerHTML = html;
         }
         
         function goToPage(page) {
             currentPage = page;
-            renderArtistsList();
+            loadAnalytics();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
         
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
-                loadArtists();
+                loadAnalytics();
             }
         });
     </script>
