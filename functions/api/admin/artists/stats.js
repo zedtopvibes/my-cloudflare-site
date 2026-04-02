@@ -22,7 +22,7 @@ export async function onRequest(context) {
   }
 
   try {
-    // Get artist stats
+    // Get aggregated artist stats
     const artistStats = await env.DB.prepare(`
       SELECT 
         COUNT(*) as total_artists,
@@ -55,25 +55,75 @@ export async function onRequest(context) {
       WHERE deleted_at IS NULL
     `).first();
     
+    // Get individual artists with their track, album, and EP counts
+    const artists = await env.DB.prepare(`
+      SELECT 
+        a.id,
+        a.name,
+        a.slug,
+        a.country,
+        a.photo_url,
+        a.views,
+        a.status,
+        a.is_featured,
+        a.is_zambian_legend,
+        a.created_at,
+        (
+          SELECT COUNT(DISTINCT ta.track_id)
+          FROM track_artists ta
+          WHERE ta.artist_id = a.id
+        ) as track_count,
+        (
+          SELECT COUNT(*)
+          FROM albums al
+          WHERE al.artist_id = a.id AND al.deleted_at IS NULL
+        ) as album_count,
+        (
+          SELECT COUNT(*)
+          FROM eps e
+          WHERE e.artist_id = a.id AND e.deleted_at IS NULL
+        ) as ep_count
+      FROM artists a
+      WHERE a.deleted_at IS NULL
+      ORDER BY a.views DESC
+    `).all();
+    
     const response = {
       success: true,
       data: {
-        artists: {
-          total: artistStats.total_artists || 0,
-          total_views: artistStats.total_views || 0,
-          avg_views: Math.round(artistStats.avg_views) || 0,
-          published: artistStats.published || 0,
-          draft: artistStats.draft || 0
+        summary: {
+          artists: {
+            total: artistStats.total_artists || 0,
+            total_views: artistStats.total_views || 0,
+            avg_views: Math.round(artistStats.avg_views) || 0,
+            published: artistStats.published || 0,
+            draft: artistStats.draft || 0
+          },
+          tracks: {
+            total: trackStats.total_tracks || 0
+          },
+          albums: {
+            total: albumStats.total_albums || 0
+          },
+          eps: {
+            total: epStats.total_eps || 0
+          }
         },
-        tracks: {
-          total: trackStats.total_tracks || 0
-        },
-        albums: {
-          total: albumStats.total_albums || 0
-        },
-        eps: {
-          total: epStats.total_eps || 0
-        }
+        artists: artists.results.map(artist => ({
+          id: artist.id,
+          name: artist.name,
+          slug: artist.slug,
+          country: artist.country || 'Unknown',
+          photo_url: artist.photo_url,
+          views: artist.views || 0,
+          status: artist.status || 'draft',
+          is_featured: artist.is_featured === 1,
+          is_zambian_legend: artist.is_zambian_legend === 1,
+          created_at: artist.created_at,
+          track_count: parseInt(artist.track_count) || 0,
+          album_count: parseInt(artist.album_count) || 0,
+          ep_count: parseInt(artist.ep_count) || 0
+        }))
       }
     };
     
