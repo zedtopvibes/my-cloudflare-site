@@ -45,7 +45,6 @@
             width: 100%;
         }
         
-        /* Header Styles */
         .admin-header {
             background: var(--white);
             border-radius: 12px;
@@ -94,7 +93,6 @@
             font-size: 0.9rem;
         }
         
-        /* Tabs */
         .admin-tabs {
             display: flex;
             gap: 8px;
@@ -141,7 +139,6 @@
             color: white;
         }
         
-        /* Content Area */
         .admin-content {
             background: var(--white);
             border-radius: 12px;
@@ -152,7 +149,6 @@
             overflow-x: hidden;
         }
         
-        /* Profile Card */
         .profile-card {
             background: var(--white);
             border-radius: 12px;
@@ -160,14 +156,12 @@
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        /* Cover Area */
         .profile-cover {
             height: 100px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             position: relative;
         }
         
-        /* Artist Header */
         .artist-header {
             display: flex;
             align-items: flex-end;
@@ -254,7 +248,6 @@
             border: 1px solid #10b981;
         }
         
-        /* Status Badge */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -275,7 +268,7 @@
             color: #856404;
         }
         
-        /* Stats Grid - 6 cards (3x2) */
+        /* Stats Grid - 6 cards (3x2) - FULL WIDTH */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -331,7 +324,6 @@
             letter-spacing: 0.5px;
         }
         
-        /* Info Row */
         .info-row {
             display: flex;
             gap: 20px;
@@ -356,7 +348,6 @@
             color: var(--primary-blue);
         }
         
-        /* Bio Section */
         .bio-section {
             padding: 16px 24px;
             border-bottom: 1px solid rgba(31, 111, 159, 0.1);
@@ -376,7 +367,7 @@
             line-height: 1.6;
         }
         
-        /* Content Sections - 3 columns */
+        /* Content Sections - 3 columns - FULL WIDTH outside stats */
         .content-sections {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -427,7 +418,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
         }
         
@@ -548,7 +539,6 @@
             opacity: 0.3;
         }
         
-        /* Action Buttons */
         .action-buttons {
             padding: 16px 24px 24px 24px;
             display: flex;
@@ -558,7 +548,6 @@
             flex-wrap: wrap;
         }
         
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -610,7 +599,6 @@
             background: #e0a800;
         }
         
-        /* Loading */
         .loading {
             text-align: center;
             padding: 60px 20px;
@@ -623,7 +611,6 @@
             margin-bottom: 16px;
         }
         
-        /* Footer */
         .admin-footer {
             background: var(--white);
             border-radius: 12px;
@@ -644,7 +631,6 @@
             text-decoration: underline;
         }
         
-        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -670,7 +656,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        /* Responsive */
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
             .toast { left: auto; right: 20px; min-width: 300px; }
@@ -780,7 +765,6 @@
         let allAlbums = [];
         let allEps = [];
         
-        // Pagination state
         let trackPage = 1;
         let albumPage = 1;
         let epPage = 1;
@@ -841,7 +825,6 @@
             return track.artists.some(a => a.id === artist.id && a.is_primary === 0);
         }
         
-        // Render paginated list
         function renderPaginatedList(items, page, containerId, renderItemFn, type) {
             const start = (page - 1) * itemsPerPage;
             const end = start + itemsPerPage;
@@ -858,7 +841,6 @@
             
             container.innerHTML = pageItems.map(renderItemFn).join('');
             
-            // Render pagination
             const paginationContainer = document.getElementById(`${containerId}-pagination`);
             if (paginationContainer && totalPages > 1) {
                 let paginationHtml = '';
@@ -1028,7 +1010,6 @@
                 allAlbums = albumsRes.ok ? await albumsRes.json() : [];
                 allEps = epsRes.ok ? await epsRes.json() : [];
                 
-                // Filter data
                 const artistTracks = allTracks.filter(trackBelongsToArtist);
                 const artistAlbums = allAlbums.filter(a => a.artist_id === artist.id);
                 const artistEps = allEps.filter(e => e.artist_id === artist.id);
@@ -1172,12 +1153,10 @@
                 
                 document.getElementById('profileContent').innerHTML = html;
                 
-                // Reset pagination pages
                 trackPage = 1;
                 albumPage = 1;
                 epPage = 1;
                 
-                // Render lists
                 renderTracksList();
                 renderAlbumsList();
                 renderEpsList();
