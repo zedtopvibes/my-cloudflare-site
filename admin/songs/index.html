@@ -44,7 +44,6 @@
             width: 100%;
         }
         
-        /* Header Styles */
         .admin-header {
             background: var(--white);
             border-radius: 12px;
@@ -93,7 +92,6 @@
             font-size: 0.9rem;
         }
         
-        /* Tabs */
         .admin-tabs {
             display: flex;
             gap: 8px;
@@ -140,7 +138,6 @@
             color: white;
         }
         
-        /* Content Area */
         .admin-content {
             background: var(--white);
             border-radius: 12px;
@@ -168,7 +165,6 @@
             color: var(--primary-blue);
         }
         
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -211,7 +207,6 @@
             letter-spacing: 0.5px;
         }
         
-        /* Search Section */
         .search-section {
             display: flex;
             gap: 10px;
@@ -255,7 +250,6 @@
             flex: 1;
         }
         
-        /* Filter Tabs - All same size, horizontal line */
         .filter-tabs {
             display: flex;
             gap: 8px;
@@ -296,7 +290,6 @@
             color: white;
         }
         
-        /* Artist Badges */
         .artist-badge {
             display: inline-block;
             background: #e3f2fd;
@@ -320,7 +313,6 @@
             align-items: center;
         }
         
-        /* Status Badge */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -341,7 +333,6 @@
             color: #856404;
         }
         
-        /* Desktop Table */
         .songs-table-container {
             overflow-x: auto;
             border-radius: 8px;
@@ -412,7 +403,6 @@
             color: var(--gray);
         }
         
-        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 5px;
@@ -444,7 +434,6 @@
             color: white;
         }
         
-        /* Mobile Cards */
         .songs-mobile-grid {
             display: none;
             flex-direction: column;
@@ -569,7 +558,6 @@
             color: #721c24;
         }
         
-        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -623,7 +611,6 @@
             font-size: 0.7rem;
         }
         
-        /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
@@ -655,7 +642,6 @@
             border-color: var(--primary-blue);
         }
         
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -675,7 +661,6 @@
             color: var(--primary-dark);
         }
         
-        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -717,7 +702,6 @@
             justify-content: flex-end;
         }
         
-        /* Edit Modal Specific */
         .edit-modal .form-group {
             margin-bottom: 12px;
         }
@@ -785,7 +769,6 @@
             font-size: 0.8rem;
         }
         
-        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -812,7 +795,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        /* Skeleton */
         .skeleton-row {
             height: 50px;
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -827,7 +809,6 @@
             100% { background-position: -200% 0; }
         }
         
-        /* Footer */
         .admin-footer {
             background: var(--white);
             border-radius: 12px;
@@ -848,7 +829,6 @@
             text-decoration: underline;
         }
         
-        /* Responsive */
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); }
@@ -973,7 +953,6 @@
         </div>
     </div>
 
-    <!-- Confirm Modal (for publish/unpublish/delete) -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h3 id="confirmModalTitle" style="color: var(--primary-blue);">Confirm Action</h3>
@@ -985,7 +964,6 @@
         </div>
     </div>
 
-    <!-- Edit Song Modal -->
     <div id="editModal" class="modal edit-modal">
         <div class="modal-content">
             <h3>Edit Song</h3>
@@ -1392,7 +1370,7 @@
                                     : `<button class="action-btn" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
                                 }
                                 <button class="action-btn" onclick="editSong(${song.id})" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn" onclick="previewSong('${song.slug}')" title="Preview"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn" onclick="previewSong(${song.id})" title="Preview"><i class="fas fa-eye"></i></button>
                                 <button class="action-btn delete" onclick="showDeleteModal(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
                             </div>
                         </td>
@@ -1400,7 +1378,7 @@
                 `;
             });
             
-            html += '</tbody></table></div>';
+            html += '</tbody> </table></div>';
             container.innerHTML = html;
         }
 
@@ -1443,7 +1421,7 @@
                                 : `<button class="action-btn" onclick="unpublishSong(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
                             }
                             <button class="action-btn" onclick="editSong(${song.id})" title="Edit"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn" onclick="previewSong('${song.slug}')" title="Preview"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn" onclick="previewSong(${song.id})" title="Preview"><i class="fas fa-eye"></i></button>
                             <button class="action-btn delete" onclick="showDeleteModal(${song.id}, '${escapeHtml(song.title)?.replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
@@ -1680,8 +1658,9 @@
             });
         };
 
-        window.previewSong = (slug) => {
-            window.open(`/song/${slug}`, '_blank');
+        // FIXED: Preview now opens Song Profile page instead of homepage
+        window.previewSong = (id) => {
+            window.open(`/admin/songs/profile.html?id=${id}`, '_blank');
         };
 
         function formatNumber(num) {
