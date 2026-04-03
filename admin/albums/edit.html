@@ -2,111 +2,249 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Edit Album - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --primary: #1e3c72;
-            --primary-light: #2a4a8a;
-            --primary-soft: #e8f0fe;
-            --secondary: #00b4d8;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --radius-sm: 6px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --gray: #666;
+            --gray-light: #999;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
             --success: #28a745;
+            --error: #dc3545;
             --warning: #ffc107;
         }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
-            padding: 20px;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
-        .container {
-            max-width: 600px;
+        .admin-container {
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
-        .header {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
+        /* Header Styles */
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
-        .header h1 {
-            font-size: 1.2rem;
-            font-weight: 600;
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .header h1 i {
-            color: var(--primary);
+        .user-info i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
         }
         
-        .back-btn {
-            padding: 6px 14px;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
-            color: var(--gray-700);
-            text-decoration: none;
-            font-size: 0.85rem;
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Tabs */
+        .admin-tabs {
             display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            border: 1px solid var(--gray-200);
+            text-decoration: none;
+            height: 36px;
         }
         
+        .tab-btn i {
+            font-size: 0.85rem;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        /* Content Area */
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Form Card */
         .form-card {
-            background: white;
-            border-radius: var(--radius-lg);
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(31, 111, 159, 0.1);
             padding: 24px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--gray-200);
         }
         
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+        }
+        
+        .form-group label i {
+            color: var(--primary-blue);
+            margin-right: 6px;
+            width: 18px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(31, 111, 159, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .form-hint {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        
+        .form-hint i {
+            color: var(--primary-blue);
+            margin-right: 4px;
+        }
+        
+        .form-hint a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .form-hint a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Cover Section */
         .cover-section {
             text-align: center;
             margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .cover-preview {
-            width: 150px;
-            height: 150px;
+            width: 180px;
+            height: 180px;
             margin: 0 auto 16px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 3rem;
             overflow: hidden;
-            border: 3px solid var(--gray-200);
+            border: 3px solid var(--white);
+            box-shadow: var(--shadow);
         }
         
         .cover-preview img {
@@ -116,127 +254,33 @@
         }
         
         .cover-upload-btn {
-            background: var(--gray-100);
-            border: 1px solid var(--gray-200);
+            background: var(--light-gray);
+            border: 1px solid #ddd;
             padding: 8px 16px;
-            border-radius: var(--radius-md);
+            border-radius: 8px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+        
+        .cover-upload-btn:hover {
+            background: #e0e0e0;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
         }
         
         #coverInput {
             display: none;
         }
         
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--gray-700);
-        }
-        
-        .form-group label i {
-            color: var(--primary);
-            margin-right: 6px;
-        }
-        
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-        
-        .btn {
-            padding: 10px 24px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-light);
-        }
-        
-        .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 1px solid var(--gray-200);
-        }
-        
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        
-        .status-badge.published {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-badge.draft {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
+        /* Artist Search Styles */
+        .artist-search-container {
+            position: relative;
         }
         
         .suggestions-container {
@@ -245,12 +289,12 @@
             left: 0;
             right: 0;
             background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
+            border: 1px solid #ddd;
+            border-radius: 8px;
             margin-top: 4px;
             max-height: 250px;
             overflow-y: auto;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow);
             display: none;
             z-index: 1000;
         }
@@ -258,7 +302,7 @@
         .suggestion-item {
             padding: 10px 15px;
             cursor: pointer;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--light-gray);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -266,93 +310,216 @@
         }
         
         .suggestion-item:hover {
-            background: var(--primary-soft);
-        }
-        
-        .suggestion-item.selected {
-            background: var(--primary-soft);
-            border-left: 3px solid var(--primary);
+            background: var(--light-gray);
         }
         
         .suggestion-icon {
-            color: var(--primary);
+            color: var(--primary-blue);
             width: 24px;
             text-align: center;
         }
         
-        .suggestion-info {
-            flex: 1;
-        }
-        
         .suggestion-name {
             font-weight: 500;
+            font-size: 0.85rem;
         }
         
         .suggestion-meta {
-            font-size: 0.8rem;
-            color: var(--gray-500);
+            font-size: 0.7rem;
+            color: var(--gray);
         }
         
         .selected-badge {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            background: var(--primary-soft);
-            color: var(--primary);
+            background: #e8f0fe;
+            color: var(--primary-blue);
             padding: 4px 10px;
             border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+        
+        .selected-badge button {
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
             font-size: 0.85rem;
-            margin-top: 5px;
+            margin: 16px 0;
         }
         
-        .form-hint {
+        .checkbox-label i {
+            color: var(--primary-blue);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
             font-size: 0.8rem;
-            color: var(--gray-500);
-            margin-top: 4px;
-        }
-        
-        .form-hint a {
-            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
             text-decoration: none;
         }
         
-        .form-hint a:hover {
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+        
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+        }
+        
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
             text-decoration: underline;
         }
         
-        @media (max-width: 640px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: var(--primary-blue); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+            .form-card { max-width: 700px; margin: 0 auto; }
+        }
+        
+        @media (max-width: 767px) {
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .cover-preview { width: 140px; height: 140px; font-size: 2rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>
-                <i class="fas fa-compact-disc"></i>
-                <span id="pageTitle">Create Album</span>
-            </h1>
-            <a href="/admin/albums/index.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back
-            </a>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-compact-disc"></i> <span id="pageTitle">Edit Album</span></h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn active"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
         </div>
         
-        <div class="form-card" id="formCard">
-            <div class="loading">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <div>Loading...</div>
+        <div class="admin-content">
+            <div class="form-card" id="formCard">
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <div>Loading album...</div>
+                </div>
             </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
@@ -363,6 +530,39 @@
         let artistTimeout;
         let selectedArtistId = null;
         let selectedArtistName = '';
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
         
         async function loadArtists() {
             try {
@@ -375,149 +575,65 @@
             }
         }
         
-        async function loadAlbumForEdit() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const albumId = urlParams.get('id');
-            
-            const pageTitle = document.getElementById('pageTitle');
-            const formCard = document.getElementById('formCard');
-            
-            await loadArtists();
-            
-            if (!albumId) {
-                pageTitle.textContent = 'Create Album';
-                renderForm(null);
-                return;
-            }
-            
-            try {
-                const res = await fetch(`${API_BASE}/admin/albums/${albumId}`);
-                if (!res.ok) throw new Error('Album not found');
-                const album = await res.json();
-                
-                selectedArtistId = album.artist_id || null;
-                selectedArtistName = album.artist_name || album.artist || '';
-                
-                pageTitle.textContent = `Edit: ${album.title}`;
-                renderForm(album);
-                
-            } catch (error) {
-                formCard.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #ef4444;">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 16px;"></i>
-                        <h3>Failed to load album</h3>
-                        <p style="margin: 16px 0;">${error.message}</p>
-                        <a href="/admin/albums/index.html" class="btn btn-primary">Back to Albums</a>
-                    </div>
-                `;
+        function previewCover(input) {
+            if (input.files && input.files[0]) {
+                currentCoverFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('coverPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         }
         
-        function renderForm(album) {
-            const isEditing = !!album;
-            const currentStatus = album?.status || 'draft';
-            const artistDisplayName = selectedArtistName || '';
+        window.selectArtist = async (artistId, artistName) => {
+            selectedArtistId = artistId;
+            selectedArtistName = artistName;
+            document.getElementById('artistSearchInput').value = artistName;
+            document.getElementById('artistSuggestions').style.display = 'none';
             
-            document.getElementById('formCard').innerHTML = `
-                <form id="albumForm">
-                    <input type="hidden" id="albumId" value="${album?.id || ''}">
-                    
-                    <div class="cover-section">
-                        <div class="cover-preview" id="coverPreview">
-                            ${album?.cover_url 
-                                ? `<img src="${album.cover_url}" alt="Cover">`
-                                : '<i class="fas fa-compact-disc"></i>'
-                            }
-                        </div>
-                        
-                        <div>
-                            <label for="coverInput" class="cover-upload-btn">
-                                <i class="fas fa-camera"></i>
-                                ${album?.cover_url ? 'Change Cover' : 'Upload Cover'}
-                            </label>
-                            <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-tag"></i> Album Title *</label>
-                        <input type="text" id="albumTitle" value="${escapeHtml(album?.title || '')}" placeholder="e.g. Midnight Waves" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> Artist *</label>
-                        <div style="position: relative;">
-                            <input type="text" id="artistSearchInput" placeholder="Search or type artist name..." autocomplete="off" value="${escapeHtml(artistDisplayName)}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius-md);">
-                            <select id="artistSelect" style="display: none;">
-                                <option value="">Select Artist</option>
-                                ${allArtists.map(artist => 
-                                    `<option value="${artist.id}" ${artist.id === selectedArtistId ? 'selected' : ''}>${escapeHtml(artist.name)}</option>`
-                                ).join('')}
-                            </select>
-                            <div id="artistSuggestions" class="suggestions-container"></div>
-                        </div>
-                        <div id="selectedArtistBadge" class="selected-badge" style="display: ${selectedArtistId ? 'inline-flex' : 'none'};">
-                            <i class="fas fa-check-circle"></i> <span id="selectedArtistName">${escapeHtml(artistDisplayName)}</span>
-                            <button type="button" onclick="clearArtistSelection()" style="background: none; border: none; color: var(--primary); margin-left: 5px; cursor: pointer;">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="form-hint">
-                            <a href="#" onclick="openNewArtistModal()">
-                                <i class="fas fa-plus-circle"></i> Add New Artist
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-calendar"></i> Release Date</label>
-                            <input type="date" id="albumReleaseDate" value="${album?.release_date || ''}">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label><i class="fas fa-tag"></i> Genre</label>
-                            <input type="text" id="albumGenre" value="${escapeHtml(album?.genre || '')}" placeholder="e.g. Hip-Hop, Gospel, R&B">
-                            <div class="form-hint">
-                                <i class="fas fa-info-circle"></i> Helps with recommendations. If left empty, will use artist's genre.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Description</label>
-                        <textarea id="albumDescription" rows="3" placeholder="Album description...">${escapeHtml(album?.description || '')}</textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-flag"></i> Status</label>
-                        <select id="albumStatus">
-                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
-                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
-                        </select>
-                        <div class="form-hint">
-                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
-                        </div>
-                    </div>
-                    
-                    <div class="checkbox-label">
-                        <input type="checkbox" id="albumFeatured" ${album?.is_featured ? 'checked' : ''}>
-                        <i class="fas fa-star" style="color: var(--primary);"></i> Featured Album
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/albums/index.html'">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            ${isEditing ? 'Update Album' : 'Create Album'}
-                        </button>
-                    </div>
-                </form>
-            `;
+            document.getElementById('selectedArtistName').textContent = artistName;
+            document.getElementById('selectedArtistBadge').style.display = 'inline-flex';
             
-            setupArtistSearch();
-            document.getElementById('albumForm').addEventListener('submit', handleSubmit);
+            // Auto-fill genre from artist if album genre is empty
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${artistId}`);
+                if (response.ok) {
+                    const artist = await response.json();
+                    const genreInput = document.getElementById('albumGenre');
+                    if (artist.genre && artist.genre.trim() && genreInput && !genreInput.value) {
+                        genreInput.value = artist.genre;
+                        showToast(`Genre auto-filled: ${artist.genre}`, 'info');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching artist:', error);
+            }
+        };
+        
+        window.clearArtistSelection = () => {
+            selectedArtistId = null;
+            selectedArtistName = '';
+            document.getElementById('artistSearchInput').value = '';
+            document.getElementById('selectedArtistBadge').style.display = 'none';
+        };
+        
+        function displayArtistSuggestions(artists) {
+            let html = '';
+            artists.forEach(artist => {
+                html += `
+                    <div class="suggestion-item" onclick="selectArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')">
+                        <div class="suggestion-icon"><i class="fas fa-user-circle"></i></div>
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(artist.name)}</div>
+                            ${artist.country ? `<div class="suggestion-meta">${escapeHtml(artist.country)}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('artistSuggestions').innerHTML = html;
+            document.getElementById('artistSuggestions').style.display = 'block';
         }
         
         function setupArtistSearch() {
@@ -559,66 +675,41 @@
             });
         }
         
-        function displayArtistSuggestions(artists) {
-            let html = '';
-            artists.forEach(artist => {
-                html += `
-                    <div class="suggestion-item" onclick="selectArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')">
-                        <div class="suggestion-icon"><i class="fas fa-user-circle"></i></div>
-                        <div class="suggestion-info">
-                            <div class="suggestion-name">${escapeHtml(artist.name)}</div>
-                            ${artist.country ? `<div class="suggestion-meta">${escapeHtml(artist.country)}</div>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('artistSuggestions').innerHTML = html;
-            document.getElementById('artistSuggestions').style.display = 'block';
+        function openNewArtistModal() {
+            const artistName = prompt('Enter new artist name:');
+            if (artistName && artistName.trim()) {
+                saveNewArtist(artistName.trim());
+            }
         }
         
-        window.selectArtist = async (artistId, artistName) => {
-            selectedArtistId = artistId;
-            selectedArtistName = artistName;
-            document.getElementById('artistSearchInput').value = artistName;
-            document.getElementById('artistSelect').value = artistId;
-            document.getElementById('artistSuggestions').style.display = 'none';
-            
-            document.getElementById('selectedArtistName').textContent = artistName;
-            document.getElementById('selectedArtistBadge').style.display = 'inline-flex';
-            
-            // Auto-fill genre from artist if album genre is empty
+        async function saveNewArtist(name) {
             try {
-                const response = await fetch(`${API_BASE}/admin/artists/${artistId}`);
-                if (response.ok) {
-                    const artist = await response.json();
-                    const genreInput = document.getElementById('albumGenre');
-                    if (artist.genre && artist.genre.trim() && genreInput && !genreInput.value) {
-                        genreInput.value = artist.genre;
-                        showToast(`Genre auto-filled: ${artist.genre}`, 'info');
-                    }
+                const response = await fetch(`${API_BASE}/admin/artists`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: name,
+                        country: null,
+                        bio: null,
+                        is_featured: false,
+                        is_zambian_legend: false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to create artist');
                 }
+                
+                allArtists.push(data);
+                allArtists.sort((a, b) => a.name.localeCompare(b.name));
+                
+                selectArtist(data.id, data.name);
+                showToast(`Artist "${name}" created!`, 'success');
+                
             } catch (error) {
-                console.error('Error fetching artist:', error);
-            }
-        };
-        
-        window.clearArtistSelection = () => {
-            selectedArtistId = null;
-            selectedArtistName = '';
-            document.getElementById('artistSearchInput').value = '';
-            document.getElementById('artistSelect').value = '';
-            document.getElementById('selectedArtistBadge').style.display = 'none';
-        };
-        
-        function previewCover(input) {
-            if (input.files && input.files[0]) {
-                currentCoverFile = input.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById('coverPreview');
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                };
-                reader.readAsDataURL(input.files[0]);
+                showToast(error.message, 'error');
             }
         }
         
@@ -629,7 +720,7 @@
             const isEditing = !!id;
             
             if (!selectedArtistId) {
-                alert('Please select an artist');
+                showToast('Please select an artist', 'error');
                 return;
             }
             
@@ -644,7 +735,7 @@
             };
             
             if (!albumData.title) {
-                alert('Album title is required');
+                showToast('Album title is required', 'error');
                 return;
             }
             
@@ -700,107 +791,143 @@
             }
         }
         
-        function openNewArtistModal() {
-            const artistName = prompt('Enter new artist name:');
-            if (artistName && artistName.trim()) {
-                saveNewArtist(artistName.trim());
-            }
+        function renderForm(album) {
+            const isEditing = !!album;
+            const currentStatus = album?.status || 'draft';
+            const artistDisplayName = selectedArtistName || '';
+            
+            document.getElementById('formCard').innerHTML = `
+                <form id="albumForm">
+                    <input type="hidden" id="albumId" value="${album?.id || ''}">
+                    
+                    <div class="cover-section">
+                        <div class="cover-preview" id="coverPreview">
+                            ${album?.cover_url 
+                                ? `<img src="${album.cover_url}" alt="Cover">`
+                                : '<i class="fas fa-compact-disc"></i>'
+                            }
+                        </div>
+                        
+                        <label for="coverInput" class="cover-upload-btn">
+                            <i class="fas fa-camera"></i>
+                            ${album?.cover_url ? 'Change Cover' : 'Upload Cover'}
+                        </label>
+                        <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Album Title *</label>
+                        <input type="text" id="albumTitle" value="${escapeHtml(album?.title || '')}" placeholder="e.g. Midnight Waves" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Artist *</label>
+                        <div class="artist-search-container">
+                            <input type="text" id="artistSearchInput" placeholder="Search or type artist name..." autocomplete="off" value="${escapeHtml(artistDisplayName)}">
+                            <div id="artistSuggestions" class="suggestions-container"></div>
+                        </div>
+                        <div id="selectedArtistBadge" class="selected-badge" style="display: ${selectedArtistId ? 'inline-flex' : 'none'};">
+                            <i class="fas fa-check-circle"></i> <span id="selectedArtistName">${escapeHtml(artistDisplayName)}</span>
+                            <button type="button" onclick="clearArtistSelection()"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="form-hint">
+                            <a href="#" onclick="openNewArtistModal(); return false;">
+                                <i class="fas fa-plus-circle"></i> Add New Artist
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Release Date</label>
+                            <input type="date" id="albumReleaseDate" value="${album?.release_date || ''}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Genre</label>
+                            <input type="text" id="albumGenre" value="${escapeHtml(album?.genre || '')}" placeholder="e.g. Hip-Hop, Gospel, R&B">
+                            <div class="form-hint">
+                                <i class="fas fa-info-circle"></i> Helps with recommendations. If left empty, will use artist's genre.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> Description</label>
+                        <textarea id="albumDescription" rows="3" placeholder="Album description...">${escapeHtml(album?.description || '')}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-flag"></i> Status</label>
+                        <select id="albumStatus">
+                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
+                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
+                        </select>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-label">
+                        <input type="checkbox" id="albumFeatured" ${album?.is_featured ? 'checked' : ''}>
+                        <i class="fas fa-star"></i> Featured Album
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/albums/index.html'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            ${isEditing ? 'Update Album' : 'Create Album'}
+                        </button>
+                    </div>
+                </form>
+            `;
+            
+            setupArtistSearch();
+            document.getElementById('albumForm').addEventListener('submit', handleSubmit);
         }
         
-        async function saveNewArtist(name) {
+        async function loadAlbumForEdit() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const albumId = urlParams.get('id');
+            
+            const pageTitle = document.getElementById('pageTitle');
+            
+            await loadArtists();
+            
+            if (!albumId) {
+                pageTitle.textContent = 'Create Album';
+                renderForm(null);
+                return;
+            }
+            
             try {
-                const response = await fetch(`${API_BASE}/admin/artists`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name: name,
-                        country: null,
-                        bio: null,
-                        is_featured: false,
-                        is_zambian_legend: false
-                    })
-                });
+                const res = await fetch(`${API_BASE}/admin/albums/${albumId}`);
+                if (!res.ok) throw new Error('Album not found');
+                const album = await res.json();
                 
-                const data = await response.json();
+                selectedArtistId = album.artist_id || null;
+                selectedArtistName = album.artist_name || album.artist || '';
                 
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to create artist');
-                }
-                
-                allArtists.push(data);
-                allArtists.sort((a, b) => a.name.localeCompare(b.name));
-                
-                const select = document.getElementById('artistSelect');
-                const option = document.createElement('option');
-                option.value = data.id;
-                option.textContent = data.name;
-                select.appendChild(option);
-                
-                selectArtist(data.id, data.name);
-                
-                showToast(`Artist "${name}" created!`, 'success');
+                pageTitle.textContent = `Edit: ${album.title}`;
+                renderForm(album);
                 
             } catch (error) {
-                showToast(error.message, 'error');
+                document.getElementById('formCard').innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
+                        <h3>Failed to Load Album</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/albums/index.html" class="btn btn-primary">Back to Albums</a>
+                    </div>
+                `;
             }
-        }
-        
-        function showToast(message, type) {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
-                border-radius: 6px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 2000;
-                animation: slideIn 0.3s;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-        
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            return true;
         }
         
         if (checkAuth()) {
             loadAlbumForEdit();
         }
-        
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
