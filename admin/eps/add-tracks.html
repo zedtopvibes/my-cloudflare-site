@@ -24,7 +24,6 @@
             --success: #10b981;
             --error: #dc3545;
             --warning: #ffc107;
-            --ep-accent: #9b59b6;
         }
         
         body {
@@ -63,7 +62,7 @@
         }
         
         .header-top h1 {
-            color: var(--ep-accent);
+            color: var(--primary-blue);
             font-size: 1.3rem;
             font-weight: 700;
             display: flex;
@@ -83,7 +82,7 @@
         }
         
         .user-info i {
-            color: var(--ep-accent);
+            color: var(--primary-blue);
             font-size: 0.9rem;
         }
         
@@ -130,11 +129,11 @@
         
         .tab-btn:hover {
             background: #f0f0f0;
-            color: var(--ep-accent);
+            color: var(--primary-blue);
         }
         
         .tab-btn.active {
-            background: var(--ep-accent);
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -168,7 +167,7 @@
         .ep-cover-small {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, var(--ep-accent), var(--primary-light));
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -193,7 +192,7 @@
         
         .ep-artist {
             font-size: 0.85rem;
-            color: var(--ep-accent);
+            color: var(--primary-blue);
             font-weight: 500;
             margin-bottom: 4px;
         }
@@ -225,15 +224,15 @@
         }
         
         .stats-badge i {
-            color: var(--ep-accent);
+            color: var(--primary-blue);
         }
         
         .stats-badge.available i {
             color: var(--success);
         }
         
-        .stats-badge.in-album i {
-            color: var(--primary-blue);
+        .stats-badge.in-ep i {
+            color: var(--warning);
         }
         
         .search-section {
@@ -285,14 +284,14 @@
         
         .filter-btn:hover {
             background: #e8f0fe;
-            border-color: var(--ep-accent);
-            color: var(--ep-accent);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
         }
         
         .filter-btn.active {
-            background: var(--ep-accent);
+            background: var(--primary-blue);
             color: white;
-            border-color: var(--ep-accent);
+            border-color: var(--primary-blue);
         }
         
         .artist-badge {
@@ -307,7 +306,7 @@
         }
         
         .artist-badge.primary {
-            background: var(--ep-accent);
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -337,13 +336,13 @@
         
         .track-item:not(.disabled):hover {
             background: #e8f0fe;
-            border-color: var(--ep-accent);
+            border-color: var(--primary-blue);
             cursor: pointer;
         }
         
         .track-item.selected {
             background: #e8f0fe;
-            border-color: var(--ep-accent);
+            border-color: var(--primary-blue);
             border-width: 2px;
         }
         
@@ -371,7 +370,7 @@
         .track-cover {
             width: 35px;
             height: 35px;
-            background: linear-gradient(135deg, var(--ep-accent), var(--primary-light));
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -426,7 +425,7 @@
         }
         
         .track-meta i {
-            color: var(--ep-accent);
+            color: var(--primary-blue);
             font-size: 0.65rem;
         }
         
@@ -479,7 +478,7 @@
         }
         
         .selected-count span {
-            color: var(--ep-accent);
+            color: var(--primary-blue);
             font-weight: 700;
         }
         
@@ -504,7 +503,7 @@
         }
         
         .btn-primary {
-            background: var(--ep-accent);
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -535,7 +534,7 @@
         
         .loading i {
             font-size: 2.5rem;
-            color: var(--ep-accent);
+            color: var(--primary-blue);
             margin-bottom: 16px;
         }
         
@@ -547,7 +546,7 @@
         
         .empty-state i {
             font-size: 3rem;
-            color: var(--ep-accent);
+            color: var(--primary-blue);
             margin-bottom: 15px;
             opacity: 0.3;
         }
@@ -596,7 +595,7 @@
         }
         
         .admin-footer a {
-            color: var(--ep-accent);
+            color: var(--primary-blue);
             text-decoration: none;
         }
         
@@ -771,10 +770,6 @@
                     }
                 }
                 
-                console.log(`Tracks in current EP: ${epTrackIds.size}`);
-                console.log(`Tracks in albums: ${tracksInAlbums.size}`);
-                console.log(`Tracks in other EPs: ${tracksInOtherEPs.size}`);
-                
                 renderPage();
                 
             } catch (error) {
@@ -857,11 +852,11 @@
                             <i class="fas fa-play-circle"></i>
                             ${inThisEPCount} In this EP
                         </span>
-                        <span class="stats-badge in-album">
+                        <span class="stats-badge">
                             <i class="fas fa-compact-disc"></i>
                             ${inAlbumsCount} In Albums
                         </span>
-                        <span class="stats-badge">
+                        <span class="stats-badge in-ep">
                             <i class="fas fa-music"></i>
                             ${inOtherEPsCount} In Other EPs
                         </span>
