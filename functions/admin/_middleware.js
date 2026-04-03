@@ -1,39 +1,26 @@
 export async function onRequest(context) {
     const { request, env, next } = context;
     const url = new URL(request.url);
-    let path = url.pathname;
+    const path = url.pathname;
     
     // Only process /admin/ paths
     if (!path.startsWith('/admin/')) {
         return next();
     }
     
-    // Handle clean URLs (no .html) and .html URLs
-    let fragmentPath = path;
-    let originalPath = path;
-    
-    // If path doesn't end with .html, try adding it
-    if (!path.endsWith('.html')) {
-        // For clean URL like /admin/upload
-        fragmentPath = path + '.html';
-        originalPath = path + '.html';
-    }
-    
-    // Build fragment file path
-    let fragmentFilePath = '/admin/_fragments' + fragmentPath.replace('/admin', '');
+    // Build fragment path: /admin/upload.html → /fragments/upload.html
+    let fragmentPath = path.replace('/admin/', '/fragments/');
     
     try {
-        // Try to read the fragment
-        const fragment = await env.ASSETS.fetch(new Request(fragmentFilePath));
+        const fragment = await env.ASSETS.fetch(new Request(fragmentPath));
         
         if (!fragment.ok) {
-            // Fragment doesn't exist, serve original file
             return next();
         }
         
         let fragmentHtml = await fragment.text();
         
-        // Extract heading from comment <!-- HEADING: ... -->
+        // Extract heading
         let heading = 'Admin';
         const headingMatch = fragmentHtml.match(/<!-- HEADING:\s*(.+?)\s*-->/);
         if (headingMatch) {
@@ -50,28 +37,16 @@ export async function onRequest(context) {
         let tabsHtml = await tabsTemplate.text();
         let footerHtml = await footerTemplate.text();
         
-        // Determine the full path for active tab detection
-        let fullPath = path;
-        if (!fullPath.endsWith('.html') && !fullPath.endsWith('/')) {
-            fullPath = fullPath + '.html';
-        }
-        if (fullPath === '/admin/' || fullPath === '/admin') {
-            fullPath = '/admin/index.html';
-        }
-        
-        // Add active class to current tab
+        // Add active class
         tabsHtml = tabsHtml.replace(/href="([^"]+)"/g, (match, href) => {
-            const isActive = (href === fullPath) || 
-                           (fullPath === '/admin/index.html' && href === '/admin/') ||
-                           (fullPath === '/admin/' && href === '/admin/');
-            
+            const isActive = (href === path) || 
+                           (path === '/admin/' && href === '/admin/');
             if (isActive) {
                 return match + ' class="tab-btn active"';
             }
             return match;
         });
         
-        // Combine everything
         const fullHtml = headerHtml.replace('{{HEADING}}', heading) + 
                         tabsHtml + 
                         fragmentHtml + 
