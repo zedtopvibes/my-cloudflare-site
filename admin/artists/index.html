@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Artists - Admin | ZEDTOPVIBES</title>
+    <title>Artist Profile - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,6 +21,7 @@
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
             --success: #28a745;
             --error: #dc3545;
             --warning: #ffc107;
@@ -148,155 +149,112 @@
             overflow-x: hidden;
         }
         
-        .content-header {
-            margin-bottom: 20px;
+        .profile-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .content-header h2 {
-            font-size: 1.2rem;
-            color: var(--primary-dark);
+        .profile-cover {
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            position: relative;
+        }
+        
+        .artist-header {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            padding: 0 24px 16px 24px;
+            margin-top: -55px;
+        }
+        
+        .artist-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            padding: 4px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .artist-avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            overflow: hidden;
+        }
+        
+        .artist-avatar-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .artist-title {
+            flex: 1;
+            margin-bottom: 10px;
+        }
+        
+        .artist-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
             flex-wrap: wrap;
+            gap: 8px;
         }
         
-        .content-header h2 i {
-            color: var(--primary-blue);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-        }
-        
-        .stat-card:hover {
-            border-color: var(--primary-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
-        }
-        
-        .stat-card .stat-icon {
-            font-size: 1.5rem;
+        .artist-slug {
+            color: var(--gray);
+            font-size: 0.8rem;
+            font-family: monospace;
             margin-bottom: 8px;
         }
         
-        .stat-card .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            line-height: 1.2;
-            margin-bottom: 4px;
-        }
-        
-        .stat-card .stat-label {
-            font-size: 0.7rem;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .search-section {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: var(--light-gray);
-            border-radius: 8px;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            flex: 2;
-            min-width: 200px;
-        }
-        
-        .search-box i {
-            color: var(--primary-blue);
-            margin-right: 8px;
-        }
-        
-        .search-box input {
-            border: none;
-            background: transparent;
-            padding: 6px 0;
-            width: 100%;
-            outline: none;
-            font-size: 0.85rem;
-        }
-        
-        .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: var(--white);
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-family: 'Montserrat', sans-serif;
-            flex: 1;
-        }
-        
-        .filter-tabs {
+        .badge-group {
             display: flex;
             gap: 8px;
-            margin-bottom: 20px;
             flex-wrap: wrap;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
         }
         
-        .filter-tab {
-            padding: 6px 14px;
-            background: transparent;
-            border: none;
+        .badge {
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
         }
         
-        .filter-tab:hover {
-            background: var(--light-gray);
-            color: var(--primary-blue);
+        .badge.featured {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
         }
         
-        .filter-tab.active {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .filter-tab.add-btn {
-            background: var(--primary-blue);
-            color: white;
+        .badge.legend {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
         }
         
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 3px 8px;
+            gap: 6px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 600;
         }
         
@@ -310,107 +268,213 @@
             color: #856404;
         }
         
-        .artist-badge {
-            display: inline-block;
-            background: #e3f2fd;
-            color: var(--primary-blue);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            margin: 2px;
-            white-space: nowrap;
+        /* Stats Grid - 6 cards (3x2) - FULL WIDTH */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .artist-badge.featured {
-            background: #f59e0b;
-            color: white;
+        .stat-card {
+            padding: 16px;
+            text-align: center;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.2s;
         }
         
-        .artist-badge.legend {
-            background: #10b981;
-            color: white;
+        .stat-card:nth-child(3n) {
+            border-right: none;
         }
         
-        .artists-table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #eee;
-            display: block;
+        .stat-card:nth-child(n+4) {
+            border-bottom: none;
         }
         
-        .artists-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-        
-        .artists-table th {
+        .stat-card:hover {
             background: var(--light-gray);
-            padding: 10px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--primary-dark);
-            border-bottom: 2px solid #ddd;
-            font-size: 0.8rem;
         }
         
-        .artists-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-            font-size: 0.8rem;
-        }
-        
-        .artists-table tr:hover td {
-            background: rgba(31, 111, 159, 0.02);
-        }
-        
-        .artist-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .artist-thumb {
-            width: 35px;
-            height: 35px;
-            border-radius: 6px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(31, 111, 159, 0.1);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-            overflow: hidden;
+            margin: 0 auto 8px;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
         }
         
-        .artist-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            line-height: 1.2;
+            margin-bottom: 4px;
         }
         
-        .artist-details h4 {
-            font-size: 0.85rem;
-            margin-bottom: 2px;
-        }
-        
-        .artist-details span {
-            font-size: 0.65rem;
+        .stat-label {
+            font-size: 0.7rem;
             color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .action-buttons {
+        .info-row {
             display: flex;
-            gap: 5px;
+            gap: 20px;
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
             flex-wrap: wrap;
         }
         
-        .action-btn {
+        .info-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: var(--light-gray);
+            border-radius: 30px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            font-size: 0.85rem;
+        }
+        
+        .info-chip i {
+            color: var(--primary-blue);
+        }
+        
+        .bio-section {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .bio-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        
+        .bio-text {
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        
+        /* Content Sections - 3 columns - FULL WIDTH outside stats */
+        .content-sections {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px 24px;
+        }
+        
+        .content-section {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .section-header h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .section-header h3 i {
+            color: var(--primary-blue);
+        }
+        
+        .section-count {
+            background: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .content-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .content-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.2s;
+        }
+        
+        .content-item:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(3px);
+        }
+        
+        .content-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .content-item-title {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .content-item-title:hover {
+            color: var(--primary-blue);
+            text-decoration: underline;
+        }
+        
+        .content-item-meta {
+            font-size: 0.65rem;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+        
+        .content-item-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .item-action-btn {
             width: 28px;
             height: 28px;
-            border-radius: 5px;
+            border-radius: 6px;
             border: none;
             background: var(--light-gray);
             color: var(--gray);
@@ -419,112 +483,69 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
         
-        .action-btn:hover {
+        .item-action-btn:hover {
             background: var(--primary-blue);
             color: white;
         }
         
-        .action-btn.delete:hover {
-            background: var(--error);
-            color: white;
-        }
-        
-        .artists-mobile-grid {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .artist-mobile-card {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .artist-mobile-header {
+        .pagination {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .artist-mobile-thumb {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            display: flex;
-            align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        
-        .artist-mobile-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .artist-mobile-info {
-            flex: 1;
-        }
-        
-        .artist-mobile-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
             flex-wrap: wrap;
-            gap: 5px;
         }
         
-        .artist-mobile-country {
-            font-size: 0.75rem;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .artist-mobile-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .artist-mobile-stat {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-        
-        .artist-mobile-stat i {
-            color: var(--primary-blue);
+        .page-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid rgba(31, 111, 159, 0.2);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
             font-size: 0.7rem;
+            font-weight: 600;
         }
         
-        .artist-mobile-actions {
+        .page-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .page-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray);
+            background: white;
+            border-radius: 8px;
+            border: 1px dashed rgba(31, 111, 159, 0.3);
+        }
+        
+        .empty-state i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+            opacity: 0.3;
+        }
+        
+        .action-buttons {
+            padding: 16px 24px 24px 24px;
             display: flex;
-            gap: 8px;
             justify-content: flex-end;
-        }
-        
-        .artist-mobile-actions .action-btn {
-            width: 32px;
-            height: 32px;
+            gap: 12px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+            flex-wrap: wrap;
         }
         
         .btn {
@@ -532,7 +553,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 8px 16px;
+            padding: 8px 20px;
             border: none;
             border-radius: 6px;
             font-size: 0.8rem;
@@ -551,164 +572,43 @@
             background: var(--primary-light);
         }
         
-        .btn-secondary {
-            background: var(--light-gray);
-            color: #333;
-            border: 1px solid #ddd;
-        }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-        
         .btn-danger {
             background: var(--error);
             color: white;
         }
         
-        .btn-warning {
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #218838;
+        }
+        
+        .btn-unpublish {
             background: var(--warning);
             color: #333;
         }
         
-        .btn-warning:hover {
+        .btn-unpublish:hover {
             background: #e0a800;
         }
         
-        .btn-sm {
-            padding: 4px 10px;
-            font-size: 0.7rem;
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .page-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.8rem;
-        }
-        
-        .page-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
-        .page-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
-        .empty-state {
+        .loading {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
             color: var(--gray);
         }
         
-        .empty-state i {
-            font-size: 3rem;
+        .loading i {
+            font-size: 2.5rem;
             color: var(--primary-blue);
-            margin-bottom: 15px;
-            opacity: 0.3;
-        }
-        
-        .empty-state h3 {
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            color: var(--primary-dark);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
-            overflow-y: auto;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal h3 {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-        
-        .modal p {
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 10px 15px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: #28a745; }
-        .toast.error { background: #dc3545; }
-        .toast.info { background: var(--primary-blue); }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        .skeleton-row {
-            height: 50px;
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+            margin-bottom: 16px;
         }
         
         .admin-footer {
@@ -731,27 +631,89 @@
             text-decoration: underline;
         }
         
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
-            .stats-grid { grid-template-columns: repeat(4, 1fr); }
-            .stat-card .stat-value { font-size: 1.8rem; }
             .toast { left: auto; right: 20px; min-width: 300px; }
         }
         
-        @media (max-width: 767px) {
-            .artists-table-container { display: none; }
-            .artists-mobile-grid { display: flex; }
-            .search-section { flex-direction: column; }
-            .search-box { width: 100%; }
-            .filter-select { width: 100%; }
-            .filter-tabs { justify-content: center; }
+        @media (max-width: 900px) {
+            .content-sections {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
         }
         
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .stat-card { padding: 12px; }
-            .stat-icon { font-size: 1.2rem; }
-            .stat-value { font-size: 1.2rem; }
+        @media (max-width: 640px) {
+            .artist-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                margin-top: -40px;
+            }
+            
+            .artist-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .artist-name {
+                font-size: 1.4rem;
+                justify-content: center;
+            }
+            
+            .badge-group {
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-card:nth-child(3n) {
+                border-right: 1px solid rgba(31, 111, 159, 0.1);
+            }
+            
+            .stat-card:nth-child(even) {
+                border-right: none;
+            }
+            
+            .info-row {
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -759,7 +721,7 @@
     <div class="admin-container">
         <div class="admin-header">
             <div class="header-top">
-                <h1><i class="fas fa-microphone"></i> Artists</h1>
+                <h1><i class="fas fa-microphone-alt"></i> Artist Profile</h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
@@ -782,75 +744,12 @@
         </div>
         
         <div class="admin-content">
-            <div class="content-header">
-                <h2>
-                    <i class="fas fa-microphone"></i> Artists Management
-                    <button onclick="loadArtists()" class="btn btn-secondary btn-sm" title="Refresh">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </h2>
-            </div>
-            
-            <div class="search-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search artists by name or country...">
-                </div>
-                <select id="countryFilter" class="filter-select">
-                    <option value="">All Countries</option>
-                </select>
-                <select id="sortFilter" class="filter-select">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="views">Most Views</option>
-                    <option value="name">Name A-Z</option>
-                    <option value="tracks">Most Tracks</option>
-                    <option value="albums">Most Albums</option>
-                    <option value="eps">Most EPs</option>
-                </select>
-            </div>
-
-            <div class="filter-tabs">
-                <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
-                <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
-                <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
-                <a href="/admin/artists/edit.html" class="filter-tab add-btn">
-                    <i class="fas fa-plus-circle"></i> Add New Artist
-                </a>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-microphone"></i></div>
-                    <div class="stat-value" id="totalArtists">0</div>
-                    <div class="stat-label">Total Artists</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
-                    <div class="stat-value" id="totalDrafts">0</div>
-                    <div class="stat-label">Drafts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
-                    <div class="stat-value" id="totalPublished">0</div>
-                    <div class="stat-label">Published</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Total Profile Views</div>
+            <div class="profile-card" id="profileContent">
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <div>Loading artist profile...</div>
                 </div>
             </div>
-
-            <div id="artistsTableContainer">
-                <div class="skeleton-row"></div>
-                <div class="skeleton-row"></div>
-                <div class="skeleton-row"></div>
-            </div>
-
-            <div id="artistsMobileGrid" class="artists-mobile-grid"></div>
-
-            <div class="pagination" id="pagination"></div>
         </div>
         
         <div class="admin-footer">
@@ -858,25 +757,19 @@
         </div>
     </div>
 
-    <div id="confirmModal" class="modal">
-        <div class="modal-content">
-            <h3 id="confirmModalTitle" style="color: var(--primary-blue);">Confirm Action</h3>
-            <p id="confirmModalMessage">Are you sure?</p>
-            <div class="modal-actions">
-                <button id="confirmModalCancel" class="btn btn-secondary">Cancel</button>
-                <button id="confirmModalConfirm" class="btn btn-primary">Confirm</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const API_BASE = '/api';
-        let currentPage = 1;
+        let artistId = null;
+        let artist = null;
+        let allTracks = [];
+        let allAlbums = [];
+        let allEps = [];
+        
+        let trackPage = 1;
+        let albumPage = 1;
+        let epPage = 1;
         const itemsPerPage = 10;
-        let allArtists = [];
-        let filteredArtists = [];
-        let currentStatusFilter = 'all';
-
+        
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
@@ -894,438 +787,396 @@
             }
             return true;
         }
-
-        function showToast(message, type = 'info') {
+        
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i><span>${message}</span>`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
-
-        function showConfirmModal(options) {
-            const modal = document.getElementById('confirmModal');
-            const titleEl = document.getElementById('confirmModalTitle');
-            const messageEl = document.getElementById('confirmModalMessage');
-            const confirmBtn = document.getElementById('confirmModalConfirm');
-            const cancelBtn = document.getElementById('confirmModalCancel');
-            
-            titleEl.textContent = options.title;
-            messageEl.textContent = options.message;
-            
-            if (options.type === 'danger') {
-                confirmBtn.className = 'btn btn-danger';
-                titleEl.style.color = 'var(--error)';
-            } else if (options.type === 'warning') {
-                confirmBtn.className = 'btn btn-warning';
-                titleEl.style.color = 'var(--warning)';
-            } else {
-                confirmBtn.className = 'btn btn-primary';
-                titleEl.style.color = 'var(--primary-blue)';
-            }
-            
-            window.confirmModalCallback = options.onConfirm;
-            
-            modal.style.display = 'flex';
-            
-            confirmBtn.onclick = () => {
-                modal.style.display = 'none';
-                if (window.confirmModalCallback) {
-                    window.confirmModalCallback();
-                    window.confirmModalCallback = null;
-                }
-            };
-            
-            cancelBtn.onclick = () => {
-                modal.style.display = 'none';
-                window.confirmModalCallback = null;
-            };
-            
-            modal.onclick = (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                    window.confirmModalCallback = null;
-                }
-            };
-        }
-
-        async function publishArtist(id, name) {
-            showConfirmModal({
-                title: 'Publish Artist',
-                message: `Are you sure you want to publish "${name}"? It will become visible to the public.`,
-                type: 'success',
-                onConfirm: async () => {
-                    try {
-                        const response = await fetch(`${API_BASE}/admin/artists/${id}/publish`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.error || 'Failed to publish');
-                        }
-                        
-                        showToast(`"${name}" published!`, 'success');
-                        loadArtists();
-                    } catch (error) {
-                        showToast(error.message, 'error');
-                    }
-                }
-            });
-        }
-
-        async function unpublishArtist(id, name) {
-            showConfirmModal({
-                title: 'Unpublish Artist',
-                message: `Are you sure you want to unpublish "${name}"? It will become a draft and hidden from public.`,
-                type: 'warning',
-                onConfirm: async () => {
-                    try {
-                        const response = await fetch(`${API_BASE}/admin/artists/${id}/unpublish`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.error || 'Failed to unpublish');
-                        }
-                        
-                        showToast(`"${name}" moved to drafts`, 'success');
-                        loadArtists();
-                    } catch (error) {
-                        showToast(error.message, 'error');
-                    }
-                }
-            });
-        }
-
-        async function deleteArtist(id, name) {
-            showConfirmModal({
-                title: 'Delete Artist',
-                message: `Are you sure you want to delete "${name}"? This will move it to trash.`,
-                type: 'danger',
-                onConfirm: async () => {
-                    try {
-                        const response = await fetch(`${API_BASE}/admin/artists/${id}`, {
-                            method: 'DELETE'
-                        });
-                        
-                        if (!response.ok) {
-                            const error = await response.json();
-                            throw new Error(error.error || 'Delete failed');
-                        }
-                        
-                        showToast('Artist moved to trash!', 'success');
-                        loadArtists();
-                    } catch (error) {
-                        showToast('Failed to delete artist: ' + error.message, 'error');
-                    }
-                }
-            });
-        }
-
-        window.filterByStatus = (status) => {
-            currentStatusFilter = status;
-            
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                if (tab.dataset.status === status) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-            
-            applyFilters();
-        };
-
-        async function loadArtists() {
-            if (!checkAuth()) return;
-            
-            try {
-                // Use the new artist stats API that includes track_count, album_count, ep_count
-                const response = await fetch(`${API_BASE}/admin/artists/stats`);
-                const result = await response.json();
-                
-                if (!result.success) {
-                    throw new Error(result.error || 'Failed to load artists');
-                }
-                
-                // Extract artists from the response
-                allArtists = result.data.artists || [];
-                
-                // Calculate stats
-                const draftCount = allArtists.filter(a => a.status === 'draft').length;
-                const publishedCount = allArtists.filter(a => a.status === 'published').length;
-                const totalViews = allArtists.reduce((sum, artist) => sum + (artist.views || 0), 0);
-                
-                document.getElementById('totalArtists').textContent = allArtists.length;
-                document.getElementById('totalDrafts').textContent = draftCount;
-                document.getElementById('totalPublished').textContent = publishedCount;
-                document.getElementById('totalViews').textContent = formatNumber(totalViews);
-                
-                populateCountryFilter();
-                applyFilters();
-                
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('artistsTableContainer').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <h3>Error Loading Artists</h3>
-                        <p>${error.message}</p>
-                        <button onclick="loadArtists()" class="btn btn-primary">Try Again</button>
-                    </div>
-                `;
-            }
-        }
-
-        function populateCountryFilter() {
-            const countries = [...new Set(allArtists.map(artist => artist.country).filter(c => c))];
-            const select = document.getElementById('countryFilter');
-            
-            while (select.options.length > 1) {
-                select.remove(1);
-            }
-            
-            countries.sort().forEach(country => {
-                const option = document.createElement('option');
-                option.value = country;
-                option.textContent = country;
-                select.appendChild(option);
-            });
-        }
-
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const country = document.getElementById('countryFilter').value;
-            const sort = document.getElementById('sortFilter').value;
-            
-            filteredArtists = allArtists.filter(artist => {
-                if (currentStatusFilter !== 'all' && artist.status !== currentStatusFilter) {
-                    return false;
-                }
-                
-                const matchesSearch = artist.name?.toLowerCase().includes(searchTerm) ||
-                                     (artist.country || '').toLowerCase().includes(searchTerm);
-                const matchesCountry = !country || artist.country === country;
-                return matchesSearch && matchesCountry;
-            });
-            
-            filteredArtists.sort((a, b) => {
-                switch(sort) {
-                    case 'oldest':
-                        return new Date(a.created_at) - new Date(b.created_at);
-                    case 'views':
-                        return (b.views || 0) - (a.views || 0);
-                    case 'name':
-                        return (a.name || '').localeCompare(b.name || '');
-                    case 'tracks':
-                        return (b.track_count || 0) - (a.track_count || 0);
-                    case 'albums':
-                        return (b.album_count || 0) - (a.album_count || 0);
-                    case 'eps':
-                        return (b.ep_count || 0) - (a.ep_count || 0);
-                    default:
-                        return new Date(b.created_at) - new Date(a.created_at);
-                }
-            });
-            
-            currentPage = 1;
-            renderArtists();
-        }
-
-        function renderArtists() {
-            const tableContainer = document.getElementById('artistsTableContainer');
-            const mobileContainer = document.getElementById('artistsMobileGrid');
-            
-            if (filteredArtists.length === 0) {
-                const emptyHtml = `
-                    <div class="empty-state">
-                        <i class="fas fa-microphone"></i>
-                        <h3>No Artists Found</h3>
-                        <p>Try adjusting your filters or create some artists</p>
-                        <a href="/admin/artists/edit.html" class="btn btn-primary">
-                            <i class="fas fa-plus-circle"></i> Create New Artist
-                        </a>
-                    </div>
-                `;
-                tableContainer.innerHTML = emptyHtml;
-                mobileContainer.innerHTML = '';
-                document.getElementById('pagination').innerHTML = '';
-                return;
-            }
-            
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const pageArtists = filteredArtists.slice(start, end);
-            
-            renderDesktopTable(tableContainer, pageArtists);
-            renderMobileCards(mobileContainer, pageArtists);
-            renderPagination();
-        }
-
-        function renderDesktopTable(container, artists) {
-            let html = `
-                <div class="artists-table-container">
-                    <table class="artists-table">
-                        <thead>
-                            <tr>
-                                <th>Artist</th>
-                                <th>Country</th>
-                                <th>Tracks</th>
-                                <th>Albums</th>
-                                <th>EPs</th>
-                                <th>Profile Views</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </thead>
-                        <tbody>
-            `;
-            
-            artists.forEach(artist => {
-                const statusBadge = artist.status === 'published' 
-                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
-                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
-                
-                const badges = [];
-                if (artist.is_featured) badges.push('<span class="artist-badge featured">Featured</span>');
-                if (artist.is_zambian_legend) badges.push('<span class="artist-badge legend">Legend</span>');
-                const badgesHtml = badges.length ? `<div style="margin-top: 4px;">${badges.join(' ')}</div>` : '';
-                
-                // Use image_url or photo_url
-                const artistImage = artist.image_url || artist.photo_url;
-                
-                html += `
-                    <tr>
-                        <td>
-                            <div class="artist-info">
-                                <div class="artist-thumb">
-                                    ${artistImage ? `<img src="${artistImage}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
-                                </div>
-                                <div class="artist-details">
-                                    <h4>${escapeHtml(artist.name)}</h4>
-                                    ${badgesHtml}
-                                </div>
-                            </div>
-                        </td>
-                        <td>${escapeHtml(artist.country) || '—'}</td>
-                        <td><i class="fas fa-music"></i> ${artist.track_count || 0}</td>
-                        <td><i class="fas fa-compact-disc"></i> ${artist.album_count || 0}</td>
-                        <td><i class="fas fa-play-circle"></i> ${artist.ep_count || 0}</td>
-                        <td><i class="fas fa-eye"></i> ${formatNumber(artist.views)}</td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            <div class="action-buttons">
-                                ${artist.status === 'draft' 
-                                    ? `<button class="action-btn" onclick="publishArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
-                                    : `<button class="action-btn" onclick="unpublishArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
-                                }
-                                <a href="/admin/artists/edit.html?id=${artist.id}" class="action-btn" title="Edit"><i class="fas fa-edit"></i></a>
-                                <a href="/admin/artists/profile.html?id=${artist.id}" class="action-btn" title="View Details"><i class="fas fa-eye"></i></a>
-                                <button class="action-btn delete" onclick="deleteArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
-        }
-
-        function renderMobileCards(container, artists) {
-            let html = '';
-            
-            artists.forEach(artist => {
-                const statusBadge = artist.status === 'published' 
-                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
-                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
-                
-                const badges = [];
-                if (artist.is_featured) badges.push('<span class="artist-badge featured">Featured</span>');
-                if (artist.is_zambian_legend) badges.push('<span class="artist-badge legend">Legend</span>');
-                const badgesHtml = badges.length ? `<div style="margin-top: 4px;">${badges.join(' ')}</div>` : '';
-                
-                const artistImage = artist.image_url || artist.photo_url;
-                
-                html += `
-                    <div class="artist-mobile-card">
-                        <div class="artist-mobile-header">
-                            <div class="artist-mobile-thumb">
-                                ${artistImage ? `<img src="${artistImage}" alt="${escapeHtml(artist.name)}">` : '<i class="fas fa-user"></i>'}
-                            </div>
-                            <div class="artist-mobile-info">
-                                <div class="artist-mobile-name">${escapeHtml(artist.name)} ${statusBadge}</div>
-                                <div class="artist-mobile-country"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(artist.country) || 'Unknown Location'}</div>
-                                ${badgesHtml}
-                            </div>
-                        </div>
-                        
-                        <div class="artist-mobile-details">
-                            <div class="artist-mobile-stat"><i class="fas fa-music"></i> ${artist.track_count || 0} tracks</div>
-                            <div class="artist-mobile-stat"><i class="fas fa-compact-disc"></i> ${artist.album_count || 0} albums</div>
-                            <div class="artist-mobile-stat"><i class="fas fa-play-circle"></i> ${artist.ep_count || 0} EPs</div>
-                            <div class="artist-mobile-stat"><i class="fas fa-eye"></i> ${formatNumber(artist.views)} views</div>
-                        </div>
-                        
-                        <div class="artist-mobile-actions">
-                            ${artist.status === 'draft' 
-                                ? `<button class="action-btn" onclick="publishArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
-                                : `<button class="action-btn" onclick="unpublishArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
-                            }
-                            <a href="/admin/artists/edit.html?id=${artist.id}" class="action-btn" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a href="/admin/artists/profile.html?id=${artist.id}" class="action-btn" title="View Details"><i class="fas fa-eye"></i></a>
-                            <button class="action-btn delete" onclick="deleteArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
+        
         function escapeHtml(text) {
             if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
-
-        function renderPagination() {
-            const totalPages = Math.ceil(filteredArtists.length / itemsPerPage);
-            if (totalPages <= 1) {
-                document.getElementById('pagination').innerHTML = '';
-                return;
-            }
-            
-            let html = '';
-            for (let i = 1; i <= totalPages; i++) {
-                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-            }
-            document.getElementById('pagination').innerHTML = html;
-        }
-
-        window.goToPage = (page) => {
-            currentPage = page;
-            renderArtists();
-        };
-
+        
         function formatNumber(num) {
             if (!num) return '0';
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
-
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('countryFilter').addEventListener('change', applyFilters);
-        document.getElementById('sortFilter').addEventListener('change', applyFilters);
-
+        
+        function trackBelongsToArtist(track) {
+            if (!track.artists || track.artists.length === 0) return false;
+            return track.artists.some(a => a.id === artist.id);
+        }
+        
+        function isPrimaryArtist(track) {
+            if (!track.artists) return false;
+            return track.artists.some(a => a.id === artist.id && a.is_primary === 1);
+        }
+        
+        function isFeaturedArtist(track) {
+            if (!track.artists) return false;
+            return track.artists.some(a => a.id === artist.id && a.is_primary === 0);
+        }
+        
+        function renderPaginatedList(items, page, containerId, renderItemFn, type) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = items.slice(start, end);
+            const totalPages = Math.ceil(items.length / itemsPerPage);
+            
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            if (pageItems.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-music"></i><p>No ${type} found</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = pageItems.map(renderItemFn).join('');
+            
+            const paginationContainer = document.getElementById(`${containerId}-pagination`);
+            if (paginationContainer && totalPages > 1) {
+                let paginationHtml = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHtml += `<button class="page-btn ${i === page ? 'active' : ''}" onclick="goToPage('${type}', ${i})">${i}</button>`;
+                }
+                paginationContainer.innerHTML = paginationHtml;
+            } else if (paginationContainer) {
+                paginationContainer.innerHTML = '';
+            }
+        }
+        
+        window.goToPage = (type, page) => {
+            if (type === 'tracks') {
+                trackPage = page;
+                renderTracksList();
+            } else if (type === 'albums') {
+                albumPage = page;
+                renderAlbumsList();
+            } else if (type === 'eps') {
+                epPage = page;
+                renderEpsList();
+            }
+        };
+        
+        function renderTracksList() {
+            const artistTracks = allTracks.filter(trackBelongsToArtist);
+            renderPaginatedList(artistTracks, trackPage, 'tracksListContainer', (track) => `
+                <div class="content-item">
+                    <div class="content-item-info">
+                        <div class="content-item-title" onclick="window.location.href='/admin/songs/profile.html?id=${track.id}'">${escapeHtml(track.title)}</div>
+                        <div class="content-item-meta"><i class="fas fa-eye"></i> ${formatNumber(track.views || 0)}</div>
+                    </div>
+                    <div class="content-item-actions">
+                        <a href="/admin/songs/profile.html?id=${track.id}" class="item-action-btn" title="View Profile"><i class="fas fa-eye"></i></a>
+                        <a href="/admin/songs/edit.html?id=${track.id}" class="item-action-btn" title="Edit"><i class="fas fa-edit"></i></a>
+                    </div>
+                </div>
+            `, 'tracks');
+        }
+        
+        function renderAlbumsList() {
+            const artistAlbums = allAlbums.filter(a => a.artist_id === artist.id);
+            renderPaginatedList(artistAlbums, albumPage, 'albumsListContainer', (album) => `
+                <div class="content-item">
+                    <div class="content-item-info">
+                        <div class="content-item-title" onclick="window.location.href='/admin/albums/profile.html?id=${album.id}'">${escapeHtml(album.title)}</div>
+                        <div class="content-item-meta"><i class="fas fa-music"></i> ${album.track_count || 0} tracks</div>
+                    </div>
+                    <div class="content-item-actions">
+                        <a href="/admin/albums/profile.html?id=${album.id}" class="item-action-btn" title="View Profile"><i class="fas fa-eye"></i></a>
+                        <a href="/admin/albums/add-tracks.html?id=${album.id}&artist_id=${artist.id}" class="item-action-btn" title="Add Tracks"><i class="fas fa-plus-circle"></i></a>
+                        <a href="/admin/albums/edit.html?id=${album.id}" class="item-action-btn" title="Edit"><i class="fas fa-edit"></i></a>
+                    </div>
+                </div>
+            `, 'albums');
+        }
+        
+        function renderEpsList() {
+            const artistEps = allEps.filter(e => e.artist_id === artist.id);
+            renderPaginatedList(artistEps, epPage, 'epsListContainer', (ep) => `
+                <div class="content-item">
+                    <div class="content-item-info">
+                        <div class="content-item-title" onclick="window.location.href='/admin/eps/profile.html?id=${ep.id}'">${escapeHtml(ep.title)}</div>
+                        <div class="content-item-meta"><i class="fas fa-music"></i> ${ep.track_count || 0} tracks</div>
+                    </div>
+                    <div class="content-item-actions">
+                        <a href="/admin/eps/profile.html?id=${ep.id}" class="item-action-btn" title="View Profile"><i class="fas fa-eye"></i></a>
+                        <a href="/admin/eps/add-tracks.html?id=${ep.id}&artist_id=${artist.id}" class="item-action-btn" title="Add Tracks"><i class="fas fa-plus-circle"></i></a>
+                        <a href="/admin/eps/edit.html?id=${ep.id}" class="item-action-btn" title="Edit"><i class="fas fa-edit"></i></a>
+                    </div>
+                </div>
+            `, 'EPs');
+        }
+        
+        async function publishArtist(id, name) {
+            if (!confirm(`Publish "${name}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${name}" published!`, 'success');
+                loadArtistProfile();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function unpublishArtist(id, name) {
+            if (!confirm(`Unpublish "${name}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${name}" moved to drafts`, 'success');
+                loadArtistProfile();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function deleteArtist(id, name, trackCount) {
+            if (trackCount > 0) {
+                showToast(`Cannot delete artist with ${trackCount} track(s). Remove all tracks first.`, 'error');
+                return;
+            }
+            
+            if (!confirm(`Move "${name}" to trash?`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/artists/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete');
+                }
+                
+                showToast('Artist moved to trash!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/admin/artists/index.html';
+                }, 1500);
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function loadArtistProfile() {
+            const urlParams = new URLSearchParams(window.location.search);
+            artistId = urlParams.get('id');
+            
+            if (!artistId) {
+                window.location.href = '/admin/artists/index.html';
+                return;
+            }
+            
+            try {
+                const [artistRes, tracksRes, albumsRes, epsRes] = await Promise.all([
+                    fetch(`${API_BASE}/admin/artists/${artistId}`),
+                    fetch(`${API_BASE}/tracks`),
+                    fetch(`${API_BASE}/albums`),
+                    fetch(`${API_BASE}/eps`)
+                ]);
+                
+                if (!artistRes.ok) throw new Error('Artist not found');
+                
+                artist = await artistRes.json();
+                allTracks = tracksRes.ok ? await tracksRes.json() : [];
+                allAlbums = albumsRes.ok ? await albumsRes.json() : [];
+                allEps = epsRes.ok ? await epsRes.json() : [];
+                
+                const artistTracks = allTracks.filter(trackBelongsToArtist);
+                const artistAlbums = allAlbums.filter(a => a.artist_id === artist.id);
+                const artistEps = allEps.filter(e => e.artist_id === artist.id);
+                
+                const totalViews = artistTracks.reduce((sum, t) => sum + (t.views || 0), 0);
+                const primaryCount = artistTracks.filter(isPrimaryArtist).length;
+                const featuredCount = artistTracks.filter(isFeaturedArtist).length;
+                
+                const joinDate = artist.created_at 
+                    ? new Date(artist.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                    : 'Unknown';
+                
+                const statusBadge = artist.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
+                const html = `
+                    <div class="profile-cover"></div>
+                    
+                    <div class="artist-header">
+                        <div class="artist-avatar">
+                            <div class="artist-avatar-inner">
+                                ${artist.image_url 
+                                    ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">`
+                                    : '<i class="fas fa-user"></i>'
+                                }
+                            </div>
+                        </div>
+                        <div class="artist-title">
+                            <h1 class="artist-name">
+                                ${escapeHtml(artist.name)}
+                                ${statusBadge}
+                            </h1>
+                            <div class="artist-slug">${artist.slug || ''}</div>
+                            <div class="badge-group">
+                                ${artist.is_featured ? '<span class="badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
+                                ${artist.is_zambian_legend ? '<span class="badge legend"><i class="fas fa-crown"></i> Legend</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-music"></i></div>
+                            <div class="stat-value">${artistTracks.length}</div>
+                            <div class="stat-label">Total Tracks</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-compact-disc"></i></div>
+                            <div class="stat-value">${artistAlbums.length}</div>
+                            <div class="stat-label">Total Albums</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
+                            <div class="stat-value">${artistEps.length}</div>
+                            <div class="stat-label">Total EPs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                            <div class="stat-value">${formatNumber(totalViews)}</div>
+                            <div class="stat-label">Views</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-star"></i></div>
+                            <div class="stat-value">${primaryCount}</div>
+                            <div class="stat-label">As Main Artist</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
+                            <div class="stat-value">${featuredCount}</div>
+                            <div class="stat-label">As Featured</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        ${artist.country ? `
+                            <div class="info-chip">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${escapeHtml(artist.country)}</span>
+                            </div>
+                        ` : ''}
+                        <div class="info-chip">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Joined ${joinDate}</span>
+                        </div>
+                    </div>
+                    
+                    ${artist.bio ? `
+                        <div class="bio-section">
+                            <div class="bio-label">Biography</div>
+                            <div class="bio-text">${escapeHtml(artist.bio)}</div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="content-sections">
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-music"></i> Songs</h3>
+                                <span class="section-count">${artistTracks.length}</span>
+                            </div>
+                            <div id="tracksListContainer" class="content-list"></div>
+                            <div id="tracksListContainer-pagination" class="pagination"></div>
+                        </div>
+                        
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-compact-disc"></i> Albums</h3>
+                                <span class="section-count">${artistAlbums.length}</span>
+                            </div>
+                            <div id="albumsListContainer" class="content-list"></div>
+                            <div id="albumsListContainer-pagination" class="pagination"></div>
+                        </div>
+                        
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-play-circle"></i> EPs</h3>
+                                <span class="section-count">${artistEps.length}</span>
+                            </div>
+                            <div id="epsListContainer" class="content-list"></div>
+                            <div id="epsListContainer-pagination" class="pagination"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="/admin/artists/edit.html?id=${artist.id}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                        ${artist.status === 'draft' 
+                            ? `<button class="btn btn-publish" onclick="publishArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-cloud-upload-alt"></i> Publish
+                               </button>`
+                            : `<button class="btn btn-unpublish" onclick="unpublishArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-eye-slash"></i> Unpublish
+                               </button>`
+                        }
+                        <button class="btn btn-danger" onclick="deleteArtist(${artist.id}, '${escapeHtml(artist.name).replace(/'/g, "\\'")}', ${artistTracks.length})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('profileContent').innerHTML = html;
+                
+                trackPage = 1;
+                albumPage = 1;
+                epPage = 1;
+                
+                renderTracksList();
+                renderAlbumsList();
+                renderEpsList();
+                
+            } catch (error) {
+                console.error('Error loading artist:', error);
+                document.getElementById('profileContent').innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i>
+                        <h3>Failed to Load Artist</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/artists/index.html" class="btn btn-primary">Back to Artists</a>
+                    </div>
+                `;
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
             if (checkAuth()) {
-                loadArtists();
+                loadArtistProfile();
             }
         });
     </script>
