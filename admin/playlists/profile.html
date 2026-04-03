@@ -2,91 +2,274 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Playlist Profile - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --primary: #1e3c72;
-            --primary-light: #2a4a8a;
-            --primary-soft: #e8f0fe;
-            --secondary: #00b4d8;
-            --success: #10b981;
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --gray: #666;
+            --gray-light: #999;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #28a745;
+            --error: #dc3545;
             --warning: #ffc107;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --radius-sm: 6px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
+            --skeleton-bg: #e2e8f0;
         }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
-            line-height: 1.5;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
         .admin-container {
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
-        .header {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
+        /* Header Styles */
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
-        .header h1 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--gray-800);
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .header h1 i {
-            color: var(--primary);
+        .user-info i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
         }
         
-        .back-btn {
-            padding: 6px 14px;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
-            color: var(--gray-700);
-            text-decoration: none;
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
             font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            border: 1px solid var(--gray-200);
+            text-decoration: none;
+            height: 36px;
         }
         
-        .back-btn:hover {
-            background: var(--gray-200);
+        .tab-btn i {
+            font-size: 0.85rem;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        /* Content Area */
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Profile Card */
+        .profile-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        /* Cover */
+        .playlist-cover-large {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5rem;
+            position: relative;
+        }
+        
+        .playlist-cover-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Playlist Info */
+        .playlist-info {
+            padding: 24px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .playlist-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .playlist-creator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .playlist-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+        
+        /* Stats Grid - 4 cards (matching album) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stat-card {
+            padding: 16px;
+            text-align: center;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stat-card:nth-child(2) {
+            border-right: none;
+        }
+        
+        .stat-card:nth-child(3) {
+            border-bottom: none;
+        }
+        
+        .stat-card:nth-child(4) {
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
         }
         
         .badge {
@@ -102,156 +285,61 @@
             border: 1px solid #fbbf24;
         }
         
-        /* Status Badge */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 12px;
-            vertical-align: middle;
+        /* Artist Badges */
+        .artist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
         }
         
-        .status-badge.published {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-badge.draft {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        /* Profile Card */
-        .profile-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-            border: 1px solid var(--gray-200);
-        }
-        
-        /* Cover */
-        .playlist-cover-large {
-            height: 200px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .artist-badge.primary {
+            background: var(--primary-blue);
             color: white;
-            font-size: 5rem;
-            position: relative;
         }
         
-        .playlist-cover-large img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .playlist-cover-large .default-cover {
-            opacity: 0.8;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        /* Playlist Info */
-        .playlist-info {
-            padding: 24px;
-            border-bottom: 1px solid var(--gray-200);
-        }
-        
-        .playlist-name {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--gray-800);
-            margin-bottom: 8px;
+        .artist-list {
             display: flex;
-            align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .playlist-creator {
-            display: flex;
+            gap: 4px;
             align-items: center;
-            gap: 6px;
-            color: var(--gray-500);
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .playlist-description {
-            color: var(--gray-600);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            max-width: 80%;
-        }
-        
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            border-bottom: 1px solid var(--gray-200);
-        }
-        
-        .stat-card {
-            padding: 20px;
-            text-align: center;
-            border-right: 1px solid var(--gray-200);
-        }
-        
-        .stat-card:last-child {
-            border-right: none;
-        }
-        
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-            text-transform: uppercase;
         }
         
         /* Tracks Section */
         .tracks-section {
-            padding: 24px;
+            padding: 20px;
         }
         
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .section-header h2 {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: var(--gray-700);
+            color: var(--primary-dark);
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
         .section-header h2 i {
-            color: var(--primary);
+            color: var(--primary-blue);
         }
         
         .track-count {
-            background: var(--gray-100);
+            background: var(--light-gray);
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--gray-600);
+            font-size: 0.75rem;
+            color: var(--gray);
         }
         
         .tracks-list {
@@ -266,30 +354,30 @@
             display: flex;
             align-items: center;
             padding: 10px 12px;
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
+            background: var(--light-gray);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            border-radius: 8px;
             transition: all 0.2s;
         }
         
         .track-item:hover {
-            background: var(--primary-soft);
-            border-color: var(--primary);
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
         }
         
         .track-number {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
-            color: var(--primary);
+            color: var(--primary-blue);
             margin-right: 12px;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .track-info {
@@ -298,63 +386,68 @@
         
         .track-title {
             font-weight: 500;
-            color: var(--gray-800);
+            font-size: 0.85rem;
+            color: var(--primary-dark);
             margin-bottom: 2px;
         }
         
         .track-artist {
-            font-size: 0.8rem;
-            color: var(--gray-500);
+            font-size: 0.7rem;
+            color: var(--gray);
         }
         
         .track-stats {
             display: flex;
-            gap: 16px;
-            margin-right: 16px;
+            gap: 12px;
+            margin-right: 12px;
         }
         
         .track-stat {
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 0.8rem;
-            color: var(--gray-500);
+            font-size: 0.7rem;
+            color: var(--gray);
         }
         
         .track-stat i {
-            color: var(--primary);
-            font-size: 0.75rem;
+            color: var(--primary-blue);
+            font-size: 0.65rem;
         }
         
         .remove-track {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             border: none;
-            background: var(--gray-200);
-            color: var(--gray-500);
+            background: white;
+            color: var(--gray);
             cursor: pointer;
             transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .remove-track:hover {
-            background: #ef4444;
+            background: var(--error);
             color: white;
         }
         
         .empty-tracks {
             text-align: center;
-            padding: 40px;
-            color: var(--gray-500);
-            background: var(--gray-50);
-            border-radius: var(--radius-md);
-            border: 1px dashed var(--gray-300);
+            padding: 40px 20px;
+            color: var(--gray);
+            background: var(--light-gray);
+            border-radius: 8px;
+            border: 1px dashed rgba(31, 111, 159, 0.3);
         }
         
         .empty-tracks i {
             font-size: 3rem;
-            color: var(--gray-300);
+            color: var(--primary-blue);
             margin-bottom: 12px;
+            opacity: 0.3;
         }
         
         /* Action Buttons */
@@ -362,25 +455,29 @@
             display: flex;
             gap: 12px;
             justify-content: flex-end;
-            padding: 20px 24px 24px 24px;
-            border-top: 1px solid var(--gray-200);
+            padding: 16px 20px 20px 20px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+            flex-wrap: wrap;
         }
         
+        /* Buttons */
         .btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -389,22 +486,22 @@
         }
         
         .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 1px solid var(--gray-200);
+            background: var(--light-gray);
+            color: #333;
+            border: 1px solid #ddd;
         }
         
         .btn-secondary:hover {
-            background: var(--gray-200);
+            background: #e0e0e0;
         }
         
         .btn-danger {
-            background: #ef4444;
+            background: var(--error);
             color: white;
         }
         
         .btn-danger:hover {
-            background: #dc2626;
+            background: #c82333;
         }
         
         .btn-publish {
@@ -413,7 +510,7 @@
         }
         
         .btn-publish:hover {
-            background: #0e8f3e;
+            background: #218838;
         }
         
         .btn-unpublish {
@@ -425,23 +522,96 @@
             background: #e0a800;
         }
         
+        /* Loading */
         .loading {
             text-align: center;
-            padding: 60px;
-            color: var(--gray-500);
+            padding: 60px 20px;
+            color: var(--gray);
         }
         
         .loading i {
             font-size: 2.5rem;
-            color: var(--primary);
+            color: var(--primary-blue);
             margin-bottom: 16px;
         }
         
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-cover {
+            height: 200px;
+        }
+        
+        .skeleton-title {
+            height: 32px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+        
+        .skeleton-text {
+            height: 16px;
+            width: 40%;
+            margin-bottom: 8px;
+        }
+        
+        .skeleton-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .skeleton-stat {
+            height: 80px;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .skeleton-stat:last-child {
+            border-right: none;
+        }
+        
+        .skeleton-track {
+            height: 60px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+        
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 12px 20px;
+            left: 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             color: white;
             z-index: 2000;
@@ -449,80 +619,148 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: var(--primary-blue); }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-10px); }
+        }
+        
         /* Responsive */
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stat-card:nth-child(3) {
-                border-right: 1px solid var(--gray-200);
-            }
-            
-            .stat-card:nth-child(5) {
-                grid-column: span 2;
-                border-right: none;
-            }
-            
-            .track-item {
-                flex-wrap: wrap;
-            }
-            
-            .track-stats {
-                width: 100%;
-                margin-left: 42px;
-                margin-top: 8px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .stat-card { padding: 20px; }
+            .stat-card:nth-child(2) { border-right: 1px solid rgba(31, 111, 159, 0.1); }
+            .stat-card:nth-child(4) { border-right: none; }
+            .stat-value { font-size: 1.8rem; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+        }
+        
+        @media (max-width: 767px) {
+            .playlist-name { font-size: 1.4rem; }
+            .track-item { flex-wrap: wrap; }
+            .track-stats { width: 100%; margin-left: 40px; margin-top: 8px; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
     <div class="admin-container">
-        <div class="header">
-            <h1>
-                <i class="fas fa-list"></i>
-                Playlist Details
-            </h1>
-            <a href="/admin/playlists/index.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-                Back to Playlists
-            </a>
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-list"></i> Playlist Profile</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn active"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
         </div>
         
-        <div class="profile-card" id="profileContent">
-            <div class="loading">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <div>Loading playlist...</div>
+        <div class="admin-content">
+            <div class="profile-card" id="profileContent">
+                <!-- Skeleton Loader -->
+                <div class="skeleton-cover skeleton"></div>
+                <div class="playlist-info">
+                    <div class="skeleton-title skeleton"></div>
+                    <div class="skeleton-text skeleton"></div>
+                    <div class="skeleton-text skeleton" style="width: 30%;"></div>
+                </div>
+                <div class="skeleton-stats">
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                </div>
+                <div class="tracks-section">
+                    <div class="skeleton-track skeleton"></div>
+                    <div class="skeleton-track skeleton"></div>
+                    <div class="skeleton-track skeleton"></div>
+                </div>
             </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
     <script>
         const API_BASE = '/api';
-        let currentPlaylist = null;
         
-        // Helper function to get artist display name from track
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+        
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
         function getTrackArtistDisplay(track) {
             if (!track.artists || track.artists.length === 0) {
                 return escapeHtml(track.artist || 'Unknown Artist');
@@ -538,15 +776,6 @@
             return html;
         }
         
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-        
-        // Publish playlist
         async function publishPlaylist(id, name) {
             if (!confirm(`Publish "${name}"? It will become visible to the public.`)) return;
             
@@ -562,13 +791,12 @@
                 }
                 
                 showToast(`"${name}" published!`, 'success');
-                loadPlaylist(); // Reload to show updated status
+                loadPlaylist();
             } catch (error) {
                 showToast(error.message, 'error');
             }
         }
         
-        // Unpublish playlist
         async function unpublishPlaylist(id, name) {
             if (!confirm(`Unpublish "${name}"? It will become a draft and hidden from public.`)) return;
             
@@ -584,7 +812,81 @@
                 }
                 
                 showToast(`"${name}" moved to drafts`, 'success');
-                loadPlaylist(); // Reload to show updated status
+                loadPlaylist();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function removeTrack(playlistId, trackId, button) {
+            if (!confirm('Remove this track from the playlist?')) return;
+            
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks/${trackId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to remove track');
+                }
+                
+                const trackItem = button.closest('.track-item');
+                trackItem.style.animation = 'fadeOut 0.3s';
+                setTimeout(() => {
+                    trackItem.remove();
+                    
+                    const trackItems = document.querySelectorAll('.track-item');
+                    trackItems.forEach((item, index) => {
+                        item.querySelector('.track-number').textContent = index + 1;
+                    });
+                    
+                    const trackCount = trackItems.length;
+                    const trackCountSpan = document.querySelector('.track-count');
+                    if (trackCountSpan) trackCountSpan.textContent = trackCount + ' tracks';
+                    
+                    const tracksStat = document.querySelector('.stats-grid .stat-card:first-child .stat-value');
+                    if (tracksStat) tracksStat.textContent = trackCount;
+                    
+                    if (trackCount === 0) {
+                        location.reload();
+                    }
+                    
+                    showToast('Track removed from playlist', 'success');
+                }, 300);
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-times"></i>';
+            }
+        }
+        
+        function addTracks(playlistId) {
+            window.location.href = `/admin/playlists/add-tracks.html?id=${playlistId}`;
+        }
+        
+        async function deletePlaylist(id) {
+            if (!confirm('Move this playlist to trash?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete');
+                }
+                
+                showToast('Playlist moved to trash!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/admin/playlists/index.html';
+                }, 1500);
+                
             } catch (error) {
                 showToast(error.message, 'error');
             }
@@ -600,50 +902,30 @@
             }
             
             try {
-                // Use admin endpoint to get playlist with status
-                const res = await fetch(`${API_BASE}/admin/playlists/${playlistId}`);
-                if (!res.ok) throw new Error('Playlist not found');
+                const playlistRes = await fetch(`${API_BASE}/admin/playlists/${playlistId}`);
+                if (!playlistRes.ok) throw new Error('Playlist not found');
+                const playlist = await playlistRes.json();
                 
-                const playlist = await res.json();
-                currentPlaylist = playlist;
-                
-                // Get tracks for this playlist
                 const tracksRes = await fetch(`${API_BASE}/playlists/${playlistId}`);
                 const playlistData = await tracksRes.json();
                 const tracks = playlistData.tracks || [];
                 
-                // Calculate stats
-                const totalPlays = tracks.reduce((sum, t) => sum + (t.plays || 0), 0);
-                const totalDuration = tracks.reduce((sum, t) => sum + (t.duration || 0), 0);
-                const totalDownloads = tracks.reduce((sum, t) => sum + (t.downloads || 0), 0);
                 const totalViews = tracks.reduce((sum, t) => sum + (t.views || 0), 0);
+                const totalDuration = tracks.reduce((sum, t) => sum + (t.duration || 0), 0);
                 
-                // Format duration
-                const formatDuration = (seconds) => {
-                    if (!seconds) return '0:00';
-                    const mins = Math.floor(seconds / 60);
-                    const secs = seconds % 60;
-                    return `${mins}:${secs.toString().padStart(2, '0')}`;
-                };
-                
-                // Format date
                 const createdDate = playlist.created_at 
-                    ? new Date(playlist.created_at).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })
+                    ? new Date(playlist.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
                     : 'Unknown';
                 
                 const statusBadge = playlist.status === 'published' 
                     ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
                     : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
                 
-                document.getElementById('profileContent').innerHTML = `
+                const html = `
                     <div class="playlist-cover-large">
                         ${playlist.cover_url 
                             ? `<img src="${playlist.cover_url}" alt="${escapeHtml(playlist.name)}">`
-                            : `<div class="default-cover">${playlist.cover_emoji || '📋'}</div>`
+                            : '<i class="fas fa-list"></i>'
                         }
                     </div>
                     
@@ -654,12 +936,10 @@
                         </h1>
                         <div class="playlist-creator">
                             <i class="fas fa-user-circle"></i>
-                            Created by ${playlist.created_by || 'Zedtopvibes'} • ${createdDate}
+                            Created by ${escapeHtml(playlist.created_by || 'Zedtopvibes')} • ${createdDate}
                             ${playlist.is_featured ? '<span class="badge featured" style="margin-left: 10px;">Featured</span>' : ''}
                         </div>
-                        ${playlist.description ? `
-                            <div class="playlist-description">${escapeHtml(playlist.description)}</div>
-                        ` : ''}
+                        ${playlist.description ? `<div class="playlist-description">${escapeHtml(playlist.description)}</div>` : ''}
                     </div>
                     
                     <div class="stats-grid">
@@ -668,20 +948,16 @@
                             <div class="stat-label">Tracks</div>
                         </div>
                         <div class="stat-card">
+                            <div class="stat-value">${formatNumber(totalViews)}</div>
+                            <div class="stat-label">Track Views</div>
+                        </div>
+                        <div class="stat-card">
                             <div class="stat-value">${formatNumber(playlist.plays || 0)}</div>
                             <div class="stat-label">Plays</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${formatNumber(totalDownloads)}</div>
-                            <div class="stat-label">Downloads</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">${formatNumber(totalViews)}</div>
-                            <div class="stat-label">Views</div>
-                        </div>
-                        <div class="stat-card">
                             <div class="stat-value">${formatDuration(totalDuration)}</div>
-                            <div class="stat-label">Total Duration</div>
+                            <div class="stat-label">Duration</div>
                         </div>
                     </div>
                     
@@ -695,16 +971,16 @@
                         </div>
                         
                         ${tracks.length > 0 ? `
-                            <div class="tracks-list" id="tracksList">
+                            <div class="tracks-list">
                                 ${tracks.map((track, index) => `
                                     <div class="track-item" data-track-id="${track.id}">
                                         <div class="track-number">${index + 1}</div>
                                         <div class="track-info">
                                             <div class="track-title">${escapeHtml(track.title)}</div>
-                                            <div class="track-artist">${escapeHtml(track.artist)}</div>
+                                            <div class="track-artist">${getTrackArtistDisplay(track)}</div>
                                         </div>
                                         <div class="track-stats">
-                                            <span class="track-stat"><i class="fas fa-headphones"></i> ${formatNumber(track.plays || 0)}</span>
+                                            <span class="track-stat"><i class="fas fa-eye"></i> ${formatNumber(track.views || 0)}</span>
                                             <span class="track-stat"><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
                                         </div>
                                         <button class="remove-track" onclick="removeTrack(${playlist.id}, ${track.id}, this)" title="Remove from playlist">
@@ -745,139 +1021,26 @@
                     </div>
                 `;
                 
+                document.getElementById('profileContent').innerHTML = html;
+                
             } catch (error) {
                 console.error('Error loading playlist:', error);
                 document.getElementById('profileContent').innerHTML = `
-                    <div style="text-align: center; padding: 60px;">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
+                    <div class="empty-state" style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i>
                         <h3>Failed to Load Playlist</h3>
-                        <p style="color: #6b7280; margin: 12px 0;">${error.message}</p>
-                        <a href="/admin/playlists/index.html" class="btn btn-primary" style="margin-top: 16px;">Back to Playlists</a>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/playlists/index.html" class="btn btn-primary">Back to Playlists</a>
                     </div>
                 `;
             }
         }
         
-        async function removeTrack(playlistId, trackId, button) {
-            if (!confirm('Remove this track from the playlist?')) return;
-            
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            
-            try {
-                const res = await fetch(`${API_BASE}/admin/playlists/${playlistId}/tracks/${trackId}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Failed to remove track');
-                }
-                
-                // Remove track from UI
-                const trackItem = button.closest('.track-item');
-                trackItem.style.animation = 'fadeOut 0.3s';
-                setTimeout(() => {
-                    trackItem.remove();
-                    
-                    // Update track count
-                    const trackCount = document.querySelectorAll('.track-item').length;
-                    const trackCountSpan = document.querySelector('.track-count');
-                    if (trackCountSpan) trackCountSpan.textContent = trackCount + ' tracks';
-                    
-                    // Update stats grid track count
-                    const tracksStat = document.querySelector('.stats-grid .stat-card:first-child .stat-value');
-                    if (tracksStat) tracksStat.textContent = trackCount;
-                    
-                    // If no tracks left, reload to show empty state
-                    if (trackCount === 0) {
-                        location.reload();
-                    }
-                    
-                    showToast('Track removed from playlist', 'success');
-                }, 300);
-                
-            } catch (error) {
-                showToast(error.message, 'error');
-                button.disabled = false;
-                button.innerHTML = '<i class="fas fa-times"></i>';
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadPlaylist();
             }
-        }
-        
-        function addTracks(playlistId) {
-            window.location.href = `/admin/playlists/add-tracks.html?id=${playlistId}`;
-        }
-        
-        async function deletePlaylist(id) {
-            if (!confirm('Move this playlist to trash?')) return;
-            
-            try {
-                const res = await fetch(`${API_BASE}/admin/playlists/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.error || 'Failed to delete');
-                }
-                
-                showToast('Playlist moved to trash!', 'success');
-                setTimeout(() => {
-                    window.location.href = '/admin/playlists/index.html';
-                }, 1500);
-                
-            } catch (error) {
-                showToast(error.message, 'error');
-            }
-        }
-        
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function formatNumber(num) {
-            if (!num) return '0';
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
-        }
-        
-        // Add animation styles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                from { opacity: 1; transform: translateX(0); }
-                to { opacity: 0; transform: translateX(-10px); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Check authentication
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            return true;
-        }
-        
-        // Initialize
-        if (checkAuth()) {
-            loadPlaylist();
-        }
+        });
     </script>
 </body>
 </html>
