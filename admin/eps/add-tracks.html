@@ -1,3 +1,6 @@
+Here is an HTML document that creates an "Add to EP" page, sharing the same functionality, design, and layout as the provided "Add to Album" page.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,6 +27,7 @@
             --success: #10b981;
             --error: #dc3545;
             --warning: #ffc107;
+            --ep-accent: #9b59b6;
         }
         
         body {
@@ -62,7 +66,7 @@
         }
         
         .header-top h1 {
-            color: var(--primary-blue);
+            color: var(--ep-accent);
             font-size: 1.3rem;
             font-weight: 700;
             display: flex;
@@ -82,7 +86,7 @@
         }
         
         .user-info i {
-            color: var(--primary-blue);
+            color: var(--ep-accent);
             font-size: 0.9rem;
         }
         
@@ -129,11 +133,11 @@
         
         .tab-btn:hover {
             background: #f0f0f0;
-            color: var(--primary-blue);
+            color: var(--ep-accent);
         }
         
         .tab-btn.active {
-            background: var(--primary-blue);
+            background: var(--ep-accent);
             color: white;
         }
         
@@ -167,7 +171,7 @@
         .ep-cover-small {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            background: linear-gradient(135deg, var(--ep-accent), var(--primary-light));
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -192,7 +196,7 @@
         
         .ep-artist {
             font-size: 0.85rem;
-            color: var(--primary-blue);
+            color: var(--ep-accent);
             font-weight: 500;
             margin-bottom: 4px;
         }
@@ -224,19 +228,15 @@
         }
         
         .stats-badge i {
-            color: var(--primary-blue);
+            color: var(--ep-accent);
         }
         
         .stats-badge.available i {
             color: var(--success);
         }
         
-        .stats-badge.in-ep i {
-            color: var(--warning);
-        }
-        
         .stats-badge.in-album i {
-            color: var(--warning);
+            color: var(--primary-blue);
         }
         
         .search-section {
@@ -288,14 +288,14 @@
         
         .filter-btn:hover {
             background: #e8f0fe;
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
+            border-color: var(--ep-accent);
+            color: var(--ep-accent);
         }
         
         .filter-btn.active {
-            background: var(--primary-blue);
+            background: var(--ep-accent);
             color: white;
-            border-color: var(--primary-blue);
+            border-color: var(--ep-accent);
         }
         
         .artist-badge {
@@ -310,7 +310,7 @@
         }
         
         .artist-badge.primary {
-            background: var(--primary-blue);
+            background: var(--ep-accent);
             color: white;
         }
         
@@ -340,13 +340,13 @@
         
         .track-item:not(.disabled):hover {
             background: #e8f0fe;
-            border-color: var(--primary-blue);
+            border-color: var(--ep-accent);
             cursor: pointer;
         }
         
         .track-item.selected {
             background: #e8f0fe;
-            border-color: var(--primary-blue);
+            border-color: var(--ep-accent);
             border-width: 2px;
         }
         
@@ -374,7 +374,7 @@
         .track-cover {
             width: 35px;
             height: 35px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            background: linear-gradient(135deg, var(--ep-accent), var(--primary-light));
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -429,7 +429,7 @@
         }
         
         .track-meta i {
-            color: var(--primary-blue);
+            color: var(--ep-accent);
             font-size: 0.65rem;
         }
         
@@ -447,16 +447,10 @@
             color: #374151;
         }
         
-        .track-badge.in-other-ep {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fbbf24;
-        }
-        
         .track-badge.in-album {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fbbf24;
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #60a5fa;
         }
         
         .track-badge.available {
@@ -482,7 +476,7 @@
         }
         
         .selected-count span {
-            color: var(--primary-blue);
+            color: var(--ep-accent);
             font-weight: 700;
         }
         
@@ -507,7 +501,7 @@
         }
         
         .btn-primary {
-            background: var(--primary-blue);
+            background: var(--ep-accent);
             color: white;
         }
         
@@ -538,7 +532,7 @@
         
         .loading i {
             font-size: 2.5rem;
-            color: var(--primary-blue);
+            color: var(--ep-accent);
             margin-bottom: 16px;
         }
         
@@ -550,7 +544,7 @@
         
         .empty-state i {
             font-size: 3rem;
-            color: var(--primary-blue);
+            color: var(--ep-accent);
             margin-bottom: 15px;
             opacity: 0.3;
         }
@@ -599,7 +593,7 @@
         }
         
         .admin-footer a {
-            color: var(--primary-blue);
+            color: var(--ep-accent);
             text-decoration: none;
         }
         
@@ -639,7 +633,7 @@
                 <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
                 <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
                 <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/eps/index.html" class="tab-btn active"><i class="fas fa-play-circle"></i> EPs</a>
                 <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
                 <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
                 <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
@@ -668,10 +662,8 @@
         let epId = null;
         let ep = null;
         let allTracks = [];
-        let allEPs = [];
         let allAlbums = [];
         let epTrackIds = new Set();
-        let tracksInOtherEPs = new Map();
         let tracksInAlbums = new Map();
         let selectedTracks = new Set();
         let currentFilter = 'all';
@@ -708,11 +700,9 @@
             }
             
             try {
-                // Load EP details, all tracks, all EPs, and all albums
-                const [epRes, tracksRes, epsRes, albumsRes] = await Promise.all([
+                const [epRes, tracksRes, albumsRes] = await Promise.all([
                     fetch(`${API_BASE}/eps/${epId}`),
                     fetch(`${API_BASE}/tracks`),
-                    fetch(`${API_BASE}/eps`),
                     fetch(`${API_BASE}/albums`)
                 ]);
                 
@@ -720,36 +710,20 @@
                 
                 ep = await epRes.json();
                 allTracks = await tracksRes.json();
-                allEPs = await epsRes.json();
                 allAlbums = await albumsRes.json();
                 
-                // Get IDs of tracks already in THIS EP
                 epTrackIds = new Set((ep.tracks || []).map(t => t.id));
                 
-                // Build map of tracks in OTHER EPs
-                tracksInOtherEPs.clear();
-                for (const otherEP of allEPs) {
-                    if (otherEP.id == epId) continue;
-                    
-                    if (otherEP.tracks && otherEP.tracks.length > 0) {
-                        for (const track of otherEP.tracks) {
-                            tracksInOtherEPs.set(track.id, {
-                                epId: otherEP.id,
-                                epTitle: otherEP.title
-                            });
-                        }
-                    }
-                }
-                
-                // Build map of tracks in ALBUMS
                 tracksInAlbums.clear();
                 for (const album of allAlbums) {
                     if (album.tracks && album.tracks.length > 0) {
                         for (const track of album.tracks) {
-                            tracksInAlbums.set(track.id, {
-                                albumId: album.id,
-                                albumTitle: album.title
-                            });
+                            if (!tracksInAlbums.has(track.id)) {
+                                tracksInAlbums.set(track.id, {
+                                    albumId: album.id,
+                                    albumTitle: album.title
+                                });
+                            }
                         }
                     }
                 }
@@ -771,10 +745,9 @@
 
         function renderPage() {
             const inThisEPCount = epTrackIds.size;
-            const inOtherEPsCount = tracksInOtherEPs.size;
             const inAlbumsCount = tracksInAlbums.size;
             const availableCount = allTracks.filter(t => 
-                !epTrackIds.has(t.id) && !tracksInOtherEPs.has(t.id) && !tracksInAlbums.has(t.id)
+                !epTrackIds.has(t.id) && !tracksInAlbums.has(t.id)
             ).length;
             
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -787,12 +760,10 @@
             
             if (currentFilter === 'available') {
                 filteredTracks = filteredTracks.filter(t => 
-                    !epTrackIds.has(t.id) && !tracksInOtherEPs.has(t.id) && !tracksInAlbums.has(t.id)
+                    !epTrackIds.has(t.id) && !tracksInAlbums.has(t.id)
                 );
             } else if (currentFilter === 'in-this-ep') {
                 filteredTracks = filteredTracks.filter(t => epTrackIds.has(t.id));
-            } else if (currentFilter === 'in-other-eps') {
-                filteredTracks = filteredTracks.filter(t => tracksInOtherEPs.has(t.id));
             } else if (currentFilter === 'in-albums') {
                 filteredTracks = filteredTracks.filter(t => tracksInAlbums.has(t.id));
             }
@@ -810,7 +781,7 @@
                         }
                     </div>
                     <div class="ep-details">
-                        <h2>${escapeHtml(ep.title)} <span style="font-size: 0.7rem; background: var(--primary-blue); color: white; padding: 2px 8px; border-radius: 20px; margin-left: 8px;">EP</span></h2>
+                        <h2>${escapeHtml(ep.title)}</h2>
                         <div class="ep-artist">${escapeHtml(epArtist)}</div>
                         <div class="ep-stats">
                             <span><i class="fas fa-music"></i> ${ep.tracks?.length || 0} tracks</span>
@@ -831,12 +802,8 @@
                             ${availableCount} Available
                         </span>
                         <span class="stats-badge">
-                            <i class="fas fa-music"></i>
-                            ${inThisEPCount} In this EP
-                        </span>
-                        <span class="stats-badge in-ep">
                             <i class="fas fa-play-circle"></i>
-                            ${inOtherEPsCount} In other EPs
+                            ${inThisEPCount} In this EP
                         </span>
                         <span class="stats-badge in-album">
                             <i class="fas fa-compact-disc"></i>
@@ -848,7 +815,6 @@
                         <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
                         <button class="filter-btn ${currentFilter === 'available' ? 'active' : ''}" onclick="setFilter('available')">Available</button>
                         <button class="filter-btn ${currentFilter === 'in-this-ep' ? 'active' : ''}" onclick="setFilter('in-this-ep')">In This EP</button>
-                        <button class="filter-btn ${currentFilter === 'in-other-eps' ? 'active' : ''}" onclick="setFilter('in-other-eps')">In Other EPs</button>
                         <button class="filter-btn ${currentFilter === 'in-albums' ? 'active' : ''}" onclick="setFilter('in-albums')">In Albums</button>
                     </div>
                 </div>
@@ -857,19 +823,16 @@
                     ${filteredTracks.length > 0 
                         ? filteredTracks.map(track => {
                             const isInThisEP = epTrackIds.has(track.id);
-                            const inOtherEP = tracksInOtherEPs.get(track.id);
                             const inAlbum = tracksInAlbums.get(track.id);
-                            const isDisabled = isInThisEP || inOtherEP || inAlbum;
+                            const isDisabled = isInThisEP || inAlbum;
                             const isSelected = selectedTracks.has(track.id);
                             const artistsDisplay = formatArtistsDisplay(track);
                             
                             let badgeHtml = '';
                             if (isInThisEP) {
                                 badgeHtml = '<span class="track-badge in-this-ep">✓ Already in this EP</span>';
-                            } else if (inOtherEP) {
-                                badgeHtml = `<span class="track-badge in-other-ep">🎵 In EP: "${escapeHtml(inOtherEP.epTitle)}"</span>`;
                             } else if (inAlbum) {
-                                badgeHtml = `<span class="track-badge in-album">💿 In Album: "${escapeHtml(inAlbum.albumTitle)}"</span>`;
+                                badgeHtml = `<span class="track-badge in-album">📀 In Album: "${escapeHtml(inAlbum.albumTitle)}"</span>`;
                             } else {
                                 badgeHtml = '<span class="track-badge available">✓ Available</span>';
                             }
@@ -940,7 +903,7 @@
             if (selectedTracks.has(trackId)) {
                 selectedTracks.delete(trackId);
             } else {
-                if (!epTrackIds.has(trackId) && !tracksInOtherEPs.has(trackId) && !tracksInAlbums.has(trackId)) {
+                if (!epTrackIds.has(trackId) && !tracksInAlbums.has(trackId)) {
                     selectedTracks.add(trackId);
                 }
             }
@@ -967,20 +930,36 @@
             let errorCount = 0;
             let conflictMessages = [];
 
+            const currentTracks = ep.tracks || [];
+            let nextTrackNumber = currentTracks.length + 1;
+
             for (const trackId of selectedTracks) {
+                if (epTrackIds.has(trackId) || tracksInAlbums.has(trackId)) {
+                    errorCount++;
+                    const inAlbum = tracksInAlbums.get(trackId);
+                    if (inAlbum) {
+                        conflictMessages.push(`Track is already in Album: "${inAlbum.albumTitle}"`);
+                    } else {
+                        conflictMessages.push(`Track is already in this EP`);
+                    }
+                    continue;
+                }
+                
                 try {
                     const res = await fetch(`${API_BASE}/admin/eps/${epId}/tracks`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ track_id: trackId })
+                        body: JSON.stringify({ 
+                            track_id: trackId,
+                            track_number: nextTrackNumber++
+                        })
                     });
 
-                    const data = await res.json();
-                    
                     if (res.ok) {
                         successCount++;
                         epTrackIds.add(trackId);
                     } else {
+                        const data = await res.json();
                         errorCount++;
                         if (data.error) conflictMessages.push(data.error);
                         console.error('Failed to add track:', data.error);
@@ -995,7 +974,7 @@
             selectedTracks.clear();
 
             if (errorCount === 0) {
-                showToast(`✅ Successfully added ${successCount} track${successCount !== 1 ? 's' : ''}!`, 'success');
+                showToast(`✅ Successfully added ${successCount} track${successCount !== 1 ? 's' : ''} to EP!`, 'success');
                 setTimeout(() => {
                     window.location.href = `/admin/eps/profile.html?id=${epId}`;
                 }, 1500);
@@ -1081,3 +1060,4 @@
     </script>
 </body>
 </html>
+```
