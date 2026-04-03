@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Song Profile - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --gray: #666;
+            --gray-light: #999;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --skeleton-bg: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+            flex: 1;
+            width: 100%;
+        }
+        
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .user-info i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+        }
+        
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            height: 36px;
+        }
+        
+        .tab-btn i {
+            font-size: 0.85rem;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .profile-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .track-cover-large {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5rem;
+            position: relative;
+        }
+        
+        .track-cover-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .track-info {
+            padding: 24px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .track-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .track-artist {
+            font-size: 1rem;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .track-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .track-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stat-card {
+            padding: 16px;
+            text-align: center;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stat-card:nth-child(2) {
+            border-right: none;
+        }
+        
+        .stat-card:nth-child(3) {
+            border-bottom: none;
+        }
+        
+        .stat-card:nth-child(4) {
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .badge.featured {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+        
+        .badge.explicit {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .artist-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary-blue);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin: 2px;
+            white-space: nowrap;
+        }
+        
+        .artist-badge.primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .content-sections {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px 24px;
+        }
+        
+        .content-section {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .section-header h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .section-header h3 i {
+            color: var(--primary-blue);
+        }
+        
+        .section-count {
+            background: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .content-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .content-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.2s;
+        }
+        
+        .content-item:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(3px);
+        }
+        
+        .content-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .content-item-title {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .content-item-title:hover {
+            color: var(--primary-blue);
+            text-decoration: underline;
+        }
+        
+        .content-item-meta {
+            font-size: 0.65rem;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+        
+        .content-item-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .item-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: none;
+            background: var(--light-gray);
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            text-decoration: none;
+        }
+        
+        .item-action-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 24px;
+            color: var(--gray);
+            background: white;
+            border-radius: 8px;
+            border: 1px dashed rgba(31, 111, 159, 0.3);
+        }
+        
+        .empty-state i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+            opacity: 0.3;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding: 16px 24px 24px 24px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #218838;
+        }
+        
+        .btn-unpublish {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+        
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-cover {
+            height: 200px;
+        }
+        
+        .skeleton-title {
+            height: 32px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+        
+        .skeleton-text {
+            height: 16px;
+            width: 40%;
+            margin-bottom: 8px;
+        }
+        
+        .skeleton-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .skeleton-stat {
+            height: 80px;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .skeleton-stat:last-child {
+            border-right: none;
+        }
+        
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: var(--primary-blue); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .stat-card { padding: 20px; }
+            .stat-card:nth-child(2) { border-right: 1px solid rgba(31, 111, 159, 0.1); }
+            .stat-card:nth-child(4) { border-right: none; }
+            .stat-value { font-size: 1.8rem; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+        }
+        
+        @media (max-width: 900px) {
+            .content-sections {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .track-name { font-size: 1.4rem; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-music"></i> Song Profile</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn active"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
+        </div>
+        
+        <div class="admin-content">
+            <div class="profile-card" id="profileContent">
+                <div class="skeleton-cover skeleton"></div>
+                <div class="track-info">
+                    <div class="skeleton-title skeleton"></div>
+                    <div class="skeleton-text skeleton"></div>
+                    <div class="skeleton-text skeleton" style="width: 30%;"></div>
+                </div>
+                <div class="skeleton-stats">
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+        
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatArtistsDisplay(artists) {
+            if (!artists || artists.length === 0) {
+                return 'Unknown Artist';
+            }
+            
+            const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
+            const featuredArtists = artists.filter(a => a.is_primary === 0);
+            
+            let html = `<span class="artist-badge primary">${escapeHtml(primaryArtist.name)}</span>`;
+            if (featuredArtists.length > 0) {
+                html += featuredArtists.map(a => `<span class="artist-badge">${escapeHtml(a.name)}</span>`).join('');
+            }
+            return html;
+        }
+        
+        async function publishTrack(id, title) {
+            if (!confirm(`Publish "${title}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/tracks/${id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${title}" published!`, 'success');
+                loadTrack();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function unpublishTrack(id, title) {
+            if (!confirm(`Unpublish "${title}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/tracks/${id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${title}" moved to drafts`, 'success');
+                loadTrack();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function deleteTrack(id, title) {
+            if (!confirm(`Move "${title}" to trash?`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/tracks/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete');
+                }
+                
+                showToast('Track moved to trash!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/admin/songs.html';
+                }, 1500);
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function loadTrack() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const trackId = urlParams.get('id');
+            
+            if (!trackId) {
+                window.location.href = '/admin/songs.html';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/tracks/${trackId}`);
+                if (!response.ok) throw new Error('Track not found');
+                
+                const data = await response.json();
+                const track = data.track || data;
+                const appearances = data.appearances || { albums: [], eps: [], playlists: [] };
+                
+                const albumsCount = appearances.albums?.length || 0;
+                const epsCount = appearances.eps?.length || 0;
+                const playlistsCount = appearances.playlists?.length || 0;
+                
+                const statusBadge = track.status === 'published' 
+                    ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                    : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+                
+                const releaseDate = track.release_date 
+                    ? new Date(track.release_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                    : 'Unknown';
+                
+                const artistsDisplay = formatArtistsDisplay(track.artists || []);
+                
+                const html = `
+                    <div class="track-cover-large">
+                        ${track.artwork_url 
+                            ? `<img src="${track.artwork_url}" alt="${escapeHtml(track.title)}">`
+                            : '<i class="fas fa-music"></i>'
+                        }
+                    </div>
+                    
+                    <div class="track-info">
+                        <h1 class="track-name">
+                            ${escapeHtml(track.title)}
+                            ${statusBadge}
+                            ${track.explicit ? '<span class="badge explicit"><i class="fas fa-exclamation-triangle"></i> Explicit</span>' : ''}
+                            ${track.is_featured ? '<span class="badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
+                        </h1>
+                        <div class="track-artist">${artistsDisplay}</div>
+                        <div class="track-meta">
+                            <span><i class="fas fa-clock"></i> ${formatDuration(track.duration)}</span>
+                            <span><i class="fas fa-calendar"></i> Released: ${releaseDate}</span>
+                            ${track.genre ? `<span><i class="fas fa-tag"></i> ${escapeHtml(track.genre)}</span>` : ''}
+                        </div>
+                        ${track.description ? `<div class="track-description">${escapeHtml(track.description)}</div>` : ''}
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${formatNumber(track.views || 0)}</div>
+                            <div class="stat-label">Views</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${albumsCount}</div>
+                            <div class="stat-label">Albums</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${epsCount}</div>
+                            <div class="stat-label">EPs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${playlistsCount}</div>
+                            <div class="stat-label">Playlists</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-sections">
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-compact-disc"></i> Albums</h3>
+                                <span class="section-count">${albumsCount}</span>
+                            </div>
+                            <div class="content-list">
+                                ${albumsCount > 0 ? appearances.albums.map(album => `
+                                    <div class="content-item">
+                                        <div class="content-item-info">
+                                            <div class="content-item-title" onclick="window.location.href='/admin/albums/profile.html?id=${album.id}'">${escapeHtml(album.title)}</div>
+                                            <div class="content-item-meta"><i class="fas fa-user"></i> ${escapeHtml(album.artist_name || 'Unknown Artist')} • Track ${album.track_number || '—'}</div>
+                                        </div>
+                                        <div class="content-item-actions">
+                                            <a href="/admin/albums/profile.html?id=${album.id}" class="item-action-btn" title="View Album"><i class="fas fa-eye"></i></a>
+                                        </div>
+                                    </div>
+                                `).join('') : '<div class="empty-state"><i class="fas fa-compact-disc"></i><p>No albums</p></div>'}
+                            </div>
+                        </div>
+                        
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-play-circle"></i> EPs</h3>
+                                <span class="section-count">${epsCount}</span>
+                            </div>
+                            <div class="content-list">
+                                ${epsCount > 0 ? appearances.eps.map(ep => `
+                                    <div class="content-item">
+                                        <div class="content-item-info">
+                                            <div class="content-item-title" onclick="window.location.href='/admin/eps/profile.html?id=${ep.id}'">${escapeHtml(ep.title)}</div>
+                                            <div class="content-item-meta"><i class="fas fa-user"></i> ${escapeHtml(ep.artist_name || 'Unknown Artist')} • Track ${ep.track_number || '—'}</div>
+                                        </div>
+                                        <div class="content-item-actions">
+                                            <a href="/admin/eps/profile.html?id=${ep.id}" class="item-action-btn" title="View EP"><i class="fas fa-eye"></i></a>
+                                        </div>
+                                    </div>
+                                `).join('') : '<div class="empty-state"><i class="fas fa-play-circle"></i><p>No EPs</p></div>'}
+                            </div>
+                        </div>
+                        
+                        <div class="content-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-list"></i> Playlists</h3>
+                                <span class="section-count">${playlistsCount}</span>
+                            </div>
+                            <div class="content-list">
+                                ${playlistsCount > 0 ? appearances.playlists.map(playlist => `
+                                    <div class="content-item">
+                                        <div class="content-item-info">
+                                            <div class="content-item-title" onclick="window.location.href='/admin/playlists/profile.html?id=${playlist.id}'">${escapeHtml(playlist.name)}</div>
+                                        </div>
+                                        <div class="content-item-actions">
+                                            <a href="/admin/playlists/profile.html?id=${playlist.id}" class="item-action-btn" title="View Playlist"><i class="fas fa-eye"></i></a>
+                                        </div>
+                                    </div>
+                                `).join('') : '<div class="empty-state"><i class="fas fa-list"></i><p>No playlists</p></div>'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="/admin/songs/edit.html?id=${track.id}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Song
+                        </a>
+                        ${track.status === 'draft' 
+                            ? `<button class="btn btn-publish" onclick="publishTrack(${track.id}, '${escapeHtml(track.title).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-cloud-upload-alt"></i> Publish
+                               </button>`
+                            : `<button class="btn btn-unpublish" onclick="unpublishTrack(${track.id}, '${escapeHtml(track.title).replace(/'/g, "\\'")}')">
+                                <i class="fas fa-eye-slash"></i> Unpublish
+                               </button>`
+                        }
+                        <button class="btn btn-danger" onclick="deleteTrack(${track.id}, '${escapeHtml(track.title).replace(/'/g, "\\'")}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('profileContent').innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error loading track:', error);
+                document.getElementById('profileContent').innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i>
+                        <h3>Failed to Load Track</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/songs.html" class="btn btn-primary">Back to Songs</a>
+                    </div>
+                `;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadTrack();
+            }
+        });
+    </script>
+</body>
+</html>
