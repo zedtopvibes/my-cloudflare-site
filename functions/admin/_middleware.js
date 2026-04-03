@@ -3,19 +3,34 @@ export async function onRequest(context) {
     const url = new URL(request.url);
     const path = url.pathname;
     
-    // Only process /admin/ paths
+    // Only process /admin/ paths that end with .html or have no extension
     if (!path.startsWith('/admin/')) {
+        return next();
+    }
+    
+    // Skip if already requesting a fragment or layout file
+    if (path.includes('/_fragments/') || path.includes('/_layout/')) {
         return next();
     }
     
     // Build fragment path: /admin/upload.html → /fragments/upload.html
     let fragmentPath = path.replace('/admin/', '/fragments/');
     
+    // Also try without .html for clean URLs
+    let fragmentPathNoHtml = fragmentPath.replace('.html', '');
+    
     try {
-        const fragment = await env.ASSETS.fetch(new Request(fragmentPath));
+        // Try to read the fragment with .html
+        let fragment = await env.ASSETS.fetch(new Request(fragmentPath));
+        
+        // If not found, try without .html
+        if (!fragment.ok) {
+            fragment = await env.ASSETS.fetch(new Request(fragmentPathNoHtml));
+        }
         
         if (!fragment.ok) {
-            return next();
+            // Fragment doesn't exist - return 404 or fallback
+            return new Response('Page not found', { status: 404 });
         }
         
         let fragmentHtml = await fragment.text();
@@ -37,16 +52,19 @@ export async function onRequest(context) {
         let tabsHtml = await tabsTemplate.text();
         let footerHtml = await footerTemplate.text();
         
-        // Add active class
+        // Add active class to current tab
         tabsHtml = tabsHtml.replace(/href="([^"]+)"/g, (match, href) => {
             const isActive = (href === path) || 
-                           (path === '/admin/' && href === '/admin/');
+                           (path === '/admin/' && href === '/admin/') ||
+                           (path + '.html' === href) ||
+                           (path === href + '/');
             if (isActive) {
                 return match + ' class="tab-btn active"';
             }
             return match;
         });
         
+        // Combine everything
         const fullHtml = headerHtml.replace('{{HEADING}}', heading) + 
                         tabsHtml + 
                         fragmentHtml + 
@@ -58,6 +76,6 @@ export async function onRequest(context) {
         
     } catch (error) {
         console.error('Middleware error:', error);
-        return next();
+        return new Response('Error loading page', { status: 500 });
     }
 }
