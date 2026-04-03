@@ -450,6 +450,12 @@
             border: 1px solid #60a5fa;
         }
         
+        .track-badge.in-other-ep {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+        
         .track-badge.available {
             background: var(--success);
             color: white;
@@ -659,9 +665,9 @@
         let epId = null;
         let ep = null;
         let allTracks = [];
-        let allAlbums = [];
         let epTrackIds = new Set();
         let tracksInAlbums = new Map();
+        let tracksInOtherEPs = new Map();
         let selectedTracks = new Set();
         let currentFilter = 'all';
 
@@ -697,42 +703,77 @@
             }
             
             try {
-                const [epRes, tracksRes, albumsRes] = await Promise.all([
-                    fetch(`${API_BASE}/eps/${epId}`),
-                    fetch(`${API_BASE}/tracks`),
-                    fetch(`${API_BASE}/albums`)
-                ]);
-                
+                // Load current EP with its tracks (full details)
+                const epRes = await fetch(`${API_BASE}/eps/${epId}`);
                 if (!epRes.ok) throw new Error('EP not found');
-                
                 ep = await epRes.json();
-                allTracks = await tracksRes.json();
-                allAlbums = await albumsRes.json();
                 
-                // Get tracks already in this EP
+                // Load all tracks
+                const tracksRes = await fetch(`${API_BASE}/tracks`);
+                allTracks = await tracksRes.json();
+                
+                // Load all albums (list endpoint)
+                const albumsListRes = await fetch(`${API_BASE}/albums`);
+                const allAlbumsList = await albumsListRes.json();
+                
+                // Load all EPs (list endpoint)
+                const epsListRes = await fetch(`${API_BASE}/eps`);
+                const allEpsList = await epsListRes.json();
+                
+                // Get tracks already in current EP
                 epTrackIds = new Set((ep.tracks || []).map(t => t.id || t));
                 
-                // FIXED: Properly detect tracks that are already in ANY album
+                // Fetch FULL details for each album to get their tracks
                 tracksInAlbums.clear();
-                for (const album of allAlbums) {
-                    // Handle different possible data structures
-                    const albumTracks = album.tracks || album.songs || [];
-                    if (albumTracks && albumTracks.length > 0) {
-                        for (const track of albumTracks) {
-                            // Track could be an object with id, or just the id itself
-                            const trackId = track.id || track;
-                            if (trackId && !tracksInAlbums.has(trackId)) {
-                                tracksInAlbums.set(trackId, {
-                                    albumId: album.id,
-                                    albumTitle: album.title
-                                });
+                for (const album of allAlbumsList) {
+                    try {
+                        const albumDetailRes = await fetch(`${API_BASE}/albums/${album.id}`);
+                        if (albumDetailRes.ok) {
+                            const albumDetail = await albumDetailRes.json();
+                            const albumTracks = albumDetail.tracks || [];
+                            for (const track of albumTracks) {
+                                const trackId = track.id || track;
+                                if (!tracksInAlbums.has(trackId)) {
+                                    tracksInAlbums.set(trackId, {
+                                        albumId: album.id,
+                                        albumTitle: album.title
+                                    });
+                                }
                             }
                         }
+                    } catch (err) {
+                        console.error(`Error fetching album ${album.id}:`, err);
                     }
                 }
                 
-                console.log(`Found ${epTrackIds.size} tracks in this EP`);
-                console.log(`Found ${tracksInAlbums.size} tracks in albums`);
+                // Fetch FULL details for OTHER EPs (not current one) to get their tracks
+                tracksInOtherEPs.clear();
+                for (const otherEP of allEpsList) {
+                    if (otherEP.id == epId) continue; // Skip current EP
+                    
+                    try {
+                        const epDetailRes = await fetch(`${API_BASE}/eps/${otherEP.id}`);
+                        if (epDetailRes.ok) {
+                            const epDetail = await epDetailRes.json();
+                            const epTracks = epDetail.tracks || [];
+                            for (const track of epTracks) {
+                                const trackId = track.id || track;
+                                if (!tracksInOtherEPs.has(trackId)) {
+                                    tracksInOtherEPs.set(trackId, {
+                                        epId: otherEP.id,
+                                        epTitle: otherEP.title
+                                    });
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.error(`Error fetching EP ${otherEP.id}:`, err);
+                    }
+                }
+                
+                console.log(`Tracks in current EP: ${epTrackIds.size}`);
+                console.log(`Tracks in albums: ${tracksInAlbums.size}`);
+                console.log(`Tracks in other EPs: ${tracksInOtherEPs.size}`);
                 
                 renderPage();
                 
@@ -752,8 +793,11 @@
         function renderPage() {
             const inThisEPCount = epTrackIds.size;
             const inAlbumsCount = tracksInAlbums.size;
+            const inOtherEPsCount = tracksInOtherEPs.size;
+            
+            // Available tracks = not in current EP, not in any album, not in any other EP
             const availableCount = allTracks.filter(t => 
-                !epTrackIds.has(t.id) && !tracksInAlbums.has(t.id)
+                !epTrackIds.has(t.id) && !tracksInAlbums.has(t.id) && !tracksInOtherEPs.has(t.id)
             ).length;
             
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -766,12 +810,14 @@
             
             if (currentFilter === 'available') {
                 filteredTracks = filteredTracks.filter(t => 
-                    !epTrackIds.has(t.id) && !tracksInAlbums.has(t.id)
+                    !epTrackIds.has(t.id) && !tracksInAlbums.has(t.id) && !tracksInOtherEPs.has(t.id)
                 );
             } else if (currentFilter === 'in-this-ep') {
                 filteredTracks = filteredTracks.filter(t => epTrackIds.has(t.id));
             } else if (currentFilter === 'in-albums') {
                 filteredTracks = filteredTracks.filter(t => tracksInAlbums.has(t.id));
+            } else if (currentFilter === 'in-other-eps') {
+                filteredTracks = filteredTracks.filter(t => tracksInOtherEPs.has(t.id));
             }
 
             const epArtist = ep.artist_name || ep.artist || 'Unknown Artist';
@@ -815,6 +861,10 @@
                             <i class="fas fa-compact-disc"></i>
                             ${inAlbumsCount} In Albums
                         </span>
+                        <span class="stats-badge">
+                            <i class="fas fa-music"></i>
+                            ${inOtherEPsCount} In Other EPs
+                        </span>
                     </div>
                     
                     <div class="filter-bar">
@@ -822,6 +872,7 @@
                         <button class="filter-btn ${currentFilter === 'available' ? 'active' : ''}" onclick="setFilter('available')">Available</button>
                         <button class="filter-btn ${currentFilter === 'in-this-ep' ? 'active' : ''}" onclick="setFilter('in-this-ep')">In This EP</button>
                         <button class="filter-btn ${currentFilter === 'in-albums' ? 'active' : ''}" onclick="setFilter('in-albums')">In Albums</button>
+                        <button class="filter-btn ${currentFilter === 'in-other-eps' ? 'active' : ''}" onclick="setFilter('in-other-eps')">In Other EPs</button>
                     </div>
                 </div>
                 
@@ -830,7 +881,8 @@
                         ? filteredTracks.map(track => {
                             const isInThisEP = epTrackIds.has(track.id);
                             const inAlbum = tracksInAlbums.get(track.id);
-                            const isDisabled = isInThisEP || inAlbum;
+                            const inOtherEP = tracksInOtherEPs.get(track.id);
+                            const isDisabled = isInThisEP || inAlbum || inOtherEP;
                             const isSelected = selectedTracks.has(track.id);
                             const artistsDisplay = formatArtistsDisplay(track);
                             
@@ -839,6 +891,8 @@
                                 badgeHtml = '<span class="track-badge in-this-ep">✓ Already in this EP</span>';
                             } else if (inAlbum) {
                                 badgeHtml = `<span class="track-badge in-album">📀 In Album: "${escapeHtml(inAlbum.albumTitle)}"</span>`;
+                            } else if (inOtherEP) {
+                                badgeHtml = `<span class="track-badge in-other-ep">🎵 In EP: "${escapeHtml(inOtherEP.epTitle)}"</span>`;
                             } else {
                                 badgeHtml = '<span class="track-badge available">✓ Available</span>';
                             }
@@ -909,7 +963,8 @@
             if (selectedTracks.has(trackId)) {
                 selectedTracks.delete(trackId);
             } else {
-                if (!epTrackIds.has(trackId) && !tracksInAlbums.has(trackId)) {
+                // Only allow selection if track is not disabled
+                if (!epTrackIds.has(trackId) && !tracksInAlbums.has(trackId) && !tracksInOtherEPs.has(trackId)) {
                     selectedTracks.add(trackId);
                 }
             }
@@ -940,11 +995,14 @@
             let nextTrackNumber = currentTracks.length + 1;
 
             for (const trackId of selectedTracks) {
-                if (epTrackIds.has(trackId) || tracksInAlbums.has(trackId)) {
+                if (epTrackIds.has(trackId) || tracksInAlbums.has(trackId) || tracksInOtherEPs.has(trackId)) {
                     errorCount++;
                     const inAlbum = tracksInAlbums.get(trackId);
+                    const inOtherEP = tracksInOtherEPs.get(trackId);
                     if (inAlbum) {
                         conflictMessages.push(`Track is already in Album: "${inAlbum.albumTitle}"`);
+                    } else if (inOtherEP) {
+                        conflictMessages.push(`Track is already in EP: "${inOtherEP.epTitle}"`);
                     } else {
                         conflictMessages.push(`Track is already in this EP`);
                     }
