@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Edit Artist - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,129 +14,149 @@
         :root {
             --primary-blue: #1f6f9f;
             --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
             --primary-dark: #1f4c73;
             --gray: #666;
+            --gray-light: #999;
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
             --success: #28a745;
-            --warning: #ffc107;
             --error: #dc3545;
+            --warning: #ffc107;
         }
         
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--light-gray);
             min-height: 100vh;
-            padding: 20px;
+            color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
-        .container {
-            max-width: 800px;
+        .admin-container {
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
-        .header {
+        /* Header Styles */
+        .admin-header {
             background: var(--white);
             border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
-        .header h1 {
+        .header-top h1 {
             color: var(--primary-blue);
             font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .back-btn {
-            padding: 8px 16px;
-            background: var(--light-gray);
-            border: none;
-            border-radius: 6px;
-            color: #333;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+        .user-info i {
+            color: var(--primary-blue);
             font-size: 0.9rem;
         }
         
-        .back-btn:hover {
-            background: #e0e0e0;
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
         }
         
+        /* Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            height: 36px;
+        }
+        
+        .tab-btn i {
+            font-size: 0.85rem;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        /* Content Area */
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Form Container */
         .form-container {
             background: var(--white);
             border-radius: 12px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-        }
-        
-        .image-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .current-image {
-            width: 150px;
-            height: 150px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
             overflow: hidden;
-            border: 3px solid var(--light-gray);
-        }
-        
-        .current-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .image-upload {
-            display: inline-block;
-            position: relative;
-        }
-        
-        .image-upload-btn {
-            background: var(--primary-blue);
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .image-upload-btn:hover {
-            background: var(--primary-light);
-        }
-        
-        .image-upload input {
-            display: none;
-        }
-        
-        .preview-image {
-            max-width: 100%;
-            max-height: 100px;
-            margin-top: 10px;
-            border-radius: 6px;
-            display: none;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            padding: 24px;
         }
         
         .form-group {
@@ -145,15 +165,16 @@
         
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: 600;
-            font-size: 0.9rem;
-            color: #333;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
         }
         
         .form-group label i {
             color: var(--primary-blue);
-            margin-right: 5px;
+            margin-right: 6px;
+            width: 18px;
         }
         
         .form-group input,
@@ -162,9 +183,10 @@
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 0.95rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
             font-family: 'Montserrat', sans-serif;
+            transition: all 0.2s;
         }
         
         .form-group input:focus,
@@ -172,14 +194,89 @@
         .form-group select:focus {
             outline: none;
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 2px rgba(31, 111, 159, 0.1);
+            box-shadow: 0 0 0 3px rgba(31, 111, 159, 0.1);
         }
         
+        .form-hint {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        
+        .form-hint i {
+            color: var(--primary-blue);
+            margin-right: 4px;
+        }
+        
+        /* Image Section */
+        .image-section {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .current-image {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            overflow: hidden;
+            border: 3px solid var(--white);
+            box-shadow: var(--shadow);
+        }
+        
+        .current-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-upload-btn {
+            background: var(--light-gray);
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+        
+        .image-upload-btn:hover {
+            background: #e0e0e0;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        #imageInput {
+            display: none;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 100px;
+            margin-top: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        /* Checkbox Group */
         .checkbox-group {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             margin: 20px 0;
-            padding: 15px;
+            padding: 16px;
             background: var(--light-gray);
             border-radius: 8px;
             flex-wrap: wrap;
@@ -190,32 +287,45 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+        
+        .checkbox-label i {
+            color: var(--primary-blue);
         }
         
         .checkbox-label input[type="checkbox"] {
             width: 16px;
             height: 16px;
+            cursor: pointer;
         }
         
+        /* Action Buttons */
         .action-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-end;
-            margin-top: 30px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
         }
         
+        /* Buttons */
         .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
         }
         
         .btn-primary {
@@ -235,35 +345,54 @@
         .btn-secondary {
             background: var(--light-gray);
             color: #333;
+            border: 1px solid #ddd;
         }
         
         .btn-secondary:hover {
             background: #e0e0e0;
         }
         
-        .status-hint {
-            font-size: 0.8rem;
-            color: var(--gray);
-            margin-top: 4px;
-        }
-        
+        /* Loading */
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px 20px;
             color: var(--gray);
         }
         
         .loading i {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
             color: var(--primary-blue);
+            margin-bottom: 16px;
         }
         
+        /* Footer */
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 12px 20px;
+            left: 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             color: white;
             z-index: 2000;
@@ -271,12 +400,12 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--error); }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
         .toast.warning { background: var(--warning); color: #333; }
         
         @keyframes slideIn {
@@ -289,35 +418,58 @@
             to { transform: translateX(100%); opacity: 0; }
         }
         
-        @media (max-width: 768px) {
-            .checkbox-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
+        /* Responsive */
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+            .form-container { max-width: 700px; margin: 0 auto; }
+        }
+        
+        @media (max-width: 767px) {
+            .checkbox-group { flex-direction: column; gap: 12px; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .current-image { width: 120px; height: 120px; font-size: 2rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-microphone"></i> <span id="pageTitle">Add New Artist</span></h1>
-            <a href="/admin/artists/index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Artists</a>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-microphone"></i> <span id="pageTitle">Add New Artist</span></h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn active"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
         </div>
         
-        <div class="form-container" id="formContainer">
-            <div class="loading">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <div>Loading artist data...</div>
+        <div class="admin-content">
+            <div class="form-container" id="formContainer">
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <div>Loading artist data...</div>
+                </div>
             </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
@@ -325,126 +477,43 @@
         const API_BASE = '/api';
         let currentPhotoFile = null;
 
-        async function loadArtistForEdit() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const artistId = urlParams.get('id');
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
             
-            const formContainer = document.getElementById('formContainer');
-            const pageTitle = document.getElementById('pageTitle');
-            
-            if (!artistId) {
-                pageTitle.textContent = 'Add New Artist';
-                renderForm(null);
-                return;
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
             }
             
-            try {
-                const res = await fetch(`${API_BASE}/admin/artists/${artistId}`);
-                if (!res.ok) throw new Error('Artist not found');
-                
-                const artist = await res.json();
-                
-                pageTitle.textContent = `Edit Artist: ${artist.name}`;
-                renderForm(artist);
-                
-            } catch (error) {
-                console.error('Error loading artist:', error);
-                formContainer.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: var(--error);">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                        <h3>Failed to load artist</h3>
-                        <p style="margin: 15px 0;">${error.message}</p>
-                        <a href="/admin/artists/index.html" class="btn btn-secondary">Back to Artists</a>
-                    </div>
-                `;
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
             }
+            return true;
         }
-
-        function renderForm(artist) {
-            const isEditing = !!artist;
-            const currentStatus = artist?.status || 'draft';
-            const formContainer = document.getElementById('formContainer');
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
             
-            formContainer.innerHTML = `
-                <form id="artistForm">
-                    <input type="hidden" id="artistId" value="${artist?.id || ''}">
-                    
-                    <div class="image-section">
-                        <div class="current-image" id="currentImage">
-                            ${artist?.image_url 
-                                ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">`
-                                : '<i class="fas fa-user"></i>'
-                            }
-                        </div>
-                        
-                        <div class="image-upload">
-                            <button type="button" class="image-upload-btn" onclick="document.getElementById('imageInput').click()">
-                                <i class="fas fa-camera"></i> Change Photo
-                            </button>
-                            <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
-                        </div>
-                        
-                        <img id="preview" class="preview-image" src="#" alt="Preview">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> Artist Name *</label>
-                        <input type="text" id="artistName" value="${escapeHtml(artist?.name || '')}" placeholder="e.g. Slap Dee" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-map-marker-alt"></i> Country</label>
-                        <input type="text" id="artistCountry" value="${escapeHtml(artist?.country || '')}" placeholder="e.g. Zambia">
-                    </div>
-                    
-                    <!-- NEW: Genre Field -->
-                    <div class="form-group">
-                        <label><i class="fas fa-tag"></i> Default Genre</label>
-                        <input type="text" id="artistGenre" value="${escapeHtml(artist?.genre || '')}" placeholder="e.g. Hip-Hop, Gospel, R&B">
-                        <div class="status-hint">
-                            <i class="fas fa-music"></i> Songs by this artist will automatically use this genre when uploaded.
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Bio</label>
-                        <textarea id="artistBio" rows="4" placeholder="Artist biography...">${escapeHtml(artist?.bio || '')}</textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-flag"></i> Status</label>
-                        <select id="artistStatus">
-                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
-                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
-                        </select>
-                        <div class="status-hint">
-                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
-                        </div>
-                    </div>
-                    
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="artistFeatured" ${artist?.is_featured ? 'checked' : ''}> Featured Artist
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="artistLegend" ${artist?.is_zambian_legend ? 'checked' : ''}> Zambian Legend
-                        </label>
-                    </div>
-                    
-                    <div class="action-buttons">
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/artists/index.html'">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            ${isEditing ? 'Update Artist' : 'Create Artist'}
-                        </button>
-                    </div>
-                </form>
-            `;
-            
-            document.getElementById('artistForm').addEventListener('submit', handleSubmit);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
-
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 currentPhotoFile = input.files[0];
@@ -462,7 +531,7 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-
+        
         async function handleSubmit(e) {
             e.preventDefault();
             
@@ -542,48 +611,129 @@
                 submitBtn.textContent = originalText;
             }
         }
-
-        function showToast(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i> ${message}`;
-            document.body.appendChild(toast);
+        
+        function renderForm(artist) {
+            const isEditing = !!artist;
+            const currentStatus = artist?.status || 'draft';
+            const formContainer = document.getElementById('formContainer');
             
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
+            formContainer.innerHTML = `
+                <form id="artistForm">
+                    <input type="hidden" id="artistId" value="${artist?.id || ''}">
+                    
+                    <div class="image-section">
+                        <div class="current-image" id="currentImage">
+                            ${artist?.image_url 
+                                ? `<img src="${artist.image_url}" alt="${escapeHtml(artist.name)}">`
+                                : '<i class="fas fa-user"></i>'
+                            }
+                        </div>
+                        
+                        <div class="image-upload">
+                            <button type="button" class="image-upload-btn" onclick="document.getElementById('imageInput').click()">
+                                <i class="fas fa-camera"></i> ${artist?.image_url ? 'Change Photo' : 'Upload Photo'}
+                            </button>
+                            <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
+                        </div>
+                        
+                        <img id="preview" class="preview-image" src="#" alt="Preview">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Artist Name *</label>
+                        <input type="text" id="artistName" value="${escapeHtml(artist?.name || '')}" placeholder="e.g. Slap Dee" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Country</label>
+                        <input type="text" id="artistCountry" value="${escapeHtml(artist?.country || '')}" placeholder="e.g. Zambia">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Default Genre</label>
+                        <input type="text" id="artistGenre" value="${escapeHtml(artist?.genre || '')}" placeholder="e.g. Hip-Hop, Gospel, R&B">
+                        <div class="form-hint">
+                            <i class="fas fa-music"></i> Songs by this artist will automatically use this genre when uploaded.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> Bio</label>
+                        <textarea id="artistBio" rows="4" placeholder="Artist biography...">${escapeHtml(artist?.bio || '')}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-flag"></i> Status</label>
+                        <select id="artistStatus">
+                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
+                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
+                        </select>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="artistFeatured" ${artist?.is_featured ? 'checked' : ''}> <i class="fas fa-star"></i> Featured Artist
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="artistLegend" ${artist?.is_zambian_legend ? 'checked' : ''}> <i class="fas fa-crown"></i> Zambian Legend
+                        </label>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/artists/index.html'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            ${isEditing ? 'Update Artist' : 'Create Artist'}
+                        </button>
+                    </div>
+                </form>
+            `;
             
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
+            document.getElementById('artistForm').addEventListener('submit', handleSubmit);
+        }
+        
+        async function loadArtistForEdit() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const artistId = urlParams.get('id');
+            
+            const pageTitle = document.getElementById('pageTitle');
+            
+            if (!artistId) {
+                pageTitle.textContent = 'Add New Artist';
+                renderForm(null);
+                return;
             }
             
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
+            try {
+                const res = await fetch(`${API_BASE}/admin/artists/${artistId}`);
+                if (!res.ok) throw new Error('Artist not found');
+                
+                const artist = await res.json();
+                
+                pageTitle.textContent = `Edit Artist: ${artist.name}`;
+                renderForm(artist);
+                
+            } catch (error) {
+                console.error('Error loading artist:', error);
+                document.getElementById('formContainer').innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
+                        <h3>Failed to Load Artist</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/artists/index.html" class="btn btn-primary">Back to Artists</a>
+                    </div>
+                `;
             }
-            return true;
         }
-
+        
         if (checkAuth()) {
             loadArtistForEdit();
         }
-
+        
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
