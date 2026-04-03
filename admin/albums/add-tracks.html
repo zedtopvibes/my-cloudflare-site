@@ -210,6 +210,31 @@
             gap: 4px;
         }
         
+        .stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: var(--light-gray);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .stats-badge i {
+            color: var(--primary-blue);
+        }
+        
+        .stats-badge.available i {
+            color: var(--success);
+        }
+        
+        .stats-badge.in-ep i {
+            color: var(--warning);
+        }
+        
         .search-section {
             padding: 20px;
             border-bottom: 1px solid rgba(31, 111, 159, 0.1);
@@ -283,13 +308,6 @@
         .artist-badge.primary {
             background: var(--primary-blue);
             color: white;
-        }
-        
-        .artist-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            align-items: center;
         }
         
         .tracks-container {
@@ -427,12 +445,6 @@
         .track-badge.available {
             background: var(--success);
             color: white;
-        }
-        
-        .track-badge.featured-only {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #fbbf24;
         }
         
         .selection-bar {
@@ -746,7 +758,6 @@
             const inThisAlbumCount = albumTrackIds.size;
             const inEPsCount = tracksInEPs.size;
             const availableCount = availableTracks.length;
-            const totalPrimaryTracks = allTracks.filter(t => isPrimaryForArtist(t, albumArtistId)).length;
             
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
             
@@ -795,7 +806,7 @@
                     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;">
                         <span class="stats-badge available">
                             <i class="fas fa-check-circle"></i>
-                            ${availableCount} Available (Primary tracks by ${escapeHtml(albumArtistName)})
+                            ${availableCount} Available
                         </span>
                         <span class="stats-badge">
                             <i class="fas fa-music"></i>
@@ -804,10 +815,6 @@
                         <span class="stats-badge in-ep">
                             <i class="fas fa-play-circle"></i>
                             ${inEPsCount} In EPs
-                        </span>
-                        <span class="stats-badge">
-                            <i class="fas fa-star"></i>
-                            ${totalPrimaryTracks} Total Primary Tracks by ${escapeHtml(albumArtistName)}
                         </span>
                     </div>
                     
@@ -985,14 +992,15 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
-                            track_id: trackId,
-                            track_number: nextTrackNumber++
+                            track_id: parseInt(trackId),
+                            track_number: nextTrackNumber
                         })
                     });
 
                     if (res.ok) {
                         successCount++;
                         albumTrackIds.add(trackId);
+                        nextTrackNumber++;
                     } else {
                         errorCount++;
                     }
