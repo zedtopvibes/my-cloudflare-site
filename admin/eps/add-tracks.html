@@ -1,6 +1,3 @@
-Here is an HTML document that creates an "Add to EP" page, sharing the same functionality, design, and layout as the provided "Add to Album" page.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -712,14 +709,20 @@ Here is an HTML document that creates an "Add to EP" page, sharing the same func
                 allTracks = await tracksRes.json();
                 allAlbums = await albumsRes.json();
                 
-                epTrackIds = new Set((ep.tracks || []).map(t => t.id));
+                // Get tracks already in this EP
+                epTrackIds = new Set((ep.tracks || []).map(t => t.id || t));
                 
+                // FIXED: Properly detect tracks that are already in ANY album
                 tracksInAlbums.clear();
                 for (const album of allAlbums) {
-                    if (album.tracks && album.tracks.length > 0) {
-                        for (const track of album.tracks) {
-                            if (!tracksInAlbums.has(track.id)) {
-                                tracksInAlbums.set(track.id, {
+                    // Handle different possible data structures
+                    const albumTracks = album.tracks || album.songs || [];
+                    if (albumTracks && albumTracks.length > 0) {
+                        for (const track of albumTracks) {
+                            // Track could be an object with id, or just the id itself
+                            const trackId = track.id || track;
+                            if (trackId && !tracksInAlbums.has(trackId)) {
+                                tracksInAlbums.set(trackId, {
                                     albumId: album.id,
                                     albumTitle: album.title
                                 });
@@ -727,6 +730,9 @@ Here is an HTML document that creates an "Add to EP" page, sharing the same func
                         }
                     }
                 }
+                
+                console.log(`Found ${epTrackIds.size} tracks in this EP`);
+                console.log(`Found ${tracksInAlbums.size} tracks in albums`);
                 
                 renderPage();
                 
@@ -1060,4 +1066,3 @@ Here is an HTML document that creates an "Add to EP" page, sharing the same func
     </script>
 </body>
 </html>
-```
