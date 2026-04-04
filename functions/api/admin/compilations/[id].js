@@ -13,7 +13,7 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  // GET - Get compilation with items
+  // GET - Fetch single compilation (NO items)
   if (request.method === 'GET') {
     try {
       const compilation = await env.DB.prepare(`
@@ -41,89 +41,7 @@ export async function onRequest(context) {
         });
       }
       
-      // Get items based on type
-      const items = await env.DB.prepare(`
-        SELECT 
-          ci.id as item_relation_id,
-          ci.item_id,
-          ci.display_order,
-          ci.added_at
-        FROM compilation_items ci
-        WHERE ci.compilation_id = ?
-        ORDER BY ci.display_order ASC
-      `).bind(id).all();
-      
-      // Fetch full item details based on compilation type
-      let itemsWithDetails = [];
-      
-      if (compilation.type === 'albums') {
-        const albumIds = items.results.map(i => i.item_id).join(',');
-        if (albumIds) {
-          const albumDetails = await env.DB.prepare(`
-            SELECT 
-              a.id, a.title, a.cover_url, a.release_date,
-              ar.name as artist_name
-            FROM albums a
-            LEFT JOIN artists ar ON a.artist_id = ar.id
-            WHERE a.id IN (${albumIds}) AND a.deleted_at IS NULL
-          `).all();
-          
-          itemsWithDetails = items.results.map(item => ({
-            ...item,
-            item: albumDetails.results.find(a => a.id === item.item_id)
-          }));
-        }
-      } else if (compilation.type === 'eps') {
-        const epIds = items.results.map(i => i.item_id).join(',');
-        if (epIds) {
-          const epDetails = await env.DB.prepare(`
-            SELECT 
-              e.id, e.title, e.cover_url, e.release_date,
-              ar.name as artist_name
-            FROM eps e
-            LEFT JOIN artists ar ON e.artist_id = ar.id
-            WHERE e.id IN (${epIds}) AND e.deleted_at IS NULL
-          `).all();
-          
-          itemsWithDetails = items.results.map(item => ({
-            ...item,
-            item: epDetails.results.find(e => e.id === item.item_id)
-          }));
-        }
-      } else if (compilation.type === 'artists') {
-        const artistIds = items.results.map(i => i.item_id).join(',');
-        if (artistIds) {
-          const artistDetails = await env.DB.prepare(`
-            SELECT id, name, image_url, country, slug
-            FROM artists
-            WHERE id IN (${artistIds}) AND deleted_at IS NULL
-          `).all();
-          
-          itemsWithDetails = items.results.map(item => ({
-            ...item,
-            item: artistDetails.results.find(a => a.id === item.item_id)
-          }));
-        }
-      } else if (compilation.type === 'playlists') {
-        const playlistIds = items.results.map(i => i.item_id).join(',');
-        if (playlistIds) {
-          const playlistDetails = await env.DB.prepare(`
-            SELECT id, name, cover_url, created_by, views
-            FROM playlists
-            WHERE id IN (${playlistIds}) AND deleted_at IS NULL
-          `).all();
-          
-          itemsWithDetails = items.results.map(item => ({
-            ...item,
-            item: playlistDetails.results.find(p => p.id === item.item_id)
-          }));
-        }
-      }
-      
-      return new Response(JSON.stringify({
-        ...compilation,
-        items: itemsWithDetails
-      }), { headers });
+      return new Response(JSON.stringify(compilation), { headers });
       
     } catch (error) {
       console.error('Error fetching compilation:', error);
@@ -157,7 +75,6 @@ export async function onRequest(context) {
         fields.push('title = ?');
         values.push(updates.title);
         
-        // Update slug when title changes
         const slug = updates.title
           .toLowerCase()
           .replace(/\s+/g, '-')
@@ -223,6 +140,17 @@ export async function onRequest(context) {
           status: 404, 
           headers 
         });
+      }
+      
+      // Check if has items
+      const itemCount = await env.DB.prepare(`
+        SELECT COUNT(*) as count FROM compilation_items WHERE compilation_id = ?
+      `).bind(id).first();
+      
+      if (itemCount.count > 0) {
+        return new Response(JSON.stringify({ 
+          error: `Cannot delete compilation with ${itemCount.count} item(s). Remove all items first.`
+        }), { status: 400, headers });
       }
       
       await env.DB.prepare(`
