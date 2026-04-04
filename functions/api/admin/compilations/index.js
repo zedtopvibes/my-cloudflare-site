@@ -12,6 +12,34 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
+  // Helper function to generate unique slug
+  async function generateUniqueSlug(db, baseSlug, excludeId = null) {
+    let slug = baseSlug;
+    let counter = 1;
+    let exists = true;
+    
+    while (exists) {
+      let query = `SELECT id FROM compilations WHERE slug = ? AND deleted_at IS NULL`;
+      const params = [slug];
+      
+      if (excludeId) {
+        query += ` AND id != ?`;
+        params.push(excludeId);
+      }
+      
+      const existing = await db.prepare(query).bind(...params).first();
+      
+      if (!existing) {
+        exists = false;
+      } else {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+    }
+    
+    return slug;
+  }
+
   // GET - List all compilations
   if (request.method === 'GET') {
     try {
@@ -60,12 +88,16 @@ export async function onRequest(context) {
         });
       }
       
-      const slug = data.title
+      // Generate base slug from title
+      const baseSlug = data.title
         .toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^\w-]/g, '')
         .replace(/--+/g, '-')
         .replace(/^-+|-+$/g, '');
+      
+      // Generate unique slug
+      const slug = await generateUniqueSlug(env.DB, baseSlug);
       
       const result = await env.DB.prepare(`
         INSERT INTO compilations (
