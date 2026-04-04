@@ -14,29 +14,39 @@ async function loadSharedComponents() {
     const overlay = document.getElementById('sidebarOverlay');
     const closeBtn = document.getElementById('closeSidebar');
     
+    function closeSidebarFunction() {
+        sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    function openSidebarFunction() {
+        sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
     if (menuBtn) {
-        menuBtn.onclick = () => {
-            sidebar.classList.add('open');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
+        menuBtn.onclick = openSidebarFunction;
     }
     
     if (closeBtn) {
-        closeBtn.onclick = () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        };
+        closeBtn.onclick = closeSidebarFunction;
     }
     
     if (overlay) {
-        overlay.onclick = () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        };
+        overlay.onclick = closeSidebarFunction;
     }
+    
+    // Close sidebar when clicking on a link (mobile)
+    const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 768) {
+                closeSidebarFunction();
+            }
+        });
+    });
     
     // Load header
     const headerResp = await fetch('/admin/shared/header.html');
@@ -60,20 +70,27 @@ async function loadSharedComponents() {
         footerContainer.innerHTML = footerHtml;
     }
     
-    // Setup dropdown functionality for Analytics
+    // Setup dropdown functionality for Analytics (closed by default)
     const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
+    const dropdown = document.querySelector('.nav-dropdown');
+    
+    // Ensure dropdown starts closed
+    if (dropdown) {
+        dropdown.classList.remove('open');
+    }
+    
     if (dropdownToggle) {
         dropdownToggle.addEventListener('click', (e) => {
             e.stopPropagation();
-            const dropdown = dropdownToggle.closest('.nav-dropdown');
-            dropdown.classList.toggle('open');
+            const parentDropdown = dropdownToggle.closest('.nav-dropdown');
+            parentDropdown.classList.toggle('open');
         });
     }
     
     // Close dropdown when clicking outside
-    document.addEventListener('click', () => {
+    document.addEventListener('click', (e) => {
         const openDropdown = document.querySelector('.nav-dropdown.open');
-        if (openDropdown) {
+        if (openDropdown && !openDropdown.contains(e.target)) {
             openDropdown.classList.remove('open');
         }
     });
