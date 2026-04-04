@@ -1,10 +1,10 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
-  const id = params.id;
+  const compilationId = params.id;
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, PUT, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
@@ -13,54 +13,46 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  // Helper function to generate unique slug
-  async function generateUniqueSlug(db, baseSlug, excludeId = null) {
-    let slug = baseSlug;
-    let counter = 1;
-    let exists = true;
-    
-    while (exists) {
-      let query = `SELECT id FROM compilations WHERE slug = ? AND deleted_at IS NULL`;
-      const params = [slug];
-      
-      if (excludeId) {
-        query += ` AND id != ?`;
-        params.push(excludeId);
-      }
-      
-      const existing = await db.prepare(query).bind(...params).first();
-      
-      if (!existing) {
-        exists = false;
-      } else {
-        slug = `${baseSlug}-${counter}`;
-        counter++;
-      }
-    }
-    
-    return slug;
-  }
-
-  // GET - Fetch single compilation
+  // GET - Get all items in compilation
   if (request.method === 'GET') {
     try {
-      const compilation = await env.DB.prepare(`
+      const items = await env.DB.prepare(`
         SELECT 
-          c.id,
-          c.title,
-          c.description,
-          c.type,
-          c.slug,
-          c.cover_url,
-          c.is_featured,
-          c.status,
-          c.views,
-          c.created_by,
-          c.created_at,
-          c.updated_at
-        FROM compilations c
-        WHERE c.id = ? AND c.deleted_at IS NULL
-      `).bind(id).first();
+          ci.id as item_relation_id,
+          ci.item_id,
+          ci.display_order
+        FROM compilation_items ci
+        WHERE ci.compilation_id = ?
+        ORDER BY ci.display_order ASC
+      `).bind(compilationId).all();
+      
+      return new Response(JSON.stringify(items.results || []), { headers });
+      
+    } catch (error) {
+      console.error('Error fetching compilation items:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
+
+  // POST - Add item to compilation
+  if (request.method === 'POST') {
+    try {
+      const { item_id } = await request.json();
+      
+      if (!item_id) {
+        return new Response(JSON.stringify({ error: 'item_id is required' }), { 
+          status: 400, 
+          headers 
+        });
+      }
+      
+      // Check if compilation exists
+      const compilation = await env.DB.prepare(`
+        SELECT id FROM compilations WHERE id = ? AND deleted_at IS NULL
+      `).bind(compilationId).first();
       
       if (!compilation) {
         return new Response(JSON.stringify({ error: 'Compilation not found' }), { 
@@ -69,132 +61,90 @@ export async function onRequest(context) {
         });
       }
       
-      return new Response(JSON.stringify(compilation), { headers });
+      // Check if item already exists
+      const existing = await env.DB.prepare(`
+        SELECT id FROM compilation_items 
+        WHERE compilation_id = ? AND item_id = ?
+      `).bind(compilationId, item_id).first();
       
-    } catch (error) {
-      console.error('Error fetching compilation:', error);
-      return new Response(JSON.stringify({ error: error.message }), { 
-        status: 500, 
-        headers 
-      });
-    }
-  }
-
-  // PUT - Update compilation
-  if (request.method === 'PUT') {
-    try {
-      const updates = await request.json();
-      
-      const existing = await env.DB.prepare(
-        'SELECT id FROM compilations WHERE id = ? AND deleted_at IS NULL'
-      ).bind(id).first();
-      
-      if (!existing) {
-        return new Response(JSON.stringify({ error: 'Compilation not found' }), { 
-          status: 404, 
+      if (existing) {
+        return new Response(JSON.stringify({ error: 'Item already in compilation' }), { 
+          status: 400, 
           headers 
         });
       }
       
-      const fields = [];
-      const values = [];
+      // Get max display order
+      const maxOrder = await env.DB.prepare(`
+        SELECT MAX(display_order) as max_order FROM compilation_items WHERE compilation_id = ?
+      `).bind(compilationId).first();
       
-      if (updates.title !== undefined) {
-        fields.push('title = ?');
-        values.push(updates.title);
-        
-        // Generate new unique slug when title changes
-        const baseSlug = updates.title
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^\w-]/g, '')
-          .replace(/--+/g, '-')
-          .replace(/^-+|-+$/g, '');
-        
-        const newSlug = await generateUniqueSlug(env.DB, baseSlug, id);
-        fields.push('slug = ?');
-        values.push(newSlug);
-      }
-      if (updates.description !== undefined) {
-        fields.push('description = ?');
-        values.push(updates.description);
-      }
-      if (updates.cover_url !== undefined) {
-        fields.push('cover_url = ?');
-        values.push(updates.cover_url);
-      }
-      if (updates.is_featured !== undefined) {
-        fields.push('is_featured = ?');
-        values.push(updates.is_featured ? 1 : 0);
-      }
-      if (updates.status !== undefined) {
-        fields.push('status = ?');
-        values.push(updates.status);
-      }
+      const displayOrder = (maxOrder?.max_order || 0) + 1;
       
-      fields.push('updated_at = CURRENT_TIMESTAMP');
-      
-      if (fields.length > 0) {
-        values.push(id);
-        const query = `UPDATE compilations SET ${fields.join(', ')} WHERE id = ?`;
-        await env.DB.prepare(query).bind(...values).run();
-      }
-      
-      const updated = await env.DB.prepare(`
-        SELECT 
-          id, title, description, type, slug, cover_url,
-          is_featured, status, views, created_by, created_at, updated_at
-        FROM compilations
-        WHERE id = ?
-      `).bind(id).first();
-      
-      return new Response(JSON.stringify(updated), { headers });
-      
-    } catch (error) {
-      console.error('Error updating compilation:', error);
-      return new Response(JSON.stringify({ error: error.message }), { 
-        status: 500, 
-        headers 
-      });
-    }
-  }
-
-  // DELETE - Soft delete compilation
-  if (request.method === 'DELETE') {
-    try {
-      const existing = await env.DB.prepare(
-        'SELECT id FROM compilations WHERE id = ? AND deleted_at IS NULL'
-      ).bind(id).first();
-      
-      if (!existing) {
-        return new Response(JSON.stringify({ error: 'Compilation not found' }), { 
-          status: 404, 
-          headers 
-        });
-      }
-      
-      // Check if has items
-      const itemCount = await env.DB.prepare(`
-        SELECT COUNT(*) as count FROM compilation_items WHERE compilation_id = ?
-      `).bind(id).first();
-      
-      if (itemCount.count > 0) {
-        return new Response(JSON.stringify({ 
-          error: `Cannot delete compilation with ${itemCount.count} item(s). Remove all items first.`
-        }), { status: 400, headers });
-      }
-      
-      await env.DB.prepare(`
-        UPDATE compilations SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?
-      `).bind(id).run();
+      const result = await env.DB.prepare(`
+        INSERT INTO compilation_items (compilation_id, item_id, display_order)
+        VALUES (?, ?, ?)
+        RETURNING id
+      `).bind(compilationId, item_id, displayOrder).run();
       
       return new Response(JSON.stringify({ 
         success: true, 
-        message: 'Compilation moved to trash'
-      }), { headers });
+        id: result.results[0].id,
+        display_order: displayOrder
+      }), { status: 201, headers });
       
     } catch (error) {
-      console.error('Error deleting compilation:', error);
+      console.error('Error adding item:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
+
+  // DELETE - Remove item from compilation
+  if (request.method === 'DELETE') {
+    try {
+      const url = new URL(request.url);
+      const itemId = url.searchParams.get('item_id');
+      
+      if (!itemId) {
+        return new Response(JSON.stringify({ error: 'item_id is required' }), { 
+          status: 400, 
+          headers 
+        });
+      }
+      
+      await env.DB.prepare(`
+        DELETE FROM compilation_items WHERE id = ? AND compilation_id = ?
+      `).bind(itemId, compilationId).run();
+      
+      return new Response(JSON.stringify({ success: true }), { headers });
+      
+    } catch (error) {
+      console.error('Error removing item:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
+  }
+
+  // PUT - Reorder items
+  if (request.method === 'PUT') {
+    try {
+      const { items } = await request.json();
+      
+      for (const item of items) {
+        await env.DB.prepare(`
+          UPDATE compilation_items SET display_order = ? WHERE id = ? AND compilation_id = ?
+        `).bind(item.display_order, item.id, compilationId).run();
+      }
+      
+      return new Response(JSON.stringify({ success: true }), { headers });
+      
+    } catch (error) {
+      console.error('Error reordering items:', error);
       return new Response(JSON.stringify({ error: error.message }), { 
         status: 500, 
         headers 
