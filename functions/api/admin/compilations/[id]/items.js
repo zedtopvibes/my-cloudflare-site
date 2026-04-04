@@ -4,13 +4,37 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, DELETE, PUT, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, PUT, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
 
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
+  }
+
+  // GET - Get all items in compilation
+  if (request.method === 'GET') {
+    try {
+      const items = await env.DB.prepare(`
+        SELECT 
+          ci.id as item_relation_id,
+          ci.item_id,
+          ci.display_order
+        FROM compilation_items ci
+        WHERE ci.compilation_id = ?
+        ORDER BY ci.display_order ASC
+      `).bind(compilationId).all();
+      
+      return new Response(JSON.stringify(items.results || []), { headers });
+      
+    } catch (error) {
+      console.error('Error fetching compilation items:', error);
+      return new Response(JSON.stringify({ error: error.message }), { 
+        status: 500, 
+        headers 
+      });
+    }
   }
 
   // POST - Add item to compilation
@@ -27,7 +51,7 @@ export async function onRequest(context) {
       
       // Check if compilation exists
       const compilation = await env.DB.prepare(`
-        SELECT id, type FROM compilations WHERE id = ? AND deleted_at IS NULL
+        SELECT id FROM compilations WHERE id = ? AND deleted_at IS NULL
       `).bind(compilationId).first();
       
       if (!compilation) {
@@ -92,8 +116,8 @@ export async function onRequest(context) {
       }
       
       await env.DB.prepare(`
-        DELETE FROM compilation_items WHERE compilation_id = ? AND id = ?
-      `).bind(compilationId, itemId).run();
+        DELETE FROM compilation_items WHERE id = ? AND compilation_id = ?
+      `).bind(itemId, compilationId).run();
       
       return new Response(JSON.stringify({ success: true }), { headers });
       
@@ -109,7 +133,7 @@ export async function onRequest(context) {
   // PUT - Reorder items
   if (request.method === 'PUT') {
     try {
-      const { items } = await request.json(); // [{id: 1, display_order: 0}, ...]
+      const { items } = await request.json();
       
       for (const item of items) {
         await env.DB.prepare(`
