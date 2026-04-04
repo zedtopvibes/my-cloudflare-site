@@ -3,37 +3,32 @@ export async function onRequest(context) {
     const url = new URL(request.url);
     const path = url.pathname;
     
-    // Only process /admin/ paths that end with .html or have no extension
+    // Only process /admin/ paths
     if (!path.startsWith('/admin/')) {
         return next();
     }
     
-    // Skip if already requesting a fragment or layout file
-    if (path.includes('/_fragments/') || path.includes('/_layout/')) {
+    // Skip layout and fragment direct access
+    if (path.includes('/_layout/')) {
         return next();
     }
     
-    // Build fragment path: /admin/upload.html → /fragments/upload.html
+    // Convert /admin/upload.html → /fragments/upload.html
     let fragmentPath = path.replace('/admin/', '/fragments/');
     
-    // Also try without .html for clean URLs
-    let fragmentPathNoHtml = fragmentPath.replace('.html', '');
+    console.log('Looking for fragment:', fragmentPath);
     
     try {
-        // Try to read the fragment with .html
-        let fragment = await env.ASSETS.fetch(new Request(fragmentPath));
-        
-        // If not found, try without .html
-        if (!fragment.ok) {
-            fragment = await env.ASSETS.fetch(new Request(fragmentPathNoHtml));
-        }
+        // Fetch the fragment
+        const fragment = await env.ASSETS.fetch(new Request(fragmentPath));
         
         if (!fragment.ok) {
-            // Fragment doesn't exist - return 404 or fallback
+            console.log('Fragment not found:', fragmentPath, fragment.status);
             return new Response('Page not found', { status: 404 });
         }
         
         let fragmentHtml = await fragment.text();
+        console.log('Fragment loaded, length:', fragmentHtml.length);
         
         // Extract heading
         let heading = 'Admin';
@@ -48,6 +43,11 @@ export async function onRequest(context) {
         let tabsTemplate = await env.ASSETS.fetch(new URL('/admin/_layout/tabs.html', url));
         const footerTemplate = await env.ASSETS.fetch(new URL('/admin/_layout/footer.html', url));
         
+        if (!headerTemplate.ok || !tabsTemplate.ok || !footerTemplate.ok) {
+            console.log('Layout files missing');
+            return new Response('Layout files missing', { status: 500 });
+        }
+        
         let headerHtml = await headerTemplate.text();
         let tabsHtml = await tabsTemplate.text();
         let footerHtml = await footerTemplate.text();
@@ -56,8 +56,7 @@ export async function onRequest(context) {
         tabsHtml = tabsHtml.replace(/href="([^"]+)"/g, (match, href) => {
             const isActive = (href === path) || 
                            (path === '/admin/' && href === '/admin/') ||
-                           (path + '.html' === href) ||
-                           (path === href + '/');
+                           (href === path + '.html');
             if (isActive) {
                 return match + ' class="tab-btn active"';
             }
@@ -76,6 +75,6 @@ export async function onRequest(context) {
         
     } catch (error) {
         console.error('Middleware error:', error);
-        return new Response('Error loading page', { status: 500 });
+        return new Response('Error loading page: ' + error.message, { status: 500 });
     }
 }
