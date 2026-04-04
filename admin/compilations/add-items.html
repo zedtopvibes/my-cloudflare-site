@@ -260,6 +260,36 @@
             color: var(--success);
         }
         
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 5px 12px;
+            background: var(--light-gray);
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            background: #e8f0fe;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
         .tracks-container {
             padding: 20px;
             max-height: 500px;
@@ -635,6 +665,19 @@
             return { title: 'Unknown', subtitle: '', image: null, views: 0 };
         }
 
+        async function fetchWithTimeout(url, options = {}, timeout = 15000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(id);
+                return response;
+            } catch (error) {
+                clearTimeout(id);
+                throw error;
+            }
+        }
+
         async function loadPage() {
             const urlParams = new URLSearchParams(window.location.search);
             compilationId = urlParams.get('id');
@@ -645,25 +688,33 @@
             }
             
             try {
-                const compilationRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}`);
+                // Load compilation info
+                const compilationRes = await fetchWithTimeout(`${API_BASE}/admin/compilations/${compilationId}`);
                 if (!compilationRes.ok) throw new Error('Compilation not found');
                 
                 compilation = await compilationRes.json();
                 
-                // Get all available items based on compilation type
+                // Get all available items based on compilation type using ADMIN APIs
                 let itemsRes;
                 if (compilation.type === 'albums') {
-                    itemsRes = await fetch(`${API_BASE}/albums`);
+                    itemsRes = await fetchWithTimeout(`${API_BASE}/admin/albums`);
                 } else if (compilation.type === 'eps') {
-                    itemsRes = await fetch(`${API_BASE}/eps`);
+                    itemsRes = await fetchWithTimeout(`${API_BASE}/admin/eps`);
                 } else if (compilation.type === 'artists') {
-                    itemsRes = await fetch(`${API_BASE}/artists`);
+                    itemsRes = await fetchWithTimeout(`${API_BASE}/admin/artists`);
                 } else if (compilation.type === 'playlists') {
-                    itemsRes = await fetch(`${API_BASE}/playlists`);
+                    itemsRes = await fetchWithTimeout(`${API_BASE}/admin/playlists`);
+                } else {
+                    throw new Error(`Unknown compilation type: ${compilation.type}`);
                 }
                 
-                allItems = itemsRes.ok ? await itemsRes.json() : [];
+                if (!itemsRes.ok) {
+                    throw new Error(`Failed to load ${compilation.type}`);
+                }
                 
+                allItems = await itemsRes.json();
+                
+                // Get current items in compilation
                 compilationItemIds.clear();
                 (compilation.items || []).forEach(item => {
                     compilationItemIds.add(item.item_id);
@@ -728,7 +779,7 @@
                         <h2>${escapeHtml(compilation.title)}</h2>
                         <div class="compilation-type">${typeLabels[compilation.type]} Compilation</div>
                         <div class="compilation-stats">
-                            <span><i class="fas fa-music"></i> ${compilationItemIds.size} items in compilation</span>
+                            <span><i class="fas fa-music"></i> ${inCompilationCount} items in compilation</span>
                             <span><i class="fas fa-eye"></i> ${formatNumber(compilation.views || 0)} views</span>
                         </div>
                     </div>
@@ -755,7 +806,7 @@
                         </span>
                     </div>
                     
-                    <div class="filter-bar" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <div class="filter-bar">
                         <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
                         <button class="filter-btn ${currentFilter === 'selected' ? 'active' : ''}" onclick="setFilter('selected')">Selected</button>
                         <button class="filter-btn ${currentFilter === 'in-compilation' ? 'active' : ''}" onclick="setFilter('in-compilation')">In Compilation</button>
@@ -870,18 +921,26 @@
                     }
                 });
                 
+                // Add items
                 for (const itemId of toAdd) {
-                    await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`, {
+                    const response = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ item_id: itemId })
                     });
+                    if (!response.ok) {
+                        console.error(`Failed to add item ${itemId}`);
+                    }
                 }
                 
+                // Remove items
                 for (const itemId of toRemove) {
-                    await fetch(`${API_BASE}/admin/compilations/${compilationId}/items?item_id=${itemId}`, {
+                    const response = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items?item_id=${itemId}`, {
                         method: 'DELETE'
                     });
+                    if (!response.ok) {
+                        console.error(`Failed to remove item ${itemId}`);
+                    }
                 }
                 
                 showToast(`✅ Updated! Added ${toAdd.length}, removed ${toRemove.length} items`, 'success');
