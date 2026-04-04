@@ -13,7 +13,35 @@ export async function onRequest(context) {
     return new Response(null, { headers });
   }
 
-  // GET - Fetch single compilation (NO items)
+  // Helper function to generate unique slug
+  async function generateUniqueSlug(db, baseSlug, excludeId = null) {
+    let slug = baseSlug;
+    let counter = 1;
+    let exists = true;
+    
+    while (exists) {
+      let query = `SELECT id FROM compilations WHERE slug = ? AND deleted_at IS NULL`;
+      const params = [slug];
+      
+      if (excludeId) {
+        query += ` AND id != ?`;
+        params.push(excludeId);
+      }
+      
+      const existing = await db.prepare(query).bind(...params).first();
+      
+      if (!existing) {
+        exists = false;
+      } else {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+    }
+    
+    return slug;
+  }
+
+  // GET - Fetch single compilation
   if (request.method === 'GET') {
     try {
       const compilation = await env.DB.prepare(`
@@ -75,14 +103,17 @@ export async function onRequest(context) {
         fields.push('title = ?');
         values.push(updates.title);
         
-        const slug = updates.title
+        // Generate new unique slug when title changes
+        const baseSlug = updates.title
           .toLowerCase()
           .replace(/\s+/g, '-')
           .replace(/[^\w-]/g, '')
           .replace(/--+/g, '-')
           .replace(/^-+|-+$/g, '');
+        
+        const newSlug = await generateUniqueSlug(env.DB, baseSlug, id);
         fields.push('slug = ?');
-        values.push(slug);
+        values.push(newSlug);
       }
       if (updates.description !== undefined) {
         fields.push('description = ?');
