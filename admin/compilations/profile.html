@@ -755,41 +755,45 @@
                     title: item.title || 'Untitled Album',
                     subtitle: item.artist_name ? `By ${item.artist_name}` : '',
                     image: item.cover_url,
-                    views: item.views || 0
+                    views: item.views || 0,
+                    duration: item.duration || 0
                 };
             } else if (type === 'eps') {
                 return {
                     title: item.title || 'Untitled EP',
                     subtitle: item.artist_name ? `By ${item.artist_name}` : '',
                     image: item.cover_url,
-                    views: item.views || 0
+                    views: item.views || 0,
+                    duration: item.duration || 0
                 };
             } else if (type === 'artists') {
                 return {
                     title: item.name || 'Unknown Artist',
                     subtitle: item.country ? `From ${item.country}` : '',
                     image: item.image_url,
-                    views: item.views || 0
+                    views: item.views || 0,
+                    duration: 0
                 };
             } else if (type === 'playlists') {
                 return {
                     title: item.name || 'Untitled Playlist',
                     subtitle: `By ${item.created_by || 'Zedtopvibes'}`,
                     image: item.cover_url,
-                    views: item.views || 0
+                    views: item.views || 0,
+                    duration: 0
                 };
             }
-            return { title: 'Unknown', subtitle: '', image: null, views: 0 };
+            return { title: 'Unknown', subtitle: '', image: null, views: 0, duration: 0 };
         }
 
-        async function removeItem(itemId, title, button) {
+        async function removeItem(relationId, title, button) {
             if (!confirm(`Remove "${title}" from this compilation?`)) return;
             
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             try {
-                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items/${itemId}`, {
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items/${relationId}`, {
                     method: 'DELETE'
                 });
                 
@@ -932,12 +936,15 @@
                     }
                     
                     const details = await detailsRes.json();
-                    itemsWithDetails = compilationItems.map(item => ({
-                        id: item.id,
-                        item_id: item.item_id,
-                        display_order: item.display_order,
-                        item: details.find(d => d.id === item.item_id)
-                    })).filter(i => i.item);
+                    itemsWithDetails = compilationItems.map(item => {
+                        const foundItem = details.find(d => d.id === item.item_id);
+                        return {
+                            relation_id: item.id,
+                            item_id: item.item_id,
+                            display_order: item.display_order,
+                            item: foundItem
+                        };
+                    }).filter(i => i.item);
                 }
                 compilation.items = itemsWithDetails;
                 
@@ -995,7 +1002,7 @@
                                 <div class="item-title">${escapeHtml(display.title)}</div>
                                 <div class="item-subtitle">${escapeHtml(display.subtitle)}</div>
                             </div>
-                            <button class="remove-item" onclick="removeItem(${item.id}, '${escapeHtml(display.title).replace(/'/g, "\\'")}', this)" title="Remove from compilation">
+                            <button class="remove-item" onclick="removeItem(${item.relation_id}, '${escapeHtml(display.title).replace(/'/g, "\\'")}', this)" title="Remove from compilation">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -1030,7 +1037,7 @@
                     <div class="compilation-meta">
                         <i class="fas fa-user-circle"></i>
                         Created by ${escapeHtml(compilation.created_by || 'Admin')} • ${createdDate}
-                        ${compilation.is_featured ? '<span class="badge featured" style="margin-left: 10px;">Featured</span>' : ''}
+                        ${compilation.is_featured ? '<span style="margin-left: 10px;">Featured</span>' : ''}
                     </div>
                     ${compilation.description ? `<div class="compilation-description">${escapeHtml(compilation.description)}</div>` : ''}
                 </div>
