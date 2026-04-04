@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Edit Compilation - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --gray: #666;
+            --gray-light: #999;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+            flex: 1;
+            width: 100%;
+        }
+        
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .user-info i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+        }
+        
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            height: 36px;
+        }
+        
+        .tab-btn i {
+            font-size: 0.85rem;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .form-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+        }
+        
+        .form-group label i {
+            color: var(--primary-blue);
+            margin-right: 6px;
+            width: 18px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(31, 111, 159, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .form-hint {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        
+        .form-hint i {
+            color: var(--primary-blue);
+            margin-right: 4px;
+        }
+        
+        .cover-section {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .cover-preview {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            overflow: hidden;
+            border: 3px solid var(--white);
+            box-shadow: var(--shadow);
+        }
+        
+        .cover-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cover-upload-btn {
+            background: var(--light-gray);
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+        
+        .cover-upload-btn:hover {
+            background: #e0e0e0;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        #coverInput {
+            display: none;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin: 16px 0;
+        }
+        
+        .checkbox-label i {
+            color: var(--primary-blue);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+        
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+        }
+        
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+            .form-card { max-width: 700px; margin: 0 auto; }
+        }
+        
+        @media (max-width: 767px) {
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .cover-preview { width: 140px; height: 140px; font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-layer-group"></i> <span id="pageTitle">Edit Compilation</span></h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/compilations/index.html" class="tab-btn active"><i class="fas fa-layer-group"></i> Compilations</a>
+                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
+        </div>
+        
+        <div class="admin-content">
+            <div class="form-card" id="formCard">
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <div>Loading compilation...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentCoverFile = null;
+
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function previewCover(input) {
+            if (input.files && input.files[0]) {
+                currentCoverFile = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('coverPreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('compilationId').value;
+            const isEditing = !!id;
+            
+            const compilationData = {
+                title: document.getElementById('compilationTitle').value.trim(),
+                description: document.getElementById('compilationDescription').value.trim() || null,
+                type: document.getElementById('compilationType').value,
+                is_featured: document.getElementById('compilationFeatured').checked,
+                status: document.getElementById('compilationStatus').value
+            };
+            
+            if (!compilationData.title) {
+                showToast('Compilation title is required', 'error');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            try {
+                let response;
+                
+                if (isEditing) {
+                    response = await fetch(`${API_BASE}/admin/compilations/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(compilationData)
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/admin/compilations`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(compilationData)
+                    });
+                }
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to save');
+                }
+                
+                const compilationId = data.id || id;
+                
+                if (currentCoverFile) {
+                    const coverData = new FormData();
+                    coverData.append('cover', currentCoverFile);
+                    await fetch(`${API_BASE}/admin/compilations/${compilationId}/cover`, {
+                        method: 'POST',
+                        body: coverData
+                    }).catch(e => console.warn('Cover upload failed'));
+                }
+                
+                const statusText = compilationData.status === 'published' ? 'published' : 'saved as draft';
+                showToast(`Compilation ${isEditing ? 'updated' : 'created'} and ${statusText}!`, 'success');
+                
+                setTimeout(() => {
+                    window.location.href = `/admin/compilations/profile.html?id=${compilationId}`;
+                }, 1500);
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = isEditing ? 'Update Compilation' : 'Create Compilation';
+            }
+        }
+
+        async function loadCompilationForEdit() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const compilationId = urlParams.get('id');
+            
+            const pageTitle = document.getElementById('pageTitle');
+            
+            if (!compilationId) {
+                pageTitle.textContent = 'Create Compilation';
+                renderForm(null);
+                return;
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/admin/compilations/${compilationId}`);
+                if (!res.ok) throw new Error('Compilation not found');
+                const compilation = await res.json();
+                
+                pageTitle.textContent = `Edit: ${compilation.title}`;
+                renderForm(compilation);
+                
+            } catch (error) {
+                document.getElementById('formCard').innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
+                        <h3>Failed to Load Compilation</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/compilations/index.html" class="btn btn-primary">Back to Compilations</a>
+                    </div>
+                `;
+            }
+        }
+
+        function renderForm(compilation) {
+            const isEditing = !!compilation;
+            const currentStatus = compilation?.status || 'draft';
+            const currentType = compilation?.type || 'albums';
+            
+            document.getElementById('formCard').innerHTML = `
+                <form id="compilationForm">
+                    <input type="hidden" id="compilationId" value="${compilation?.id || ''}">
+                    
+                    <div class="cover-section">
+                        <div class="cover-preview" id="coverPreview">
+                            ${compilation?.cover_url 
+                                ? `<img src="${compilation.cover_url}" alt="Cover">`
+                                : '<i class="fas fa-layer-group"></i>'
+                            }
+                        </div>
+                        
+                        <label for="coverInput" class="cover-upload-btn">
+                            <i class="fas fa-camera"></i>
+                            ${compilation?.cover_url ? 'Change Cover' : 'Upload Cover'}
+                        </label>
+                        <input type="file" id="coverInput" accept="image/*" onchange="previewCover(this)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Compilation Title *</label>
+                        <input type="text" id="compilationTitle" value="${escapeHtml(compilation?.title || '')}" placeholder="e.g. Best of 2024, Top Albums, Rising Artists" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group"></i> Compilation Type *</label>
+                        <select id="compilationType">
+                            <option value="albums" ${currentType === 'albums' ? 'selected' : ''}>📀 Albums</option>
+                            <option value="eps" ${currentType === 'eps' ? 'selected' : ''}>💿 EPs</option>
+                            <option value="artists" ${currentType === 'artists' ? 'selected' : ''}>🎤 Artists</option>
+                            <option value="playlists" ${currentType === 'playlists' ? 'selected' : ''}>📋 Playlists</option>
+                        </select>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> What type of content will this compilation contain?
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> Description</label>
+                        <textarea id="compilationDescription" rows="4" placeholder="Describe what this compilation is about...">${escapeHtml(compilation?.description || '')}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-flag"></i> Status</label>
+                        <select id="compilationStatus">
+                            <option value="draft" ${currentStatus === 'draft' ? 'selected' : ''}>📝 Draft (Not visible to public)</option>
+                            <option value="published" ${currentStatus === 'published' ? 'selected' : ''}>🌍 Published (Visible to public)</option>
+                        </select>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Drafts are only visible in admin panel
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-label">
+                        <input type="checkbox" id="compilationFeatured" ${compilation?.is_featured ? 'checked' : ''}>
+                        <i class="fas fa-star"></i> Featured Compilation
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/compilations/index.html'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            ${isEditing ? 'Update Compilation' : 'Create Compilation'}
+                        </button>
+                    </div>
+                </form>
+            `;
+            
+            document.getElementById('compilationForm').addEventListener('submit', handleSubmit);
+        }
+
+        if (checkAuth()) {
+            loadCompilationForEdit();
+        }
+    </script>
+</body>
+</html>
