@@ -653,12 +653,10 @@
             }
             
             try {
-                // Load compilation info
                 const compilationRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}`);
                 if (!compilationRes.ok) throw new Error('Compilation not found');
                 compilation = await compilationRes.json();
                 
-                // Load existing items in compilation
                 const itemsRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`);
                 const existingItems = await itemsRes.json();
                 
@@ -670,7 +668,6 @@
                 selectedItems.clear();
                 compilationItemIds.forEach(id => selectedItems.add(id));
                 
-                // Load available items
                 allItems = await fetchItems();
                 
                 renderPage();
@@ -823,29 +820,17 @@
                     if (searchTimeout) clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
                         const searchTerm = e.target.value.toLowerCase();
-                        if (searchTerm) {
-                            const filtered = allItems.filter(item => {
-                                const title = (item.title || item.name || '').toLowerCase();
-                                return title.includes(searchTerm);
+                        const itemsContainer = document.querySelector('.items-container');
+                        const rows = document.querySelectorAll('.item-row');
+                        if (rows.length > 0) {
+                            rows.forEach(row => {
+                                const title = row.querySelector('.item-title')?.textContent.toLowerCase();
+                                if (title && !title.includes(searchTerm)) {
+                                    row.style.display = 'none';
+                                } else {
+                                    row.style.display = 'flex';
+                                }
                             });
-                            filteredItems = filtered;
-                            // Re-render with filtered items
-                            const itemsContainer = document.querySelector('.items-container');
-                            if (itemsContainer) {
-                                // Simple filter - just update display
-                                const rows = document.querySelectorAll('.item-row');
-                                rows.forEach(row => {
-                                    const title = row.querySelector('.item-title')?.textContent.toLowerCase();
-                                    if (title && !title.includes(searchTerm)) {
-                                        row.style.display = 'none';
-                                    } else {
-                                        row.style.display = 'flex';
-                                    }
-                                });
-                            }
-                        } else {
-                            const rows = document.querySelectorAll('.item-row');
-                            rows.forEach(row => row.style.display = 'flex');
                         }
                     }, 300);
                 });
@@ -895,23 +880,34 @@
                 
                 // Add items
                 for (const itemId of toAdd) {
-                    await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`, {
+                    const response = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ item_id: itemId })
+                        body: JSON.stringify({ item_id: parseInt(itemId) })
                     });
+                    
+                    if (!response.ok) {
+                        const error = await response.json();
+                        console.error(`Failed to add item ${itemId}:`, error);
+                    }
                 }
+                
+                // Get current items to find relation IDs for removal
+                const itemsRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`);
+                const currentItems = await itemsRes.json();
                 
                 // Remove items
                 for (const itemId of toRemove) {
-                    // Need to get the relation ID for removal
-                    const itemsRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`);
-                    const existingItems = await itemsRes.json();
-                    const relationItem = existingItems.find(item => item.item_id === itemId);
+                    const relationItem = currentItems.find(item => item.item_id === parseInt(itemId));
                     if (relationItem) {
-                        await fetch(`${API_BASE}/admin/compilations/${compilationId}/items/${relationItem.id}`, {
+                        const response = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items/${relationItem.id}`, {
                             method: 'DELETE'
                         });
+                        
+                        if (!response.ok) {
+                            const error = await response.json();
+                            console.error(`Failed to remove item ${itemId}:`, error);
+                        }
                     }
                 }
                 
