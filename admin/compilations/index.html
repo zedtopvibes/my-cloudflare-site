@@ -16,6 +16,7 @@
             --primary-light: #2f8ed0;
             --primary-dark: #1f4c73;
             --gray: #666;
+            --gray-light: #999;
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -140,6 +141,8 @@
             padding: 20px;
             box-shadow: var(--shadow);
             border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
         }
         
         .content-header {
@@ -155,6 +158,10 @@
             flex-wrap: wrap;
         }
         
+        .content-header h2 i {
+            color: var(--primary-blue);
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -167,10 +174,21 @@
             border-radius: 12px;
             padding: 16px;
             text-align: center;
+            transition: all 0.3s ease;
             border: 1px solid rgba(31, 111, 159, 0.15);
         }
         
-        .stat-value {
+        .stat-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+        
+        .stat-card .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .stat-value {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-blue);
@@ -178,10 +196,11 @@
             margin-bottom: 4px;
         }
         
-        .stat-label {
+        .stat-card .stat-label {
             font-size: 0.7rem;
             color: var(--gray);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .search-section {
@@ -223,6 +242,7 @@
             background: var(--white);
             font-size: 0.85rem;
             cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
             flex: 1;
         }
         
@@ -244,6 +264,7 @@
             font-weight: 600;
             color: #666;
             cursor: pointer;
+            transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -275,10 +296,25 @@
             font-weight: 600;
         }
         
-        .type-badge.albums { background: #d4edda; color: #155724; }
-        .type-badge.eps { background: #d1ecf1; color: #0c5460; }
-        .type-badge.artists { background: #fff3cd; color: #856404; }
-        .type-badge.playlists { background: #e2d5f5; color: #4a1d8c; }
+        .type-badge.albums {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .type-badge.eps {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .type-badge.artists {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .type-badge.playlists {
+            background: #e2d5f5;
+            color: #4a1d8c;
+        }
         
         .status-badge {
             display: inline-flex;
@@ -290,48 +326,54 @@
             font-weight: 600;
         }
         
-        .status-badge.published { background: #d4edda; color: #155724; }
-        .status-badge.draft { background: #fff3cd; color: #856404; }
-        
-        .compilations-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 700px;
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
         }
         
-        .compilations-table th {
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Mobile-First Cards - No Horizontal Scroll */
+        .compilations-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .compilation-card {
             background: var(--light-gray);
-            padding: 10px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--primary-dark);
-            border-bottom: 2px solid #ddd;
-            font-size: 0.8rem;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            transition: all 0.2s;
         }
         
-        .compilations-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-            font-size: 0.8rem;
+        .compilation-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(3px);
         }
         
-        .compilation-info {
+        .compilation-card-header {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
         .compilation-thumb {
-            width: 35px;
-            height: 35px;
-            border-radius: 6px;
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
+            flex-shrink: 0;
             overflow: hidden;
         }
         
@@ -341,24 +383,69 @@
             object-fit: cover;
         }
         
-        .action-buttons {
+        .compilation-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .compilation-card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .compilation-card-meta {
             display: flex;
-            gap: 5px;
             flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+        
+        .compilation-card-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .compilation-card-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+        
+        .compilation-card-stat i {
+            color: var(--primary-blue);
+            font-size: 0.7rem;
+        }
+        
+        .compilation-card-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
         }
         
         .action-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 5px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             border: none;
-            background: var(--light-gray);
+            background: white;
             color: var(--gray);
             cursor: pointer;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
         }
         
         .action-btn:hover {
@@ -374,6 +461,7 @@
         .btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
             padding: 8px 16px;
             border: none;
@@ -381,6 +469,7 @@
             font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
             text-decoration: none;
         }
         
@@ -389,10 +478,18 @@
             color: white;
         }
         
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
         .btn-secondary {
             background: var(--light-gray);
             color: #333;
             border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
         }
         
         .pagination {
@@ -410,9 +507,17 @@
             border-radius: 6px;
             background: white;
             cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
         }
         
-        .page-btn:hover, .page-btn.active {
+        .page-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .page-btn.active {
             background: var(--primary-blue);
             color: white;
             border-color: var(--primary-blue);
@@ -431,33 +536,22 @@
             opacity: 0.3;
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
+        .empty-state h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
         }
         
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
         }
         
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
+        .loading i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin-bottom: 12px;
         }
         
         .toast {
@@ -496,17 +590,73 @@
             font-size: 0.75rem;
         }
         
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .modal h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .modal p {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); }
-            .stat-value { font-size: 1.8rem; }
+            .stat-card .stat-value { font-size: 1.8rem; }
+            .compilations-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
             .toast { left: auto; right: 20px; min-width: 300px; }
+        }
+        
+        @media (min-width: 1024px) {
+            .compilations-grid { grid-template-columns: repeat(3, 1fr); }
         }
         
         @media (max-width: 767px) {
             .search-section { flex-direction: column; }
+            .search-box { width: 100%; }
+            .filter-select { width: 100%; }
             .filter-tabs { justify-content: center; }
-            .compilations-table { display: none; }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-card { padding: 12px; }
+            .stat-icon { font-size: 1.2rem; }
+            .stat-value { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -520,6 +670,7 @@
                     <span>Admin</span>
                 </div>
             </div>
+            
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
@@ -535,7 +686,12 @@
         
         <div class="admin-content">
             <div class="content-header">
-                <h2><i class="fas fa-layer-group"></i> Compilations Management</h2>
+                <h2>
+                    <i class="fas fa-layer-group"></i> Compilations Management
+                    <button onclick="loadCompilations()" class="btn btn-secondary" style="padding: 4px 10px;">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </h2>
             </div>
             
             <div class="search-section">
@@ -556,28 +712,52 @@
                 <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
                 <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
                 <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
-                <a href="/admin/compilations/edit.html" class="filter-tab add-btn"><i class="fas fa-plus-circle"></i> New Compilation</a>
+                <a href="/admin/compilations/edit.html" class="filter-tab add-btn">
+                    <i class="fas fa-plus-circle"></i> New Compilation
+                </a>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card"><div class="stat-value" id="totalCompilations">0</div><div class="stat-label">Total</div></div>
-                <div class="stat-card"><div class="stat-value" id="totalDrafts">0</div><div class="stat-label">Drafts</div></div>
-                <div class="stat-card"><div class="stat-value" id="totalPublished">0</div><div class="stat-label">Published</div></div>
-                <div class="stat-card"><div class="stat-value" id="totalViews">0</div><div class="stat-label">Total Views</div></div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                    <div class="stat-value" id="totalCompilations">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
+                    <div class="stat-value" id="totalDrafts">0</div>
+                    <div class="stat-label">Drafts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                    <div class="stat-value" id="totalPublished">0</div>
+                    <div class="stat-label">Published</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                    <div class="stat-value" id="totalViews">0</div>
+                    <div class="stat-label">Total Views</div>
+                </div>
             </div>
 
-            <div id="compilationsContainer"></div>
+            <div id="compilationsContainer">
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <div>Loading compilations...</div>
+                </div>
+            </div>
+
             <div class="pagination" id="pagination"></div>
         </div>
         
         <div class="admin-footer">
-            <p>© 2024 ZEDTOPVIBES. All rights reserved.</p>
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
     <div id="confirmModal" class="modal">
         <div class="modal-content">
-            <h3 id="confirmModalTitle">Confirm</h3>
+            <h3 id="confirmModalTitle">Confirm Action</h3>
             <p id="confirmModalMessage">Are you sure?</p>
             <div class="modal-actions">
                 <button id="confirmModalCancel" class="btn btn-secondary">Cancel</button>
@@ -588,14 +768,27 @@
 
     <script>
         const API_BASE = '/api';
-        let allCompilations = [], filteredCompilations = [], currentPage = 1, itemsPerPage = 10, currentStatus = 'all';
+        let allCompilations = [];
+        let filteredCompilations = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let currentStatus = 'all';
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
-            if (!isLoggedIn || !loginTime) { window.location.href = '/admin/login.html'; return false; }
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
             const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) { localStorage.clear(); window.location.href = '/admin/login.html'; return false; }
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
             return true;
         }
 
@@ -609,120 +802,273 @@
 
         function showConfirmModal(options) {
             const modal = document.getElementById('confirmModal');
-            document.getElementById('confirmModalTitle').textContent = options.title;
-            document.getElementById('confirmModalMessage').textContent = options.message;
+            const titleEl = document.getElementById('confirmModalTitle');
+            const messageEl = document.getElementById('confirmModalMessage');
             const confirmBtn = document.getElementById('confirmModalConfirm');
             const cancelBtn = document.getElementById('confirmModalCancel');
-            if (options.type === 'danger') confirmBtn.className = 'btn btn-danger';
-            else confirmBtn.className = 'btn btn-primary';
+            
+            titleEl.textContent = options.title;
+            messageEl.textContent = options.message;
+            
+            if (options.type === 'danger') {
+                confirmBtn.className = 'btn btn-danger';
+            } else {
+                confirmBtn.className = 'btn btn-primary';
+            }
+            
+            window.confirmModalCallback = options.onConfirm;
             modal.style.display = 'flex';
-            confirmBtn.onclick = () => { modal.style.display = 'none'; options.onConfirm(); };
-            cancelBtn.onclick = () => { modal.style.display = 'none'; };
-            modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+            
+            confirmBtn.onclick = () => {
+                modal.style.display = 'none';
+                if (window.confirmModalCallback) {
+                    window.confirmModalCallback();
+                    window.confirmModalCallback = null;
+                }
+            };
+            
+            cancelBtn.onclick = () => {
+                modal.style.display = 'none';
+                window.confirmModalCallback = null;
+            };
+            
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    window.confirmModalCallback = null;
+                }
+            };
         }
 
+        async function publishCompilation(id, title) {
+            showConfirmModal({
+                title: 'Publish Compilation',
+                message: `Publish "${title}"? It will become visible to the public.`,
+                type: 'success',
+                onConfirm: async () => {
+                    try {
+                        await fetch(`${API_BASE}/admin/compilations/${id}/publish`, { method: 'POST' });
+                        showToast(`"${title}" published!`, 'success');
+                        loadCompilations();
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
+            });
+        }
+
+        async function unpublishCompilation(id, title) {
+            showConfirmModal({
+                title: 'Unpublish Compilation',
+                message: `Unpublish "${title}"? It will become a draft.`,
+                type: 'warning',
+                onConfirm: async () => {
+                    try {
+                        await fetch(`${API_BASE}/admin/compilations/${id}/unpublish`, { method: 'POST' });
+                        showToast(`"${title}" moved to drafts`, 'success');
+                        loadCompilations();
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
+            });
+        }
+
+        async function deleteCompilation(id, title) {
+            showConfirmModal({
+                title: 'Delete Compilation',
+                message: `Delete "${title}"? This will move it to trash.`,
+                type: 'danger',
+                onConfirm: async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/admin/compilations/${id}`, { method: 'DELETE' });
+                        const data = await response.json();
+                        if (data.error) {
+                            showToast(data.error, 'error');
+                        } else {
+                            showToast('Compilation moved to trash!', 'success');
+                            loadCompilations();
+                        }
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
+            });
+        }
+
+        window.filterByStatus = (status) => {
+            currentStatus = status;
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                if (tab.dataset.status === status) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            applyFilters();
+        };
+
         async function loadCompilations() {
+            if (!checkAuth()) return;
+            
             try {
-                const res = await fetch(`${API_BASE}/admin/compilations`);
-                allCompilations = await res.json();
+                const response = await fetch(`${API_BASE}/admin/compilations`);
+                if (!response.ok) throw new Error('Failed to load compilations');
+                
+                allCompilations = await response.json();
+                
                 const draftCount = allCompilations.filter(c => c.status === 'draft').length;
                 const publishedCount = allCompilations.filter(c => c.status === 'published').length;
                 const totalViews = allCompilations.reduce((sum, c) => sum + (c.views || 0), 0);
+                
                 document.getElementById('totalCompilations').textContent = allCompilations.length;
                 document.getElementById('totalDrafts').textContent = draftCount;
                 document.getElementById('totalPublished').textContent = publishedCount;
                 document.getElementById('totalViews').textContent = formatNumber(totalViews);
+                
                 applyFilters();
-            } catch (error) { console.error(error); }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('compilationsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Error Loading Compilations</h3>
+                        <p>${error.message}</p>
+                        <button onclick="loadCompilations()" class="btn btn-primary">Try Again</button>
+                    </div>
+                `;
+            }
         }
 
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const type = document.getElementById('typeFilter').value;
-            filteredCompilations = allCompilations.filter(c => {
-                if (currentStatus !== 'all' && c.status !== currentStatus) return false;
-                if (searchTerm && !c.title.toLowerCase().includes(searchTerm)) return false;
-                if (type && c.type !== type) return false;
+            
+            filteredCompilations = allCompilations.filter(comp => {
+                if (currentStatus !== 'all' && comp.status !== currentStatus) return false;
+                if (searchTerm && !comp.title?.toLowerCase().includes(searchTerm)) return false;
+                if (type && comp.type !== type) return false;
                 return true;
             });
+            
             currentPage = 1;
             renderCompilations();
         }
 
         function renderCompilations() {
             const container = document.getElementById('compilationsContainer');
+            
             if (filteredCompilations.length === 0) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-layer-group"></i><h3>No Compilations Found</h3><a href="/admin/compilations/edit.html" class="btn btn-primary">Create New</a></div>`;
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-layer-group"></i>
+                        <h3>No Compilations Found</h3>
+                        <p>Try adjusting your filters or create a new compilation</p>
+                        <a href="/admin/compilations/edit.html" class="btn btn-primary">
+                            <i class="fas fa-plus-circle"></i> New Compilation
+                        </a>
+                    </div>
+                `;
                 document.getElementById('pagination').innerHTML = '';
                 return;
             }
+            
             const start = (currentPage - 1) * itemsPerPage;
-            const pageItems = filteredCompilations.slice(start, start + itemsPerPage);
-            let html = `<table class="compilations-table"><thead><tr><th>Compilation</th><th>Type</th><th>Items</th><th>Views</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
-            pageItems.forEach(c => {
-                const typeIcons = { albums: 'fa-compact-disc', eps: 'fa-play-circle', artists: 'fa-microphone', playlists: 'fa-list' };
-                html += `<tr>
-                    <td><div class="compilation-info"><div class="compilation-thumb">${c.cover_url ? `<img src="${c.cover_url}">` : `<i class="fas ${typeIcons[c.type]}"></i>`}</div>${escapeHtml(c.title)}</div></td>
-                    <td><span class="type-badge ${c.type}">${c.type}</span></td>
-                    <td>${c.item_count || 0}</td>
-                    <td>${formatNumber(c.views)}</td>
-                    <td><span class="status-badge ${c.status}">${c.status === 'published' ? 'Published' : 'Draft'}</span></td>
-                    <td><div class="action-buttons">
-                        ${c.status === 'draft' ? `<button class="action-btn" onclick="publishCompilation(${c.id}, '${escapeHtml(c.title)}')"><i class="fas fa-cloud-upload-alt"></i></button>` : `<button class="action-btn" onclick="unpublishCompilation(${c.id}, '${escapeHtml(c.title)}')"><i class="fas fa-eye-slash"></i></button>`}
-                        <a href="/admin/compilations/edit.html?id=${c.id}" class="action-btn"><i class="fas fa-edit"></i></a>
-                        <a href="/admin/compilations/profile.html?id=${c.id}" class="action-btn"><i class="fas fa-eye"></i></a>
-                        <a href="/admin/compilations/add-items.html?id=${c.id}" class="action-btn"><i class="fas fa-plus-circle"></i></a>
-                        <button class="action-btn delete" onclick="deleteCompilation(${c.id}, '${escapeHtml(c.title)}')"><i class="fas fa-trash"></i></button>
-                    </div></td>
-                </tr>`;
+            const end = start + itemsPerPage;
+            const pageCompilations = filteredCompilations.slice(start, end);
+            
+            let html = '<div class="compilations-grid">';
+            
+            pageCompilations.forEach(comp => {
+                const typeIcons = {
+                    albums: 'fa-compact-disc',
+                    eps: 'fa-play-circle',
+                    artists: 'fa-microphone',
+                    playlists: 'fa-list'
+                };
+                
+                html += `
+                    <div class="compilation-card">
+                        <div class="compilation-card-header">
+                            <div class="compilation-thumb">
+                                ${comp.cover_url ? `<img src="${comp.cover_url}" alt="${escapeHtml(comp.title)}">` : `<i class="fas ${typeIcons[comp.type]}"></i>`}
+                            </div>
+                            <div class="compilation-card-info">
+                                <div class="compilation-card-title">${escapeHtml(comp.title)}</div>
+                                <div class="compilation-card-meta">
+                                    <span class="type-badge ${comp.type}">${comp.type}</span>
+                                    <span class="status-badge ${comp.status}">${comp.status === 'published' ? 'Published' : 'Draft'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="compilation-card-details">
+                            <div class="compilation-card-stat"><i class="fas fa-music"></i> ${comp.item_count || 0} items</div>
+                            <div class="compilation-card-stat"><i class="fas fa-eye"></i> ${formatNumber(comp.views)} views</div>
+                            <div class="compilation-card-stat"><i class="fas fa-calendar"></i> ${new Date(comp.created_at).toLocaleDateString()}</div>
+                        </div>
+                        
+                        <div class="compilation-card-actions">
+                            ${comp.status === 'draft' 
+                                ? `<button class="action-btn" onclick="publishCompilation(${comp.id}, '${escapeHtml(comp.title).replace(/'/g, "\\'")}')" title="Publish"><i class="fas fa-cloud-upload-alt"></i></button>`
+                                : `<button class="action-btn" onclick="unpublishCompilation(${comp.id}, '${escapeHtml(comp.title).replace(/'/g, "\\'")}')" title="Unpublish"><i class="fas fa-eye-slash"></i></button>`
+                            }
+                            <a href="/admin/compilations/edit.html?id=${comp.id}" class="action-btn" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="/admin/compilations/profile.html?id=${comp.id}" class="action-btn" title="View Details"><i class="fas fa-eye"></i></a>
+                            <a href="/admin/compilations/add-items.html?id=${comp.id}" class="action-btn" title="Add Items"><i class="fas fa-plus-circle"></i></a>
+                            <button class="action-btn delete" onclick="deleteCompilation(${comp.id}, '${escapeHtml(comp.title).replace(/'/g, "\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
             });
-            html += '</tbody></table>';
+            
+            html += '</div>';
             container.innerHTML = html;
             renderPagination();
         }
 
         function renderPagination() {
             const totalPages = Math.ceil(filteredCompilations.length / itemsPerPage);
-            if (totalPages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+            if (totalPages <= 1) {
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+            
             let html = '';
-            for (let i = 1; i <= totalPages; i++) html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
             document.getElementById('pagination').innerHTML = html;
         }
 
-        window.goToPage = (page) => { currentPage = page; renderCompilations(); };
-        window.filterByStatus = (status) => { currentStatus = status; document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active')); event.target.classList.add('active'); applyFilters(); };
+        window.goToPage = (page) => {
+            currentPage = page;
+            renderCompilations();
+        };
 
-        async function publishCompilation(id, title) {
-            showConfirmModal({ title: 'Publish', message: `Publish "${title}"?`, type: 'success', onConfirm: async () => {
-                await fetch(`${API_BASE}/admin/compilations/${id}/publish`, { method: 'POST' });
-                showToast(`"${title}" published!`, 'success');
-                loadCompilations();
-            }});
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
-        async function unpublishCompilation(id, title) {
-            showConfirmModal({ title: 'Unpublish', message: `Unpublish "${title}"?`, type: 'warning', onConfirm: async () => {
-                await fetch(`${API_BASE}/admin/compilations/${id}/unpublish`, { method: 'POST' });
-                showToast(`"${title}" moved to drafts`, 'success');
-                loadCompilations();
-            }});
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
         }
-
-        async function deleteCompilation(id, title) {
-            showConfirmModal({ title: 'Delete', message: `Delete "${title}"?`, type: 'danger', onConfirm: async () => {
-                const res = await fetch(`${API_BASE}/admin/compilations/${id}`, { method: 'DELETE' });
-                const data = await res.json();
-                if (data.error) showToast(data.error, 'error');
-                else { showToast('Compilation deleted!', 'success'); loadCompilations(); }
-            }});
-        }
-
-        function formatNumber(num) { if (!num) return '0'; if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M'; if (num >= 1000) return (num / 1000).toFixed(1) + 'K'; return num.toString(); }
-        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('typeFilter').addEventListener('change', applyFilters);
-        document.addEventListener('DOMContentLoaded', () => { if (checkAuth()) loadCompilations(); });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadCompilations();
+            }
+        });
     </script>
 </body>
 </html>
