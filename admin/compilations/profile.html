@@ -10,122 +10,644 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary-blue: #1f6f9f; --primary-light: #2f8ed0; --primary-dark: #1f4c73; --gray: #666; --light-gray: #f0f2f5; --white: #ffffff; --shadow: 0 2px 10px rgba(0,0,0,0.05); --success: #28a745; --error: #dc3545; --warning: #ffc107; --skeleton-bg: #e2e8f0; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--light-gray); min-height: 100vh; display: flex; flex-direction: column; }
-        .admin-container { max-width: 1400px; margin: 0 auto; padding: 10px; flex: 1; width: 100%; }
-        .admin-header { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid rgba(31, 111, 159, 0.1); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-        .header-top h1 { color: var(--primary-blue); font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .user-info { display: flex; align-items: center; gap: 10px; background: var(--light-gray); padding: 8px 15px; border-radius: 30px; font-size: 0.9rem; border: 1px solid rgba(31, 111, 159, 0.1); }
-        .user-info i { color: var(--primary-blue); }
-        .admin-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; scrollbar-width: none; }
-        .admin-tabs::-webkit-scrollbar { display: none; }
-        .tab-btn { padding: 8px 14px; background: transparent; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #666; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; height: 36px; }
-        .tab-btn:hover { background: #f0f0f0; color: var(--primary-blue); }
-        .tab-btn.active { background: var(--primary-blue); color: white; }
-        .admin-content { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); border: 1px solid rgba(31, 111, 159, 0.1); }
-        .profile-card { background: var(--white); border-radius: 12px; overflow: hidden; border: 1px solid rgba(31, 111, 159, 0.1); }
-        .compilation-cover-large { height: 200px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-size: 5rem; }
-        .compilation-cover-large img { width: 100%; height: 100%; object-fit: cover; }
-        .compilation-info { padding: 24px; border-bottom: 1px solid rgba(31, 111, 159, 0.1); }
-        .compilation-name { font-size: 1.8rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .compilation-meta { display: flex; align-items: center; gap: 6px; color: var(--gray); font-size: 0.85rem; margin-bottom: 12px; flex-wrap: wrap; }
-        .compilation-description { color: var(--gray); font-size: 0.9rem; line-height: 1.6; margin-top: 12px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); border-bottom: 1px solid rgba(31, 111, 159, 0.1); }
-        .stat-card { padding: 16px; text-align: center; border-right: 1px solid rgba(31, 111, 159, 0.1); }
-        .stat-card:nth-child(2) { border-right: none; }
-        .stat-card:nth-child(3) { border-bottom: none; }
-        .stat-card:nth-child(4) { border-right: none; border-bottom: none; }
-        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary-blue); margin-bottom: 4px; }
-        .stat-label { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
-        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
-        .status-badge.published { background: #d4edda; color: #155724; }
-        .status-badge.draft { background: #fff3cd; color: #856404; }
-        .type-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
-        .type-badge.albums { background: #d4edda; color: #155724; }
-        .type-badge.eps { background: #d1ecf1; color: #0c5460; }
-        .type-badge.artists { background: #fff3cd; color: #856404; }
-        .type-badge.playlists { background: #e2d5f5; color: #4a1d8c; }
-        .items-section { padding: 20px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .section-header h2 { font-size: 1rem; font-weight: 600; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
-        .item-count { background: var(--light-gray); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; color: var(--gray); }
-        .items-list { display: flex; flex-direction: column; gap: 8px; max-height: 500px; overflow-y: auto; }
-        .item-row { display: flex; align-items: center; padding: 10px 12px; background: var(--light-gray); border: 1px solid rgba(31, 111, 159, 0.1); border-radius: 8px; transition: all 0.2s; }
-        .item-row:hover { border-color: var(--primary-blue); transform: translateX(5px); }
-        .item-number { width: 28px; height: 28px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; color: var(--primary-blue); margin-right: 12px; border: 1px solid rgba(31, 111, 159, 0.1); }
-        .item-thumb { width: 35px; height: 35px; background: linear-gradient(135deg, var(--primary-blue), var(--primary-light)); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; margin-right: 12px; flex-shrink: 0; overflow: hidden; }
-        .item-thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .item-info { flex: 1; }
-        .item-title { font-weight: 600; font-size: 0.85rem; color: var(--primary-dark); margin-bottom: 2px; }
-        .item-subtitle { font-size: 0.7rem; color: var(--gray); }
-        .remove-item { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--gray); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; }
-        .remove-item:hover { background: var(--error); color: white; }
-        .empty-items { text-align: center; padding: 40px 20px; color: var(--gray); background: var(--light-gray); border-radius: 8px; border: 1px dashed rgba(31, 111, 159, 0.3); }
-        .action-buttons { display: flex; gap: 12px; justify-content: flex-end; padding: 16px 20px 20px; border-top: 1px solid rgba(31, 111, 159, 0.1); flex-wrap: wrap; }
-        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 20px; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none; }
-        .btn-primary { background: var(--primary-blue); color: white; }
-        .btn-secondary { background: var(--light-gray); color: #333; border: 1px solid #ddd; }
-        .btn-danger { background: var(--error); color: white; }
-        .btn-publish { background: var(--success); color: white; }
-        .btn-unpublish { background: var(--warning); color: #333; }
-        .loading { text-align: center; padding: 60px 20px; color: var(--gray); }
-        .skeleton { background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px; }
-        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .skeleton-cover { height: 200px; }
-        .skeleton-title { height: 32px; width: 60%; margin-bottom: 12px; }
-        .skeleton-text { height: 16px; width: 40%; margin-bottom: 8px; }
-        .skeleton-stats { display: grid; grid-template-columns: repeat(2, 1fr); }
-        .skeleton-stat { height: 80px; border-right: 1px solid rgba(31, 111, 159, 0.1); }
-        .admin-footer { background: var(--white); border-radius: 12px; padding: 15px; margin-top: 15px; text-align: center; border: 1px solid rgba(31, 111, 159, 0.1); color: var(--gray); font-size: 0.75rem; }
-        .toast { position: fixed; top: 20px; right: 20px; left: 20px; padding: 10px 15px; border-radius: 8px; color: white; z-index: 2000; animation: slideIn 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .toast.success { background: #28a745; }
-        .toast.error { background: #dc3545; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-10px); } }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
+        :root {
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --gray: #666;
+            --gray-light: #999;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --skeleton-bg: #e2e8f0;
         }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px;
+            flex: 1;
             width: 100%;
-            max-width: 400px;
         }
-        .modal-content h3 {
+        
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
             margin-bottom: 15px;
-            font-size: 1.1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
-        .modal-content p {
-            margin-bottom: 20px;
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .user-info i {
+            color: var(--primary-blue);
             font-size: 0.9rem;
         }
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
+        
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
         }
         
-        @media (min-width: 768px) { .admin-container { padding: 15px; } .stats-grid { grid-template-columns: repeat(4, 1fr); } .stat-card { padding: 20px; } .stat-card:nth-child(2) { border-right: 1px solid rgba(31, 111, 159, 0.1); } .stat-card:nth-child(4) { border-right: none; } .stat-value { font-size: 1.8rem; } .toast { left: auto; right: 20px; min-width: 300px; } }
-        @media (max-width: 767px) { .compilation-name { font-size: 1.4rem; } .item-row { flex-wrap: wrap; } .item-subtitle { width: 100%; margin-left: 55px; margin-top: 4px; } .action-buttons { flex-direction: column; } .btn { width: 100%; justify-content: center; } }
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            height: 36px;
+        }
+        
+        .tab-btn i {
+            font-size: 0.85rem;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .profile-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .compilation-cover-large {
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5rem;
+            position: relative;
+        }
+        
+        .compilation-cover-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .compilation-info {
+            padding: 24px;
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .compilation-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .compilation-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .compilation-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stat-card {
+            padding: 16px;
+            text-align: center;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stat-card:nth-child(2) {
+            border-right: none;
+        }
+        
+        .stat-card:nth-child(3) {
+            border-bottom: none;
+        }
+        
+        .stat-card:nth-child(4) {
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .type-badge.albums {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .type-badge.eps {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .type-badge.artists {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .type-badge.playlists {
+            background: #e2d5f5;
+            color: #4a1d8c;
+        }
+        
+        .items-section {
+            padding: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .section-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-header h2 i {
+            color: var(--primary-blue);
+        }
+        
+        .item-count {
+            background: var(--light-gray);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .item-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: var(--light-gray);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .item-row:hover {
+            border-color: var(--primary-blue);
+            transform: translateX(5px);
+        }
+        
+        .item-number {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-right: 12px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .item-thumb {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .item-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
+            margin-bottom: 2px;
+        }
+        
+        .item-subtitle {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+        
+        .remove-item {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .remove-item:hover {
+            background: var(--error);
+            color: white;
+        }
+        
+        .empty-items {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+            background: var(--light-gray);
+            border-radius: 8px;
+            border: 1px dashed rgba(31, 111, 159, 0.3);
+        }
+        
+        .empty-items i {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding: 16px 20px 20px 20px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #218838;
+        }
+        
+        .btn-unpublish {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+        
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .skeleton-cover {
+            height: 200px;
+        }
+        
+        .skeleton-title {
+            height: 32px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+        
+        .skeleton-text {
+            height: 16px;
+            width: 40%;
+            margin-bottom: 8px;
+        }
+        
+        .skeleton-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .skeleton-stat {
+            height: 80px;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .skeleton-stat:last-child {
+            border-right: none;
+        }
+        
+        .skeleton-item {
+            height: 60px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+        
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: var(--primary-blue); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-10px); }
+        }
+        
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .stat-card { padding: 20px; }
+            .stat-card:nth-child(2) { border-right: 1px solid rgba(31, 111, 159, 0.1); }
+            .stat-card:nth-child(4) { border-right: none; }
+            .stat-value { font-size: 1.8rem; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+        }
+        
+        @media (max-width: 767px) {
+            .compilation-name { font-size: 1.4rem; }
+            .item-row { flex-wrap: wrap; }
+            .item-subtitle { width: 100%; margin-left: 40px; margin-top: 8px; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+        }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <div class="header-top"><h1><i class="fas fa-layer-group"></i> Compilation Profile</h1><div class="user-info"><i class="fas fa-user-circle"></i><span>Admin</span></div></div>
+            <div class="header-top">
+                <h1><i class="fas fa-layer-group"></i> Compilation Profile</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
             <div class="admin-tabs">
                 <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
@@ -138,18 +660,31 @@
                 <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
             </div>
         </div>
-        <div class="admin-content"><div class="profile-card" id="profileContent"><div class="skeleton-cover skeleton"></div><div class="compilation-info"><div class="skeleton-title skeleton"></div><div class="skeleton-text skeleton"></div></div><div class="skeleton-stats"><div class="skeleton-stat skeleton"></div><div class="skeleton-stat skeleton"></div><div class="skeleton-stat skeleton"></div><div class="skeleton-stat skeleton"></div></div></div></div>
-        <div class="admin-footer"><p>© 2024 ZEDTOPVIBES. All rights reserved.</p></div>
-    </div>
-
-    <div id="confirmModal" class="modal">
-        <div class="modal-content">
-            <h3 id="confirmModalTitle">Confirm Action</h3>
-            <p id="confirmModalMessage">Are you sure?</p>
-            <div class="modal-actions">
-                <button id="confirmModalCancel" class="btn btn-secondary">Cancel</button>
-                <button id="confirmModalConfirm" class="btn btn-primary">Confirm</button>
+        
+        <div class="admin-content">
+            <div class="profile-card" id="profileContent">
+                <div class="skeleton-cover skeleton"></div>
+                <div class="compilation-info">
+                    <div class="skeleton-title skeleton"></div>
+                    <div class="skeleton-text skeleton"></div>
+                    <div class="skeleton-text skeleton" style="width: 30%;"></div>
+                </div>
+                <div class="skeleton-stats">
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                </div>
+                <div class="items-section">
+                    <div class="skeleton-item skeleton"></div>
+                    <div class="skeleton-item skeleton"></div>
+                    <div class="skeleton-item skeleton"></div>
+                </div>
             </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
@@ -160,13 +695,22 @@
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
             const loginTime = localStorage.getItem('admin_login_time');
-            if (!isLoggedIn || !loginTime) { window.location.href = '/admin/login.html'; return false; }
+            
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
+            }
+            
             const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) { localStorage.clear(); window.location.href = '/admin/login.html'; return false; }
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
+            }
             return true;
         }
 
-        function showToast(message, type) {
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
@@ -174,30 +718,78 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        function formatNumber(num) { if (!num) return '0'; if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M'; if (num >= 1000) return (num / 1000).toFixed(1) + 'K'; return num.toString(); }
-        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
         function getTypeIcon(type) {
-            const icons = { albums: 'fa-compact-disc', eps: 'fa-play-circle', artists: 'fa-microphone', playlists: 'fa-list' };
+            const icons = {
+                albums: 'fa-compact-disc',
+                eps: 'fa-play-circle',
+                artists: 'fa-microphone',
+                playlists: 'fa-list'
+            };
             return icons[type] || 'fa-layer-group';
         }
 
         function getItemDisplay(item, type) {
-            if (type === 'albums') return { title: item.title || 'Untitled', subtitle: item.artist_name ? `By ${item.artist_name}` : '', image: item.cover_url };
-            if (type === 'eps') return { title: item.title || 'Untitled', subtitle: item.artist_name ? `By ${item.artist_name}` : '', image: item.cover_url };
-            if (type === 'artists') return { title: item.name || 'Unknown', subtitle: item.country ? `From ${item.country}` : '', image: item.image_url };
-            if (type === 'playlists') return { title: item.name || 'Untitled', subtitle: `By ${item.created_by || 'Admin'}`, image: item.cover_url };
-            return { title: 'Unknown', subtitle: '', image: null };
+            if (type === 'albums') {
+                return {
+                    title: item.title || 'Untitled Album',
+                    subtitle: item.artist_name ? `By ${item.artist_name}` : '',
+                    image: item.cover_url,
+                    views: item.views || 0
+                };
+            } else if (type === 'eps') {
+                return {
+                    title: item.title || 'Untitled EP',
+                    subtitle: item.artist_name ? `By ${item.artist_name}` : '',
+                    image: item.cover_url,
+                    views: item.views || 0
+                };
+            } else if (type === 'artists') {
+                return {
+                    title: item.name || 'Unknown Artist',
+                    subtitle: item.country ? `From ${item.country}` : '',
+                    image: item.image_url,
+                    views: item.views || 0
+                };
+            } else if (type === 'playlists') {
+                return {
+                    title: item.name || 'Untitled Playlist',
+                    subtitle: `By ${item.created_by || 'Zedtopvibes'}`,
+                    image: item.cover_url,
+                    views: item.views || 0
+                };
+            }
+            return { title: 'Unknown', subtitle: '', image: null, views: 0 };
         }
 
-        async function removeItem(itemRelationId, title, button) {
+        async function removeItem(itemId, title, button) {
             if (!confirm(`Remove "${title}" from this compilation?`)) return;
             
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             try {
-                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items/${itemRelationId}`, {
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items/${itemId}`, {
                     method: 'DELETE'
                 });
                 
@@ -211,14 +803,12 @@
                 setTimeout(() => {
                     itemRow.remove();
                     
-                    // Update remaining item numbers
                     const remainingItems = document.querySelectorAll('.item-row');
                     remainingItems.forEach((item, index) => {
                         const numberSpan = item.querySelector('.item-number');
                         if (numberSpan) numberSpan.textContent = index + 1;
                     });
                     
-                    // Update counts
                     const newCount = remainingItems.length;
                     const itemCountSpan = document.querySelector('.item-count');
                     if (itemCountSpan) itemCountSpan.textContent = newCount + ' items';
@@ -241,7 +831,7 @@
         }
 
         async function publishCompilation() {
-            if (!confirm(`Publish "${compilation.title}"?`)) return;
+            if (!confirm(`Publish "${compilation.title}"? It will become visible to the public.`)) return;
             
             try {
                 const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/publish`, {
@@ -262,7 +852,7 @@
         }
 
         async function unpublishCompilation() {
-            if (!confirm(`Unpublish "${compilation.title}"?`)) return;
+            if (!confirm(`Unpublish "${compilation.title}"? It will become a draft and hidden from public.`)) return;
             
             try {
                 const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/unpublish`, {
@@ -314,7 +904,11 @@
         async function loadCompilation() {
             const urlParams = new URLSearchParams(window.location.search);
             const compilationId = urlParams.get('id');
-            if (!compilationId) { window.location.href = '/admin/compilations/index.html'; return; }
+            
+            if (!compilationId) {
+                window.location.href = '/admin/compilations/index.html';
+                return;
+            }
             
             try {
                 const compRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}`);
@@ -327,39 +921,75 @@
                 let itemsWithDetails = [];
                 if (compilationItems.length > 0) {
                     let detailsRes;
-                    if (compilation.type === 'albums') detailsRes = await fetch(`${API_BASE}/admin/albums/lite?limit=500`);
-                    else if (compilation.type === 'eps') detailsRes = await fetch(`${API_BASE}/admin/eps/lite?limit=500`);
-                    else if (compilation.type === 'artists') detailsRes = await fetch(`${API_BASE}/admin/artists/lite?limit=500`);
-                    else detailsRes = await fetch(`${API_BASE}/admin/playlists/lite?limit=500`);
+                    if (compilation.type === 'albums') {
+                        detailsRes = await fetch(`${API_BASE}/admin/albums/lite?limit=500`);
+                    } else if (compilation.type === 'eps') {
+                        detailsRes = await fetch(`${API_BASE}/admin/eps/lite?limit=500`);
+                    } else if (compilation.type === 'artists') {
+                        detailsRes = await fetch(`${API_BASE}/admin/artists/lite?limit=500`);
+                    } else {
+                        detailsRes = await fetch(`${API_BASE}/admin/playlists/lite?limit=500`);
+                    }
                     
                     const details = await detailsRes.json();
-                    itemsWithDetails = compilationItems.map(item => ({ 
-                        ...item, 
-                        item: details.find(d => d.id === item.item_id) 
+                    itemsWithDetails = compilationItems.map(item => ({
+                        id: item.id,
+                        item_id: item.item_id,
+                        display_order: item.display_order,
+                        item: details.find(d => d.id === item.item_id)
                     })).filter(i => i.item);
                 }
                 compilation.items = itemsWithDetails;
+                
                 renderProfile();
-            } catch (error) { 
-                console.error(error); 
-                document.getElementById('profileContent').innerHTML = `<div style="text-align: center; padding: 60px 20px;"><i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i><h3>Failed to Load</h3><p>${error.message}</p><a href="/admin/compilations/index.html" class="btn btn-primary">Back</a></div>`;
+                
+            } catch (error) {
+                console.error('Error loading compilation:', error);
+                document.getElementById('profileContent').innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i>
+                        <h3>Failed to Load Compilation</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/compilations/index.html" class="btn btn-primary">Back to Compilations</a>
+                    </div>
+                `;
             }
         }
 
         function renderProfile() {
             const itemsCount = compilation.items?.length || 0;
             const totalItemViews = compilation.items?.reduce((sum, i) => sum + (i.item?.views || 0), 0) || 0;
-            const typeLabels = { albums: 'Albums', eps: 'EPs', artists: 'Artists', playlists: 'Playlists' };
+            const totalDuration = compilation.items?.reduce((sum, i) => sum + (i.item?.duration || 0), 0) || 0;
+            
+            const typeLabels = {
+                albums: 'Albums',
+                eps: 'EPs',
+                artists: 'Artists',
+                playlists: 'Playlists'
+            };
+            
+            const statusBadge = compilation.status === 'published' 
+                ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+            
+            const typeBadge = `<span class="type-badge ${compilation.type}"><i class="fas ${getTypeIcon(compilation.type)}"></i> ${typeLabels[compilation.type]}</span>`;
+            
+            const createdDate = compilation.created_at 
+                ? new Date(compilation.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                : 'Unknown';
             
             let itemsHtml = '';
             if (itemsCount > 0) {
                 itemsHtml = compilation.items.map((item, index) => {
                     const display = getItemDisplay(item.item, compilation.type);
                     return `
-                        <div class="item-row" data-track-id="${item.item_id}">
+                        <div class="item-row" data-item-id="${item.item_id}">
                             <div class="item-number">${index + 1}</div>
                             <div class="item-thumb">
-                                ${display.image ? `<img src="${display.image}">` : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`}
+                                ${display.image 
+                                    ? `<img src="${display.image}" alt="${escapeHtml(display.title)}">`
+                                    : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`
+                                }
                             </div>
                             <div class="item-info">
                                 <div class="item-title">${escapeHtml(display.title)}</div>
@@ -372,41 +1002,72 @@
                     `;
                 }).join('');
             } else {
-                itemsHtml = `<div class="empty-items"><i class="fas fa-music"></i><p>No items in this compilation yet</p><button class="btn btn-primary" style="margin-top: 16px;" onclick="window.location.href='/admin/compilations/add-items.html?id=${compilation.id}'"><i class="fas fa-plus-circle"></i> Add Items</button></div>`;
+                itemsHtml = `
+                    <div class="empty-items">
+                        <i class="fas fa-music"></i>
+                        <p>No items in this compilation yet</p>
+                        <button class="btn btn-primary" style="margin-top: 16px;" onclick="window.location.href='/admin/compilations/add-items.html?id=${compilation.id}'">
+                            <i class="fas fa-plus-circle"></i> Add Items
+                        </button>
+                    </div>
+                `;
             }
             
             const html = `
                 <div class="compilation-cover-large">
-                    ${compilation.cover_url ? `<img src="${compilation.cover_url}">` : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`}
+                    ${compilation.cover_url 
+                        ? `<img src="${compilation.cover_url}" alt="${escapeHtml(compilation.title)}">`
+                        : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`
+                    }
                 </div>
+                
                 <div class="compilation-info">
                     <h1 class="compilation-name">
                         ${escapeHtml(compilation.title)}
-                        <span class="status-badge ${compilation.status}">${compilation.status === 'published' ? 'Published' : 'Draft'}</span>
-                        <span class="type-badge ${compilation.type}">${typeLabels[compilation.type]}</span>
+                        ${statusBadge}
+                        ${typeBadge}
                     </h1>
                     <div class="compilation-meta">
                         <i class="fas fa-user-circle"></i>
-                        Created by ${escapeHtml(compilation.created_by || 'Admin')} • ${new Date(compilation.created_at).toLocaleDateString()}
-                        ${compilation.is_featured ? '<span style="margin-left: 10px;">Featured</span>' : ''}
+                        Created by ${escapeHtml(compilation.created_by || 'Admin')} • ${createdDate}
+                        ${compilation.is_featured ? '<span class="badge featured" style="margin-left: 10px;">Featured</span>' : ''}
                     </div>
                     ${compilation.description ? `<div class="compilation-description">${escapeHtml(compilation.description)}</div>` : ''}
                 </div>
+                
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-value">${itemsCount}</div><div class="stat-label">Items</div></div>
-                    <div class="stat-card"><div class="stat-value">${formatNumber(totalItemViews)}</div><div class="stat-label">Total Views</div></div>
-                    <div class="stat-card"><div class="stat-value">${formatNumber(compilation.views || 0)}</div><div class="stat-label">Compilation Views</div></div>
-                    <div class="stat-card"><div class="stat-value">${formatDuration(totalItemViews)}</div><div class="stat-label">Duration</div></div>
+                    <div class="stat-card">
+                        <div class="stat-value">${itemsCount}</div>
+                        <div class="stat-label">Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${formatNumber(totalItemViews)}</div>
+                        <div class="stat-label">Item Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${formatNumber(compilation.views || 0)}</div>
+                        <div class="stat-label">Compilation Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${formatDuration(totalDuration)}</div>
+                        <div class="stat-label">Duration</div>
+                    </div>
                 </div>
+                
                 <div class="items-section">
                     <div class="section-header">
-                        <h2><i class="fas fa-music"></i> Items in this Compilation</h2>
+                        <h2>
+                            <i class="fas fa-list"></i>
+                            Items in this Compilation
+                        </h2>
                         <span class="item-count">${itemsCount} items</span>
                     </div>
+                    
                     <div class="items-list">
                         ${itemsHtml}
                     </div>
                 </div>
+                
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="window.location.href='/admin/compilations/add-items.html?id=${compilation.id}'">
                         <i class="fas fa-plus-circle"></i> Add Items
@@ -431,14 +1092,11 @@
             document.getElementById('profileContent').innerHTML = html;
         }
 
-        function formatDuration(seconds) {
-            if (!seconds) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        if (checkAuth()) loadCompilation();
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadCompilation();
+            }
+        });
     </script>
 </body>
 </html>
