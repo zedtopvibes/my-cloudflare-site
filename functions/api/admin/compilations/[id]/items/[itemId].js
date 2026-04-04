@@ -35,6 +35,17 @@ export async function onRequest(context) {
       }), { status: 400, headers });
     }
 
+    // Check if the compilation exists
+    const compilation = await env.DB.prepare(
+      'SELECT id FROM compilations WHERE id = ? AND deleted_at IS NULL'
+    ).bind(compilationId).first();
+
+    if (!compilation) {
+      return new Response(JSON.stringify({ 
+        error: 'Compilation not found'
+      }), { status: 404, headers });
+    }
+
     // Check if the relationship exists in compilation_items table
     const exists = await env.DB.prepare(
       'SELECT * FROM compilation_items WHERE compilation_id = ? AND id = ?'
@@ -51,7 +62,7 @@ export async function onRequest(context) {
       'DELETE FROM compilation_items WHERE compilation_id = ? AND id = ?'
     ).bind(compilationId, itemId).run();
 
-    // Optional: Reorder remaining items
+    // Reorder remaining items
     const remaining = await env.DB.prepare(
       'SELECT id FROM compilation_items WHERE compilation_id = ? ORDER BY display_order'
     ).bind(compilationId).all();
