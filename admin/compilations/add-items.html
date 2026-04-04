@@ -290,7 +290,7 @@
             border-color: var(--primary-blue);
         }
         
-        .tracks-container {
+        .items-container {
             padding: 20px;
             max-height: 500px;
             overflow-y: auto;
@@ -317,12 +317,6 @@
             background: #e8f0fe;
             border-color: var(--primary-blue);
             border-width: 2px;
-        }
-        
-        .item-row.disabled {
-            opacity: 0.6;
-            background: var(--light-gray);
-            cursor: not-allowed;
         }
         
         .item-checkbox {
@@ -374,26 +368,6 @@
         .item-subtitle {
             font-size: 0.7rem;
             color: var(--gray);
-        }
-        
-        .item-meta {
-            display: flex;
-            gap: 12px;
-            margin-right: 12px;
-            font-size: 0.7rem;
-            color: var(--gray);
-            flex-shrink: 0;
-        }
-        
-        .item-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .item-meta i {
-            color: var(--primary-blue);
-            font-size: 0.65rem;
         }
         
         .item-badge {
@@ -561,7 +535,7 @@
         @media (max-width: 767px) {
             .compilation-header { flex-direction: column; text-align: center; }
             .item-row { flex-wrap: wrap; }
-            .item-meta { width: 100%; margin-left: 55px; margin-top: 8px; }
+            .item-subtitle { width: 100%; margin-left: 55px; margin-top: 4px; }
             .selection-bar { flex-direction: column; }
             .action-buttons { width: 100%; }
             .btn { flex: 1; justify-content: center; }
@@ -617,6 +591,7 @@
         let compilationItemIds = new Set();
         let selectedItems = new Set();
         let currentFilter = 'all';
+        let searchTimeout = null;
 
         function formatNumber(num) {
             if (!num) return '0';
@@ -637,45 +612,42 @@
                 return {
                     title: item.title || 'Untitled Album',
                     subtitle: item.artist_name ? `By ${item.artist_name}` : '',
-                    image: item.cover_url,
-                    views: item.views || 0
+                    image: item.cover_url
                 };
             } else if (type === 'eps') {
                 return {
                     title: item.title || 'Untitled EP',
                     subtitle: item.artist_name ? `By ${item.artist_name}` : '',
-                    image: item.cover_url,
-                    views: item.views || 0
+                    image: item.cover_url
                 };
             } else if (type === 'artists') {
                 return {
                     title: item.name || 'Unknown Artist',
                     subtitle: item.country ? `From ${item.country}` : '',
-                    image: item.image_url,
-                    views: item.views || 0
+                    image: item.image_url
                 };
             } else if (type === 'playlists') {
                 return {
                     title: item.name || 'Untitled Playlist',
                     subtitle: `By ${item.created_by || 'Zedtopvibes'}`,
-                    image: item.cover_url,
-                    views: item.views || 0
+                    image: item.cover_url
                 };
             }
-            return { title: 'Unknown', subtitle: '', image: null, views: 0 };
+            return { title: 'Unknown', subtitle: '', image: null };
         }
 
-        async function fetchWithTimeout(url, options = {}, timeout = 15000) {
-            const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), timeout);
-            try {
-                const response = await fetch(url, { ...options, signal: controller.signal });
-                clearTimeout(id);
-                return response;
-            } catch (error) {
-                clearTimeout(id);
-                throw error;
+        async function fetchItems(searchTerm = '') {
+            const type = compilation.type;
+            let url = `${API_BASE}/admin/${type}/lite?limit=200`;
+            if (searchTerm) {
+                url += `&search=${encodeURIComponent(searchTerm)}`;
             }
+            
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${type}`);
+            }
+            return await response.json();
         }
 
         async function loadPage() {
@@ -689,30 +661,13 @@
             
             try {
                 // Load compilation info
-                const compilationRes = await fetchWithTimeout(`${API_BASE}/admin/compilations/${compilationId}`);
+                const compilationRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}`);
                 if (!compilationRes.ok) throw new Error('Compilation not found');
                 
                 compilation = await compilationRes.json();
                 
-                // Get all available items based on compilation type using ADMIN APIs
-                let itemsRes;
-                if (compilation.type === 'albums') {
-                    itemsRes = await fetchWithTimeout(`${API_BASE}/admin/albums`);
-                } else if (compilation.type === 'eps') {
-                    itemsRes = await fetchWithTimeout(`${API_BASE}/admin/eps`);
-                } else if (compilation.type === 'artists') {
-                    itemsRes = await fetchWithTimeout(`${API_BASE}/admin/artists`);
-                } else if (compilation.type === 'playlists') {
-                    itemsRes = await fetchWithTimeout(`${API_BASE}/admin/playlists`);
-                } else {
-                    throw new Error(`Unknown compilation type: ${compilation.type}`);
-                }
-                
-                if (!itemsRes.ok) {
-                    throw new Error(`Failed to load ${compilation.type}`);
-                }
-                
-                allItems = await itemsRes.json();
+                // Load items using lightweight API
+                allItems = await fetchItems();
                 
                 // Get current items in compilation
                 compilationItemIds.clear();
@@ -738,17 +693,25 @@
             }
         }
 
+        async function handleSearch(searchTerm) {
+            if (searchTimeout) clearTimeout(searchTimeout);
+            
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const items = await fetchItems(searchTerm);
+                    allItems = items;
+                    renderPage();
+                } catch (error) {
+                    console.error('Search error:', error);
+                }
+            }, 300);
+        }
+
         function renderPage() {
             const inCompilationCount = compilationItemIds.size;
             const selectedCount = selectedItems.size;
             
-            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
-            
-            let filteredItems = allItems.filter(item => {
-                const title = (item.title || item.name || '').toLowerCase();
-                const artist = (item.artist_name || '').toLowerCase();
-                return title.includes(searchTerm) || artist.includes(searchTerm);
-            });
+            let filteredItems = [...allItems];
             
             if (currentFilter === 'selected') {
                 filteredItems = filteredItems.filter(item => selectedItems.has(item.id));
@@ -788,7 +751,7 @@
                 <div class="search-section">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search items..." value="${escapeHtml(searchTerm)}">
+                        <input type="text" id="searchInput" placeholder="Search items..." autocomplete="off">
                     </div>
                     
                     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;">
@@ -814,7 +777,7 @@
                     </div>
                 </div>
                 
-                <div class="tracks-container">
+                <div class="items-container">
                     ${filteredItems.length > 0 
                         ? filteredItems.map(item => {
                             const isSelected = selectedItems.has(item.id);
@@ -837,9 +800,6 @@
                                 <div class="item-info">
                                     <div class="item-title">${escapeHtml(display.title)}</div>
                                     <div class="item-subtitle">${escapeHtml(display.subtitle)}</div>
-                                </div>
-                                <div class="item-meta">
-                                    <span><i class="fas fa-eye"></i> ${formatNumber(display.views)}</span>
                                 </div>
                                 ${isInCompilation ? '<span class="item-badge in-compilation">✓ Already in Compilation</span>' : ''}
                             </div>
@@ -871,12 +831,9 @@
 
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
-                const newSearchInput = searchInput.cloneNode(true);
-                searchInput.parentNode.replaceChild(newSearchInput, searchInput);
-                
-                newSearchInput.addEventListener('input', debounce(() => {
-                    renderPage();
-                }, 300));
+                searchInput.addEventListener('input', (e) => {
+                    handleSearch(e.target.value);
+                });
             }
         }
 
@@ -923,24 +880,18 @@
                 
                 // Add items
                 for (const itemId of toAdd) {
-                    const response = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`, {
+                    await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ item_id: itemId })
                     });
-                    if (!response.ok) {
-                        console.error(`Failed to add item ${itemId}`);
-                    }
                 }
                 
                 // Remove items
                 for (const itemId of toRemove) {
-                    const response = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items?item_id=${itemId}`, {
+                    await fetch(`${API_BASE}/admin/compilations/${compilationId}/items?item_id=${itemId}`, {
                         method: 'DELETE'
                     });
-                    if (!response.ok) {
-                        console.error(`Failed to remove item ${itemId}`);
-                    }
                 }
                 
                 showToast(`✅ Updated! Added ${toAdd.length}, removed ${toRemove.length} items`, 'success');
@@ -963,18 +914,6 @@
             toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i><span>${message}</span>`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
         }
 
         function checkAuth() {
