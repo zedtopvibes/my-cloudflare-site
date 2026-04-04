@@ -51,7 +51,7 @@ export async function onRequest(context) {
       
       // Check if compilation exists
       const compilation = await env.DB.prepare(`
-        SELECT id FROM compilations WHERE id = ? AND deleted_at IS NULL
+        SELECT id, type FROM compilations WHERE id = ? AND deleted_at IS NULL
       `).bind(compilationId).first();
       
       if (!compilation) {
@@ -102,22 +102,44 @@ export async function onRequest(context) {
     }
   }
 
-  // DELETE - Remove item from compilation
+  // DELETE - Remove item from compilation (FIXED)
   if (request.method === 'DELETE') {
     try {
       const url = new URL(request.url);
-      const itemId = url.searchParams.get('item_id');
+      const itemRelationId = url.searchParams.get('item_id');
       
-      if (!itemId) {
+      if (!itemRelationId) {
         return new Response(JSON.stringify({ error: 'item_id is required' }), { 
           status: 400, 
           headers 
         });
       }
       
-      await env.DB.prepare(`
-        DELETE FROM compilation_items WHERE id = ? AND compilation_id = ?
-      `).bind(itemId, compilationId).run();
+      // Delete using the compilation_items.id (relation ID)
+      const result = await env.DB.prepare(`
+        DELETE FROM compilation_items 
+        WHERE id = ? AND compilation_id = ?
+      `).bind(itemRelationId, compilationId).run();
+      
+      if (result.changes === 0) {
+        return new Response(JSON.stringify({ error: 'Item not found' }), { 
+          status: 404, 
+          headers 
+        });
+      }
+      
+      // Reorder remaining items to have sequential display_order
+      const remainingItems = await env.DB.prepare(`
+        SELECT id FROM compilation_items 
+        WHERE compilation_id = ? 
+        ORDER BY display_order ASC
+      `).bind(compilationId).all();
+      
+      for (let i = 0; i < remainingItems.results.length; i++) {
+        await env.DB.prepare(`
+          UPDATE compilation_items SET display_order = ? WHERE id = ?
+        `).bind(i, remainingItems.results[i].id).run();
+      }
       
       return new Response(JSON.stringify({ success: true }), { headers });
       
@@ -134,6 +156,13 @@ export async function onRequest(context) {
   if (request.method === 'PUT') {
     try {
       const { items } = await request.json();
+      
+      if (!items || !Array.isArray(items)) {
+        return new Response(JSON.stringify({ error: 'items array is required' }), { 
+          status: 400, 
+          headers 
+        });
+      }
       
       for (const item of items) {
         await env.DB.prepare(`
