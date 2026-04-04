@@ -22,16 +22,42 @@ export async function onRequest(context) {
   }
 
   try {
+    // First verify the compilation exists
+    const compilation = await env.DB.prepare(`
+      SELECT id FROM compilations WHERE id = ? AND deleted_at IS NULL
+    `).bind(compilationId).first();
+    
+    if (!compilation) {
+      return new Response(JSON.stringify({ error: 'Compilation not found' }), { 
+        status: 404, 
+        headers 
+      });
+    }
+    
+    // Delete the item
     const result = await env.DB.prepare(`
       DELETE FROM compilation_items 
       WHERE id = ? AND compilation_id = ?
     `).bind(itemId, compilationId).run();
     
     if (result.changes === 0) {
-      return new Response(JSON.stringify({ error: 'Item not found' }), { 
+      return new Response(JSON.stringify({ error: 'Item not found in this compilation' }), { 
         status: 404, 
         headers 
       });
+    }
+    
+    // Reorder remaining items to have sequential display_order
+    const remainingItems = await env.DB.prepare(`
+      SELECT id FROM compilation_items 
+      WHERE compilation_id = ? 
+      ORDER BY display_order ASC
+    `).bind(compilationId).all();
+    
+    for (let i = 0; i < remainingItems.results.length; i++) {
+      await env.DB.prepare(`
+        UPDATE compilation_items SET display_order = ? WHERE id = ?
+      `).bind(i, remainingItems.results[i].id).run();
     }
     
     return new Response(JSON.stringify({ success: true }), { headers });
