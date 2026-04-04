@@ -18,7 +18,8 @@
         .header-top h1 { color: var(--primary-blue); font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .user-info { display: flex; align-items: center; gap: 10px; background: var(--light-gray); padding: 8px 15px; border-radius: 30px; font-size: 0.9rem; border: 1px solid rgba(31, 111, 159, 0.1); }
         .user-info i { color: var(--primary-blue); }
-        .admin-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; }
+        .admin-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; scrollbar-width: none; }
+        .admin-tabs::-webkit-scrollbar { display: none; }
         .tab-btn { padding: 8px 14px; background: transparent; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #666; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; height: 36px; }
         .tab-btn:hover { background: #f0f0f0; color: var(--primary-blue); }
         .tab-btn.active { background: var(--primary-blue); color: white; }
@@ -59,7 +60,7 @@
         .item-info { flex: 1; }
         .item-title { font-weight: 600; font-size: 0.85rem; color: var(--primary-dark); margin-bottom: 2px; }
         .item-subtitle { font-size: 0.7rem; color: var(--gray); }
-        .remove-item { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--gray); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+        .remove-item { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--gray); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .remove-item:hover { background: var(--error); color: white; }
         .empty-items { text-align: center; padding: 40px 20px; color: var(--gray); background: var(--light-gray); border-radius: 8px; border: 1px dashed rgba(31, 111, 159, 0.3); }
         .action-buttons { display: flex; gap: 12px; justify-content: flex-end; padding: 16px 20px 20px; border-top: 1px solid rgba(31, 111, 159, 0.1); flex-wrap: wrap; }
@@ -84,7 +85,6 @@
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-10px); } }
         
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -143,7 +143,6 @@
         <div class="admin-footer"><p>© 2024 ZEDTOPVIBES. All rights reserved.</p></div>
     </div>
 
-    <!-- Modal - Popup (placed outside admin-container) -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h3 id="confirmModalTitle">Confirm Action</h3>
@@ -208,10 +207,24 @@
         }
 
         async function removeItem(itemRelationId, title) {
-            showConfirmModal({ title: 'Remove Item', message: `Remove "${title}" from compilation?`, type: 'danger', onConfirm: async () => {
-                const res = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items?item_id=${itemRelationId}`, { method: 'DELETE' });
-                if (res.ok) { showToast('Item removed', 'success'); loadCompilation(); }
-                else showToast('Failed to remove', 'error');
+            showConfirmModal({ title: 'Remove Item', message: `Remove "${title}" from this compilation?`, type: 'danger', onConfirm: async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items?item_id=${itemRelationId}`, { 
+                        method: 'DELETE' 
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        showToast(`"${title}" removed from compilation`, 'success');
+                        loadCompilation();
+                    } else {
+                        showToast(data.error || 'Failed to remove item', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Failed to remove item', 'error');
+                }
             }});
         }
 
@@ -219,8 +232,21 @@
             const items = document.querySelectorAll('.item-row');
             const orderUpdates = [];
             items.forEach((item, index) => { orderUpdates.push({ id: parseInt(item.dataset.itemId), display_order: index }); });
-            await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: orderUpdates }) });
-            items.forEach((item, index) => { const numSpan = item.querySelector('.item-number'); if (numSpan) numSpan.textContent = index + 1; });
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items`, { 
+                    method: 'PUT', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ items: orderUpdates }) 
+                });
+                
+                if (response.ok) {
+                    items.forEach((item, index) => { const numSpan = item.querySelector('.item-number'); if (numSpan) numSpan.textContent = index + 1; });
+                    showToast('Order saved!', 'success');
+                }
+            } catch (error) {
+                console.error('Error saving order:', error);
+            }
         }
 
         function setupDragAndDrop() {
@@ -247,17 +273,17 @@
 
         async function publishCompilation() {
             showConfirmModal({ title: 'Publish', message: `Publish "${compilation.title}"?`, type: 'success', onConfirm: async () => {
-                await fetch(`${API_BASE}/admin/compilations/${compilation.id}/publish`, { method: 'POST' });
-                showToast('Published!', 'success');
-                loadCompilation();
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/publish`, { method: 'POST' });
+                if (response.ok) { showToast('Published!', 'success'); loadCompilation(); }
+                else showToast('Failed to publish', 'error');
             }});
         }
 
         async function unpublishCompilation() {
             showConfirmModal({ title: 'Unpublish', message: `Unpublish "${compilation.title}"?`, type: 'warning', onConfirm: async () => {
-                await fetch(`${API_BASE}/admin/compilations/${compilation.id}/unpublish`, { method: 'POST' });
-                showToast('Unpublished', 'success');
-                loadCompilation();
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/unpublish`, { method: 'POST' });
+                if (response.ok) { showToast('Unpublished', 'success'); loadCompilation(); }
+                else showToast('Failed to unpublish', 'error');
             }});
         }
 
@@ -265,9 +291,10 @@
             const itemCount = compilation.items?.length || 0;
             if (itemCount > 0) { showToast(`Cannot delete: ${itemCount} items remaining`, 'error'); return; }
             showConfirmModal({ title: 'Delete', message: `Delete "${compilation.title}"?`, type: 'danger', onConfirm: async () => {
-                const res = await fetch(`${API_BASE}/admin/compilations/${compilation.id}`, { method: 'DELETE' });
-                if (res.ok) { showToast('Deleted', 'success'); setTimeout(() => window.location.href = '/admin/compilations/index.html', 1500); }
-                else showToast('Failed', 'error');
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}`, { method: 'DELETE' });
+                const data = await response.json();
+                if (response.ok && data.success) { showToast('Deleted', 'success'); setTimeout(() => window.location.href = '/admin/compilations/index.html', 1500); }
+                else showToast(data.error || 'Failed to delete', 'error');
             }});
         }
 
@@ -277,23 +304,32 @@
             if (!compilationId) { window.location.href = '/admin/compilations/index.html'; return; }
             try {
                 const compRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}`);
+                if (!compRes.ok) throw new Error('Compilation not found');
                 compilation = await compRes.json();
+                
                 const itemsRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`);
                 const compilationItems = await itemsRes.json();
+                
                 let itemsWithDetails = [];
                 if (compilationItems.length > 0) {
-                    const itemIds = compilationItems.map(i => i.item_id).join(',');
                     let detailsRes;
                     if (compilation.type === 'albums') detailsRes = await fetch(`${API_BASE}/admin/albums/lite?limit=500`);
                     else if (compilation.type === 'eps') detailsRes = await fetch(`${API_BASE}/admin/eps/lite?limit=500`);
                     else if (compilation.type === 'artists') detailsRes = await fetch(`${API_BASE}/admin/artists/lite?limit=500`);
                     else detailsRes = await fetch(`${API_BASE}/admin/playlists/lite?limit=500`);
+                    
                     const details = await detailsRes.json();
-                    itemsWithDetails = compilationItems.map(item => ({ ...item, item: details.find(d => d.id === item.item_id) })).filter(i => i.item);
+                    itemsWithDetails = compilationItems.map(item => ({ 
+                        ...item, 
+                        item: details.find(d => d.id === item.item_id) 
+                    })).filter(i => i.item);
                 }
                 compilation.items = itemsWithDetails;
                 renderProfile();
-            } catch (error) { console.error(error); document.getElementById('profileContent').innerHTML = `<div class="empty-state"><h3>Error</h3><p>${error.message}</p><a href="/admin/compilations/index.html" class="btn btn-primary">Back</a></div>`; }
+            } catch (error) { 
+                console.error(error); 
+                document.getElementById('profileContent').innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><i class="fas fa-exclamation-circle" style="font-size:3rem;color:#ef4444;margin-bottom:15px;"></i><h3>Failed to Load</h3><p>${error.message}</p><a href="/admin/compilations/index.html" class="btn btn-primary">Back</a></div>`;
+            }
         }
 
         function renderProfile() {
@@ -304,11 +340,21 @@
             if (itemsCount > 0) {
                 itemsHtml = compilation.items.map((item, index) => {
                     const display = getItemDisplay(item.item, compilation.type);
-                    return `<div class="item-row" data-item-id="${item.id}"><div class="drag-handle"><i class="fas fa-grip-vertical"></i></div><div class="item-number">${index + 1}</div><div class="item-thumb">${display.image ? `<img src="${display.image}">` : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`}</div><div class="item-info"><div class="item-title">${escapeHtml(display.title)}</div><div class="item-subtitle">${escapeHtml(display.subtitle)}</div></div><button class="remove-item" onclick="removeItem(${item.id}, '${escapeHtml(display.title)}')"><i class="fas fa-times"></i></button></div>`;
+                    return `<div class="item-row" data-item-id="${item.id}">
+                        <div class="drag-handle"><i class="fas fa-grip-vertical"></i></div>
+                        <div class="item-number">${index + 1}</div>
+                        <div class="item-thumb">${display.image ? `<img src="${display.image}">` : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`}</div>
+                        <div class="item-info">
+                            <div class="item-title">${escapeHtml(display.title)}</div>
+                            <div class="item-subtitle">${escapeHtml(display.subtitle)}</div>
+                        </div>
+                        <button class="remove-item" onclick="removeItem(${item.id}, '${escapeHtml(display.title).replace(/'/g, "\\'")}')"><i class="fas fa-times"></i></button>
+                    </div>`;
                 }).join('');
             } else {
-                itemsHtml = `<div class="empty-items"><i class="fas fa-music"></i><p>No items yet</p><a href="/admin/compilations/add-items.html?id=${compilation.id}" class="btn btn-primary">Add Items</a></div>`;
+                itemsHtml = `<div class="empty-items"><i class="fas fa-music"></i><p>No items in this compilation yet</p><a href="/admin/compilations/add-items.html?id=${compilation.id}" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add Items</a></div>`;
             }
+            
             const html = `
                 <div class="compilation-cover-large">${compilation.cover_url ? `<img src="${compilation.cover_url}">` : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`}</div>
                 <div class="compilation-info">
@@ -322,13 +368,14 @@
                     <div class="stat-card"><div class="stat-value">${formatNumber(compilation.views || 0)}</div><div class="stat-label">Compilation Views</div></div>
                     <div class="stat-card"><div class="stat-value">${formatNumber(itemsCount)}</div><div class="stat-label">Total Items</div></div>
                 </div>
-                <div class="items-section"><div class="section-header"><h2><i class="fas fa-list"></i> Items</h2><span class="item-count">${itemsCount} items</span></div><div class="items-list" id="itemsList">${itemsHtml}</div></div>
+                <div class="items-section"><div class="section-header"><h2><i class="fas fa-list"></i> Items in this Compilation</h2><span class="item-count">${itemsCount} items</span></div><div class="items-list" id="itemsList">${itemsHtml}</div></div>
                 <div class="action-buttons">
                     <a href="/admin/compilations/add-items.html?id=${compilation.id}" class="btn btn-secondary"><i class="fas fa-plus-circle"></i> Add Items</a>
                     <a href="/admin/compilations/edit.html?id=${compilation.id}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit</a>
                     ${compilation.status === 'draft' ? `<button class="btn btn-publish" onclick="publishCompilation()"><i class="fas fa-cloud-upload-alt"></i> Publish</button>` : `<button class="btn btn-unpublish" onclick="unpublishCompilation()"><i class="fas fa-eye-slash"></i> Unpublish</button>`}
                     <button class="btn btn-danger" onclick="deleteCompilation()"><i class="fas fa-trash"></i> Delete</button>
                 </div>`;
+            
             document.getElementById('profileContent').innerHTML = html;
             if (itemsCount > 0) setupDragAndDrop();
         }
