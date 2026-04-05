@@ -8,146 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin/shared/styles.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --primary-blue: #1f6f9f;
-            --primary-light: #2f8ed0;
-            --primary-lighter: #70c8ff;
-            --primary-dark: #1f4c73;
-            --gray: #666;
-            --gray-light: #999;
-            --light-gray: #f0f2f5;
-            --white: #ffffff;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --success: #28a745;
-            --error: #dc3545;
-            --warning: #ffc107;
-            --skeleton-bg: #e2e8f0;
-        }
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--light-gray);
-            min-height: 100vh;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .admin-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 10px;
-            flex: 1;
-            width: 100%;
-        }
-        
-        .admin-header {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .header-top h1 {
-            color: var(--primary-blue);
-            font-size: 1.3rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--light-gray);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .user-info i {
-            color: var(--primary-blue);
-            font-size: 0.9rem;
-        }
-        
-        .user-info span {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .admin-tabs {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 5px 0;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        
-        .admin-tabs::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .tab-btn {
-            padding: 8px 14px;
-            background: transparent;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-            height: 36px;
-        }
-        
-        .tab-btn i {
-            font-size: 0.85rem;
-        }
-        
-        .tab-btn:hover {
-            background: #f0f0f0;
-            color: var(--primary-blue);
-        }
-        
-        .tab-btn.active {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .admin-content {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-            width: 100%;
-            overflow-x: hidden;
-        }
-        
+        /* ========== ARTISTS PAGE SPECIFIC STYLES ========== */
         .content-header {
             margin-bottom: 20px;
         }
@@ -420,6 +283,7 @@
             align-items: center;
             justify-content: center;
             font-size: 0.75rem;
+            text-decoration: none;
         }
         
         .action-btn:hover {
@@ -527,54 +391,6 @@
             height: 32px;
         }
         
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-        
-        .btn-primary {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-light);
-        }
-        
-        .btn-secondary {
-            background: var(--light-gray);
-            color: #333;
-            border: 1px solid #ddd;
-        }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-        
-        .btn-danger {
-            background: var(--error);
-            color: white;
-        }
-        
-        .btn-warning {
-            background: var(--warning);
-            color: #333;
-        }
-        
-        .btn-warning:hover {
-            background: #e0a800;
-        }
-        
         .btn-sm {
             padding: 4px 10px;
             font-size: 0.7rem;
@@ -630,47 +446,6 @@
             color: var(--primary-dark);
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
-            overflow-y: auto;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal h3 {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-        
-        .modal p {
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
         .toast {
             position: fixed;
             top: 20px;
@@ -711,28 +486,7 @@
             100% { background-position: -200% 0; }
         }
         
-        .admin-footer {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            text-align: center;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-            color: var(--gray);
-            font-size: 0.75rem;
-        }
-        
-        .admin-footer a {
-            color: var(--primary-blue);
-            text-decoration: none;
-        }
-        
-        .admin-footer a:hover {
-            text-decoration: underline;
-        }
-        
         @media (min-width: 768px) {
-            .admin-container { padding: 15px; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); }
             .stat-card .stat-value { font-size: 1.8rem; }
             .toast { left: auto; right: 20px; min-width: 300px; }
@@ -756,108 +510,89 @@
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <div class="admin-header">
-            <div class="header-top">
-                <h1><i class="fas fa-microphone"></i> Artists</h1>
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Admin</span>
-                </div>
-            </div>
-            
-            <div class="admin-tabs">
-                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
-                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
-                <a href="/admin/artists/index.html" class="tab-btn active"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
-                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
-                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
-                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
-                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
-            </div>
-        </div>
-        
-        <div class="admin-content">
-            <div class="content-header">
-                <h2>
-                    <i class="fas fa-microphone"></i> Artists Management
-                    <button onclick="loadArtists()" class="btn btn-secondary btn-sm" title="Refresh">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </h2>
-            </div>
-            
-            <div class="search-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search artists by name or country...">
-                </div>
-                <select id="countryFilter" class="filter-select">
-                    <option value="">All Countries</option>
-                </select>
-                <select id="sortFilter" class="filter-select">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="views">Most Views</option>
-                    <option value="name">Name A-Z</option>
-                    <option value="tracks">Most Tracks</option>
-                    <option value="albums">Most Albums</option>
-                    <option value="eps">Most EPs</option>
-                </select>
-            </div>
+    <div class="admin-layout">
+        <main class="admin-main">
+            <div class="admin-container">
+                <div id="admin-header" data-title="Artists" data-icon="microphone"></div>
+                
+                <div class="admin-content">
+                    <div class="content-header">
+                        <h2>
+                            <i class="fas fa-microphone"></i> Artists Management
+                            <button onclick="loadArtists()" class="btn btn-secondary btn-sm" title="Refresh">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </h2>
+                    </div>
+                    
+                    <div class="search-section">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search artists by name or country...">
+                        </div>
+                        <select id="countryFilter" class="filter-select">
+                            <option value="">All Countries</option>
+                        </select>
+                        <select id="sortFilter" class="filter-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="views">Most Views</option>
+                            <option value="name">Name A-Z</option>
+                            <option value="tracks">Most Tracks</option>
+                            <option value="albums">Most Albums</option>
+                            <option value="eps">Most EPs</option>
+                        </select>
+                    </div>
 
-            <div class="filter-tabs">
-                <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
-                <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
-                <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
-                <a href="/admin/artists/edit.html" class="filter-tab add-btn">
-                    <i class="fas fa-plus-circle"></i> Add New Artist
-                </a>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
+                        <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
+                        <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
+                        <a href="/admin/artists/edit.html" class="filter-tab add-btn">
+                            <i class="fas fa-plus-circle"></i> Add New Artist
+                        </a>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-microphone"></i></div>
+                            <div class="stat-value" id="totalArtists">0</div>
+                            <div class="stat-label">Total Artists</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
+                            <div class="stat-value" id="totalDrafts">0</div>
+                            <div class="stat-label">Drafts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                            <div class="stat-value" id="totalPublished">0</div>
+                            <div class="stat-label">Published</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                            <div class="stat-value" id="totalViews">0</div>
+                            <div class="stat-label">Total Profile Views</div>
+                        </div>
+                    </div>
+
+                    <div id="artistsTableContainer">
+                        <div class="skeleton-row"></div>
+                        <div class="skeleton-row"></div>
+                        <div class="skeleton-row"></div>
+                    </div>
+
+                    <div id="artistsMobileGrid" class="artists-mobile-grid"></div>
+
+                    <div class="pagination" id="pagination"></div>
+                </div>
+                
+                <div id="admin-footer"></div>
             </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-microphone"></i></div>
-                    <div class="stat-value" id="totalArtists">0</div>
-                    <div class="stat-label">Total Artists</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
-                    <div class="stat-value" id="totalDrafts">0</div>
-                    <div class="stat-label">Drafts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
-                    <div class="stat-value" id="totalPublished">0</div>
-                    <div class="stat-label">Published</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Total Profile Views</div>
-                </div>
-            </div>
-
-            <div id="artistsTableContainer">
-                <div class="skeleton-row"></div>
-                <div class="skeleton-row"></div>
-                <div class="skeleton-row"></div>
-            </div>
-
-            <div id="artistsMobileGrid" class="artists-mobile-grid"></div>
-
-            <div class="pagination" id="pagination"></div>
-        </div>
-        
-        <div class="admin-footer">
-            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
-        </div>
+        </main>
     </div>
 
+    <!-- Confirm Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h3 id="confirmModalTitle" style="color: var(--primary-blue);">Confirm Action</h3>
@@ -869,31 +604,15 @@
         </div>
     </div>
 
+    <script src="/admin/shared/loader.js"></script>
     <script>
+        // ========== ARTISTS PAGE SPECIFIC CODE ==========
         const API_BASE = '/api';
         let currentPage = 1;
         const itemsPerPage = 10;
         let allArtists = [];
         let filteredArtists = [];
         let currentStatusFilter = 'all';
-
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            return true;
-        }
 
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
@@ -1041,10 +760,7 @@
         };
 
         async function loadArtists() {
-            if (!checkAuth()) return;
-            
             try {
-                // Use the new artist stats API that includes track_count, album_count, ep_count
                 const response = await fetch(`${API_BASE}/admin/artists/stats`);
                 const result = await response.json();
                 
@@ -1052,10 +768,8 @@
                     throw new Error(result.error || 'Failed to load artists');
                 }
                 
-                // Extract artists from the response
                 allArtists = result.data.artists || [];
                 
-                // Calculate stats
                 const draftCount = allArtists.filter(a => a.status === 'draft').length;
                 const publishedCount = allArtists.filter(a => a.status === 'published').length;
                 const totalViews = allArtists.reduce((sum, artist) => sum + (artist.views || 0), 0);
@@ -1180,7 +894,8 @@
                                 <th>Profile Views</th>
                                 <th>Status</th>
                                 <th>Actions</th>
-                            </thead>
+                            </tr>
+                        </thead>
                         <tbody>
             `;
             
@@ -1194,7 +909,6 @@
                 if (artist.is_zambian_legend) badges.push('<span class="artist-badge legend">Legend</span>');
                 const badgesHtml = badges.length ? `<div style="margin-top: 4px;">${badges.join(' ')}</div>` : '';
                 
-                // Use image_url or photo_url
                 const artistImage = artist.image_url || artist.photo_url;
                 
                 html += `
@@ -1231,7 +945,7 @@
                 `;
             });
             
-            html += '</tbody></table></div>';
+            html += '</tbody> </table></div>';
             container.innerHTML = html;
         }
 
@@ -1324,9 +1038,7 @@
         document.getElementById('sortFilter').addEventListener('change', applyFilters);
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (checkAuth()) {
-                loadArtists();
-            }
+            loadArtists();
         });
     </script>
 </body>
