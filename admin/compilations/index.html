@@ -8,143 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin/shared/styles.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --primary-blue: #1f6f9f;
-            --primary-light: #2f8ed0;
-            --primary-dark: #1f4c73;
-            --gray: #666;
-            --gray-light: #999;
-            --light-gray: #f0f2f5;
-            --white: #ffffff;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --success: #28a745;
-            --error: #dc3545;
-            --warning: #ffc107;
-        }
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--light-gray);
-            min-height: 100vh;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .admin-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 10px;
-            flex: 1;
-            width: 100%;
-        }
-        
-        .admin-header {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .header-top h1 {
-            color: var(--primary-blue);
-            font-size: 1.3rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--light-gray);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .user-info i {
-            color: var(--primary-blue);
-            font-size: 0.9rem;
-        }
-        
-        .user-info span {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .admin-tabs {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 5px 0;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        
-        .admin-tabs::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .tab-btn {
-            padding: 8px 14px;
-            background: transparent;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-            height: 36px;
-        }
-        
-        .tab-btn i {
-            font-size: 0.85rem;
-        }
-        
-        .tab-btn:hover {
-            background: #f0f0f0;
-            color: var(--primary-blue);
-        }
-        
-        .tab-btn.active {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .admin-content {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-            width: 100%;
-            overflow-x: hidden;
-        }
-        
+        /* ========== COMPILATIONS PAGE SPECIFIC STYLES ========== */
         .content-header {
             margin-bottom: 20px;
         }
@@ -336,7 +202,6 @@
             color: #856404;
         }
         
-        /* Mobile-First Cards - No Horizontal Scroll */
         .compilations-grid {
             display: flex;
             flex-direction: column;
@@ -446,6 +311,7 @@
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
+            text-decoration: none;
         }
         
         .action-btn:hover {
@@ -456,40 +322,6 @@
         .action-btn.delete:hover {
             background: var(--error);
             color: white;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-        
-        .btn-primary {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-light);
-        }
-        
-        .btn-secondary {
-            background: var(--light-gray);
-            color: #333;
-            border: 1px solid #ddd;
-        }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
         }
         
         .pagination {
@@ -579,22 +411,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        .admin-footer {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            text-align: center;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-            color: var(--gray);
-            font-size: 0.75rem;
-        }
-        
-        .admin-footer a {
-            color: var(--primary-blue);
-            text-decoration: none;
-        }
-        
         .modal {
             display: none;
             position: fixed;
@@ -634,7 +450,6 @@
         }
         
         @media (min-width: 768px) {
-            .admin-container { padding: 15px; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); }
             .stat-card .stat-value { font-size: 1.8rem; }
             .compilations-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
@@ -661,98 +476,80 @@
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <div class="admin-header">
-            <div class="header-top">
-                <h1><i class="fas fa-layer-group"></i> Compilations</h1>
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Admin</span>
-                </div>
-            </div>
-            
-            <div class="admin-tabs">
-                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
-                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
-                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
-                <a href="/admin/compilations/index.html" class="tab-btn active"><i class="fas fa-layer-group"></i> Compilations</a>
-                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
-            </div>
-        </div>
-        
-        <div class="admin-content">
-            <div class="content-header">
-                <h2>
-                    <i class="fas fa-layer-group"></i> Compilations Management
-                    <button onclick="loadCompilations()" class="btn btn-secondary" style="padding: 4px 10px;">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </h2>
-            </div>
-            
-            <div class="search-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search compilations...">
-                </div>
-                <select id="typeFilter" class="filter-select">
-                    <option value="">All Types</option>
-                    <option value="albums">Albums</option>
-                    <option value="eps">EPs</option>
-                    <option value="artists">Artists</option>
-                    <option value="playlists">Playlists</option>
-                </select>
-            </div>
+    <div class="admin-layout">
+        <main class="admin-main">
+            <div class="admin-container">
+                <div id="admin-header" data-title="Compilations" data-icon="layer-group"></div>
+                
+                <div class="admin-content">
+                    <div class="content-header">
+                        <h2>
+                            <i class="fas fa-layer-group"></i> Compilations Management
+                            <button onclick="loadCompilations()" class="btn btn-secondary" style="padding: 4px 10px;">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </h2>
+                    </div>
+                    
+                    <div class="search-section">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search compilations...">
+                        </div>
+                        <select id="typeFilter" class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="albums">Albums</option>
+                            <option value="eps">EPs</option>
+                            <option value="artists">Artists</option>
+                            <option value="playlists">Playlists</option>
+                        </select>
+                    </div>
 
-            <div class="filter-tabs">
-                <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
-                <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
-                <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
-                <a href="/admin/compilations/edit.html" class="filter-tab add-btn">
-                    <i class="fas fa-plus-circle"></i> New Compilation
-                </a>
-            </div>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
+                        <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
+                        <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
+                        <a href="/admin/compilations/edit.html" class="filter-tab add-btn">
+                            <i class="fas fa-plus-circle"></i> New Compilation
+                        </a>
+                    </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
-                    <div class="stat-value" id="totalCompilations">0</div>
-                    <div class="stat-label">Total</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
-                    <div class="stat-value" id="totalDrafts">0</div>
-                    <div class="stat-label">Drafts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
-                    <div class="stat-value" id="totalPublished">0</div>
-                    <div class="stat-label">Published</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Total Views</div>
-                </div>
-            </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                            <div class="stat-value" id="totalCompilations">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
+                            <div class="stat-value" id="totalDrafts">0</div>
+                            <div class="stat-label">Drafts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                            <div class="stat-value" id="totalPublished">0</div>
+                            <div class="stat-label">Published</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                            <div class="stat-value" id="totalViews">0</div>
+                            <div class="stat-label">Total Views</div>
+                        </div>
+                    </div>
 
-            <div id="compilationsContainer">
-                <div class="loading">
-                    <i class="fas fa-circle-notch fa-spin"></i>
-                    <div>Loading compilations...</div>
-                </div>
-            </div>
+                    <div id="compilationsContainer">
+                        <div class="loading">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <div>Loading compilations...</div>
+                        </div>
+                    </div>
 
-            <div class="pagination" id="pagination"></div>
-        </div>
-        
-        <div class="admin-footer">
-            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
-        </div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+                
+                <div id="admin-footer"></div>
+            </div>
+        </main>
     </div>
 
     <div id="confirmModal" class="modal">
@@ -766,31 +563,15 @@
         </div>
     </div>
 
+    <script src="/admin/shared/loader.js"></script>
     <script>
+        // ========== COMPILATIONS PAGE SPECIFIC CODE ==========
         const API_BASE = '/api';
         let allCompilations = [];
         let filteredCompilations = [];
         let currentPage = 1;
         const itemsPerPage = 10;
         let currentStatus = 'all';
-
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            return true;
-        }
 
         function showToast(message, type) {
             const toast = document.createElement('div');
@@ -909,8 +690,6 @@
         };
 
         async function loadCompilations() {
-            if (!checkAuth()) return;
-            
             try {
                 const response = await fetch(`${API_BASE}/admin/compilations`);
                 if (!response.ok) throw new Error('Failed to load compilations');
@@ -1065,9 +844,7 @@
         document.getElementById('typeFilter').addEventListener('change', applyFilters);
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (checkAuth()) {
-                loadCompilations();
-            }
+            loadCompilations();
         });
     </script>
 </body>
