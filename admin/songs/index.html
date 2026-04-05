@@ -8,951 +8,89 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-            --primary-blue: #1f6f9f;
-            --primary-light: #2f8ed0;
-            --primary-lighter: #70c8ff;
-            --primary-dark: #1f4c73;
-            --gray: #666;
-            --gray-light: #999;
-            --light-gray: #f0f2f5;
-            --white: #ffffff;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --success: #28a745;
-            --error: #dc3545;
-            --warning: #ffc107;
-            --skeleton-bg: #e2e8f0;
-        }
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--light-gray);
-            min-height: 100vh;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .admin-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 10px;
-            flex: 1;
-            width: 100%;
-        }
-        
-        .admin-header {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .header-top h1 {
-            color: var(--primary-blue);
-            font-size: 1.3rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--light-gray);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .user-info i {
-            color: var(--primary-blue);
-            font-size: 0.9rem;
-        }
-        
-        .user-info span {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .admin-tabs {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 5px 0;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        
-        .admin-tabs::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .tab-btn {
-            padding: 8px 14px;
-            background: transparent;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-            height: 36px;
-        }
-        
-        .tab-btn i {
-            font-size: 0.85rem;
-        }
-        
-        .tab-btn:hover {
-            background: #f0f0f0;
-            color: var(--primary-blue);
-        }
-        
-        .tab-btn.active {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .admin-content {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(31, 111, 159, 0.1);
-            width: 100%;
-            overflow-x: hidden;
-        }
-        
-        .content-header {
-            margin-bottom: 20px;
-        }
-        
-        .content-header h2 {
-            font-size: 1.2rem;
-            color: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .content-header h2 i {
-            color: var(--primary-blue);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(31, 111, 159, 0.15);
-        }
-        
-        .stat-card:hover {
-            border-color: var(--primary-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 111, 159, 0.15);
-        }
-        
-        .stat-card .stat-icon {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-        
-        .stat-card .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-            line-height: 1.2;
-            margin-bottom: 4px;
-        }
-        
-        .stat-card .stat-label {
-            font-size: 0.7rem;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .search-section {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: var(--light-gray);
-            border-radius: 8px;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            flex: 2;
-            min-width: 200px;
-        }
-        
-        .search-box i {
-            color: var(--primary-blue);
-            margin-right: 8px;
-        }
-        
-        .search-box input {
-            border: none;
-            background: transparent;
-            padding: 6px 0;
-            width: 100%;
-            outline: none;
-            font-size: 0.85rem;
-        }
-        
-        .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: var(--white);
-            font-size: 0.85rem;
-            cursor: pointer;
-            font-family: 'Montserrat', sans-serif;
-            flex: 1;
-        }
-        
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-        
-        .filter-tab {
-            padding: 6px 14px;
-            background: transparent;
-            border: none;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #666;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-        }
-        
-        .filter-tab:hover {
-            background: var(--light-gray);
-            color: var(--primary-blue);
-        }
-        
-        .filter-tab.active {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .filter-tab.add-btn {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .artist-badge {
-            display: inline-block;
-            background: #e3f2fd;
-            color: var(--primary-blue);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            margin: 2px;
-            white-space: nowrap;
-        }
-        
-        .artist-badge.primary {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .artist-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            align-items: center;
-        }
-        
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: 600;
-        }
-        
-        .status-badge.published {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-badge.draft {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .songs-table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #eee;
-            display: block;
-        }
-        
-        .songs-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 700px;
-        }
-        
-        .songs-table th {
-            background: var(--light-gray);
-            padding: 10px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--primary-dark);
-            border-bottom: 2px solid #ddd;
-            font-size: 0.8rem;
-        }
-        
-        .songs-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
-            font-size: 0.8rem;
-        }
-        
-        .songs-table tr:hover td {
-            background: rgba(31, 111, 159, 0.02);
-        }
-        
-        .song-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .song-thumb {
-            width: 35px;
-            height: 35px;
-            border-radius: 6px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        
-        .song-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .song-details h4 {
-            font-size: 0.85rem;
-            margin-bottom: 2px;
-        }
-        
-        .song-details span {
-            font-size: 0.65rem;
-            color: var(--gray);
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        
-        .action-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 5px;
-            border: none;
-            background: var(--light-gray);
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-        }
-        
-        .action-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .action-btn.delete:hover {
-            background: var(--error);
-            color: white;
-        }
-        
-        .songs-mobile-grid {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .song-mobile-card {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 12px;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .song-mobile-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .song-mobile-thumb {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        
-        .song-mobile-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .song-mobile-info {
-            flex: 1;
-        }
-        
-        .song-mobile-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        
-        .song-mobile-artist {
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-        
-        .song-mobile-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
-        }
-        
-        .song-mobile-stat {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-        
-        .song-mobile-stat i {
-            color: var(--primary-blue);
-            font-size: 0.7rem;
-        }
-        
-        .song-mobile-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .song-mobile-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-        
-        .song-mobile-actions .action-btn {
-            width: 32px;
-            height: 32px;
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            background: var(--light-gray);
-            color: var(--gray);
-        }
-        
-        .badge.featured {
-            background: rgba(255, 193, 7, 0.2);
-            color: #856404;
-        }
-        
-        .badge.editor {
-            background: rgba(40, 167, 69, 0.2);
-            color: #155724;
-        }
-        
-        .badge.explicit {
-            background: rgba(220, 53, 69, 0.2);
-            color: #721c24;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-        
-        .btn-primary {
-            background: var(--primary-blue);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-light);
-        }
-        
-        .btn-secondary {
-            background: var(--light-gray);
-            color: #333;
-            border: 1px solid #ddd;
-        }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-        
-        .btn-danger {
-            background: var(--error);
-            color: white;
-        }
-        
-        .btn-warning {
-            background: var(--warning);
-            color: #333;
-        }
-        
-        .btn-warning:hover {
-            background: #e0a800;
-        }
-        
-        .btn-sm {
-            padding: 4px 10px;
-            font-size: 0.7rem;
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .page-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.8rem;
-        }
-        
-        .page-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
-        .page-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
-        }
-        
-        .empty-state i {
-            font-size: 3rem;
-            color: var(--primary-blue);
-            margin-bottom: 15px;
-            opacity: 0.3;
-        }
-        
-        .empty-state h3 {
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            color: var(--primary-dark);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
-            overflow-y: auto;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal h3 {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-        
-        .modal p {
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
-        .edit-modal .form-group {
-            margin-bottom: 12px;
-        }
-        
-        .edit-modal label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-        
-        .edit-modal input,
-        .edit-modal select,
-        .edit-modal textarea {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-        
-        .image-upload-area {
-            border: 2px dashed var(--primary-blue);
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 12px;
-            background: var(--light-gray);
-        }
-        
-        .image-preview {
-            width: 100%;
-            max-height: 150px;
-            object-fit: contain;
-            border-radius: 6px;
-            margin-top: 8px;
-            display: none;
-        }
-        
-        .image-preview.has-image {
-            display: block;
-        }
-        
-        .remove-image {
-            color: var(--error);
-            cursor: pointer;
-            font-size: 0.75rem;
-            margin-top: 5px;
-            display: inline-block;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin: 12px 0;
-        }
-        
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: normal;
-            font-size: 0.8rem;
-        }
-        
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 10px 15px;
-            border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: #28a745; }
-        .toast.error { background: #dc3545; }
-        .toast.info { background: var(--primary-blue); }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        .skeleton-row {
-            height: 50px;
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        .admin-footer {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            text-align: center;
-            border: 1px solid rgba(31, 111, 159, 0.1);
-            color: var(--gray);
-            font-size: 0.75rem;
-        }
-        
-        .admin-footer a {
-            color: var(--primary-blue);
-            text-decoration: none;
-        }
-        
-        .admin-footer a:hover {
-            text-decoration: underline;
-        }
-        
-        @media (min-width: 768px) {
-            .admin-container { padding: 15px; }
-            .stats-grid { grid-template-columns: repeat(4, 1fr); }
-            .stat-card .stat-value { font-size: 1.8rem; }
-            .toast { left: auto; right: 20px; min-width: 300px; }
-        }
-        
-        @media (max-width: 767px) {
-            .songs-table-container { display: none; }
-            .songs-mobile-grid { display: flex; }
-            .search-section { flex-direction: column; }
-            .search-box { width: 100%; }
-            .filter-select { width: 100%; }
-            .filter-tabs { justify-content: center; }
-        }
-        
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .stat-card { padding: 12px; }
-            .stat-icon { font-size: 1.2rem; }
-            .stat-value { font-size: 1.2rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="/admin/shared/styles.css">
 </head>
 <body>
-    <div class="admin-container">
-        <div class="admin-header">
-            <div class="header-top">
-                <h1><i class="fas fa-music"></i> Songs</h1>
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Admin</span>
-                </div>
-            </div>
-            
-            <div class="admin-tabs">
-                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
-                <a href="/admin/songs.html" class="tab-btn active"><i class="fas fa-music"></i> Songs</a>
-                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
-                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
-                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
-                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
-                <a href="/admin/genres/index.html" class="tab-btn"><i class="fas fa-tag"></i> Genres</a>
-                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
-                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
-                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
-            </div>
-        </div>
-        
-        <div class="admin-content">
-            <div class="content-header">
-                <h2>
-                    <i class="fas fa-music"></i> Songs Management
-                    <button onclick="loadSongs()" class="btn btn-secondary btn-sm" title="Refresh">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </h2>
-            </div>
-            
-            <div class="search-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search songs by title or artist...">
-                </div>
-                <select id="genreFilter" class="filter-select">
-                    <option value="">All Genres</option>
-                </select>
-                <select id="sortFilter" class="filter-select">
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="views">Most Views</option>
-                    <option value="title">Title A-Z</option>
-                </select>
-            </div>
+    <div class="admin-layout">
+        <main class="admin-main">
+            <div class="admin-container">
+                <div id="admin-header" data-title="Songs" data-icon="music"></div>
+                
+                <div class="admin-content">
+                    <div class="content-header">
+                        <h2>
+                            <i class="fas fa-music"></i> Songs Management
+                            <button onclick="loadSongs()" class="btn btn-secondary btn-sm" title="Refresh">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </h2>
+                    </div>
+                    
+                    <div class="search-section">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search songs by title or artist...">
+                        </div>
+                        <select id="genreFilter" class="filter-select">
+                            <option value="">All Genres</option>
+                        </select>
+                        <select id="sortFilter" class="filter-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="views">Most Views</option>
+                            <option value="title">Title A-Z</option>
+                        </select>
+                    </div>
 
-            <div class="filter-tabs">
-                <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
-                <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
-                <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
-                <a href="/admin/upload.html" class="filter-tab add-btn">
-                    <i class="fas fa-plus-circle"></i> Add New Song
-                </a>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-status="all" onclick="filterByStatus('all')">All</button>
+                        <button class="filter-tab" data-status="published" onclick="filterByStatus('published')">Published</button>
+                        <button class="filter-tab" data-status="draft" onclick="filterByStatus('draft')">Drafts</button>
+                        <a href="/admin/upload.html" class="filter-tab add-btn">
+                            <i class="fas fa-plus-circle"></i> Add New Song
+                        </a>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-music"></i></div>
+                            <div class="stat-value" id="totalSongs">0</div>
+                            <div class="stat-label">Total Songs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
+                            <div class="stat-value" id="totalDrafts">0</div>
+                            <div class="stat-label">Drafts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                            <div class="stat-value" id="totalPublished">0</div>
+                            <div class="stat-label">Published</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                            <div class="stat-value" id="totalViews">0</div>
+                            <div class="stat-label">Total Views</div>
+                        </div>
+                    </div>
+
+                    <div id="songsTableContainer">
+                        <div class="skeleton-row"></div>
+                        <div class="skeleton-row"></div>
+                        <div class="skeleton-row"></div>
+                    </div>
+
+                    <div id="songsMobileGrid" class="songs-mobile-grid"></div>
+
+                    <div class="pagination" id="pagination"></div>
+                </div>
+                
+                <div id="admin-footer"></div>
             </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-music"></i></div>
-                    <div class="stat-value" id="totalSongs">0</div>
-                    <div class="stat-label">Total Songs</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-pencil-alt"></i></div>
-                    <div class="stat-value" id="totalDrafts">0</div>
-                    <div class="stat-label">Drafts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
-                    <div class="stat-value" id="totalPublished">0</div>
-                    <div class="stat-label">Published</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div class="stat-value" id="totalViews">0</div>
-                    <div class="stat-label">Total Views</div>
-                </div>
-            </div>
-
-            <div id="songsTableContainer">
-                <div class="skeleton-row"></div>
-                <div class="skeleton-row"></div>
-                <div class="skeleton-row"></div>
-            </div>
-
-            <div id="songsMobileGrid" class="songs-mobile-grid"></div>
-
-            <div class="pagination" id="pagination"></div>
-        </div>
-        
-        <div class="admin-footer">
-            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
-        </div>
+        </main>
     </div>
 
+    <!-- Confirm Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h3 id="confirmModalTitle" style="color: var(--primary-blue);">Confirm Action</h3>
@@ -964,6 +102,7 @@
         </div>
     </div>
 
+    <!-- Edit Modal -->
     <div id="editModal" class="modal edit-modal">
         <div class="modal-content">
             <h3>Edit Song</h3>
@@ -1039,7 +178,9 @@
         </div>
     </div>
 
+    <script src="/admin/shared/loader.js"></script>
     <script>
+        // ========== SONGS PAGE SPECIFIC CODE ==========
         const API_BASE = '/api';
         let currentPage = 1;
         const itemsPerPage = 10;
@@ -1049,24 +190,6 @@
         let selectedImageFile = null;
         let currentEditingSong = null;
         let currentStatusFilter = 'all';
-
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
-            
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
-            }
-            return true;
-        }
 
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
@@ -1211,8 +334,6 @@
         };
 
         async function loadSongs() {
-            if (!checkAuth()) return;
-            
             try {
                 const response = await fetch(`${API_BASE}/admin/tracks`);
                 if (!response.ok) throw new Error('Failed to load songs');
@@ -1336,7 +457,8 @@
                                 <th>Views</th>
                                 <th>Status</th>
                                 <th>Actions</th>
-                            </thead>
+                            </tr>
+                        </thead>
                         <tbody>
             `;
             
@@ -1361,7 +483,7 @@
                         </td>
                         <td><div class="artist-list">${artistsDisplay}</div></td>
                         <td>${escapeHtml(song.genre) || '—'}</td>
-                        <td><i class="fas fa-eye"></i> ${formatNumber(song.views)}</span></td>
+                        <td><i class="fas fa-eye"></i> ${formatNumber(song.views)}</td>
                         <td>${statusBadge}</td>
                         <td>
                             <div class="action-buttons">
@@ -1677,9 +799,7 @@
         document.getElementById('sortFilter').addEventListener('change', applyFilters);
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (checkAuth()) {
-                loadSongs();
-            }
+            loadSongs();
         });
     </script>
 </body>
