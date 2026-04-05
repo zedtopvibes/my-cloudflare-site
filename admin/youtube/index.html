@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>YT Stats - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin/shared/styles.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <main class="admin-main">
+            <div class="admin-container">
+                <div id="admin-header" data-title="YT Stats" data-icon="fab fa-youtube"></div>
+                
+                <div class="admin-content">
+                    <!-- Fetch Button Section -->
+                    <div style="margin-bottom: 24px; text-align: center;">
+                        <button id="fetchBtn" class="btn btn-primary" style="background: #ff0000; border-color: #ff0000;">
+                            <i class="fab fa-youtube"></i> Fetch Latest Stats
+                        </button>
+                        <div id="lastFetchInfo" style="margin-top: 8px; font-size: 0.75rem; color: var(--gray);"></div>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <div class="stat-value" id="currentSubs">—</div>
+                            <div class="stat-label">Subscribers</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                            <div class="stat-value" id="totalViews">—</div>
+                            <div class="stat-label">Total Views</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-video"></i></div>
+                            <div class="stat-value" id="totalVideos">—</div>
+                            <div class="stat-label">Videos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="stat-value" id="weeklyGain">—</div>
+                            <div class="stat-label">Weekly Gain</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar Section -->
+                    <div class="section-header">
+                        <i class="fas fa-bullseye"></i>
+                        <h3>Subscriber Goal Progress</h3>
+                        <button id="editGoalBtn" class="settings-btn" style="margin-left: auto;"><i class="fas fa-cog"></i> Set Goal</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem;">
+                            <span id="currentProgressText">—</span>
+                            <span id="goalTargetText">Goal: —</span>
+                        </div>
+                        <div class="progress-bar-container" style="background: var(--light-gray); border-radius: 10px; height: 30px; overflow: hidden;">
+                            <div id="progressFill" class="progress-bar-fill" style="width: 0%; background: var(--success); height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; border-radius: 10px;">
+                                0%
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly & Monthly Summary -->
+                    <div class="views-grid" style="margin-bottom: 24px;">
+                        <div class="view-card">
+                            <div class="view-icon"><i class="fas fa-calendar-week"></i></div>
+                            <div class="view-value" id="weeklySubGain">—</div>
+                            <div class="view-label">Subs (Last 7 Days)</div>
+                        </div>
+                        <div class="view-card">
+                            <div class="view-icon"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="view-value" id="monthlySubGain">—</div>
+                            <div class="view-label">Subs (Last 30 Days)</div>
+                        </div>
+                        <div class="view-card">
+                            <div class="view-icon"><i class="fas fa-clock"></i></div>
+                            <div class="view-value" id="weeklyWatchHours">—</div>
+                            <div class="view-label">Watch Hours (7d)</div>
+                        </div>
+                    </div>
+
+                    <!-- History Table -->
+                    <div class="section-header">
+                        <i class="fas fa-history"></i>
+                        <h3>Historical Data</h3>
+                    </div>
+                    
+                    <div style="overflow-x: auto;">
+                        <table class="stats-table" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--light-gray);">
+                                    <th style="padding: 12px; text-align: left;">Date</th>
+                                    <th style="padding: 12px; text-align: left;">Subscribers</th>
+                                    <th style="padding: 12px; text-align: left;">Views</th>
+                                    <th style="padding: 12px; text-align: left;">Videos</th>
+                                    <th style="padding: 12px; text-align: left;">Daily Change</th>
+                                    <th style="padding: 12px; text-align: left;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <tr>
+                                    <td colspan="6" style="padding: 40px; text-align: center; color: var(--gray);">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="admin-footer"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Goal Settings Modal -->
+    <div id="goalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-bullseye"></i> Set Subscriber Goal</h3>
+                <button class="close-btn" onclick="closeGoalModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-users"></i> Target Subscribers</label>
+                <input type="number" id="goalInput" class="form-control" placeholder="Enter goal number" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeGoalModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveGoal()">Save Goal</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/admin/shared/loader.js"></script>
+    <script>
+        let currentGoal = 1000;
+        let currentSubs = 0;
+
+        // Modal functions
+        function openGoalModal() {
+            document.getElementById('goalModal').style.display = 'flex';
+            document.getElementById('goalInput').value = currentGoal;
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goalModal').style.display = 'none';
+        }
+
+        // Fetch goal from API
+        async function loadGoal() {
+            try {
+                const response = await fetch('/api/admin/yt-goal');
+                const result = await response.json();
+                if (result.success && result.data) {
+                    currentGoal = result.data.target_subs;
+                    document.getElementById('goalTargetText').innerText = `Goal: ${currentGoal.toLocaleString()}`;
+                    updateProgressBar();
+                }
+            } catch (error) {
+                console.error('Error loading goal:', error);
+            }
+        }
+
+        // Save goal
+        async function saveGoal() {
+            const newGoal = parseInt(document.getElementById('goalInput').value);
+            if (isNaN(newGoal) || newGoal <= 0) {
+                alert('Please enter a valid number');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/yt-goal', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_subs: newGoal, enabled: true })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    currentGoal = newGoal;
+                    document.getElementById('goalTargetText').innerText = `Goal: ${currentGoal.toLocaleString()}`;
+                    updateProgressBar();
+                    closeGoalModal();
+                } else {
+                    alert('Error saving goal');
+                }
+            } catch (error) {
+                console.error('Error saving goal:', error);
+                alert('Error saving goal');
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const percent = Math.min((currentSubs / currentGoal) * 100, 100);
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = percent + '%';
+            progressFill.innerHTML = Math.round(percent) + '%';
+            document.getElementById('currentProgressText').innerHTML = `${currentSubs.toLocaleString()} / ${currentGoal.toLocaleString()}`;
+        }
+
+        // Fetch stats from YouTube and save
+        async function fetchYouTubeStats() {
+            const fetchBtn = document.getElementById('fetchBtn');
+            const originalText = fetchBtn.innerHTML;
+            fetchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
+            fetchBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/admin/yt-stats/fetch');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('lastFetchInfo').innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> Last fetched: ${result.data.date}`;
+                    loadDashboard();
+                    loadHistory();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to fetch stats'));
+                }
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+                alert('Error connecting to server');
+            } finally {
+                fetchBtn.innerHTML = originalText;
+                fetchBtn.disabled = false;
+            }
+        }
+
+        // Load dashboard stats
+        async function loadDashboard() {
+            try {
+                // Get latest stats
+                const statsResponse = await fetch('/api/admin/yt-stats');
+                const statsResult = await statsResponse.json();
+                
+                if (statsResult.success && statsResult.data && statsResult.data.length > 0) {
+                    const latest = statsResult.data[0];
+                    currentSubs = latest.subscribers;
+                    document.getElementById('currentSubs').innerHTML = currentSubs.toLocaleString();
+                    document.getElementById('totalViews').innerHTML = latest.total_views.toLocaleString();
+                    document.getElementById('totalVideos').innerHTML = latest.videos_uploaded;
+                    updateProgressBar();
+                } else {
+                    document.getElementById('currentSubs').innerHTML = 'No data';
+                    document.getElementById('totalViews').innerHTML = 'No data';
+                    document.getElementById('totalVideos').innerHTML = 'No data';
+                }
+                
+                // Get weekly summary
+                const weeklyResponse = await fetch('/api/admin/yt-stats/weekly/summary');
+                const weeklyResult = await weeklyResponse.json();
+                if (weeklyResult.success && weeklyResult.data) {
+                    const weeklyGain = weeklyResult.data.weekly_gain;
+                    document.getElementById('weeklyGain').innerHTML = (weeklyGain >= 0 ? '+' : '') + weeklyGain.toLocaleString();
+                    document.getElementById('weeklySubGain').innerHTML = (weeklyGain >= 0 ? '+' : '') + weeklyGain.toLocaleString();
+                    document.getElementById('weeklyWatchHours').innerHTML = weeklyResult.data.total_watch_hours?.toLocaleString() || '0';
+                }
+                
+                // Get monthly summary
+                const monthlyResponse = await fetch('/api/admin/yt-stats/monthly/summary');
+                const monthlyResult = await monthlyResponse.json();
+                if (monthlyResult.success && monthlyResult.data) {
+                    const monthlyGain = monthlyResult.data.monthly_gain;
+                    document.getElementById('monthlySubGain').innerHTML = (monthlyGain >= 0 ? '+' : '') + monthlyGain.toLocaleString();
+                }
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Load history table
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/admin/yt-stats');
+                const result = await response.json();
+                
+                const tbody = document.getElementById('historyTableBody');
+                
+                if (!result.success || !result.data || result.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = '';
+                for (let i = 0; i < result.data.length; i++) {
+                    const stat = result.data[i];
+                    let dailyChange = '';
+                    let changeClass = '';
+                    
+                    if (i < result.data.length - 1) {
+                        const change = stat.subscribers - result.data[i + 1].subscribers;
+                        dailyChange = change > 0 ? `+${change}` : change;
+                        changeClass = change > 0 ? 'style="color: var(--success);"' : (change < 0 ? 'style="color: var(--error);"' : '');
+                    } else {
+                        dailyChange = '-';
+                    }
+                    
+                    const row = tbody.insertRow();
+                    row.style.borderBottom = '1px solid #eee';
+                    
+                    row.insertCell(0).innerHTML = `<span style="padding: 12px; display: inline-block;">${stat.date}</span>`;
+                    row.insertCell(1).innerHTML = `<span style="padding: 12px; display: inline-block; font-weight: 600;">${stat.subscribers.toLocaleString()}</span>`;
+                    row.insertCell(2).innerHTML = `<span style="padding: 12px; display: inline-block;">${stat.total_views.toLocaleString()}</span>`;
+                    row.insertCell(3).innerHTML = `<span style="padding: 12px; display: inline-block;">${stat.videos_uploaded}</span>`;
+                    row.insertCell(4).innerHTML = `<span ${changeClass} style="padding: 12px; display: inline-block;">${dailyChange}</span>`;
+                    row.insertCell(5).innerHTML = `<button class="delete-btn" onclick="deleteStat('${stat.date}')" style="background: none; border: none; color: var(--error); cursor: pointer;"><i class="fas fa-trash"></i></button>`;
+                }
+                
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="6" style="padding: 40px; text-align: center; color: var(--error);"><i class="fas fa-exclamation-triangle"></i> Error loading data</td></tr>';
+            }
+        }
+
+        // Delete stat
+        async function deleteStat(date) {
+            if (!confirm(`Delete stats for ${date}?`)) return;
+            
+            try {
+                const response = await fetch(`/api/admin/yt-stats/${date}`, { method: 'DELETE' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    loadDashboard();
+                    loadHistory();
+                } else {
+                    alert('Error deleting: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error deleting stat:', error);
+                alert('Error deleting stat');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('fetchBtn').addEventListener('click', fetchYouTubeStats);
+        document.getElementById('editGoalBtn').addEventListener('click', openGoalModal);
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('goalModal');
+            if (event.target === modal) {
+                closeGoalModal();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGoal();
+            loadDashboard();
+            loadHistory();
+        });
+    </script>
+</body>
+</html>
