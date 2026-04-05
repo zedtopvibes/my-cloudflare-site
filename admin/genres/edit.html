@@ -2,91 +2,157 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Edit Genre - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --primary: #1e3c72;
-            --primary-light: #2a4a8a;
-            --primary-soft: #e8f0fe;
-            --secondary: #00b4d8;
-            --success: #10b981;
+            --primary-blue: #1f6f9f;
+            --primary-light: #2f8ed0;
+            --primary-lighter: #70c8ff;
+            --primary-dark: #1f4c73;
+            --gray: #666;
+            --gray-light: #999;
+            --light-gray: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --success: #28a745;
+            --error: #dc3545;
             --warning: #ffc107;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --radius-sm: 6px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
         }
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
-            padding: 20px;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--light-gray);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
-        .container {
-            max-width: 600px;
+        .admin-container {
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 10px;
+            flex: 1;
+            width: 100%;
         }
         
-        .header {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
+        .admin-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
         }
         
-        .header h1 {
-            font-size: 1.2rem;
-            font-weight: 600;
+        .header-top h1 {
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
+            background: var(--light-gray);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .header h1 i {
-            color: var(--primary);
+        .user-info i {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
         }
         
-        .back-btn {
-            padding: 6px 14px;
-            background: var(--gray-100);
-            border-radius: var(--radius-md);
-            color: var(--gray-700);
-            text-decoration: none;
-            font-size: 0.85rem;
+        .user-info span {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .admin-tabs {
             display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .admin-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
-            border: 1px solid var(--gray-200);
+            text-decoration: none;
+            height: 36px;
+        }
+        
+        .tab-btn i {
+            font-size: 0.85rem;
+        }
+        
+        .tab-btn:hover {
+            background: #f0f0f0;
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .admin-content {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            width: 100%;
+            overflow-x: hidden;
         }
         
         .form-card {
-            background: white;
-            border-radius: var(--radius-lg);
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(31, 111, 159, 0.1);
             padding: 24px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--gray-200);
         }
         
         .form-group {
@@ -95,59 +161,99 @@
         
         .form-group label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--gray-700);
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--primary-dark);
         }
         
         .form-group label i {
-            color: var(--primary);
+            color: var(--primary-blue);
             margin-right: 6px;
+            width: 18px;
         }
         
         .form-group input,
         .form-group textarea {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
-            font-family: 'Inter', sans-serif;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.2s;
         }
         
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(31, 111, 159, 0.1);
+        }
+        
+        .form-hint {
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        
+        .form-hint i {
+            color: var(--primary-blue);
+            margin-right: 4px;
         }
         
         .slug-preview {
-            background: var(--gray-100);
+            background: var(--light-gray);
             padding: 8px 12px;
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            color: var(--gray-600);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--gray);
             margin-top: 4px;
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .slug-preview i {
-            color: var(--primary);
+            color: var(--primary-blue);
         }
         
-        .slug-preview span {
-            font-family: monospace;
-            color: var(--gray-700);
+        .slug-preview .slug-value {
+            font-weight: 600;
+            color: var(--primary-blue);
         }
         
-        .form-hint {
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin: 16px 0;
+        }
+        
+        .checkbox-label i {
+            color: var(--primary-blue);
+        }
+        
+        .stats-box {
+            background: var(--light-gray);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stats-box i {
+            color: var(--primary-blue);
+            margin-right: 4px;
+        }
+        
+        .stats-box span {
+            margin-left: 10px;
             font-size: 0.8rem;
-            color: var(--gray-500);
-            margin-top: 4px;
         }
         
         .action-buttons {
@@ -155,22 +261,27 @@
             gap: 12px;
             justify-content: flex-end;
             margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .btn {
-            padding: 10px 24px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: var(--primary-blue);
             color: white;
         }
         
@@ -179,21 +290,53 @@
         }
         
         .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
-            border: 1px solid var(--gray-200);
+            background: var(--light-gray);
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
         }
         
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+        
+        .loading i {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+        }
+        
+        .admin-footer {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .admin-footer a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .admin-footer a:hover {
+            text-decoration: underline;
         }
         
         .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 12px 20px;
+            left: 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             color: white;
             z-index: 2000;
@@ -201,86 +344,105 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .toast.success { background: var(--success); }
-        .toast.error { background: #ef4444; }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         
-        @media (max-width: 640px) {
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
+        @media (min-width: 768px) {
+            .admin-container { padding: 15px; }
+            .toast { left: auto; right: 20px; min-width: 300px; }
+            .form-card { max-width: 600px; margin: 0 auto; }
+        }
+        
+        @media (max-width: 767px) {
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>
-                <i class="fas fa-tag"></i>
-                <span id="pageTitle">Edit Genre</span>
-            </h1>
-            <a href="/admin/genres/index.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back to Genres
-            </a>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-tag"></i> <span id="pageTitle">Edit Genre</span></h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/compilations/index.html" class="tab-btn"><i class="fas fa-layer-group"></i> Compilations</a>
+                <a href="/admin/genres/index.html" class="tab-btn active"><i class="fas fa-tag"></i> Genres</a>
+                <a href="/admin/pages/index.html" class="tab-btn"><i class="fas fa-file-alt"></i> Pages</a>
+                <a href="/admin/analytics/index.html" class="tab-btn"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
         </div>
         
-        <div class="form-card" id="formCard">
-            <div class="loading">
-                <i class="fas fa-circle-notch fa-spin"></i>
-                <div>Loading...</div>
+        <div class="admin-content">
+            <div class="form-card" id="formCard">
+                <div class="loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <div>Loading genre data...</div>
+                </div>
             </div>
+        </div>
+        
+        <div class="admin-footer">
+            <p>© 2024 ZEDTOPVIBES. All rights reserved. | <a href="/admin/">Admin</a> | <a href="/">Visit Site</a></p>
         </div>
     </div>
 
     <script>
         const API_BASE = '/api';
         
-        async function loadGenreForEdit() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const genreSlug = urlParams.get('slug');
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
             
-            const pageTitle = document.getElementById('pageTitle');
-            const formCard = document.getElementById('formCard');
-            
-            if (!genreSlug) {
-                pageTitle.textContent = 'Create Genre';
-                renderForm(null);
-                return;
+            if (!isLoggedIn || !loginTime) {
+                window.location.href = '/admin/login.html';
+                return false;
             }
             
-            try {
-                // Get genre stats first to see if it exists
-                const res = await fetch(`${API_BASE}/genres/${encodeURIComponent(genreSlug)}/stats`);
-                if (!res.ok) throw new Error('Genre not found');
-                
-                const stats = await res.json();
-                
-                pageTitle.textContent = `Edit: ${stats.genre}`;
-                renderForm(stats);
-                
-            } catch (error) {
-                formCard.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #ef4444;">
-                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 16px;"></i>
-                        <h3>Failed to load genre</h3>
-                        <p style="margin: 16px 0;">${error.message}</p>
-                        <a href="/admin/genres/index.html" class="btn btn-primary">Back to Genres</a>
-                    </div>
-                `;
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) {
+                localStorage.clear();
+                window.location.href = '/admin/login.html';
+                return false;
             }
+            return true;
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
         
         function generateSlug(name) {
@@ -290,75 +452,6 @@
                 .replace(/[^\w-]/g, '')
                 .replace(/--+/g, '-')
                 .replace(/^-+|-+$/g, '');
-        }
-        
-        function renderForm(genreData) {
-            const isEditing = !!genreData;
-            const currentName = genreData?.genre || '';
-            const currentSlug = generateSlug(currentName);
-            
-            document.getElementById('formCard').innerHTML = `
-                <form id="genreForm">
-                    <div class="form-group">
-                        <label><i class="fas fa-tag"></i> Genre Name *</label>
-                        <input type="text" id="genreName" value="${escapeHtml(currentName)}" placeholder="e.g. Gospel, Hip-Hop" required onkeyup="updateSlugPreview()">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-link"></i> URL Slug</label>
-                        <input type="text" id="genreSlug" value="${escapeHtml(currentSlug)}" placeholder="e.g. gospel" readonly>
-                        <div class="slug-preview">
-                            <i class="fas fa-globe"></i>
-                            <span>${window.location.origin}/genre/</span>
-                            <span id="slugPreview">${escapeHtml(currentSlug)}</span>
-                        </div>
-                        <div class="form-hint">
-                            <i class="fas fa-info-circle"></i> Slug is auto-generated from the name.
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> Description (Optional)</label>
-                        <textarea id="genreDescription" rows="4" placeholder="Describe this genre...">${escapeHtml(genreData?.description || '')}</textarea>
-                        <div class="form-hint">
-                            <i class="fas fa-info-circle"></i> This will appear on the genre page.
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-image"></i> Cover URL (Optional)</label>
-                        <input type="text" id="genreCover" value="${escapeHtml(genreData?.cover_url || '')}" placeholder="https://...">
-                        <div class="form-hint">
-                            <i class="fas fa-info-circle"></i> Image URL for the genre page.
-                        </div>
-                    </div>
-                    
-                    <div class="checkbox-label">
-                        <input type="checkbox" id="genreFeatured" ${genreData?.is_featured ? 'checked' : ''}>
-                        <i class="fas fa-star" style="color: var(--primary);"></i> Featured Genre
-                    </div>
-                    
-                    ${isEditing ? `
-                        <div class="form-hint" style="margin-top: 15px; padding: 10px; background: var(--gray-100); border-radius: var(--radius-md);">
-                            <i class="fas fa-chart-line"></i> Statistics:
-                            <span style="margin-left: 10px;">🎤 ${genreData?.stats?.artists || 0} artists</span>
-                            <span style="margin-left: 10px;">💿 ${genreData?.stats?.albums || 0} albums</span>
-                            <span style="margin-left: 10px;">🎵 ${genreData?.stats?.eps || 0} EPs</span>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="action-buttons">
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/genres/index.html'">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            ${isEditing ? 'Update Genre' : 'Create Genre'}
-                        </button>
-                    </div>
-                </form>
-            `;
-            
-            document.getElementById('genreForm').addEventListener('submit', handleSubmit);
         }
         
         function updateSlugPreview() {
@@ -392,14 +485,29 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             
             try {
-                // This is a placeholder - you'll need to implement a genres API endpoint
-                // For now, we're just updating the name in the database
-                // Since genres are derived from artist/album/ep genres, this is informational only
+                const genreData = {
+                    name: name,
+                    slug: slug,
+                    description: description,
+                    cover_url: cover_url,
+                    is_featured: is_featured
+                };
                 
-                showToast(`Genre "${name}" updated! (Genres are derived from your content)`, 'success');
+                const response = await fetch(`${API_BASE}/admin/genres`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(genreData)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to save genre');
+                }
+                
+                showToast(`Genre "${name}" saved!`, 'success');
                 
                 setTimeout(() => {
-                    window.location.href = `/admin/genres/index.html`;
+                    window.location.href = '/admin/genres/index.html';
                 }, 1500);
                 
             } catch (error) {
@@ -409,51 +517,116 @@
             }
         }
         
-        function showToast(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function renderForm(genreData) {
+            const isEditing = !!genreData;
+            const currentName = genreData?.genre || '';
+            const currentSlug = generateSlug(currentName);
+            const currentDescription = genreData?.description || '';
+            const currentCover = genreData?.cover_url || '';
+            const isFeatured = genreData?.is_featured || false;
+            
+            document.getElementById('formCard').innerHTML = `
+                <form id="genreForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Genre Name *</label>
+                        <input type="text" id="genreName" value="${escapeHtml(currentName)}" placeholder="e.g. Gospel, Hip-Hop" required onkeyup="updateSlugPreview()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-link"></i> URL Slug</label>
+                        <input type="text" id="genreSlug" value="${escapeHtml(currentSlug)}" placeholder="e.g. gospel" readonly>
+                        <div class="slug-preview">
+                            <i class="fas fa-globe"></i>
+                            <span>${window.location.origin}/genre/</span>
+                            <span id="slugPreview" class="slug-value">${escapeHtml(currentSlug)}</span>
+                        </div>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Slug is auto-generated from the name.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> Description (Optional)</label>
+                        <textarea id="genreDescription" rows="4" placeholder="Describe this genre...">${escapeHtml(currentDescription)}</textarea>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> This will appear on the genre page.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-image"></i> Cover URL (Optional)</label>
+                        <input type="text" id="genreCover" value="${escapeHtml(currentCover)}" placeholder="https://...">
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Image URL for the genre page.
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-label">
+                        <input type="checkbox" id="genreFeatured" ${isFeatured ? 'checked' : ''}>
+                        <i class="fas fa-star"></i> Featured Genre
+                    </div>
+                    
+                    ${isEditing ? `
+                        <div class="stats-box">
+                            <i class="fas fa-chart-line"></i> Statistics:
+                            <span><i class="fas fa-microphone"></i> ${genreData?.stats?.artists || 0} artists</span>
+                            <span><i class="fas fa-compact-disc"></i> ${genreData?.stats?.albums || 0} albums</span>
+                            <span><i class="fas fa-play-circle"></i> ${genreData?.stats?.eps || 0} EPs</span>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/admin/genres/index.html'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            ${isEditing ? 'Update Genre' : 'Create Genre'}
+                        </button>
+                    </div>
+                </form>
+            `;
+            
+            document.getElementById('genreForm').addEventListener('submit', handleSubmit);
         }
         
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function checkAuth() {
-            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
-            const loginTime = localStorage.getItem('admin_login_time');
+        async function loadGenreForEdit() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const genreSlug = urlParams.get('slug');
             
-            if (!isLoggedIn || !loginTime) {
-                window.location.href = '/admin/login.html';
-                return false;
+            const pageTitle = document.getElementById('pageTitle');
+            
+            if (!genreSlug) {
+                pageTitle.textContent = 'Create Genre';
+                renderForm(null);
+                return;
             }
             
-            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
-            if (hoursSince > 24) {
-                localStorage.clear();
-                window.location.href = '/admin/login.html';
-                return false;
+            try {
+                const res = await fetch(`${API_BASE}/genres/${encodeURIComponent(genreSlug)}/stats`);
+                if (!res.ok) throw new Error('Genre not found');
+                
+                const stats = await res.json();
+                
+                pageTitle.textContent = `Edit: ${stats.genre}`;
+                renderForm(stats);
+                
+            } catch (error) {
+                document.getElementById('formCard').innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 16px;"></i>
+                        <h3>Failed to Load Genre</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/genres/index.html" class="btn btn-primary">Back to Genres</a>
+                    </div>
+                `;
             }
-            return true;
         }
         
         if (checkAuth()) {
             loadGenreForEdit();
         }
         
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
+        window.updateSlugPreview = updateSlugPreview;
     </script>
 </body>
 </html>
