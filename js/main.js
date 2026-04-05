@@ -1,8 +1,8 @@
 // ===== Zedtopvibes.com - Main JavaScript with Live API Integration =====
-// Connected to: https://zedtopvibes.com/api
+// Uses relative paths - works on any domain (custom domain or pages.dev)
 
 const API_BASE = '/api';
-const IMAGE_BASE = '';
+const IMAGE_BASE = '';  // Empty = use same domain as the page
 
 // Prevent multiple initialization
 let isInitialized = false;
@@ -31,11 +31,7 @@ function getAlbumArtistDisplay(album) {
 // Stable image fallback - prevents layout shifts and glitching
 function getAlbumImage(album) {
     if (album.cover_url && album.cover_url !== 'null' && album.cover_url !== '') {
-        // Convert relative path to absolute URL from main site
-        if (album.cover_url.startsWith('/')) {
-            return `${IMAGE_BASE}${album.cover_url}`;
-        }
-        return album.cover_url;
+        return album.cover_url;  // Already relative or absolute
     }
     // SVG placeholder with emoji
     if (album.cover_emoji) {
@@ -48,11 +44,7 @@ function getAlbumImage(album) {
 
 function getPlaylistImage(playlist) {
     if (playlist.cover_url && playlist.cover_url !== 'null' && playlist.cover_url !== '') {
-        // Convert relative path to absolute URL from main site
-        if (playlist.cover_url.startsWith('/')) {
-            return `${IMAGE_BASE}${playlist.cover_url}`;
-        }
-        return playlist.cover_url;
+        return playlist.cover_url;  // Already relative or absolute
     }
     if (playlist.cover_emoji) {
         const encodedEmoji = encodeURIComponent(playlist.cover_emoji);
