@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Add Items to Compilation - Admin | ZEDTOPVIBES</title>
+    <title>Compilation Profile - Admin | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,9 +21,10 @@
             --light-gray: #f0f2f5;
             --white: #ffffff;
             --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --success: #10b981;
+            --success: #28a745;
             --error: #dc3545;
             --warning: #ffc107;
+            --skeleton-bg: #e2e8f0;
         }
         
         body {
@@ -147,152 +148,189 @@
             overflow-x: hidden;
         }
         
-        .content-card {
+        .profile-card {
             background: var(--white);
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .compilation-header {
-            padding: 20px;
-            background: linear-gradient(135deg, var(--light-gray), var(--white));
-            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        
-        .compilation-cover-small {
-            width: 60px;
-            height: 60px;
+        .compilation-cover-large {
+            height: 200px;
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.8rem;
+            font-size: 5rem;
+            position: relative;
         }
         
-        .compilation-cover-small img {
+        .compilation-cover-large img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 8px;
         }
         
-        .compilation-details h2 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            margin-bottom: 4px;
-        }
-        
-        .compilation-type {
-            font-size: 0.85rem;
-            color: var(--primary-blue);
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-        
-        .compilation-stats {
-            display: flex;
-            gap: 16px;
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-        
-        .compilation-stats span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .search-section {
-            padding: 20px;
+        .compilation-info {
+            padding: 24px;
             border-bottom: 1px solid rgba(31, 111, 159, 0.1);
         }
         
-        .search-box {
+        .compilation-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            background: var(--light-gray);
-            border-radius: 8px;
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            width: 100%;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
-        .search-box i {
-            color: var(--gray-light);
-            margin-right: 10px;
-        }
-        
-        .search-box input {
-            border: none;
-            background: transparent;
-            padding: 8px 0;
-            width: 100%;
-            outline: none;
+        .compilation-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray);
             font-size: 0.85rem;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
         }
         
-        .stats-badge {
+        .compilation-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            border-bottom: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stat-card {
+            padding: 16px;
+            text-align: center;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .stat-card:nth-child(2) {
+            border-right: none;
+        }
+        
+        .stat-card:nth-child(3) {
+            border-bottom: none;
+        }
+        
+        .stat-card:nth-child(4) {
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            background: var(--light-gray);
             border-radius: 20px;
-            font-size: 0.75rem;
-            color: var(--gray);
-            margin-right: 8px;
-            margin-bottom: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
         }
         
-        .stats-badge i {
-            color: var(--primary-blue);
+        .status-badge.published {
+            background: #d4edda;
+            color: #155724;
         }
         
-        .stats-badge.selected i {
-            color: var(--success);
+        .status-badge.draft {
+            background: #fff3cd;
+            color: #856404;
         }
         
-        .filter-bar {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            padding: 5px 12px;
-            background: var(--light-gray);
-            border: 1px solid #ddd;
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.2s;
+            font-size: 0.7rem;
+            font-weight: 600;
         }
         
-        .filter-btn:hover {
-            background: #e8f0fe;
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
+        .type-badge.albums {
+            background: #d4edda;
+            color: #155724;
         }
         
-        .filter-btn.active {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
+        .type-badge.eps {
+            background: #d1ecf1;
+            color: #0c5460;
         }
         
-        .items-container {
+        .type-badge.artists {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .type-badge.playlists {
+            background: #e2d5f5;
+            color: #4a1d8c;
+        }
+        
+        .items-section {
             padding: 20px;
-            max-height: 500px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .section-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-header h2 i {
+            color: var(--primary-blue);
+        }
+        
+        .item-count {
+            background: var(--light-gray);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
             overflow-y: auto;
         }
         
@@ -303,30 +341,27 @@
             background: var(--light-gray);
             border: 1px solid rgba(31, 111, 159, 0.1);
             border-radius: 8px;
-            margin-bottom: 8px;
             transition: all 0.2s;
         }
         
         .item-row:hover {
-            background: #e8f0fe;
             border-color: var(--primary-blue);
-            cursor: pointer;
+            transform: translateX(5px);
         }
         
-        .item-row.selected {
-            background: #e8f0fe;
-            border-color: var(--primary-blue);
-            border-width: 2px;
-        }
-        
-        .item-checkbox {
+        .item-number {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-blue);
             margin-right: 12px;
-        }
-        
-        .item-checkbox input {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .item-thumb {
@@ -348,11 +383,11 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 6px;
         }
         
         .item-info {
             flex: 1;
-            min-width: 0;
         }
         
         .item-title {
@@ -360,9 +395,6 @@
             font-size: 0.85rem;
             color: var(--primary-dark);
             margin-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .item-subtitle {
@@ -370,45 +402,48 @@
             color: var(--gray);
         }
         
-        .item-badge {
-            font-size: 0.65rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            white-space: nowrap;
-            margin-left: 8px;
-            font-weight: 500;
-        }
-        
-        .item-badge.in-compilation {
-            background: #d1d5db;
-            color: #374151;
-        }
-        
-        .selection-bar {
-            padding: 16px 20px;
-            background: var(--light-gray);
-            border-top: 1px solid rgba(31, 111, 159, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        
-        .selected-count {
-            font-weight: 500;
-            font-size: 0.85rem;
+        .remove-item {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: white;
             color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .selected-count span {
+        .remove-item:hover {
+            background: var(--error);
+            color: white;
+        }
+        
+        .empty-items {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+            background: var(--light-gray);
+            border-radius: 8px;
+            border: 1px dashed rgba(31, 111, 159, 0.3);
+        }
+        
+        .empty-items i {
+            font-size: 3rem;
             color: var(--primary-blue);
-            font-weight: 700;
+            margin-bottom: 12px;
+            opacity: 0.3;
         }
         
         .action-buttons {
             display: flex;
             gap: 12px;
+            justify-content: flex-end;
+            padding: 16px 20px 20px 20px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+            flex-wrap: wrap;
         }
         
         .btn {
@@ -416,7 +451,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            padding: 8px 20px;
+            padding: 8px 16px;
             border: none;
             border-radius: 6px;
             font-size: 0.8rem;
@@ -431,13 +466,8 @@
             color: white;
         }
         
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover {
             background: var(--primary-light);
-        }
-        
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
         
         .btn-secondary {
@@ -448,6 +478,33 @@
         
         .btn-secondary:hover {
             background: #e0e0e0;
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-publish {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-publish:hover {
+            background: #218838;
+        }
+        
+        .btn-unpublish {
+            background: var(--warning);
+            color: #333;
+        }
+        
+        .btn-unpublish:hover {
+            background: #e0a800;
         }
         
         .loading {
@@ -462,49 +519,52 @@
             margin-bottom: 16px;
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-bg) 25%, #f1f5f9 50%, var(--skeleton-bg) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
         }
         
-        .empty-state i {
-            font-size: 3rem;
-            color: var(--primary-blue);
-            margin-bottom: 15px;
-            opacity: 0.3;
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         
-        .empty-state h3 {
-            font-size: 1rem;
+        .skeleton-cover {
+            height: 200px;
+        }
+        
+        .skeleton-title {
+            height: 32px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+        
+        .skeleton-text {
+            height: 16px;
+            width: 40%;
             margin-bottom: 8px;
-            color: var(--primary-dark);
         }
         
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            padding: 10px 15px;
+        .skeleton-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .skeleton-stat {
+            height: 80px;
+            border-right: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .skeleton-stat:last-child {
+            border-right: none;
+        }
+        
+        .skeleton-item {
+            height: 60px;
+            margin-bottom: 8px;
             border-radius: 8px;
-            color: white;
-            z-index: 2000;
-            animation: slideIn 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .toast.success { background: #28a745; }
-        .toast.error { background: #dc3545; }
-        .toast.warning { background: var(--warning); color: #333; }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
         }
         
         .admin-footer {
@@ -527,18 +587,53 @@
             text-decoration: underline;
         }
         
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 2000;
+            animation: slideIn 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: var(--primary-blue); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-10px); }
+        }
+        
         @media (min-width: 768px) {
             .admin-container { padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+            .stat-card { padding: 20px; }
+            .stat-card:nth-child(2) { border-right: 1px solid rgba(31, 111, 159, 0.1); }
+            .stat-card:nth-child(4) { border-right: none; }
+            .stat-value { font-size: 1.8rem; }
             .toast { left: auto; right: 20px; min-width: 300px; }
         }
         
         @media (max-width: 767px) {
-            .compilation-header { flex-direction: column; text-align: center; }
+            .compilation-name { font-size: 1.4rem; }
             .item-row { flex-wrap: wrap; }
-            .item-subtitle { width: 100%; margin-left: 55px; margin-top: 4px; }
-            .selection-bar { flex-direction: column; }
-            .action-buttons { width: 100%; }
-            .btn { flex: 1; justify-content: center; }
+            .item-subtitle { width: 100%; margin-left: 40px; margin-top: 8px; }
+            .action-buttons { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -546,7 +641,7 @@
     <div class="admin-container">
         <div class="admin-header">
             <div class="header-top">
-                <h1><i class="fas fa-layer-group"></i> Add Items to Compilation</h1>
+                <h1><i class="fas fa-layer-group"></i> Compilation Profile</h1>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span>Admin</span>
@@ -567,10 +662,23 @@
         </div>
         
         <div class="admin-content">
-            <div class="content-card" id="contentCard">
-                <div class="loading">
-                    <i class="fas fa-circle-notch fa-spin"></i>
-                    <div>Loading items...</div>
+            <div class="profile-card" id="profileContent">
+                <div class="skeleton-cover skeleton"></div>
+                <div class="compilation-info">
+                    <div class="skeleton-title skeleton"></div>
+                    <div class="skeleton-text skeleton"></div>
+                    <div class="skeleton-text skeleton" style="width: 30%;"></div>
+                </div>
+                <div class="skeleton-stats">
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                    <div class="skeleton-stat skeleton"></div>
+                </div>
+                <div class="items-section">
+                    <div class="skeleton-item skeleton"></div>
+                    <div class="skeleton-item skeleton"></div>
+                    <div class="skeleton-item skeleton"></div>
                 </div>
             </div>
         </div>
@@ -582,356 +690,7 @@
 
     <script>
         const API_BASE = '/api';
-        let compilationId = null;
         let compilation = null;
-        let allItems = [];
-        let compilationItemIds = new Set();
-        let selectedItems = new Set();
-        let currentFilter = 'all';
-        let searchTimeout = null;
-
-        function formatNumber(num) {
-            if (!num) return '0';
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function getItemDisplay(item, type) {
-            if (type === 'albums') {
-                return {
-                    title: item.title || 'Untitled Album',
-                    subtitle: item.artist_name ? `By ${item.artist_name}` : '',
-                    image: item.cover_url
-                };
-            } else if (type === 'eps') {
-                return {
-                    title: item.title || 'Untitled EP',
-                    subtitle: item.artist_name ? `By ${item.artist_name}` : '',
-                    image: item.cover_url
-                };
-            } else if (type === 'artists') {
-                return {
-                    title: item.name || 'Unknown Artist',
-                    subtitle: item.country ? `From ${item.country}` : '',
-                    image: item.image_url
-                };
-            } else if (type === 'playlists') {
-                return {
-                    title: item.name || 'Untitled Playlist',
-                    subtitle: `By ${item.created_by || 'Zedtopvibes'}`,
-                    image: item.cover_url
-                };
-            }
-            return { title: 'Unknown', subtitle: '', image: null };
-        }
-
-        async function fetchItems() {
-            const type = compilation.type;
-            const url = `${API_BASE}/admin/${type}/lite?limit=200`;
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Failed to load ${type}`);
-            }
-            return await response.json();
-        }
-
-        async function loadPage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            compilationId = urlParams.get('id');
-            
-            if (!compilationId) {
-                window.location.href = '/admin/compilations/index.html';
-                return;
-            }
-            
-            try {
-                const compilationRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}`);
-                if (!compilationRes.ok) throw new Error('Compilation not found');
-                compilation = await compilationRes.json();
-                
-                const itemsRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`);
-                const existingItems = await itemsRes.json();
-                
-                compilationItemIds.clear();
-                existingItems.forEach(item => {
-                    compilationItemIds.add(item.item_id);
-                });
-                
-                selectedItems.clear();
-                compilationItemIds.forEach(id => selectedItems.add(id));
-                
-                allItems = await fetchItems();
-                
-                renderPage();
-                
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('contentCard').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
-                        <h3>Failed to Load</h3>
-                        <p style="margin: 12px 0;">${error.message}</p>
-                        <button onclick="loadPage()" class="btn btn-primary">Try Again</button>
-                    </div>
-                `;
-            }
-        }
-
-        function renderPage() {
-            const inCompilationCount = compilationItemIds.size;
-            const selectedCount = selectedItems.size;
-            
-            let filteredItems = [...allItems];
-            
-            if (currentFilter === 'selected') {
-                filteredItems = filteredItems.filter(item => selectedItems.has(item.id));
-            } else if (currentFilter === 'in-compilation') {
-                filteredItems = filteredItems.filter(item => compilationItemIds.has(item.id));
-            } else if (currentFilter === 'available') {
-                filteredItems = filteredItems.filter(item => !compilationItemIds.has(item.id));
-            }
-
-            const typeLabels = {
-                albums: 'Albums',
-                eps: 'EPs',
-                artists: 'Artists',
-                playlists: 'Playlists'
-            };
-            
-            const typeIcons = {
-                albums: 'fa-compact-disc',
-                eps: 'fa-play-circle',
-                artists: 'fa-microphone',
-                playlists: 'fa-list'
-            };
-            
-            const contentCard = document.getElementById('contentCard');
-            
-            contentCard.innerHTML = `
-                <div class="compilation-header">
-                    <div class="compilation-cover-small">
-                        ${compilation.cover_url 
-                            ? `<img src="${compilation.cover_url}" alt="${escapeHtml(compilation.title)}">`
-                            : `<i class="fas ${typeIcons[compilation.type]}"></i>`
-                        }
-                    </div>
-                    <div class="compilation-details">
-                        <h2>${escapeHtml(compilation.title)}</h2>
-                        <div class="compilation-type">${typeLabels[compilation.type]} Compilation</div>
-                        <div class="compilation-stats">
-                            <span><i class="fas fa-music"></i> ${inCompilationCount} items in compilation</span>
-                            <span><i class="fas fa-eye"></i> ${formatNumber(compilation.views || 0)} views</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="search-section">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search items..." autocomplete="off">
-                    </div>
-                    
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;">
-                        <span class="stats-badge selected">
-                            <i class="fas fa-check-circle"></i>
-                            ${selectedCount} Selected
-                        </span>
-                        <span class="stats-badge">
-                            <i class="fas fa-list"></i>
-                            ${inCompilationCount} In Compilation
-                        </span>
-                        <span class="stats-badge">
-                            <i class="fas fa-database"></i>
-                            ${allItems.length} Total
-                        </span>
-                    </div>
-                    
-                    <div class="filter-bar">
-                        <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
-                        <button class="filter-btn ${currentFilter === 'selected' ? 'active' : ''}" onclick="setFilter('selected')">Selected</button>
-                        <button class="filter-btn ${currentFilter === 'in-compilation' ? 'active' : ''}" onclick="setFilter('in-compilation')">In Compilation</button>
-                        <button class="filter-btn ${currentFilter === 'available' ? 'active' : ''}" onclick="setFilter('available')">Available</button>
-                    </div>
-                </div>
-                
-                <div class="items-container">
-                    ${filteredItems.length > 0 
-                        ? filteredItems.map(item => {
-                            const isSelected = selectedItems.has(item.id);
-                            const isInCompilation = compilationItemIds.has(item.id);
-                            const display = getItemDisplay(item, compilation.type);
-                            
-                            return `
-                            <div class="item-row ${isSelected ? 'selected' : ''}" onclick="toggleItem(${item.id}, event)">
-                                <div class="item-checkbox" onclick="event.stopPropagation()">
-                                    <input type="checkbox" 
-                                           ${isSelected ? 'checked' : ''}
-                                           onchange="toggleItem(${item.id})">
-                                </div>
-                                <div class="item-thumb">
-                                    ${display.image 
-                                        ? `<img src="${display.image}" alt="">`
-                                        : `<i class="fas ${typeIcons[compilation.type]}"></i>`
-                                    }
-                                </div>
-                                <div class="item-info">
-                                    <div class="item-title">${escapeHtml(display.title)}</div>
-                                    <div class="item-subtitle">${escapeHtml(display.subtitle)}</div>
-                                </div>
-                                ${isInCompilation ? '<span class="item-badge in-compilation">✓ Already in Compilation</span>' : ''}
-                            </div>
-                        `}).join('')
-                        : `
-                            <div class="empty-state">
-                                <i class="fas fa-music"></i>
-                                <h3>No items found</h3>
-                                <p>Try a different search or filter</p>
-                            </div>
-                        `
-                    }
-                </div>
-                
-                <div class="selection-bar">
-                    <div class="selected-count">
-                        <span>${selectedItems.size}</span> item${selectedItems.size !== 1 ? 's' : ''} selected
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-secondary" onclick="clearSelection()">
-                            Clear
-                        </button>
-                        <button class="btn btn-primary" onclick="saveChanges()" ${selectedItems.size === compilationItemIds.size ? 'disabled' : ''}>
-                            <i class="fas fa-save"></i> Save Changes
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    if (searchTimeout) clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => {
-                        const searchTerm = e.target.value.toLowerCase();
-                        const itemsContainer = document.querySelector('.items-container');
-                        const rows = document.querySelectorAll('.item-row');
-                        if (rows.length > 0) {
-                            rows.forEach(row => {
-                                const title = row.querySelector('.item-title')?.textContent.toLowerCase();
-                                if (title && !title.includes(searchTerm)) {
-                                    row.style.display = 'none';
-                                } else {
-                                    row.style.display = 'flex';
-                                }
-                            });
-                        }
-                    }, 300);
-                });
-            }
-        }
-
-        function toggleItem(itemId, event) {
-            if (selectedItems.has(itemId)) {
-                selectedItems.delete(itemId);
-            } else {
-                selectedItems.add(itemId);
-            }
-            renderPage();
-        }
-
-        function setFilter(filter) {
-            currentFilter = filter;
-            renderPage();
-        }
-
-        function clearSelection() {
-            selectedItems.clear();
-            compilationItemIds.forEach(id => selectedItems.add(id));
-            renderPage();
-        }
-
-        async function saveChanges() {
-            const saveBtn = document.querySelector('.btn-primary');
-            const originalText = saveBtn.innerHTML;
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            
-            try {
-                const toAdd = [];
-                selectedItems.forEach(id => {
-                    if (!compilationItemIds.has(id)) {
-                        toAdd.push(id);
-                    }
-                });
-                
-                const toRemove = [];
-                compilationItemIds.forEach(id => {
-                    if (!selectedItems.has(id)) {
-                        toRemove.push(id);
-                    }
-                });
-                
-                // Add items
-                for (const itemId of toAdd) {
-                    const response = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ item_id: parseInt(itemId) })
-                    });
-                    
-                    if (!response.ok) {
-                        const error = await response.json();
-                        console.error(`Failed to add item ${itemId}:`, error);
-                    }
-                }
-                
-                // Get current items to find relation IDs for removal
-                const itemsRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`);
-                const currentItems = await itemsRes.json();
-                
-                // Remove items
-                for (const itemId of toRemove) {
-                    const relationItem = currentItems.find(item => item.item_id === parseInt(itemId));
-                    if (relationItem) {
-                        const response = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items/${relationItem.id}`, {
-                            method: 'DELETE'
-                        });
-                        
-                        if (!response.ok) {
-                            const error = await response.json();
-                            console.error(`Failed to remove item ${itemId}:`, error);
-                        }
-                    }
-                }
-                
-                showToast(`✅ Updated! Added ${toAdd.length}, removed ${toRemove.length} items`, 'success');
-                
-                setTimeout(() => {
-                    window.location.href = `/admin/compilations/profile.html?id=${compilationId}`;
-                }, 1500);
-                
-            } catch (error) {
-                console.error('Error saving:', error);
-                showToast(error.message, 'error');
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = originalText;
-            }
-        }
-
-        function showToast(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i><span>${message}</span>`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
 
         function checkAuth() {
             const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
@@ -951,14 +710,400 @@
             return true;
         }
 
-        if (checkAuth()) {
-            loadPage();
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
-        
-        window.toggleItem = toggleItem;
-        window.setFilter = setFilter;
-        window.clearSelection = clearSelection;
-        window.saveChanges = saveChanges;
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getTypeIcon(type) {
+            const icons = {
+                albums: 'fa-compact-disc',
+                eps: 'fa-play-circle',
+                artists: 'fa-microphone',
+                playlists: 'fa-list'
+            };
+            return icons[type] || 'fa-layer-group';
+        }
+
+        function getItemDisplay(item, type) {
+            if (type === 'albums') {
+                return {
+                    title: item.title || 'Untitled Album',
+                    subtitle: item.artist_name ? `By ${item.artist_name}` : '',
+                    image: item.cover_url,
+                    views: item.views || 0,
+                    duration: item.duration || 0
+                };
+            } else if (type === 'eps') {
+                return {
+                    title: item.title || 'Untitled EP',
+                    subtitle: item.artist_name ? `By ${item.artist_name}` : '',
+                    image: item.cover_url,
+                    views: item.views || 0,
+                    duration: item.duration || 0
+                };
+            } else if (type === 'artists') {
+                return {
+                    title: item.name || 'Unknown Artist',
+                    subtitle: item.country ? `From ${item.country}` : '',
+                    image: item.image_url,
+                    views: item.views || 0,
+                    duration: 0
+                };
+            } else if (type === 'playlists') {
+                return {
+                    title: item.name || 'Untitled Playlist',
+                    subtitle: `By ${item.created_by || 'Zedtopvibes'}`,
+                    image: item.cover_url,
+                    views: item.views || 0,
+                    duration: 0
+                };
+            }
+            return { title: 'Unknown', subtitle: '', image: null, views: 0, duration: 0 };
+        }
+
+        async function removeItem(relationId, title, button) {
+            if (!confirm(`Remove "${title}" from this compilation?`)) return;
+            
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/items/${relationId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to remove item');
+                }
+                
+                const itemRow = button.closest('.item-row');
+                itemRow.style.animation = 'fadeOut 0.3s';
+                setTimeout(() => {
+                    itemRow.remove();
+                    
+                    const remainingItems = document.querySelectorAll('.item-row');
+                    remainingItems.forEach((item, index) => {
+                        const numberSpan = item.querySelector('.item-number');
+                        if (numberSpan) numberSpan.textContent = index + 1;
+                    });
+                    
+                    const newCount = remainingItems.length;
+                    const itemCountSpan = document.querySelector('.item-count');
+                    if (itemCountSpan) itemCountSpan.textContent = newCount + ' items';
+                    
+                    const tracksStat = document.querySelector('.stats-grid .stat-card:first-child .stat-value');
+                    if (tracksStat) tracksStat.textContent = newCount;
+                    
+                    if (newCount === 0) {
+                        location.reload();
+                    }
+                    
+                    showToast('Item removed from compilation', 'success');
+                }, 300);
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-times"></i>';
+            }
+        }
+
+        async function publishCompilation() {
+            if (!confirm(`Publish "${compilation.title}"? It will become visible to the public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/publish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to publish');
+                }
+                
+                showToast(`"${compilation.title}" published!`, 'success');
+                loadCompilation();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        async function unpublishCompilation() {
+            if (!confirm(`Unpublish "${compilation.title}"? It will become a draft and hidden from public.`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}/unpublish`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to unpublish');
+                }
+                
+                showToast(`"${compilation.title}" moved to drafts`, 'success');
+                loadCompilation();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        async function deleteCompilation() {
+            const itemCount = compilation.items?.length || 0;
+            if (itemCount > 0) {
+                showToast(`Cannot delete compilation with ${itemCount} item(s). Remove all items first.`, 'error');
+                return;
+            }
+            
+            if (!confirm(`Move "${compilation.title}" to trash?`)) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/compilations/${compilation.id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete');
+                }
+                
+                showToast('Compilation moved to trash!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/admin/compilations/index.html';
+                }, 1500);
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        async function loadCompilation() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const compilationId = urlParams.get('id');
+            
+            if (!compilationId) {
+                window.location.href = '/admin/compilations/index.html';
+                return;
+            }
+            
+            try {
+                const compRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}`);
+                if (!compRes.ok) throw new Error('Compilation not found');
+                compilation = await compRes.json();
+                
+                const itemsRes = await fetch(`${API_BASE}/admin/compilations/${compilationId}/items`);
+                const compilationItems = await itemsRes.json();
+                
+                let itemsWithDetails = [];
+                if (compilationItems.length > 0) {
+                    let detailsRes;
+                    if (compilation.type === 'albums') {
+                        detailsRes = await fetch(`${API_BASE}/admin/albums/lite?limit=500`);
+                    } else if (compilation.type === 'eps') {
+                        detailsRes = await fetch(`${API_BASE}/admin/eps/lite?limit=500`);
+                    } else if (compilation.type === 'artists') {
+                        detailsRes = await fetch(`${API_BASE}/admin/artists/lite?limit=500`);
+                    } else {
+                        detailsRes = await fetch(`${API_BASE}/admin/playlists/lite?limit=500`);
+                    }
+                    
+                    const details = await detailsRes.json();
+                    itemsWithDetails = compilationItems.map(item => {
+                        const foundItem = details.find(d => d.id === item.item_id);
+                        return {
+                            relation_id: item.id,
+                            item_id: item.item_id,
+                            display_order: item.display_order,
+                            item: foundItem
+                        };
+                    }).filter(i => i.item);
+                }
+                compilation.items = itemsWithDetails;
+                
+                renderProfile();
+                
+            } catch (error) {
+                console.error('Error loading compilation:', error);
+                document.getElementById('profileContent').innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i>
+                        <h3>Failed to Load Compilation</h3>
+                        <p style="margin: 12px 0;">${error.message}</p>
+                        <a href="/admin/compilations/index.html" class="btn btn-primary">Back to Compilations</a>
+                    </div>
+                `;
+            }
+        }
+
+        function renderProfile() {
+            const itemsCount = compilation.items?.length || 0;
+            const totalItemViews = compilation.items?.reduce((sum, i) => sum + (i.item?.views || 0), 0) || 0;
+            const totalDuration = compilation.items?.reduce((sum, i) => sum + (i.item?.duration || 0), 0) || 0;
+            
+            const typeLabels = {
+                albums: 'Albums',
+                eps: 'EPs',
+                artists: 'Artists',
+                playlists: 'Playlists'
+            };
+            
+            const statusBadge = compilation.status === 'published' 
+                ? '<span class="status-badge published"><i class="fas fa-globe"></i> Published</span>'
+                : '<span class="status-badge draft"><i class="fas fa-pencil-alt"></i> Draft</span>';
+            
+            const typeBadge = `<span class="type-badge ${compilation.type}"><i class="fas ${getTypeIcon(compilation.type)}"></i> ${typeLabels[compilation.type]}</span>`;
+            
+            const createdDate = compilation.created_at 
+                ? new Date(compilation.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                : 'Unknown';
+            
+            let itemsHtml = '';
+            if (itemsCount > 0) {
+                itemsHtml = compilation.items.map((item, index) => {
+                    const display = getItemDisplay(item.item, compilation.type);
+                    return `
+                        <div class="item-row" data-item-id="${item.item_id}">
+                            <div class="item-number">${index + 1}</div>
+                            <div class="item-thumb">
+                                ${display.image 
+                                    ? `<img src="${display.image}" alt="${escapeHtml(display.title)}">`
+                                    : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`
+                                }
+                            </div>
+                            <div class="item-info">
+                                <div class="item-title">${escapeHtml(display.title)}</div>
+                                <div class="item-subtitle">${escapeHtml(display.subtitle)}</div>
+                            </div>
+                            <button class="remove-item" onclick="removeItem(${item.relation_id}, '${escapeHtml(display.title).replace(/'/g, "\\'")}', this)" title="Remove from compilation">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                itemsHtml = `
+                    <div class="empty-items">
+                        <i class="fas fa-music"></i>
+                        <p>No items in this compilation yet</p>
+                        <button class="btn btn-primary" style="margin-top: 16px;" onclick="window.location.href='/admin/compilations/add-items.html?id=${compilation.id}'">
+                            <i class="fas fa-plus-circle"></i> Add Items
+                        </button>
+                    </div>
+                `;
+            }
+            
+            const html = `
+                <div class="compilation-cover-large">
+                    ${compilation.cover_url 
+                        ? `<img src="${compilation.cover_url}" alt="${escapeHtml(compilation.title)}">`
+                        : `<i class="fas ${getTypeIcon(compilation.type)}"></i>`
+                    }
+                </div>
+                
+                <div class="compilation-info">
+                    <h1 class="compilation-name">
+                        ${escapeHtml(compilation.title)}
+                        ${statusBadge}
+                        ${typeBadge}
+                    </h1>
+                    <div class="compilation-meta">
+                        <i class="fas fa-user-circle"></i>
+                        Created by ${escapeHtml(compilation.created_by || 'Admin')} • ${createdDate}
+                        ${compilation.is_featured ? '<span style="margin-left: 10px;">Featured</span>' : ''}
+                    </div>
+                    ${compilation.description ? `<div class="compilation-description">${escapeHtml(compilation.description)}</div>` : ''}
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${itemsCount}</div>
+                        <div class="stat-label">Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${formatNumber(totalItemViews)}</div>
+                        <div class="stat-label">Item Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${formatNumber(compilation.views || 0)}</div>
+                        <div class="stat-label">Compilation Views</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${formatDuration(totalDuration)}</div>
+                        <div class="stat-label">Duration</div>
+                    </div>
+                </div>
+                
+                <div class="items-section">
+                    <div class="section-header">
+                        <h2>
+                            <i class="fas fa-list"></i>
+                            Items in this Compilation
+                        </h2>
+                        <span class="item-count">${itemsCount} items</span>
+                    </div>
+                    
+                    <div class="items-list">
+                        ${itemsHtml}
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="window.location.href='/admin/compilations/add-items.html?id=${compilation.id}'">
+                        <i class="fas fa-plus-circle"></i> Add Items
+                    </button>
+                    <a href="/admin/compilations/edit.html?id=${compilation.id}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit Compilation
+                    </a>
+                    ${compilation.status === 'draft' 
+                        ? `<button class="btn btn-publish" onclick="publishCompilation()">
+                            <i class="fas fa-cloud-upload-alt"></i> Publish
+                           </button>`
+                        : `<button class="btn btn-unpublish" onclick="unpublishCompilation()">
+                            <i class="fas fa-eye-slash"></i> Unpublish
+                           </button>`
+                    }
+                    <button class="btn btn-danger" onclick="deleteCompilation()">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('profileContent').innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadCompilation();
+            }
+        });
     </script>
 </body>
 </html>
