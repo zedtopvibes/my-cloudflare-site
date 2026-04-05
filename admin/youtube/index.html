@@ -157,7 +157,9 @@
         // Fetch goal from API
         async function loadGoal() {
             try {
-                const response = await fetch('/api/admin/yt-goal');
+                const response = await fetch('/api/admin/yt-goal', {
+                    credentials: 'include'
+                });
                 const result = await response.json();
                 if (result.success && result.data) {
                     currentGoal = result.data.target_subs;
@@ -178,9 +180,10 @@
             }
             
             try {
-                const response = await fetch('/api/admin/yt-goal', {
+                const response = await fetch('/api/admin/yt-goal/update', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({ target_subs: newGoal, enabled: true })
                 });
                 const result = await response.json();
@@ -215,7 +218,9 @@
             fetchBtn.disabled = true;
             
             try {
-                const response = await fetch('/api/admin/yt-stats');
+                const response = await fetch('/api/admin/yt-stats/fetch', {
+                    credentials: 'include'
+                });
                 const result = await response.json();
                 
                 if (result.success) {
@@ -238,7 +243,9 @@
         async function loadDashboard() {
             try {
                 // Get latest stats
-                const statsResponse = await fetch('/api/admin/yt-stats');
+                const statsResponse = await fetch('/api/admin/yt-stats', {
+                    credentials: 'include'
+                });
                 const statsResult = await statsResponse.json();
                 
                 if (statsResult.success && statsResult.data && statsResult.data.length > 0) {
@@ -255,7 +262,9 @@
                 }
                 
                 // Get weekly summary
-                const weeklyResponse = await fetch('/api/admin/yt-stats/weekly/summary');
+                const weeklyResponse = await fetch('/api/admin/yt-stats/weekly/summary', {
+                    credentials: 'include'
+                });
                 const weeklyResult = await weeklyResponse.json();
                 if (weeklyResult.success && weeklyResult.data) {
                     const weeklyGain = weeklyResult.data.weekly_gain;
@@ -265,7 +274,9 @@
                 }
                 
                 // Get monthly summary
-                const monthlyResponse = await fetch('/api/admin/yt-stats/monthly/summary');
+                const monthlyResponse = await fetch('/api/admin/yt-stats/monthly/summary', {
+                    credentials: 'include'
+                });
                 const monthlyResult = await monthlyResponse.json();
                 if (monthlyResult.success && monthlyResult.data) {
                     const monthlyGain = monthlyResult.data.monthly_gain;
@@ -280,7 +291,9 @@
         // Load history table
         async function loadHistory() {
             try {
-                const response = await fetch('/api/admin/yt-stats');
+                const response = await fetch('/api/admin/yt-stats', {
+                    credentials: 'include'
+                });
                 const result = await response.json();
                 
                 const tbody = document.getElementById('historyTableBody');
@@ -326,7 +339,10 @@
             if (!confirm(`Delete stats for ${date}?`)) return;
             
             try {
-                const response = await fetch(`/api/admin/yt-stats/${date}`, { method: 'DELETE' });
+                const response = await fetch(`/api/admin/yt-stats/${date}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
                 const result = await response.json();
                 
                 if (result.success) {
