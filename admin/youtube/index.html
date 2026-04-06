@@ -34,6 +34,17 @@
             font-weight: 700;
             color: var(--primary-blue);
         }
+        
+        /* All icons use primary blue */
+        .stat-card .stat-icon i,
+        .best-day-card i:first-child,
+        .auto-target-card i:first-child,
+        .section-header i,
+        .clickable-card .stat-icon i {
+            color: var(--primary-blue);
+        }
+        
+        /* Fetch button stays red */
         .btn-youtube {
             background: #ff0000;
             border-color: #ff0000;
@@ -41,6 +52,9 @@
         .btn-youtube:hover {
             background: #cc0000;
             transform: translateY(-2px);
+        }
+        .btn-youtube i {
+            color: white !important;
         }
         
         /* Clickable card style */
@@ -92,7 +106,7 @@
                 <div class="admin-header">
                     <div class="header-top">
                         <h1>
-                            <i class="fab fa-youtube"></i> YT Stats
+                            <i class="fab fa-youtube" style="color: var(--primary-blue);"></i> YT Stats
                         </h1>
                         <div class="user-info">
                             <i class="fas fa-user-shield"></i>
@@ -138,7 +152,7 @@
                     <div class="views-grid" style="margin-bottom: 24px;">
                         <!-- Best Day Card -->
                         <div class="best-day-card">
-                            <i class="fas fa-trophy" style="font-size: 1.5rem; margin-bottom: 8px; color: var(--primary-blue);"></i>
+                            <i class="fas fa-trophy"></i>
                             <div class="best-day-value" id="bestDayValue">—</div>
                             <div class="best-day-label" style="font-size: 0.75rem; color: var(--gray);">🏆 Best Day Gain</div>
                             <div id="bestDayDate" style="font-size: 0.7rem; color: var(--gray);">—</div>
@@ -146,7 +160,7 @@
 
                         <!-- Auto Target Card -->
                         <div class="auto-target-card">
-                            <i class="fas fa-bullseye" style="font-size: 1.5rem; margin-bottom: 8px; color: var(--primary-blue);"></i>
+                            <i class="fas fa-bullseye"></i>
                             <div class="target-value" id="autoTarget">—</div>
                             <div class="target-label" style="font-size: 0.75rem; color: var(--gray);">🎯 Next Milestone</div>
                             <div id="remainingToTarget" style="font-size: 0.7rem; color: var(--gray);">—</div>
@@ -383,7 +397,7 @@
                 const tbody = document.getElementById('historyTableBody');
                 
                 if (!result.success || !result.data || result.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</tr></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>';
                     return;
                 }
                 
