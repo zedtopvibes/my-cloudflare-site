@@ -42,6 +42,46 @@
             background: #cc0000;
             transform: translateY(-2px);
         }
+        
+        /* Clickable card style */
+        .clickable-card {
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+        }
+        .clickable-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 12px rgba(31,111,159,0.15);
+        }
+        
+        /* Historical Data Table Spacing */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .stats-table th,
+        .stats-table td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(31,111,159,0.1);
+        }
+        .stats-table th {
+            background: var(--light-gray);
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        .stats-table tbody tr:hover {
+            background: rgba(31,111,159,0.03);
+        }
+        @media (max-width: 768px) {
+            .stats-table th,
+            .stats-table td {
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -119,12 +159,14 @@
                             <div class="stat-label">Subs (Last 7 Days)</div>
                         </div>
 
-                        <!-- Achievements Counter Card -->
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-medal"></i></div>
-                            <div class="stat-value" id="achievementCounter">0/19</div>
-                            <div class="stat-label">Achievements 🏆</div>
-                        </div>
+                        <!-- Achievements Counter Card (Clickable) -->
+                        <a href="/admin/youtube/achievements.html" class="clickable-card">
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-medal"></i></div>
+                                <div class="stat-value" id="achievementCounter">0/19</div>
+                                <div class="stat-label">Achievements 🏆</div>
+                            </div>
+                        </a>
                     </div>
 
                     <!-- Progress Bar Section (Auto follows next milestone) -->
@@ -156,8 +198,8 @@
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Subs</th>
-                                    <th>Views</th>
+                                    <th>Subscribers</th>
+                                    <th>Total Views</th>
                                     <th>Videos</th>
                                     <th>Daily Change</th>
                                 </tr>
@@ -341,7 +383,7 @@
                 const tbody = document.getElementById('historyTableBody');
                 
                 if (!result.success || !result.data || result.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</tr></tr>';
                     return;
                 }
                 
