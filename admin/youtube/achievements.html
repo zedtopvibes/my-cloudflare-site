@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Achievements - YT Stats | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin/shared/styles.css">
+    <style>
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .achievement-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(31,111,159,0.15);
+            transition: all 0.3s;
+        }
+        .achievement-card.unlocked {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        .achievement-card.unlocked i {
+            color: white;
+        }
+        .achievement-card i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--primary-blue);
+        }
+        .achievement-card .achievement-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .achievement-card .achievement-target {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <main class="admin-main">
+            <div class="admin-container">
+                <!-- Custom Header -->
+                <div class="admin-header">
+                    <div class="header-top">
+                        <h1>
+                            <i class="fas fa-medal"></i> Achievements
+                        </h1>
+                        <div class="user-info">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-content">
+                    <a href="/admin/youtube/index.html" class="back-link">
+                        <i class="fas fa-arrow-left"></i> Back to YT Stats
+                    </a>
+                    
+                    <div class="section-header">
+                        <i class="fas fa-medal"></i>
+                        <h3>All Milestones <span id="achievementCounter" style="font-size: 0.8rem; color: var(--primary-blue);">(0/19)</span></h3>
+                    </div>
+                    
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <div style="text-align: center; grid-column: span 4; padding: 40px;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="admin-footer"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/admin/shared/loader.js"></script>
+    <script>
+        // 19 Balanced Milestones (100 to 100,000)
+        const milestones = [
+            100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000,
+            5000, 7500, 10000, 15000, 20000, 25000, 50000, 75000, 100000
+        ];
+
+        let currentSubs = 0;
+
+        async function loadData() {
+            try {
+                const response = await fetch('/api/admin/yt-stats', {
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                
+                if (result.success && result.data && result.data.length > 0) {
+                    currentSubs = result.data[0].subscribers;
+                }
+                
+                updateAchievements(currentSubs);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('achievementsGrid').innerHTML = '<div style="text-align: center; grid-column: span 4; color: var(--error);">Error loading achievements</div>';
+            }
+        }
+
+        function updateAchievements(subs) {
+            const container = document.getElementById('achievementsGrid');
+            container.innerHTML = '';
+            
+            let unlockedCount = 0;
+            
+            milestones.forEach(milestone => {
+                const unlocked = subs >= milestone;
+                if (unlocked) unlockedCount++;
+                
+                const card = document.createElement('div');
+                card.className = `achievement-card ${unlocked ? 'unlocked' : ''}`;
+                card.innerHTML = `
+                    <i class="fas ${unlocked ? 'fa-check-circle' : 'fa-lock'}"></i>
+                    <div class="achievement-name">${milestone.toLocaleString()} Subs</div>
+                    <div class="achievement-target">${unlocked ? '✓ Unlocked' : `${(milestone - subs).toLocaleString()} to go`}</div>
+                `;
+                container.appendChild(card);
+            });
+            
+            const totalMilestones = milestones.length;
+            document.getElementById('achievementCounter').innerHTML = `(${unlockedCount}/${totalMilestones})`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+        });
+    </script>
+</body>
+</html>
