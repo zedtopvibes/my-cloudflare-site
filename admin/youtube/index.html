@@ -9,30 +9,77 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/admin/shared/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Additional styles for YT Stats page */
-        .stats-table {
-            width: 100%;
-            border-collapse: collapse;
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
         }
-        
-        .stats-table th,
-        .stats-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .stats-table th {
+        .achievement-card {
             background: var(--light-gray);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(31,111,159,0.15);
+            transition: all 0.3s;
+        }
+        .achievement-card.unlocked {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+        .achievement-card.unlocked i {
+            color: white;
+        }
+        .achievement-card i {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            color: var(--primary-blue);
+        }
+        .achievement-card .achievement-name {
+            font-size: 0.75rem;
             font-weight: 600;
         }
-        
+        .achievement-card .achievement-target {
+            font-size: 0.65rem;
+            opacity: 0.8;
+        }
+        .best-day-card {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .best-day-card .best-day-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .auto-target-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .auto-target-card .target-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .chart-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: 12px;
+        }
+        canvas {
+            max-height: 250px;
+            width: 100%;
+        }
         @media (max-width: 768px) {
-            .stats-table th,
-            .stats-table td {
-                padding: 8px;
-                font-size: 0.85rem;
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -76,6 +123,36 @@
                         </div>
                     </div>
 
+                    <!-- Best Day & Auto Target Row -->
+                    <div class="views-grid" style="margin-bottom: 24px;">
+                        <div class="best-day-card">
+                            <i class="fas fa-trophy" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+                            <div class="best-day-value" id="bestDayValue">—</div>
+                            <div class="best-day-label" style="font-size: 0.75rem;">🏆 Best Day Gain</div>
+                            <div id="bestDayDate" style="font-size: 0.7rem; opacity: 0.9;">—</div>
+                        </div>
+                        <div class="auto-target-card">
+                            <i class="fas fa-bullseye" style="font-size: 1.5rem; margin-bottom: 8px;"></i>
+                            <div class="target-value" id="autoTarget">—</div>
+                            <div class="target-label" style="font-size: 0.75rem;">🎯 Next Milestone</div>
+                            <div id="remainingToTarget" style="font-size: 0.7rem; opacity: 0.9;">—</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
+                            <div class="stat-value" id="weeklySubGain">—</div>
+                            <div class="stat-label">Subs (Last 7 Days)</div>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Section -->
+                    <div class="section-header">
+                        <i class="fas fa-medal"></i>
+                        <h3>Achievements 🏆</h3>
+                    </div>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Filled by JS -->
+                    </div>
+
                     <!-- Progress Bar Section -->
                     <div class="section-header">
                         <i class="fas fa-bullseye"></i>
@@ -95,23 +172,13 @@
                         </div>
                     </div>
 
-                    <!-- Weekly & Monthly Summary -->
-                    <div class="views-grid" style="margin-bottom: 24px;">
-                        <div class="view-card">
-                            <div class="view-icon"><i class="fas fa-calendar-week"></i></div>
-                            <div class="view-value" id="weeklySubGain">—</div>
-                            <div class="view-label">Subs (Last 7 Days)</div>
-                        </div>
-                        <div class="view-card">
-                            <div class="view-icon"><i class="fas fa-calendar-alt"></i></div>
-                            <div class="view-value" id="monthlySubGain">—</div>
-                            <div class="view-label">Subs (Last 30 Days)</div>
-                        </div>
-                        <div class="view-card">
-                            <div class="view-icon"><i class="fas fa-clock"></i></div>
-                            <div class="view-value" id="weeklyWatchHours">—</div>
-                            <div class="view-label">Watch Hours (7d)</div>
-                        </div>
+                    <!-- Last 7 Days Chart -->
+                    <div class="section-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Last 7 Days Growth 📊</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="growthChart"></canvas>
                     </div>
 
                     <!-- History Table -->
@@ -169,7 +236,11 @@
     <script>
         let currentGoal = 1000;
         let currentSubs = 0;
+        let growthChart = null;
 
+        // Achievement milestones
+        const milestones = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
+        
         // Modal functions
         function openGoalModal() {
             document.getElementById('goalModal').style.display = 'flex';
@@ -236,6 +307,104 @@
             document.getElementById('currentProgressText').innerHTML = `${currentSubs.toLocaleString()} / ${currentGoal.toLocaleString()}`;
         }
 
+        // Update achievements display
+        function updateAchievements(subs) {
+            const container = document.getElementById('achievementsGrid');
+            container.innerHTML = '';
+            
+            // Show next 6 milestones
+            const nextMilestones = milestones.filter(m => m <= subs * 2).slice(0, 6);
+            
+            nextMilestones.forEach(milestone => {
+                const unlocked = subs >= milestone;
+                const card = document.createElement('div');
+                card.className = `achievement-card ${unlocked ? 'unlocked' : ''}`;
+                card.innerHTML = `
+                    <i class="fas ${unlocked ? 'fa-check-circle' : 'fa-lock'}"></i>
+                    <div class="achievement-name">${milestone.toLocaleString()} Subs</div>
+                    <div class="achievement-target">${unlocked ? 'Unlocked! 🎉' : `${milestone - subs} to go`}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Update auto target
+        function updateAutoTarget(subs) {
+            const nextMilestone = milestones.find(m => m > subs);
+            if (nextMilestone) {
+                const remaining = nextMilestone - subs;
+                document.getElementById('autoTarget').innerHTML = `${nextMilestone.toLocaleString()} subs`;
+                document.getElementById('remainingToTarget').innerHTML = `${remaining.toLocaleString()} more to go! 🎯`;
+            } else {
+                document.getElementById('autoTarget').innerHTML = `Legend! 🏆`;
+                document.getElementById('remainingToTarget').innerHTML = `You're crushing it!`;
+            }
+        }
+
+        // Update best day
+        function updateBestDay(statsData) {
+            if (!statsData || statsData.length < 2) {
+                document.getElementById('bestDayValue').innerHTML = '—';
+                document.getElementById('bestDayDate').innerHTML = 'Not enough data';
+                return;
+            }
+            
+            let bestGain = 0;
+            let bestDate = '';
+            
+            for (let i = 0; i < statsData.length - 1; i++) {
+                const gain = statsData[i].subscribers - statsData[i + 1].subscribers;
+                if (gain > bestGain) {
+                    bestGain = gain;
+                    bestDate = statsData[i].date;
+                }
+            }
+            
+            if (bestGain > 0) {
+                document.getElementById('bestDayValue').innerHTML = `+${bestGain.toLocaleString()}`;
+                document.getElementById('bestDayDate').innerHTML = bestDate;
+            } else {
+                document.getElementById('bestDayValue').innerHTML = '—';
+                document.getElementById('bestDayDate').innerHTML = 'No gains yet';
+            }
+        }
+
+        // Update chart
+        function updateChart(statsData) {
+            const last7Days = statsData.slice(0, 7).reverse();
+            const labels = last7Days.map(s => s.date);
+            const data = last7Days.map(s => s.subscribers);
+            
+            if (growthChart) {
+                growthChart.destroy();
+            }
+            
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Subscribers',
+                        data: data,
+                        borderColor: '#1f6f9f',
+                        backgroundColor: 'rgba(31, 111, 159, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+
         // Fetch stats from YouTube and save
         async function fetchYouTubeStats() {
             const fetchBtn = document.getElementById('fetchBtn');
@@ -268,7 +437,6 @@
         // Load dashboard stats
         async function loadDashboard() {
             try {
-                // Get latest stats
                 const statsResponse = await fetch('/api/admin/yt-stats', {
                     credentials: 'include'
                 });
@@ -281,13 +449,16 @@
                     document.getElementById('totalViews').innerHTML = latest.total_views.toLocaleString();
                     document.getElementById('totalVideos').innerHTML = latest.videos_uploaded;
                     updateProgressBar();
+                    updateAchievements(currentSubs);
+                    updateAutoTarget(currentSubs);
+                    updateBestDay(statsResult.data);
+                    updateChart(statsResult.data);
                 } else {
                     document.getElementById('currentSubs').innerHTML = 'No data';
                     document.getElementById('totalViews').innerHTML = 'No data';
                     document.getElementById('totalVideos').innerHTML = 'No data';
                 }
                 
-                // Get weekly summary
                 const weeklyResponse = await fetch('/api/admin/yt-stats/weekly/summary', {
                     credentials: 'include'
                 });
@@ -296,17 +467,6 @@
                     const weeklyGain = weeklyResult.data.weekly_gain;
                     document.getElementById('weeklyGain').innerHTML = (weeklyGain >= 0 ? '+' : '') + weeklyGain.toLocaleString();
                     document.getElementById('weeklySubGain').innerHTML = (weeklyGain >= 0 ? '+' : '') + weeklyGain.toLocaleString();
-                    document.getElementById('weeklyWatchHours').innerHTML = weeklyResult.data.total_watch_hours?.toLocaleString() || '0';
-                }
-                
-                // Get monthly summary
-                const monthlyResponse = await fetch('/api/admin/yt-stats/monthly/summary', {
-                    credentials: 'include'
-                });
-                const monthlyResult = await monthlyResponse.json();
-                if (monthlyResult.success && monthlyResult.data) {
-                    const monthlyGain = monthlyResult.data.monthly_gain;
-                    document.getElementById('monthlySubGain').innerHTML = (monthlyGain >= 0 ? '+' : '') + monthlyGain.toLocaleString();
                 }
                 
             } catch (error) {
@@ -314,7 +474,7 @@
             }
         }
 
-        // Load history table (no delete button)
+        // Load history table
         async function loadHistory() {
             try {
                 const response = await fetch('/api/admin/yt-stats', {
@@ -344,7 +504,6 @@
                     }
                     
                     const row = tbody.insertRow();
-                    
                     row.insertCell(0).innerHTML = stat.date;
                     row.insertCell(1).innerHTML = `<strong>${stat.subscribers.toLocaleString()}</strong>`;
                     row.insertCell(2).innerHTML = stat.total_views.toLocaleString();
@@ -354,7 +513,6 @@
                 
             } catch (error) {
                 console.error('Error loading history:', error);
-                tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--error);"><i class="fas fa-exclamation-triangle"></i> Error loading data</td></tr>';
             }
         }
 
@@ -362,7 +520,6 @@
         document.getElementById('fetchBtn').addEventListener('click', fetchYouTubeStats);
         document.getElementById('editGoalBtn').addEventListener('click', openGoalModal);
         
-        // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('goalModal');
             if (event.target === modal) {
@@ -370,7 +527,6 @@
             }
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadGoal();
             loadDashboard();
