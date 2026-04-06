@@ -9,6 +9,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/admin/shared/styles.css">
+    <style>
+        /* Additional styles for YT Stats page */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .stats-table th,
+        .stats-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stats-table th {
+            background: var(--light-gray);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-table th,
+            .stats-table td {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="admin-layout">
@@ -94,20 +121,19 @@
                     </div>
                     
                     <div style="overflow-x: auto;">
-                        <table class="stats-table" style="width: 100%; border-collapse: collapse;">
+                        <table class="stats-table">
                             <thead>
-                                <tr style="background: var(--light-gray);">
-                                    <th style="padding: 12px; text-align: left;">Date</th>
-                                    <th style="padding: 12px; text-align: left;">Subscribers</th>
-                                    <th style="padding: 12px; text-align: left;">Views</th>
-                                    <th style="padding: 12px; text-align: left;">Videos</th>
-                                    <th style="padding: 12px; text-align: left;">Daily Change</th>
-                                    <th style="padding: 12px; text-align: left;">Actions</th>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Subscribers</th>
+                                    <th>Views</th>
+                                    <th>Videos</th>
+                                    <th>Daily Change</th>
                                 </tr>
                             </thead>
                             <tbody id="historyTableBody">
                                 <tr>
-                                    <td colspan="6" style="padding: 40px; text-align: center; color: var(--gray);">
+                                    <td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);">
                                         <i class="fas fa-spinner fa-spin"></i> Loading...
                                     </td>
                                 </tr>
@@ -288,7 +314,7 @@
             }
         }
 
-        // Load history table
+        // Load history table (no delete button)
         async function loadHistory() {
             try {
                 const response = await fetch('/api/admin/yt-stats', {
@@ -299,7 +325,7 @@
                 const tbody = document.getElementById('historyTableBody');
                 
                 if (!result.success || !result.data || result.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>';
                     return;
                 }
                 
@@ -318,42 +344,17 @@
                     }
                     
                     const row = tbody.insertRow();
-                    row.style.borderBottom = '1px solid #eee';
                     
-                    row.insertCell(0).innerHTML = `<span style="padding: 12px; display: inline-block;">${stat.date}</span>`;
-                    row.insertCell(1).innerHTML = `<span style="padding: 12px; display: inline-block; font-weight: 600;">${stat.subscribers.toLocaleString()}</span>`;
-                    row.insertCell(2).innerHTML = `<span style="padding: 12px; display: inline-block;">${stat.total_views.toLocaleString()}</span>`;
-                    row.insertCell(3).innerHTML = `<span style="padding: 12px; display: inline-block;">${stat.videos_uploaded}</span>`;
-                    row.insertCell(4).innerHTML = `<span ${changeClass} style="padding: 12px; display: inline-block;">${dailyChange}</span>`;
-                    row.insertCell(5).innerHTML = `<button class="delete-btn" onclick="deleteStat('${stat.date}')" style="background: none; border: none; color: var(--error); cursor: pointer;"><i class="fas fa-trash"></i></button>`;
+                    row.insertCell(0).innerHTML = stat.date;
+                    row.insertCell(1).innerHTML = `<strong>${stat.subscribers.toLocaleString()}</strong>`;
+                    row.insertCell(2).innerHTML = stat.total_views.toLocaleString();
+                    row.insertCell(3).innerHTML = stat.videos_uploaded;
+                    row.insertCell(4).innerHTML = `<span ${changeClass}>${dailyChange}</span>`;
                 }
                 
             } catch (error) {
                 console.error('Error loading history:', error);
-                document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="6" style="padding: 40px; text-align: center; color: var(--error);"><i class="fas fa-exclamation-triangle"></i> Error loading data</td></tr>';
-            }
-        }
-
-        // Delete stat
-        async function deleteStat(date) {
-            if (!confirm(`Delete stats for ${date}?`)) return;
-            
-            try {
-                const response = await fetch(`/api/admin/yt-stats/${date}`, {
-                    method: 'DELETE',
-                    credentials: 'include'
-                });
-                const result = await response.json();
-                
-                if (result.success) {
-                    loadDashboard();
-                    loadHistory();
-                } else {
-                    alert('Error deleting: ' + (result.error || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error deleting stat:', error);
-                alert('Error deleting stat');
+                tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--error);"><i class="fas fa-exclamation-triangle"></i> Error loading data</td></tr>';
             }
         }
 
