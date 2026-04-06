@@ -3,120 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>YT Stats - Admin | ZEDTOPVIBES</title>
+    <title>Achievements - YT Stats | ZEDTOPVIBES</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/admin/shared/styles.css">
     <style>
-        .best-day-card {
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .achievement-card {
             background: var(--light-gray);
             border-radius: 12px;
             padding: 16px;
             text-align: center;
             border: 1px solid rgba(31,111,159,0.15);
-        }
-        .best-day-card .best-day-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        .auto-target-card {
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            border: 1px solid rgba(31,111,159,0.15);
-        }
-        .auto-target-card .target-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        
-        /* All icons use primary blue */
-        .stat-card .stat-icon i,
-        .best-day-card i:first-child,
-        .auto-target-card i:first-child,
-        .clickable-card .stat-icon i {
-            color: var(--primary-blue);
-        }
-        
-        /* Fetch button stays red */
-        .btn-youtube {
-            background: #ff0000;
-            border-color: #ff0000;
-        }
-        .btn-youtube:hover {
-            background: #cc0000;
-            transform: translateY(-2px);
-        }
-        .btn-youtube i {
-            color: white !important;
-        }
-        
-        /* Clickable card style */
-        .clickable-card {
-            cursor: pointer;
             transition: all 0.3s;
-            text-decoration: none;
-            display: block;
         }
-        .clickable-card:hover {
-            transform: translateY(-3px);
+        .achievement-card.unlocked {
+            background: var(--primary-blue);
+            color: white;
             border-color: var(--primary-blue);
-            box-shadow: 0 4px 12px rgba(31,111,159,0.15);
         }
-        
-        /* Historical Data Table Spacing */
-        .stats-table {
-            width: 100%;
-            border-collapse: collapse;
+        .achievement-card.unlocked i {
+            color: white;
         }
-        .stats-table th,
-        .stats-table td {
-            padding: 14px 12px;
-            text-align: left;
-            border-bottom: 1px solid rgba(31,111,159,0.1);
+        .achievement-card i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--primary-blue);
         }
-        .stats-table th {
-            background: var(--light-gray);
+        .achievement-card .achievement-name {
+            font-size: 0.9rem;
             font-weight: 600;
-            color: var(--primary-dark);
+            margin-bottom: 4px;
         }
-        .stats-table tbody tr:hover {
-            background: rgba(31,111,159,0.03);
+        .achievement-card .achievement-target {
+            font-size: 0.7rem;
+            opacity: 0.8;
         }
-        
-        /* Pagination styles */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(31,111,159,0.1);
-        }
-        .pagination button {
-            padding: 8px 16px;
-            font-size: 0.85rem;
-        }
-        .pagination span {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-        
         @media (max-width: 768px) {
-            .stats-table th,
-            .stats-table td {
-                padding: 10px 8px;
-                font-size: 0.8rem;
-            }
-            .pagination button {
-                padding: 6px 12px;
-                font-size: 0.75rem;
+            .achievements-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
         }
     </style>
@@ -125,127 +58,32 @@
     <div class="admin-layout">
         <main class="admin-main">
             <div class="admin-container">
-                <!-- Reusable Header -->
-                <div id="admin-header" data-title="YT Stats" data-icon="fab fa-youtube"></div>
+                <!-- Custom Header -->
+                <div class="admin-header">
+                    <div class="header-top">
+                        <h1>
+                            <i class="fas fa-medal"></i> Achievements
+                        </h1>
+                        <div class="user-info">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin</span>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="admin-content">
-                    <!-- Fetch Button Section -->
-                    <div style="margin-bottom: 24px; text-align: center;">
-                        <button id="fetchBtn" class="btn btn-primary btn-youtube">
-                            <i class="fab fa-youtube"></i> Fetch Latest Stats
-                        </button>
-                        <div id="lastFetchInfo" style="margin-top: 8px; font-size: 0.75rem; color: var(--gray);"></div>
-                    </div>
-
-                    <!-- Stats Grid (4 cards) -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-users"></i></div>
-                            <div class="stat-value" id="currentSubs">—</div>
-                            <div class="stat-label">Subscribers</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                            <div class="stat-value" id="totalViews">—</div>
-                            <div class="stat-label">Total Views</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-video"></i></div>
-                            <div class="stat-value" id="totalVideos">—</div>
-                            <div class="stat-label">Videos</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                            <div class="stat-value" id="weeklyGain">—</div>
-                            <div class="stat-label">Weekly Gain</div>
-                        </div>
-                    </div>
-
-                    <!-- Best Day, Auto Target, Weekly Subs, Achievements Row (4 cards) -->
-                    <div class="views-grid" style="margin-bottom: 24px;">
-                        <!-- Best Day Card -->
-                        <div class="best-day-card">
-                            <i class="fas fa-trophy"></i>
-                            <div class="best-day-value" id="bestDayValue">—</div>
-                            <div class="best-day-label" style="font-size: 0.75rem; color: var(--gray);">🏆 Best Day Gain</div>
-                            <div id="bestDayDate" style="font-size: 0.7rem; color: var(--gray);">—</div>
-                        </div>
-
-                        <!-- Auto Target Card -->
-                        <div class="auto-target-card">
-                            <i class="fas fa-bullseye"></i>
-                            <div class="target-value" id="autoTarget">—</div>
-                            <div class="target-label" style="font-size: 0.75rem; color: var(--gray);">🎯 Next Milestone</div>
-                            <div id="remainingToTarget" style="font-size: 0.7rem; color: var(--gray);">—</div>
-                        </div>
-
-                        <!-- Weekly Subs Card -->
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
-                            <div class="stat-value" id="weeklySubGain">—</div>
-                            <div class="stat-label">Subs (Last 7 Days)</div>
-                        </div>
-
-                        <!-- Achievements Counter Card (Clickable) -->
-                        <a href="/admin/youtube/achievements.html" class="clickable-card">
-                            <div class="stat-card">
-                                <div class="stat-icon"><i class="fas fa-medal"></i></div>
-                                <div class="stat-value" id="achievementCounter">0/19</div>
-                                <div class="stat-label">Achievements 🏆</div>
-                            </div>
+                    <!-- Section Header with Back Link (ONLY CHANGE) -->
+                    <div class="section-header">
+                        <a href="/admin/youtube/index.html" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--primary-blue); font-size: 0.85rem;">
+                            <i class="fas fa-arrow-left"></i> YT Stats
                         </a>
-                    </div>
-
-                    <!-- Progress Bar Section (Auto follows next milestone) -->
-                    <div class="section-header">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>Progress to Next Milestone</h3>
+                        <h3>All Milestones <span id="achievementCounter" style="font-size: 0.8rem; color: var(--primary-blue);">(0/19)</span></h3>
                     </div>
                     
-                    <div style="margin-bottom: 24px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem;">
-                            <span id="currentProgressText">—</span>
-                            <span id="goalTargetText">Target: —</span>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <div style="text-align: center; grid-column: span 4; padding: 40px;">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
                         </div>
-                        <div class="progress-bar-container" style="background: var(--light-gray); border-radius: 10px; height: 30px; overflow: hidden;">
-                            <div id="progressFill" class="progress-bar-fill" style="width: 0%; background: var(--primary-blue); height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; border-radius: 10px;">
-                                0%
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- History Table with Pagination -->
-                    <div class="section-header">
-                        <i class="fas fa-history"></i>
-                        <h3>Historical Data</h3>
-                    </div>
-                    
-                    <div style="overflow-x: auto;">
-                        <table class="stats-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Subscribers</th>
-                                    <th>Total Views</th>
-                                    <th>Videos</th>
-                                    <th>Daily Change</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTableBody">
-                                <tr>
-                                    <td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);">
-                                        <i class="fas fa-spinner fa-spin"></i> Loading...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Pagination Controls -->
-                    <div class="pagination" id="paginationControls" style="display: none;">
-                        <button id="prevPage" class="btn btn-secondary">← Previous</button>
-                        <span id="pageInfo">Page 1 of 1</span>
-                        <button id="nextPage" class="btn btn-secondary">Next →</button>
                     </div>
                 </div>
                 
@@ -256,253 +94,58 @@
 
     <script src="/admin/shared/loader.js"></script>
     <script>
-        let currentSubs = 0;
-        let allStatsData = [];
-        let currentPage = 1;
-        const rowsPerPage = 10;
-        
         // 19 Balanced Milestones (100 to 100,000)
         const milestones = [
             100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000,
             5000, 7500, 10000, 15000, 20000, 25000, 50000, 75000, 100000
         ];
 
-        // Get next milestone based on current subs
-        function getNextMilestone(subs) {
-            return milestones.find(m => m > subs);
-        }
+        let currentSubs = 0;
 
-        // Update progress bar based on next milestone
-        function updateProgressBar(subs) {
-            const nextMilestone = getNextMilestone(subs);
-            if (nextMilestone) {
-                const percent = (subs / nextMilestone) * 100;
-                const progressFill = document.getElementById('progressFill');
-                progressFill.style.width = percent + '%';
-                progressFill.innerHTML = Math.round(percent) + '%';
-                document.getElementById('currentProgressText').innerHTML = `${subs.toLocaleString()} / ${nextMilestone.toLocaleString()}`;
-                document.getElementById('goalTargetText').innerHTML = `Target: ${nextMilestone.toLocaleString()} subs`;
-            } else {
-                document.getElementById('progressFill').style.width = '100%';
-                document.getElementById('progressFill').innerHTML = '100%';
-                document.getElementById('currentProgressText').innerHTML = `${subs.toLocaleString()} / Legend!`;
-                document.getElementById('goalTargetText').innerHTML = `Target: Complete! 🏆`;
-            }
-        }
-
-        // Update auto target display
-        function updateAutoTarget(subs) {
-            const nextMilestone = getNextMilestone(subs);
-            if (nextMilestone) {
-                const remaining = nextMilestone - subs;
-                document.getElementById('autoTarget').innerHTML = `${nextMilestone.toLocaleString()} subs`;
-                document.getElementById('remainingToTarget').innerHTML = `${remaining.toLocaleString()} more to go 🎯`;
-            } else {
-                document.getElementById('autoTarget').innerHTML = `Legend! 🏆`;
-                document.getElementById('remainingToTarget').innerHTML = `You're crushing it!`;
-            }
-        }
-
-        // Update achievement counter
-        function updateAchievementCounter(subs) {
-            let unlockedCount = 0;
-            milestones.forEach(milestone => {
-                if (subs >= milestone) unlockedCount++;
-            });
-            const totalMilestones = milestones.length;
-            document.getElementById('achievementCounter').innerHTML = `${unlockedCount}/${totalMilestones}`;
-        }
-
-        // Update best day
-        function updateBestDay(statsData) {
-            if (!statsData || statsData.length < 2) {
-                document.getElementById('bestDayValue').innerHTML = '—';
-                document.getElementById('bestDayDate').innerHTML = 'Not enough data';
-                return;
-            }
-            
-            let bestGain = 0;
-            let bestDate = '';
-            
-            for (let i = 0; i < statsData.length - 1; i++) {
-                const gain = statsData[i].subscribers - statsData[i + 1].subscribers;
-                if (gain > bestGain) {
-                    bestGain = gain;
-                    bestDate = statsData[i].date;
-                }
-            }
-            
-            if (bestGain > 0) {
-                document.getElementById('bestDayValue').innerHTML = `+${bestGain.toLocaleString()}`;
-                document.getElementById('bestDayDate').innerHTML = bestDate;
-            } else {
-                document.getElementById('bestDayValue').innerHTML = '—';
-                document.getElementById('bestDayDate').innerHTML = 'No gains yet';
-            }
-        }
-
-        // Render history table with pagination
-        function renderHistoryTable() {
-            const tbody = document.getElementById('historyTableBody');
-            const paginationControls = document.getElementById('paginationControls');
-            
-            if (!allStatsData || allStatsData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>';
-                paginationControls.style.display = 'none';
-                return;
-            }
-            
-            const totalPages = Math.ceil(allStatsData.length / rowsPerPage);
-            const startIndex = (currentPage - 1) * rowsPerPage;
-            const endIndex = startIndex + rowsPerPage;
-            const pageData = allStatsData.slice(startIndex, endIndex);
-            
-            tbody.innerHTML = '';
-            for (let i = 0; i < pageData.length; i++) {
-                const stat = pageData[i];
-                const globalIndex = startIndex + i;
-                let dailyChange = '';
-                let changeClass = '';
-                
-                if (globalIndex < allStatsData.length - 1) {
-                    const change = stat.subscribers - allStatsData[globalIndex + 1].subscribers;
-                    dailyChange = change > 0 ? `+${change}` : change;
-                    changeClass = change > 0 ? 'style="color: var(--success);"' : (change < 0 ? 'style="color: var(--error);"' : '');
-                } else {
-                    dailyChange = '-';
-                }
-                
-                const row = tbody.insertRow();
-                row.insertCell(0).innerHTML = stat.date;
-                row.insertCell(1).innerHTML = `<strong>${stat.subscribers.toLocaleString()}</strong>`;
-                row.insertCell(2).innerHTML = stat.total_views.toLocaleString();
-                row.insertCell(3).innerHTML = stat.videos_uploaded;
-                row.insertCell(4).innerHTML = `<span ${changeClass}>${dailyChange}</span>`;
-            }
-            
-            // Update pagination controls
-            document.getElementById('pageInfo').innerHTML = `Page ${currentPage} of ${totalPages}`;
-            document.getElementById('prevPage').disabled = currentPage === 1;
-            document.getElementById('nextPage').disabled = currentPage === totalPages;
-            paginationControls.style.display = 'flex';
-        }
-
-        // Pagination event handlers
-        function setupPagination() {
-            document.getElementById('prevPage').addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderHistoryTable();
-                }
-            });
-            
-            document.getElementById('nextPage').addEventListener('click', () => {
-                const totalPages = Math.ceil(allStatsData.length / rowsPerPage);
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderHistoryTable();
-                }
-            });
-        }
-
-        // Fetch stats from YouTube and save
-        async function fetchYouTubeStats() {
-            const fetchBtn = document.getElementById('fetchBtn');
-            const originalText = fetchBtn.innerHTML;
-            fetchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
-            fetchBtn.disabled = true;
-            
-            try {
-                const response = await fetch('/api/admin/yt-stats/fetch', {
-                    credentials: 'include'
-                });
-                const result = await response.json();
-                
-                if (result.success) {
-                    document.getElementById('lastFetchInfo').innerHTML = `<i class="fas fa-check-circle" style="color: var(--success);"></i> Last fetched: ${result.data.date}`;
-                    loadDashboard();
-                    loadHistory();
-                } else {
-                    alert('Error: ' + (result.error || 'Failed to fetch stats'));
-                }
-            } catch (error) {
-                console.error('Error fetching stats:', error);
-                alert('Error connecting to server');
-            } finally {
-                fetchBtn.innerHTML = originalText;
-                fetchBtn.disabled = false;
-            }
-        }
-
-        // Load dashboard stats
-        async function loadDashboard() {
-            try {
-                const statsResponse = await fetch('/api/admin/yt-stats', {
-                    credentials: 'include'
-                });
-                const statsResult = await statsResponse.json();
-                
-                if (statsResult.success && statsResult.data && statsResult.data.length > 0) {
-                    const latest = statsResult.data[0];
-                    currentSubs = latest.subscribers;
-                    document.getElementById('currentSubs').innerHTML = currentSubs.toLocaleString();
-                    document.getElementById('totalViews').innerHTML = latest.total_views.toLocaleString();
-                    document.getElementById('totalVideos').innerHTML = latest.videos_uploaded;
-                    updateProgressBar(currentSubs);
-                    updateAutoTarget(currentSubs);
-                    updateAchievementCounter(currentSubs);
-                    updateBestDay(statsResult.data);
-                } else {
-                    document.getElementById('currentSubs').innerHTML = 'No data';
-                    document.getElementById('totalViews').innerHTML = 'No data';
-                    document.getElementById('totalVideos').innerHTML = 'No data';
-                }
-                
-                const weeklyResponse = await fetch('/api/admin/yt-stats/weekly/summary', {
-                    credentials: 'include'
-                });
-                const weeklyResult = await weeklyResponse.json();
-                if (weeklyResult.success && weeklyResult.data) {
-                    const weeklyGain = weeklyResult.data.weekly_gain;
-                    document.getElementById('weeklyGain').innerHTML = (weeklyGain >= 0 ? '+' : '') + weeklyGain.toLocaleString();
-                    document.getElementById('weeklySubGain').innerHTML = (weeklyGain >= 0 ? '+' : '') + weeklyGain.toLocaleString();
-                }
-                
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-            }
-        }
-
-        // Load history data
-        async function loadHistory() {
+        async function loadData() {
             try {
                 const response = await fetch('/api/admin/yt-stats', {
                     credentials: 'include'
                 });
                 const result = await response.json();
                 
-                if (result.success && result.data) {
-                    allStatsData = result.data;
-                    currentPage = 1;
-                    renderHistoryTable();
-                } else {
-                    allStatsData = [];
-                    renderHistoryTable();
+                if (result.success && result.data && result.data.length > 0) {
+                    currentSubs = result.data[0].subscribers;
                 }
+                
+                updateAchievements(currentSubs);
             } catch (error) {
-                console.error('Error loading history:', error);
-                allStatsData = [];
-                renderHistoryTable();
+                console.error('Error loading data:', error);
+                document.getElementById('achievementsGrid').innerHTML = '<div style="text-align: center; grid-column: span 4; color: var(--error);">Error loading achievements</div>';
             }
         }
 
-        // Event listeners
-        document.getElementById('fetchBtn').addEventListener('click', fetchYouTubeStats);
-        setupPagination();
+        function updateAchievements(subs) {
+            const container = document.getElementById('achievementsGrid');
+            container.innerHTML = '';
+            
+            let unlockedCount = 0;
+            
+            milestones.forEach(milestone => {
+                const unlocked = subs >= milestone;
+                if (unlocked) unlockedCount++;
+                
+                const card = document.createElement('div');
+                card.className = `achievement-card ${unlocked ? 'unlocked' : ''}`;
+                card.innerHTML = `
+                    <i class="fas ${unlocked ? 'fa-check-circle' : 'fa-lock'}"></i>
+                    <div class="achievement-name">${milestone.toLocaleString()} Subs</div>
+                    <div class="achievement-target">${unlocked ? '✓ Unlocked' : `${(milestone - subs).toLocaleString()} to go`}</div>
+                `;
+                container.appendChild(card);
+            });
+            
+            const totalMilestones = milestones.length;
+            document.getElementById('achievementCounter').innerHTML = `(${unlockedCount}/${totalMilestones})`;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadDashboard();
-            loadHistory();
+            loadData();
         });
     </script>
 </body>
