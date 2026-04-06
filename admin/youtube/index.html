@@ -42,22 +42,6 @@
             background: #cc0000;
             transform: translateY(-2px);
         }
-        .achievements-link {
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-        .achievements-link-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .achievements-link:hover {
-            opacity: 0.8;
-        }
     </style>
 </head>
 <body>
@@ -86,7 +70,7 @@
                         <div id="lastFetchInfo" style="margin-top: 8px; font-size: 0.75rem; color: var(--gray);"></div>
                     </div>
 
-                    <!-- Stats Grid -->
+                    <!-- Stats Grid (4 cards) -->
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-users"></i></div>
@@ -110,24 +94,36 @@
                         </div>
                     </div>
 
-                    <!-- Best Day & Auto Target Row -->
+                    <!-- Best Day, Auto Target, Weekly Subs, Achievements Row (4 cards) -->
                     <div class="views-grid" style="margin-bottom: 24px;">
+                        <!-- Best Day Card -->
                         <div class="best-day-card">
                             <i class="fas fa-trophy" style="font-size: 1.5rem; margin-bottom: 8px; color: var(--primary-blue);"></i>
                             <div class="best-day-value" id="bestDayValue">—</div>
                             <div class="best-day-label" style="font-size: 0.75rem; color: var(--gray);">🏆 Best Day Gain</div>
                             <div id="bestDayDate" style="font-size: 0.7rem; color: var(--gray);">—</div>
                         </div>
+
+                        <!-- Auto Target Card -->
                         <div class="auto-target-card">
                             <i class="fas fa-bullseye" style="font-size: 1.5rem; margin-bottom: 8px; color: var(--primary-blue);"></i>
                             <div class="target-value" id="autoTarget">—</div>
                             <div class="target-label" style="font-size: 0.75rem; color: var(--gray);">🎯 Next Milestone</div>
                             <div id="remainingToTarget" style="font-size: 0.7rem; color: var(--gray);">—</div>
                         </div>
+
+                        <!-- Weekly Subs Card -->
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
                             <div class="stat-value" id="weeklySubGain">—</div>
                             <div class="stat-label">Subs (Last 7 Days)</div>
+                        </div>
+
+                        <!-- Achievements Counter Card -->
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-medal"></i></div>
+                            <div class="stat-value" id="achievementCounter">0/19</div>
+                            <div class="stat-label">Achievements 🏆</div>
                         </div>
                     </div>
 
@@ -147,18 +143,6 @@
                                 0%
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Achievements Section (clickable link to achievements page) -->
-                    <div class="section-header">
-                        <i class="fas fa-medal"></i>
-                        <a href="/admin/youtube/achievements.html" class="achievements-link">
-                            <div class="achievements-link-left">
-                                <h3>Achievements 🏆</h3>
-                                <span id="achievementCounter" style="font-size: 0.8rem; color: var(--primary-blue);">(0/19)</span>
-                            </div>
-                            <i class="fas fa-arrow-right" style="color: var(--primary-blue);"></i>
-                        </a>
                     </div>
 
                     <!-- History Table -->
@@ -240,14 +224,14 @@
             }
         }
 
-        // Update achievement counter only (full grid on separate page)
+        // Update achievement counter
         function updateAchievementCounter(subs) {
             let unlockedCount = 0;
             milestones.forEach(milestone => {
                 if (subs >= milestone) unlockedCount++;
             });
             const totalMilestones = milestones.length;
-            document.getElementById('achievementCounter').innerHTML = `(${unlockedCount}/${totalMilestones})`;
+            document.getElementById('achievementCounter').innerHTML = `${unlockedCount}/${totalMilestones}`;
         }
 
         // Update best day
