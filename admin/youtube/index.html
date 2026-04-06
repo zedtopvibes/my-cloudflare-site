@@ -10,41 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/admin/shared/styles.css">
     <style>
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 24px;
-        }
-        .achievement-card {
-            background: var(--light-gray);
-            border-radius: 10px;
-            padding: 8px;
-            text-align: center;
-            border: 1px solid rgba(31,111,159,0.15);
-            transition: all 0.3s;
-        }
-        .achievement-card.unlocked {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        .achievement-card.unlocked i {
-            color: white;
-        }
-        .achievement-card i {
-            font-size: 1.2rem;
-            margin-bottom: 4px;
-            color: var(--primary-blue);
-        }
-        .achievement-card .achievement-name {
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-        .achievement-card .achievement-target {
-            font-size: 0.6rem;
-            opacity: 0.8;
-        }
         .best-day-card {
             background: var(--light-gray);
             border-radius: 12px;
@@ -77,16 +42,21 @@
             background: #cc0000;
             transform: translateY(-2px);
         }
-        @media (max-width: 768px) {
-            .achievements-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
-            }
+        .achievements-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
         }
-        @media (max-width: 480px) {
-            .achievements-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .achievements-link-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .achievements-link:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -179,13 +149,16 @@
                         </div>
                     </div>
 
-                    <!-- Achievements Section -->
+                    <!-- Achievements Section (clickable link to achievements page) -->
                     <div class="section-header">
                         <i class="fas fa-medal"></i>
-                        <h3>Achievements 🏆</h3>
-                    </div>
-                    <div class="achievements-grid" id="achievementsGrid">
-                        <!-- Filled by JS -->
+                        <a href="/admin/youtube/achievements.html" class="achievements-link">
+                            <div class="achievements-link-left">
+                                <h3>Achievements 🏆</h3>
+                                <span id="achievementCounter" style="font-size: 0.8rem; color: var(--primary-blue);">(0/19)</span>
+                            </div>
+                            <i class="fas fa-arrow-right" style="color: var(--primary-blue);"></i>
+                        </a>
                     </div>
 
                     <!-- History Table -->
@@ -225,7 +198,7 @@
     <script>
         let currentSubs = 0;
         
-        // 20 Balanced Milestones (100 to 100,000)
+        // 19 Balanced Milestones (100 to 100,000)
         const milestones = [
             100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000,
             5000, 7500, 10000, 15000, 20000, 25000, 50000, 75000, 100000
@@ -267,23 +240,14 @@
             }
         }
 
-        // Update achievements display
-        function updateAchievements(subs) {
-            const container = document.getElementById('achievementsGrid');
-            container.innerHTML = '';
-            
-            // Show all milestones (up to 20)
+        // Update achievement counter only (full grid on separate page)
+        function updateAchievementCounter(subs) {
+            let unlockedCount = 0;
             milestones.forEach(milestone => {
-                const unlocked = subs >= milestone;
-                const card = document.createElement('div');
-                card.className = `achievement-card ${unlocked ? 'unlocked' : ''}`;
-                card.innerHTML = `
-                    <i class="fas ${unlocked ? 'fa-check-circle' : 'fa-lock'}"></i>
-                    <div class="achievement-name">${milestone.toLocaleString()} Subs</div>
-                    <div class="achievement-target">${unlocked ? '✓ Unlocked' : `${(milestone - subs).toLocaleString()} to go`}</div>
-                `;
-                container.appendChild(card);
+                if (subs >= milestone) unlockedCount++;
             });
+            const totalMilestones = milestones.length;
+            document.getElementById('achievementCounter').innerHTML = `(${unlockedCount}/${totalMilestones})`;
         }
 
         // Update best day
@@ -359,7 +323,7 @@
                     document.getElementById('totalVideos').innerHTML = latest.videos_uploaded;
                     updateProgressBar(currentSubs);
                     updateAutoTarget(currentSubs);
-                    updateAchievements(currentSubs);
+                    updateAchievementCounter(currentSubs);
                     updateBestDay(statsResult.data);
                 } else {
                     document.getElementById('currentSubs').innerHTML = 'No data';
@@ -393,7 +357,7 @@
                 const tbody = document.getElementById('historyTableBody');
                 
                 if (!result.success || !result.data || result.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>                        ';
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>';
                     return;
                 }
                 
