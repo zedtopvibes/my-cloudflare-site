@@ -69,6 +69,14 @@
             font-weight: 700;
             color: var(--primary-blue);
         }
+        .btn-youtube {
+            background: #ff0000;
+            border-color: #ff0000;
+        }
+        .btn-youtube:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+        }
         @media (max-width: 768px) {
             .achievements-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -80,12 +88,23 @@
     <div class="admin-layout">
         <main class="admin-main">
             <div class="admin-container">
-                <div id="admin-header" data-title="YT Stats" data-icon="fab fa-youtube"></div>
+                <!-- Custom Header with YouTube icon -->
+                <div class="admin-header">
+                    <div class="header-top">
+                        <h1>
+                            <i class="fab fa-youtube"></i> YT Stats
+                        </h1>
+                        <div class="user-info">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin</span>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="admin-content">
                     <!-- Fetch Button Section -->
                     <div style="margin-bottom: 24px; text-align: center;">
-                        <button id="fetchBtn" class="btn btn-primary">
+                        <button id="fetchBtn" class="btn btn-primary btn-youtube">
                             <i class="fab fa-youtube"></i> Fetch Latest Stats
                         </button>
                         <div id="lastFetchInfo" style="margin-top: 8px; font-size: 0.75rem; color: var(--gray);"></div>
@@ -136,16 +155,7 @@
                         </div>
                     </div>
 
-                    <!-- Achievements Section -->
-                    <div class="section-header">
-                        <i class="fas fa-medal"></i>
-                        <h3>Achievements 🏆</h3>
-                    </div>
-                    <div class="achievements-grid" id="achievementsGrid">
-                        <!-- Filled by JS -->
-                    </div>
-
-                    <!-- Progress Bar Section -->
+                    <!-- Progress Bar Section (Moved above Achievements) -->
                     <div class="section-header">
                         <i class="fas fa-bullseye"></i>
                         <h3>Subscriber Goal Progress</h3>
@@ -162,6 +172,15 @@
                                 0%
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Achievements Section -->
+                    <div class="section-header">
+                        <i class="fas fa-medal"></i>
+                        <h3>Achievements 🏆</h3>
+                    </div>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Filled by JS -->
                     </div>
 
                     <!-- History Table -->
