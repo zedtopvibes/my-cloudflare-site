@@ -12,14 +12,14 @@
     <style>
         .achievements-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
             margin-bottom: 24px;
         }
         .achievement-card {
             background: var(--light-gray);
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 8px;
             text-align: center;
             border: 1px solid rgba(31,111,159,0.15);
             transition: all 0.3s;
@@ -33,16 +33,16 @@
             color: white;
         }
         .achievement-card i {
-            font-size: 1.5rem;
-            margin-bottom: 6px;
+            font-size: 1.2rem;
+            margin-bottom: 4px;
             color: var(--primary-blue);
         }
         .achievement-card .achievement-name {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
         }
         .achievement-card .achievement-target {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             opacity: 0.8;
         }
         .best-day-card {
@@ -78,6 +78,12 @@
             transform: translateY(-2px);
         }
         @media (max-width: 768px) {
+            .achievements-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+        }
+        @media (max-width: 480px) {
             .achievements-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -155,17 +161,16 @@
                         </div>
                     </div>
 
-                    <!-- Progress Bar Section (Moved above Achievements) -->
+                    <!-- Progress Bar Section (Auto follows next milestone) -->
                     <div class="section-header">
-                        <i class="fas fa-bullseye"></i>
-                        <h3>Subscriber Goal Progress</h3>
-                        <button id="editGoalBtn" class="settings-btn" style="margin-left: auto;"><i class="fas fa-cog"></i> Set Goal</button>
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Progress to Next Milestone</h3>
                     </div>
                     
                     <div style="margin-bottom: 24px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem;">
                             <span id="currentProgressText">—</span>
-                            <span id="goalTargetText">Goal: —</span>
+                            <span id="goalTargetText">Target: —</span>
                         </div>
                         <div class="progress-bar-container" style="background: var(--light-gray); border-radius: 10px; height: 30px; overflow: hidden;">
                             <div id="progressFill" class="progress-bar-fill" style="width: 0%; background: var(--primary-blue); height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; border-radius: 10px;">
@@ -216,122 +221,42 @@
         </main>
     </div>
 
-    <!-- Goal Settings Modal -->
-    <div id="goalModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-bullseye"></i> Set Subscriber Goal</h3>
-                <button class="close-btn" onclick="closeGoalModal()">&times;</button>
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-users"></i> Target Subscribers</label>
-                <input type="number" id="goalInput" class="form-control" placeholder="Enter goal number" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-secondary" onclick="closeGoalModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveGoal()">Save Goal</button>
-            </div>
-        </div>
-    </div>
-
     <script src="/admin/shared/loader.js"></script>
     <script>
-        let currentGoal = 1000;
         let currentSubs = 0;
-
-        // Achievement milestones (auto-updates)
-        const milestones = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
         
-        // Modal functions
-        function openGoalModal() {
-            document.getElementById('goalModal').style.display = 'flex';
-            document.getElementById('goalInput').value = currentGoal;
+        // 20 Balanced Milestones (100 to 100,000)
+        const milestones = [
+            100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000,
+            5000, 7500, 10000, 15000, 20000, 25000, 50000, 75000, 100000
+        ];
+
+        // Get next milestone based on current subs
+        function getNextMilestone(subs) {
+            return milestones.find(m => m > subs);
         }
 
-        function closeGoalModal() {
-            document.getElementById('goalModal').style.display = 'none';
-        }
-
-        // Fetch goal from API
-        async function loadGoal() {
-            try {
-                const response = await fetch('/api/admin/yt-goal', {
-                    credentials: 'include'
-                });
-                const result = await response.json();
-                if (result.success && result.data) {
-                    currentGoal = result.data.target_subs;
-                    document.getElementById('goalTargetText').innerText = `Goal: ${currentGoal.toLocaleString()}`;
-                    updateProgressBar();
-                }
-            } catch (error) {
-                console.error('Error loading goal:', error);
+        // Update progress bar based on next milestone
+        function updateProgressBar(subs) {
+            const nextMilestone = getNextMilestone(subs);
+            if (nextMilestone) {
+                const percent = (subs / nextMilestone) * 100;
+                const progressFill = document.getElementById('progressFill');
+                progressFill.style.width = percent + '%';
+                progressFill.innerHTML = Math.round(percent) + '%';
+                document.getElementById('currentProgressText').innerHTML = `${subs.toLocaleString()} / ${nextMilestone.toLocaleString()}`;
+                document.getElementById('goalTargetText').innerHTML = `Target: ${nextMilestone.toLocaleString()} subs`;
+            } else {
+                document.getElementById('progressFill').style.width = '100%';
+                document.getElementById('progressFill').innerHTML = '100%';
+                document.getElementById('currentProgressText').innerHTML = `${subs.toLocaleString()} / Legend!`;
+                document.getElementById('goalTargetText').innerHTML = `Target: Complete! 🏆`;
             }
         }
 
-        // Save goal
-        async function saveGoal() {
-            const newGoal = parseInt(document.getElementById('goalInput').value);
-            if (isNaN(newGoal) || newGoal <= 0) {
-                alert('Please enter a valid number');
-                return;
-            }
-            
-            try {
-                const response = await fetch('/api/admin/yt-goal/update', {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ target_subs: newGoal, enabled: true })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    currentGoal = newGoal;
-                    document.getElementById('goalTargetText').innerText = `Goal: ${currentGoal.toLocaleString()}`;
-                    updateProgressBar();
-                    closeGoalModal();
-                } else {
-                    alert('Error saving goal');
-                }
-            } catch (error) {
-                console.error('Error saving goal:', error);
-                alert('Error saving goal');
-            }
-        }
-
-        // Update progress bar
-        function updateProgressBar() {
-            const percent = Math.min((currentSubs / currentGoal) * 100, 100);
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = percent + '%';
-            progressFill.innerHTML = Math.round(percent) + '%';
-            document.getElementById('currentProgressText').innerHTML = `${currentSubs.toLocaleString()} / ${currentGoal.toLocaleString()}`;
-        }
-
-        // Update achievements display (auto-updates based on currentSubs)
-        function updateAchievements(subs) {
-            const container = document.getElementById('achievementsGrid');
-            container.innerHTML = '';
-            
-            // Show next 6 milestones
-            const nextMilestones = milestones.filter(m => m <= subs * 2).slice(0, 6);
-            
-            nextMilestones.forEach(milestone => {
-                const unlocked = subs >= milestone;
-                const card = document.createElement('div');
-                card.className = `achievement-card ${unlocked ? 'unlocked' : ''}`;
-                card.innerHTML = `
-                    <i class="fas ${unlocked ? 'fa-check-circle' : 'fa-lock'}"></i>
-                    <div class="achievement-name">${milestone.toLocaleString()} Subs</div>
-                    <div class="achievement-target">${unlocked ? 'Unlocked! 🎉' : `${(milestone - subs).toLocaleString()} to go`}</div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // Update auto target (automatically finds next milestone)
+        // Update auto target display
         function updateAutoTarget(subs) {
-            const nextMilestone = milestones.find(m => m > subs);
+            const nextMilestone = getNextMilestone(subs);
             if (nextMilestone) {
                 const remaining = nextMilestone - subs;
                 document.getElementById('autoTarget').innerHTML = `${nextMilestone.toLocaleString()} subs`;
@@ -340,6 +265,25 @@
                 document.getElementById('autoTarget').innerHTML = `Legend! 🏆`;
                 document.getElementById('remainingToTarget').innerHTML = `You're crushing it!`;
             }
+        }
+
+        // Update achievements display
+        function updateAchievements(subs) {
+            const container = document.getElementById('achievementsGrid');
+            container.innerHTML = '';
+            
+            // Show all milestones (up to 20)
+            milestones.forEach(milestone => {
+                const unlocked = subs >= milestone;
+                const card = document.createElement('div');
+                card.className = `achievement-card ${unlocked ? 'unlocked' : ''}`;
+                card.innerHTML = `
+                    <i class="fas ${unlocked ? 'fa-check-circle' : 'fa-lock'}"></i>
+                    <div class="achievement-name">${milestone.toLocaleString()} Subs</div>
+                    <div class="achievement-target">${unlocked ? '✓ Unlocked' : `${(milestone - subs).toLocaleString()} to go`}</div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         // Update best day
@@ -413,9 +357,9 @@
                     document.getElementById('currentSubs').innerHTML = currentSubs.toLocaleString();
                     document.getElementById('totalViews').innerHTML = latest.total_views.toLocaleString();
                     document.getElementById('totalVideos').innerHTML = latest.videos_uploaded;
-                    updateProgressBar();
-                    updateAchievements(currentSubs);
+                    updateProgressBar(currentSubs);
                     updateAutoTarget(currentSubs);
+                    updateAchievements(currentSubs);
                     updateBestDay(statsResult.data);
                 } else {
                     document.getElementById('currentSubs').innerHTML = 'No data';
@@ -449,7 +393,7 @@
                 const tbody = document.getElementById('historyTableBody');
                 
                 if (!result.success || !result.data || result.data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding: 40px; text-align: center; color: var(--gray);"><i class="fas fa-database"></i> No data yet. Click "Fetch Latest Stats" to get started.</td></tr>                        ';
                     return;
                 }
                 
@@ -482,17 +426,8 @@
 
         // Event listeners
         document.getElementById('fetchBtn').addEventListener('click', fetchYouTubeStats);
-        document.getElementById('editGoalBtn').addEventListener('click', openGoalModal);
-        
-        window.onclick = function(event) {
-            const modal = document.getElementById('goalModal');
-            if (event.target === modal) {
-                closeGoalModal();
-            }
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadGoal();
             loadDashboard();
             loadHistory();
         });
