@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/admin/shared/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .achievements-grid {
             display: grid;
@@ -69,17 +68,6 @@
             font-size: 1.3rem;
             font-weight: 700;
             color: var(--primary-blue);
-        }
-        .chart-container {
-            margin: 20px 0;
-            padding: 15px;
-            background: var(--light-gray);
-            border-radius: 12px;
-            border: 1px solid rgba(31,111,159,0.15);
-        }
-        canvas {
-            max-height: 250px;
-            width: 100%;
         }
         @media (max-width: 768px) {
             .achievements-grid {
@@ -176,15 +164,6 @@
                         </div>
                     </div>
 
-                    <!-- Last 7 Days Chart -->
-                    <div class="section-header">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>Last 7 Days Growth 📊</h3>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="growthChart"></canvas>
-                    </div>
-
                     <!-- History Table -->
                     <div class="section-header">
                         <i class="fas fa-history"></i>
@@ -240,9 +219,8 @@
     <script>
         let currentGoal = 1000;
         let currentSubs = 0;
-        let growthChart = null;
 
-        // Achievement milestones
+        // Achievement milestones (auto-updates)
         const milestones = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
         
         // Modal functions
@@ -311,11 +289,12 @@
             document.getElementById('currentProgressText').innerHTML = `${currentSubs.toLocaleString()} / ${currentGoal.toLocaleString()}`;
         }
 
-        // Update achievements display
+        // Update achievements display (auto-updates based on currentSubs)
         function updateAchievements(subs) {
             const container = document.getElementById('achievementsGrid');
             container.innerHTML = '';
             
+            // Show next 6 milestones
             const nextMilestones = milestones.filter(m => m <= subs * 2).slice(0, 6);
             
             nextMilestones.forEach(milestone => {
@@ -325,13 +304,13 @@
                 card.innerHTML = `
                     <i class="fas ${unlocked ? 'fa-check-circle' : 'fa-lock'}"></i>
                     <div class="achievement-name">${milestone.toLocaleString()} Subs</div>
-                    <div class="achievement-target">${unlocked ? 'Unlocked! 🎉' : `${milestone - subs} to go`}</div>
+                    <div class="achievement-target">${unlocked ? 'Unlocked! 🎉' : `${(milestone - subs).toLocaleString()} to go`}</div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // Update auto target
+        // Update auto target (automatically finds next milestone)
         function updateAutoTarget(subs) {
             const nextMilestone = milestones.find(m => m > subs);
             if (nextMilestone) {
@@ -370,42 +349,6 @@
                 document.getElementById('bestDayValue').innerHTML = '—';
                 document.getElementById('bestDayDate').innerHTML = 'No gains yet';
             }
-        }
-
-        // Update chart
-        function updateChart(statsData) {
-            const last7Days = statsData.slice(0, 7).reverse();
-            const labels = last7Days.map(s => s.date);
-            const data = last7Days.map(s => s.subscribers);
-            
-            if (growthChart) {
-                growthChart.destroy();
-            }
-            
-            const ctx = document.getElementById('growthChart').getContext('2d');
-            growthChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Subscribers',
-                        data: data,
-                        borderColor: '#1f6f9f',
-                        backgroundColor: 'rgba(31, 111, 159, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    }
-                }
-            });
         }
 
         // Fetch stats from YouTube and save
@@ -455,7 +398,6 @@
                     updateAchievements(currentSubs);
                     updateAutoTarget(currentSubs);
                     updateBestDay(statsResult.data);
-                    updateChart(statsResult.data);
                 } else {
                     document.getElementById('currentSubs').innerHTML = 'No data';
                     document.getElementById('totalViews').innerHTML = 'No data';
