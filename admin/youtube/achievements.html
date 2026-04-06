@@ -38,29 +38,57 @@
             color: var(--primary-blue);
         }
         .achievement-card .achievement-name {
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 600;
             margin-bottom: 4px;
         }
         .achievement-card .achievement-target {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             opacity: 0.8;
         }
-        .section-header a {
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(31,111,159,0.2);
+        }
+        .section-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .section-header-left a {
             display: flex;
             align-items: center;
             gap: 8px;
             text-decoration: none;
             color: var(--primary-blue);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
-        .section-header a:hover {
+        .section-header-left a:hover {
             text-decoration: underline;
+        }
+        .section-header-left h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
         }
         @media (max-width: 768px) {
             .achievements-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
+            }
+            .achievement-card .achievement-name {
+                font-size: 0.85rem;
+            }
+            .achievement-card .achievement-target {
+                font-size: 0.65rem;
             }
         }
     </style>
@@ -85,10 +113,12 @@
                 <div class="admin-content">
                     <!-- Section Header with Back Link -->
                     <div class="section-header">
-                        <a href="/admin/youtube/index.html">
-                            <i class="fas fa-arrow-left"></i> YT Stats
-                        </a>
-                        <h3>All Milestones <span id="achievementCounter" style="font-size: 0.8rem; color: var(--primary-blue);">(0/19)</span></h3>
+                        <div class="section-header-left">
+                            <a href="/admin/youtube/index.html">
+                                <i class="fas fa-arrow-left"></i> YT Stats
+                            </a>
+                            <h3>All Milestones <span id="achievementCounter" style="font-size: 0.7rem; color: var(--primary-blue);">(0/19)</span></h3>
+                        </div>
                     </div>
                     
                     <div class="achievements-grid" id="achievementsGrid">
