@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Homepage Sections - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary-blue: #1f6f9f; --primary-light: #2f8ed0; --primary-dark: #1f4c73; --gray: #666; --light-gray: #f0f2f5; --white: #ffffff; --shadow: 0 2px 10px rgba(0,0,0,0.05); --success: #28a745; --error: #dc3545; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--light-gray); min-height: 100vh; display: flex; flex-direction: column; }
+        .admin-container { max-width: 1400px; margin: 0 auto; padding: 10px; flex: 1; width: 100%; }
+        .admin-header { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid rgba(31, 111, 159, 0.1); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+        .header-top h1 { color: var(--primary-blue); font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .user-info { display: flex; align-items: center; gap: 10px; background: var(--light-gray); padding: 8px 15px; border-radius: 30px; font-size: 0.9rem; border: 1px solid rgba(31, 111, 159, 0.1); }
+        .admin-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; }
+        .tab-btn { padding: 8px 14px; background: transparent; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #666; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; height: 36px; }
+        .tab-btn:hover { background: #f0f0f0; color: var(--primary-blue); }
+        .tab-btn.active { background: var(--primary-blue); color: white; }
+        .admin-content { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); border: 1px solid rgba(31, 111, 159, 0.1); }
+        .sections-list { display: flex; flex-direction: column; gap: 12px; }
+        .section-card { background: var(--light-gray); border-radius: 12px; padding: 16px; border: 1px solid rgba(31, 111, 159, 0.1); cursor: grab; }
+        .section-card.dragging { opacity: 0.5; cursor: grabbing; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+        .section-title { font-size: 1.1rem; font-weight: 600; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+        .drag-handle { cursor: grab; color: var(--gray); font-size: 1.2rem; }
+        .source-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .source-badge.playlist { background: #9c27b0; color: white; }
+        .source-badge.compilation { background: var(--primary-blue); color: white; }
+        .source-badge.albums { background: #d4edda; color: #155724; }
+        .source-badge.eps { background: #d1ecf1; color: #0c5460; }
+        .source-badge.artists { background: #fff3cd; color: #856404; }
+        .source-badge.playlists { background: #e2d5f5; color: #4a1d8c; }
+        .section-stats { display: flex; gap: 16px; font-size: 0.75rem; color: var(--gray); }
+        .section-actions { display: flex; gap: 8px; }
+        .action-btn { width: 32px; height: 32px; border-radius: 6px; border: none; background: white; color: var(--gray); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+        .action-btn:hover { background: var(--primary-blue); color: white; }
+        .action-btn.delete:hover { background: var(--error); color: white; }
+        .visibility-btn { width: 32px; height: 32px; border-radius: 6px; border: none; background: white; cursor: pointer; }
+        .visibility-btn.visible { color: var(--success); }
+        .visibility-btn.hidden { color: var(--error); }
+        .add-section { background: var(--light-gray); border: 2px dashed var(--primary-blue); border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px; cursor: pointer; transition: all 0.2s; }
+        .add-section:hover { background: #e8f0fe; border-color: var(--primary-light); }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; padding: 15px; }
+        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 500px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85rem; }
+        .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.85rem; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; }
+        .btn-primary { background: var(--primary-blue); color: white; }
+        .btn-secondary { background: var(--light-gray); color: #333; border: 1px solid #ddd; }
+        .toast { position: fixed; top: 20px; right: 20px; left: 20px; padding: 10px 15px; border-radius: 8px; color: white; z-index: 2000; animation: slideIn 0.3s; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .admin-footer { background: var(--white); border-radius: 12px; padding: 15px; margin-top: 15px; text-align: center; border: 1px solid rgba(31, 111, 159, 0.1); color: var(--gray); font-size: 0.75rem; }
+        @media (max-width: 768px) { .section-header { flex-direction: column; align-items: flex-start; } .section-actions { align-self: flex-end; } }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-top">
+                <h1><i class="fas fa-home"></i> Homepage Sections</h1>
+                <div class="user-info"><i class="fas fa-user-circle"></i><span>Admin</span></div>
+            </div>
+            <div class="admin-tabs">
+                <a href="/admin/" class="tab-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="/admin/upload.html" class="tab-btn"><i class="fas fa-cloud-upload-alt"></i> Upload</a>
+                <a href="/admin/songs.html" class="tab-btn"><i class="fas fa-music"></i> Songs</a>
+                <a href="/admin/albums/index.html" class="tab-btn"><i class="fas fa-compact-disc"></i> Albums</a>
+                <a href="/admin/eps/index.html" class="tab-btn"><i class="fas fa-play-circle"></i> EPs</a>
+                <a href="/admin/artists/index.html" class="tab-btn"><i class="fas fa-microphone"></i> Artists</a>
+                <a href="/admin/playlists/index.html" class="tab-btn"><i class="fas fa-list"></i> Playlists</a>
+                <a href="/admin/compilations/index.html" class="tab-btn"><i class="fas fa-layer-group"></i> Compilations</a>
+                <a href="/admin/homepage/index.html" class="tab-btn active"><i class="fas fa-home"></i> Homepage</a>
+                <a href="/admin/trash.html" class="tab-btn"><i class="fas fa-trash-alt"></i> Trash</a>
+            </div>
+        </div>
+        <div class="admin-content">
+            <div id="sectionsContainer" class="sections-list"></div>
+            <div class="add-section" onclick="openAddModal()">
+                <i class="fas fa-plus-circle" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 8px; display: block;"></i>
+                <strong>Add New Section</strong>
+                <p style="font-size: 0.8rem; color: var(--gray); margin-top: 4px;">Select a playlist or compilation to feature on the homepage</p>
+            </div>
+        </div>
+        <div class="admin-footer"><p>© 2024 ZEDTOPVIBES. All rights reserved.</p></div>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Homepage Section</h3>
+            <div class="form-group">
+                <label>Section Title</label>
+                <input type="text" id="sectionTitle" placeholder="e.g., Trending Songs, Best Albums 2024">
+            </div>
+            <div class="form-group">
+                <label>Source Type</label>
+                <select id="sourceType" onchange="loadSources()">
+                    <option value="">Select type...</option>
+                    <option value="playlist">Playlist (Songs/Tracks)</option>
+                    <option value="compilation">Compilation (Albums/EPs/Artists/Playlists)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Select Source</label>
+                <select id="sourceSelect">
+                    <option value="">First select source type...</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addSection()">Add Section</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let sections = [];
+        let allPlaylists = [];
+        let allCompilations = [];
+        let dragSourceIndex = null;
+
+        function checkAuth() {
+            const isLoggedIn = localStorage.getItem('admin_logged_in') === 'true';
+            const loginTime = localStorage.getItem('admin_login_time');
+            if (!isLoggedIn || !loginTime) { window.location.href = '/admin/login.html'; return false; }
+            const hoursSince = (Date.now() - parseInt(loginTime)) / (1000 * 60 * 60);
+            if (hoursSince > 24) { localStorage.clear(); window.location.href = '/admin/login.html'; return false; }
+            return true;
+        }
+
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function loadSections() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/homepage/sections`);
+                sections = await response.json();
+                renderSections();
+            } catch (error) {
+                console.error('Error loading sections:', error);
+                showToast('Failed to load sections', 'error');
+            }
+        }
+
+        async function loadPlaylists() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/playlists`);
+                allPlaylists = await response.json();
+            } catch (error) {
+                console.error('Error loading playlists:', error);
+            }
+        }
+
+        async function loadCompilations() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/compilations`);
+                allCompilations = await response.json();
+            } catch (error) {
+                console.error('Error loading compilations:', error);
+            }
+        }
+
+        async function loadSources() {
+            const sourceType = document.getElementById('sourceType').value;
+            const select = document.getElementById('sourceSelect');
+            
+            if (!sourceType) {
+                select.innerHTML = '<option value="">First select source type...</option>';
+                return;
+            }
+            
+            if (sourceType === 'playlist') {
+                await loadPlaylists();
+                select.innerHTML = '<option value="">Select a playlist...</option>';
+                allPlaylists.forEach(playlist => {
+                    const option = document.createElement('option');
+                    option.value = playlist.id;
+                    option.textContent = `${playlist.name} (${playlist.track_count || 0} tracks)`;
+                    select.appendChild(option);
+                });
+            } else if (sourceType === 'compilation') {
+                await loadCompilations();
+                select.innerHTML = '<option value="">Select a compilation...</option>';
+                allCompilations.forEach(comp => {
+                    const option = document.createElement('option');
+                    option.value = comp.id;
+                    option.textContent = `${comp.title} (${comp.type} - ${comp.item_count || 0} items)`;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        function getSourceBadge(section) {
+            if (section.source_type === 'playlist') {
+                return `<span class="source-badge playlist"><i class="fas fa-list"></i> Playlist</span>`;
+            } else {
+                const typeLabels = { albums: 'Albums', eps: 'EPs', artists: 'Artists', playlists: 'Playlists' };
+                const typeLabel = typeLabels[section.source_type_display] || section.source_type_display;
+                return `<span class="source-badge ${section.source_type_display}"><i class="fas ${section.source_type_display === 'albums' ? 'fa-compact-disc' : section.source_type_display === 'eps' ? 'fa-play-circle' : section.source_type_display === 'artists' ? 'fa-microphone' : 'fa-list'}"></i> ${typeLabel}</span>`;
+            }
+        }
+
+        function renderSections() {
+            const container = document.getElementById('sectionsContainer');
+            if (!sections.length) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--gray);">No sections added yet. Click "Add New Section" to get started.</div>';
+                return;
+            }
+            container.innerHTML = sections.map((section, index) => `
+                <div class="section-card" data-index="${index}" draggable="true">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-grip-vertical drag-handle" style="cursor: grab;"></i>
+                            <span>${escapeHtml(section.title)}</span>
+                            ${getSourceBadge(section)}
+                        </div>
+                        <div class="section-stats">
+                            <span><i class="fas fa-music"></i> ${section.item_count || 0} items</span>
+                            <span><i class="fas fa-link"></i> ${section.source_slug}</span>
+                        </div>
+                        <div class="section-actions">
+                            <button class="visibility-btn ${section.is_visible ? 'visible' : 'hidden'}" onclick="toggleVisibility(${section.id}, ${!section.is_visible})" title="${section.is_visible ? 'Hide' : 'Show'}">
+                                <i class="fas ${section.is_visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="deleteSection(${section.id}, '${escapeHtml(section.title)}')" title="Remove"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            setupDragAndDrop();
+        }
+
+        function setupDragAndDrop() {
+            const items = document.querySelectorAll('.section-card');
+            items.forEach(item => {
+                item.ondragstart = (e) => {
+                    dragSourceIndex = parseInt(item.dataset.index);
+                    item.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                };
+                item.ondragover = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
+                item.ondrop = async (e) => {
+                    e.preventDefault();
+                    const targetIndex = parseInt(item.dataset.index);
+                    if (dragSourceIndex === targetIndex) return;
+                    const newOrder = [...sections];
+                    const [movedItem] = newOrder.splice(dragSourceIndex, 1);
+                    newOrder.splice(targetIndex, 0, movedItem);
+                    const orderUpdates = newOrder.map((section, idx) => ({ id: section.id, display_order: idx }));
+                    try {
+                        await fetch(`${API_BASE}/admin/homepage/sections/reorder`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ sections: orderUpdates })
+                        });
+                        await loadSections();
+                        showToast('Order saved!', 'success');
+                    } catch (error) {
+                        showToast('Failed to save order', 'error');
+                    }
+                };
+                item.ondragend = (e) => { e.target.classList.remove('dragging'); };
+            });
+        }
+
+        async function toggleVisibility(id, isVisible) {
+            try {
+                await fetch(`${API_BASE}/admin/homepage/sections/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_visible: isVisible })
+                });
+                await loadSections();
+                showToast(isVisible ? 'Section shown' : 'Section hidden', 'success');
+            } catch (error) {
+                showToast('Failed to update visibility', 'error');
+            }
+        }
+
+        async function deleteSection(id, title) {
+            if (!confirm(`Remove "${title}" from homepage?`)) return;
+            try {
+                await fetch(`${API_BASE}/admin/homepage/sections/${id}`, { method: 'DELETE' });
+                await loadSections();
+                showToast('Section removed', 'success');
+            } catch (error) {
+                showToast('Failed to remove section', 'error');
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById('sectionTitle').value = '';
+            document.getElementById('sourceType').value = '';
+            document.getElementById('sourceSelect').innerHTML = '<option value="">First select source type...</option>';
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').style.display = 'none';
+        }
+
+        async function addSection() {
+            const title = document.getElementById('sectionTitle').value.trim();
+            const sourceType = document.getElementById('sourceType').value;
+            const sourceId = document.getElementById('sourceSelect').value;
+            
+            if (!title) { showToast('Section title is required', 'error'); return; }
+            if (!sourceType) { showToast('Please select source type', 'error'); return; }
+            if (!sourceId) { showToast('Please select a source', 'error'); return; }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/homepage/sections`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, source_type: sourceType, source_id: parseInt(sourceId) })
+                });
+                if (!response.ok) throw new Error('Failed to add');
+                closeAddModal();
+                await loadSections();
+                showToast('Section added!', 'success');
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        document.addEventListener('DOMContentLoaded', () => { if (checkAuth()) { loadSections(); } });
+        window.openAddModal = openAddModal; window.closeAddModal = closeAddModal; window.addSection = addSection;
+        window.toggleVisibility = toggleVisibility; window.deleteSection = deleteSection; window.loadSources = loadSources;
+    </script>
+</body>
+</html>
