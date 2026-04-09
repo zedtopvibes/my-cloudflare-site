@@ -7,9 +7,11 @@ export async function onRequest(context) {
   };
 
   try {
-    const id = params.id;
+    const slug = params.slug;
     
-    // Get compilation details - only if published and not deleted
+    console.log('Fetching compilation with slug:', slug);
+    
+    // Get compilation details
     const compilation = await env.DB.prepare(`
       SELECT 
         id,
@@ -23,8 +25,8 @@ export async function onRequest(context) {
         created_by,
         created_at
       FROM compilations 
-      WHERE id = ? AND status = 'published' AND deleted_at IS NULL
-    `).bind(id).first();
+      WHERE slug = ? AND status = 'published' AND deleted_at IS NULL
+    `).bind(slug).first();
     
     if (!compilation) {
       return new Response(JSON.stringify({ error: 'Compilation not found' }), { 
@@ -32,6 +34,8 @@ export async function onRequest(context) {
         headers 
       });
     }
+    
+    console.log('Compilation found:', compilation.title);
     
     // Get items in this compilation
     const { results: items } = await env.DB.prepare(`
@@ -43,6 +47,8 @@ export async function onRequest(context) {
       WHERE ci.compilation_id = ?
       ORDER BY ci.display_order ASC
     `).bind(compilation.id).all();
+    
+    console.log('Items found:', items.length);
     
     // Fetch item details based on compilation type
     let itemsWithDetails = [];
@@ -66,12 +72,15 @@ export async function onRequest(context) {
           WHERE a.id IN (${itemIds}) AND a.deleted_at IS NULL AND a.status = 'published'
         `).all();
         
-        itemsWithDetails = items.map(item => ({
-          id: item.relation_id,
-          item_id: item.item_id,
-          display_order: item.display_order,
-          item: albums.find(a => a.id === item.item_id)
-        })).filter(i => i.item);
+        itemsWithDetails = items.map(item => {
+          const found = albums.find(a => a.id === item.item_id);
+          return found ? {
+            id: item.relation_id,
+            item_id: item.item_id,
+            display_order: item.display_order,
+            item: found
+          } : null;
+        }).filter(i => i !== null);
         
       } else if (compilation.type === 'eps') {
         const { results: eps } = await env.DB.prepare(`
@@ -89,12 +98,15 @@ export async function onRequest(context) {
           WHERE e.id IN (${itemIds}) AND e.deleted_at IS NULL AND e.status = 'published'
         `).all();
         
-        itemsWithDetails = items.map(item => ({
-          id: item.relation_id,
-          item_id: item.item_id,
-          display_order: item.display_order,
-          item: eps.find(e => e.id === item.item_id)
-        })).filter(i => i.item);
+        itemsWithDetails = items.map(item => {
+          const found = eps.find(e => e.id === item.item_id);
+          return found ? {
+            id: item.relation_id,
+            item_id: item.item_id,
+            display_order: item.display_order,
+            item: found
+          } : null;
+        }).filter(i => i !== null);
         
       } else if (compilation.type === 'artists') {
         const { results: artists } = await env.DB.prepare(`
@@ -111,12 +123,15 @@ export async function onRequest(context) {
           WHERE id IN (${itemIds}) AND deleted_at IS NULL AND status = 'published'
         `).all();
         
-        itemsWithDetails = items.map(item => ({
-          id: item.relation_id,
-          item_id: item.item_id,
-          display_order: item.display_order,
-          item: artists.find(a => a.id === item.item_id)
-        })).filter(i => i.item);
+        itemsWithDetails = items.map(item => {
+          const found = artists.find(a => a.id === item.item_id);
+          return found ? {
+            id: item.relation_id,
+            item_id: item.item_id,
+            display_order: item.display_order,
+            item: found
+          } : null;
+        }).filter(i => i !== null);
         
       } else if (compilation.type === 'playlists') {
         const { results: playlists } = await env.DB.prepare(`
@@ -131,21 +146,24 @@ export async function onRequest(context) {
           WHERE id IN (${itemIds}) AND deleted_at IS NULL AND status = 'published'
         `).all();
         
-        itemsWithDetails = items.map(item => ({
-          id: item.relation_id,
-          item_id: item.item_id,
-          display_order: item.display_order,
-          item: playlists.find(p => p.id === item.item_id)
-        })).filter(i => i.item);
+        itemsWithDetails = items.map(item => {
+          const found = playlists.find(p => p.id === item.item_id);
+          return found ? {
+            id: item.relation_id,
+            item_id: item.item_id,
+            display_order: item.display_order,
+            item: found
+          } : null;
+        }).filter(i => i !== null);
       }
     }
     
     compilation.items = itemsWithDetails;
     
-    // Increment view count
-    await env.DB.prepare(`
+    // Increment view count asynchronously (don't wait for it)
+    env.DB.prepare(`
       UPDATE compilations SET views = views + 1 WHERE id = ?
-    `).bind(compilation.id).run();
+    `).bind(compilation.id).run().catch(e => console.error('Error updating views:', e));
     
     return new Response(JSON.stringify(compilation), { headers });
     
