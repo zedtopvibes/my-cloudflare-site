@@ -42,18 +42,18 @@ export async function onRequest(context) {
       });
     }
 
-    // Generate filename (matching playlist pattern)
+    // Generate filename (no timestamp)
     const extension = cover.name.split('.').pop();
-    const timestamp = Date.now();
-    const filename = `compilations/${compilation.slug}-${timestamp}.${extension}`;
+    const filename = `${compilation.slug}.${extension}`;
+    const r2Path = `compilations/${filename}`;
 
-    // Upload to R2 (using AUDIO bucket)
-    await env.AUDIO.put(filename, await cover.arrayBuffer(), {
+    // Upload to R2
+    await env.AUDIO.put(r2Path, await cover.arrayBuffer(), {
       httpMetadata: { contentType: cover.type }
     });
 
-    // Generate URL - using compilation-cover endpoint
-    const coverUrl = `/api/compilation-cover/${compilation.slug}-${timestamp}.${extension}`;
+    // Store the frontend path (no /api prefix)
+    const coverUrl = `/images/compilations/${filename}`;
 
     // Update database
     await env.DB.prepare(
