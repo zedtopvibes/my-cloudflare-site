@@ -9,6 +9,8 @@ export async function onRequest(context) {
   try {
     const slug = params.slug;
     
+    console.log('Fetching compilation with slug:', slug);
+    
     // Get compilation details
     const compilation = await env.DB.prepare(`
       SELECT 
@@ -19,7 +21,6 @@ export async function onRequest(context) {
         slug,
         cover_url,
         is_featured,
-        status,
         views,
         created_by,
         created_at
@@ -67,12 +68,15 @@ export async function onRequest(context) {
           WHERE a.id IN (${itemIds}) AND a.deleted_at IS NULL AND a.status = 'published'
         `).all();
         
-        itemsWithDetails = items.map(item => ({
-          id: item.relation_id,
-          item_id: item.item_id,
-          display_order: item.display_order,
-          item: albums.find(a => a.id === item.item_id)
-        })).filter(i => i.item);
+        itemsWithDetails = items.map(item => {
+          const found = albums.find(a => a.id === item.item_id);
+          return found ? {
+            id: item.relation_id,
+            item_id: item.item_id,
+            display_order: item.display_order,
+            item: found
+          } : null;
+        }).filter(i => i !== null);
         
       } else if (compilation.type === 'eps') {
         const { results: eps } = await env.DB.prepare(`
@@ -90,12 +94,15 @@ export async function onRequest(context) {
           WHERE e.id IN (${itemIds}) AND e.deleted_at IS NULL AND e.status = 'published'
         `).all();
         
-        itemsWithDetails = items.map(item => ({
-          id: item.relation_id,
-          item_id: item.item_id,
-          display_order: item.display_order,
-          item: eps.find(e => e.id === item.item_id)
-        })).filter(i => i.item);
+        itemsWithDetails = items.map(item => {
+          const found = eps.find(e => e.id === item.item_id);
+          return found ? {
+            id: item.relation_id,
+            item_id: item.item_id,
+            display_order: item.display_order,
+            item: found
+          } : null;
+        }).filter(i => i !== null);
         
       } else if (compilation.type === 'artists') {
         const { results: artists } = await env.DB.prepare(`
@@ -112,12 +119,15 @@ export async function onRequest(context) {
           WHERE id IN (${itemIds}) AND deleted_at IS NULL AND status = 'published'
         `).all();
         
-        itemsWithDetails = items.map(item => ({
-          id: item.relation_id,
-          item_id: item.item_id,
-          display_order: item.display_order,
-          item: artists.find(a => a.id === item.item_id)
-        })).filter(i => i.item);
+        itemsWithDetails = items.map(item => {
+          const found = artists.find(a => a.id === item.item_id);
+          return found ? {
+            id: item.relation_id,
+            item_id: item.item_id,
+            display_order: item.display_order,
+            item: found
+          } : null;
+        }).filter(i => i !== null);
         
       } else if (compilation.type === 'playlists') {
         const { results: playlists } = await env.DB.prepare(`
@@ -132,36 +142,26 @@ export async function onRequest(context) {
           WHERE id IN (${itemIds}) AND deleted_at IS NULL AND status = 'published'
         `).all();
         
-        itemsWithDetails = items.map(item => ({
-          id: item.relation_id,
-          item_id: item.item_id,
-          display_order: item.display_order,
-          item: playlists.find(p => p.id === item.item_id)
-        })).filter(i => i.item);
+        itemsWithDetails = items.map(item => {
+          const found = playlists.find(p => p.id === item.item_id);
+          return found ? {
+            id: item.relation_id,
+            item_id: item.item_id,
+            display_order: item.display_order,
+            item: found
+          } : null;
+        }).filter(i => i !== null);
       }
     }
     
-    // Get compilation stats
-    const stats = await env.DB.prepare(`
-      SELECT 
-        COUNT(*) as item_count
-      FROM compilation_items
-      WHERE compilation_id = ?
-    `).bind(compilation.id).first();
+    compilation.items = itemsWithDetails;
     
-    // Increment view count
-    await env.DB.prepare(`
+    // Increment view count asynchronously
+    env.DB.prepare(`
       UPDATE compilations SET views = views + 1 WHERE id = ?
-    `).bind(compilation.id).run();
+    `).bind(compilation.id).run().catch(e => console.error('Error updating views:', e));
     
-    return new Response(JSON.stringify({
-      ...compilation,
-      items: itemsWithDetails,
-      stats: {
-        item_count: stats.item_count || 0
-      },
-      views: (compilation.views || 0) + 1
-    }), { headers });
+    return new Response(JSON.stringify(compilation), { headers });
     
   } catch (error) {
     console.error('Error fetching compilation:', error);
