@@ -42,18 +42,18 @@ export async function onRequest(context) {
       });
     }
 
-    // Generate filename (no timestamp for cleaner URLs)
+    // Generate filename
     const extension = cover.name.split('.').pop();
-    const filename = `${compilation.slug}.${extension}`;
-    const r2Path = `compilations/${filename}`;
+    const timestamp = Date.now();
+    const filename = `compilations/${compilation.slug}-${timestamp}.${extension}`;
 
     // Upload to R2
-    await env.AUDIO.put(r2Path, await cover.arrayBuffer(), {
+    await env.AUDIO.put(filename, await cover.arrayBuffer(), {
       httpMetadata: { contentType: cover.type }
     });
 
-    // Store the FULL API path (with /api) - THIS WORKS
-    const coverUrl = `/api/images/compilations/${filename}`;
+    // Generate URL - MATCH THE SERVING API PATH
+    const coverUrl = `/api/compilation-cover/${compilation.slug}-${timestamp}.${extension}`;
 
     // Update database
     await env.DB.prepare(
