@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="/css/style.css">
     
     <style>
-        /* Same styles as album/playlist page */
         .album-header {
             display: flex;
             gap: 30px;
@@ -41,31 +40,11 @@
         .breadcrumb { padding: 15px 20px 5px 20px; font-size: 14px; color: #666; }
         .breadcrumb a { color: #ff4b2b; text-decoration: none; }
         .section-spacing { margin-top: 40px; }
-        .roundthumb.track-number { background: #ff5500; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; }
-        .page-navi { padding: 2px 6px; margin: 5px 0; text-align: center; clear: both; }
-        .page-numbers, a.page-numbers { background: #424242; color: #fff; padding: 6px 12px; border-radius: 6px; border: 1px solid #555; text-decoration: none; transition: all 0.25s ease; display: inline-block; font-family: 'Inter', sans-serif; font-size: 13px; line-height: normal; margin: 0 1px; }
-        a.page-numbers:hover { background: #ff4b2b; color: #fff; transform: translateY(-2px); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
-        .page-numbers.current { background: #ff4b2b; color: #fff; border-color: #ff4b2b; }
         .loading-spinner { text-align: center; padding: 60px 20px; color: #666; font-size: 14px; }
         .loading-spinner::after { content: ''; display: inline-block; width: 30px; height: 30px; margin-left: 10px; border: 3px solid #f3f3f3; border-top: 3px solid #ff4b2b; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .error-message { text-align: center; padding: 60px 20px; color: #ff2121; font-size: 14px; }
-        .compilation-type-badge {
-            display: inline-block;
-            background: #ff4b2b;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 12px;
-            vertical-align: middle;
-        }
-        .item-meta-type {
-            font-size: 12px;
-            color: #ff4b2b;
-            font-weight: 500;
-        }
+        .item-meta-type { font-size: 12px; color: #ff4b2b; font-weight: 500; }
         @media (max-width: 768px) {
             .album-header { flex-direction: column; text-align: center; gap: 20px; }
             .album-artwork img { width: 150px; height: 150px; }
@@ -101,7 +80,6 @@
                 <span class="album-stats"><i class="fas fa-eye"></i> <span id="compilation-views">---</span> views</span>
             </div>
             <p class="album-description" id="compilation-description">Loading compilation description...</p>
-            
             <div class="share-buttons">
                 <button class="share-btn telegram" onclick="shareTelegram()"><i class="fab fa-telegram"></i> Telegram</button>
                 <button class="share-btn facebook" onclick="shareFacebook()"><i class="fab fa-facebook"></i> Facebook</button>
@@ -112,49 +90,30 @@
     </div>
 
     <div class="section-header" style="margin-top:0;">
-        <h2 class="section-title">
-            <i class="fas fa-list" style="margin-right: 8px;"></i>
-            Items in Compilation
-        </h2>
+        <h2 class="section-title"><i class="fas fa-list" style="margin-right: 8px;"></i> Items in Compilation</h2>
     </div>
-    
     <div class="corner">
-        <div class="music-grid" id="items-container">
-            <div class="loading-spinner">Loading items...</div>
-        </div>
+        <div class="music-grid" id="items-container"><div class="loading-spinner">Loading items...</div></div>
     </div>
 
     <div class="page-navi" align="center"></div>
 
     <div class="section-header section-spacing">
-        <h2 class="section-title">
-            <i class="fas fa-thumbs-up" style="margin-right: 8px;"></i>
-            Recommended Compilations
-        </h2>
+        <h2 class="section-title"><i class="fas fa-thumbs-up" style="margin-right: 8px;"></i> Recommended Compilations</h2>
     </div>
-    
     <div class="corner">
-        <div class="music-grid" id="recommended-container">
-            <div class="loading-spinner">Loading recommendations...</div>
-        </div>
+        <div class="music-grid" id="recommended-container"><div class="loading-spinner">Loading recommendations...</div></div>
     </div>
 
     <div id="footer-placeholder"></div>
 
     <script>
-        const API_BASE = 'api';
-        const IMAGE_BASE = 'https://zedtopvibes.pages.dev';
+        const API_BASE = '/api';
+        const IMAGE_BASE = '';
         
         let currentPage = 1;
         let itemsPerPage = 8;
         let allItems = [];
-        
-        function formatDuration(seconds) {
-            if (!seconds) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
         
         function formatNumber(num) {
             if (!num) return '0';
@@ -183,12 +142,7 @@
         }
         
         function getItemTypeLabel(type) {
-            const labels = {
-                'albums': 'Album',
-                'eps': 'EP',
-                'artists': 'Artist',
-                'playlists': 'Playlist'
-            };
+            const labels = { 'albums': 'Album', 'eps': 'EP', 'artists': 'Artist', 'playlists': 'Playlist' };
             return labels[type] || 'Item';
         }
         
@@ -221,57 +175,41 @@
                 const itemTypeLabel = getItemTypeLabel(compilationType);
                 const itemSubtitle = getItemSubtitle(item.item, compilationType);
                 const itemImage = item.item.cover_url || item.item.image_url || '/images/default.jpg';
-                
                 return `
                     <a href="${itemUrl}" class="music-item">
                         <div class="item-container">
-                            <div class="item-thumb">
-                                <img src="${itemImage}" width="80" height="80" class="roundthumb" alt="${escapeHtml(item.item.title || item.item.name)}">
-                            </div>
+                            <div class="item-thumb"><img src="${itemImage}" width="80" height="80" class="roundthumb" alt="${escapeHtml(item.item.title || item.item.name)}"></div>
                             <div class="item-data">
                                 <span class="track-title"><b>${escapeHtml(item.item.title || item.item.name)}</b></span>
                                 <div class="artist-name">${escapeHtml(itemSubtitle)}</div>
-                                <span class="item-meta">
-                                    <span class="item-meta-type">${itemTypeLabel}</span>
-                                </span>
+                                <span class="item-meta"><span class="item-meta-type">${itemTypeLabel}</span></span>
                             </div>
                         </div>
                     </a>
                 `;
             }).join('');
-            
             updatePagination(totalPages);
         }
         
         function updatePagination(totalPages) {
             const paginationDiv = document.querySelector('.page-navi');
             if (!paginationDiv) return;
-            if (totalPages <= 1) {
-                paginationDiv.style.display = 'none';
-                return;
-            }
+            if (totalPages <= 1) { paginationDiv.style.display = 'none'; return; }
             paginationDiv.style.display = 'block';
-            
             let html = '';
             if (currentPage === 1) html += `<span class="page-numbers current">1</span>`;
             else html += `<a class="page-numbers" href="#" onclick="loadPage(1)">1</a>`;
-            
             if (currentPage > 3) html += `<span class="page-numbers dots">…</span>`;
-            
             for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
                 if (i === currentPage) html += `<span class="page-numbers current">${i}</span>`;
                 else html += `<a class="page-numbers" href="#" onclick="loadPage(${i})">${i}</a>`;
             }
-            
             if (currentPage < totalPages - 2) html += `<span class="page-numbers dots">…</span>`;
-            
             if (totalPages > 1) {
                 if (currentPage === totalPages) html += `<span class="page-numbers current">${totalPages}</span>`;
                 else html += `<a class="page-numbers" href="#" onclick="loadPage(${totalPages})">${totalPages}</a>`;
             }
-            
             if (currentPage < totalPages) html += `<a class="next page-numbers" href="#" onclick="loadPage(${currentPage + 1})">Next »</a>`;
-            
             paginationDiv.innerHTML = html;
         }
         
@@ -279,8 +217,7 @@
             currentPage = page;
             const compilationType = document.getElementById('compilation-type')?.getAttribute('data-type') || 'albums';
             renderItems(allItems, compilationType);
-            const section = document.querySelector('.section-header');
-            if (section) section.scrollIntoView({ behavior: 'smooth' });
+            document.querySelector('.section-header')?.scrollIntoView({ behavior: 'smooth' });
         };
         
         function getShareText() {
@@ -288,16 +225,10 @@
             return `🎧 Check out "${name}" compilation on Zedtopvibes!`;
         }
         
-        window.shareTelegram = function() {
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(getShareText())}`, '_blank');
-        };
-        window.shareFacebook = function() {
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
-        };
-        window.shareWhatsApp = function() {
-            window.open(`https://wa.me/?text=${encodeURIComponent(getShareText() + ' ' + window.location.href)}`, '_blank');
-        };
-        window.copyLink = function() {
+        window.shareTelegram = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(getShareText())}`, '_blank');
+        window.shareFacebook = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+        window.shareWhatsApp = () => window.open(`https://wa.me/?text=${encodeURIComponent(getShareText() + ' ' + window.location.href)}`, '_blank');
+        window.copyLink = () => {
             navigator.clipboard.writeText(window.location.href).then(() => {
                 const btn = document.querySelector('.share-btn.copy');
                 const original = btn.innerHTML;
@@ -314,18 +245,14 @@
                 const compilations = await response.json();
                 const compilationList = Array.isArray(compilations) ? compilations : (compilations.results || []);
                 const recommended = compilationList.filter(c => c.id != currentId).slice(0, 6);
-                
-                if (!recommended || recommended.length === 0) {
+                if (!recommended.length) {
                     container.innerHTML = '<div class="error-message">No recommendations available</div>';
                     return;
                 }
-                
                 container.innerHTML = recommended.map(c => `
                     <a href="/compilation/${c.slug}" class="music-item">
                         <div class="item-container">
-                            <div class="item-thumb">
-                                <img src="${c.cover_url || '/images/default-compilation.jpg'}" width="80" height="80" class="roundthumb" alt="${escapeHtml(c.title)}">
-                            </div>
+                            <div class="item-thumb"><img src="${c.cover_url || '/images/default-compilation.jpg'}" width="80" height="80" class="roundthumb" alt="${escapeHtml(c.title)}"></div>
                             <div class="item-data">
                                 <span class="track-title"><b>${escapeHtml(c.title)}</b></span>
                                 <div class="artist-name">${c.item_count || 0} items</div>
@@ -347,14 +274,14 @@
             if (!slug) {
                 document.getElementById('compilation-name').textContent = 'Compilation not specified';
                 document.getElementById('compilation-description').textContent = 'No compilation slug provided in URL.';
+                document.getElementById('compilation-header').style.display = 'flex';
                 return;
             }
             
             try {
-                // FIXED: Use correct API endpoint matching playlist pattern
+                // Use the correct API endpoint
                 const apiUrl = `${API_BASE}/compilation/by-slug/${slug}`;
                 console.log('Fetching from:', apiUrl);
-                
                 const response = await fetch(apiUrl);
                 
                 if (!response.ok) {
@@ -364,6 +291,7 @@
                 const compilation = await response.json();
                 console.log('Compilation data:', compilation);
                 
+                // Populate header
                 document.getElementById('compilation-header').style.display = 'flex';
                 document.getElementById('compilation-name').textContent = compilation.title || 'Untitled';
                 document.getElementById('compilation-type').textContent = compilation.type || 'Unknown';
@@ -374,14 +302,12 @@
                 document.getElementById('breadcrumb-title').textContent = compilation.title || 'Compilation';
                 
                 if (compilation.cover_url) {
-                    const imgUrl = compilation.cover_url.startsWith('/') ? `${IMAGE_BASE}${compilation.cover_url}` : compilation.cover_url;
-                    document.getElementById('compilation-cover').src = imgUrl;
+                    document.getElementById('compilation-cover').src = compilation.cover_url.startsWith('/') ? compilation.cover_url : compilation.cover_url;
                 }
                 
                 const items = compilation.items || [];
                 currentPage = 1;
                 renderItems(items, compilation.type);
-                
                 await loadRecommendedCompilations(compilation.id, compilation.type);
                 
             } catch (error) {
@@ -395,17 +321,10 @@
         
         async function loadHeaderAndFooter() {
             try {
-                const [header, footer] = await Promise.all([
-                    fetch('/header.html').then(r => r.text()),
-                    fetch('/footer.html').then(r => r.text())
-                ]);
-                const headerPlaceholder = document.getElementById('header-placeholder');
-                const footerPlaceholder = document.getElementById('footer-placeholder');
-                if (headerPlaceholder) headerPlaceholder.innerHTML = header;
-                if (footerPlaceholder) footerPlaceholder.innerHTML = footer;
-            } catch (e) {
-                console.log('Header/footer not found');
-            }
+                const [header, footer] = await Promise.all([fetch('/header.html').then(r => r.text()), fetch('/footer.html').then(r => r.text())]);
+                document.getElementById('header-placeholder').innerHTML = header;
+                document.getElementById('footer-placeholder').innerHTML = footer;
+            } catch (e) { console.log('Header/footer not found'); }
         }
         
         document.addEventListener('DOMContentLoaded', async () => {
