@@ -51,15 +51,6 @@ function getPlaylistImage(playlist) {
     return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239c27b0'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📋%3C/text%3E%3C/svg%3E";
 }
 
-function getCompilationImage(item, type) {
-    if (item.cover_url) return item.cover_url;
-    const colors = { 'album': 'ff5500', 'ep': '9c27b0', 'artist': '2196f3', 'playlist': '4caf50' };
-    const icons = { 'album': '💿', 'ep': '📀', 'artist': '🎤', 'playlist': '📋' };
-    const color = colors[type] || '666';
-    const icon = icons[type] || '📁';
-    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23${color}'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodeURIComponent(icon)}%3C/text%3E%3C/svg%3E`;
-}
-
 function getArtistImage(artist) {
     return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232196f3'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎤%3C/text%3E%3C/svg%3E";
 }
@@ -108,10 +99,10 @@ async function loadHomepageSections() {
     const container = document.getElementById('homepage-sections-container');
     if (!container) return;
     
-    // Show skeleton loaders immediately to prevent layout shift
+    // Show skeleton loaders immediately
     container.innerHTML = `
         <div class="skeleton-grid">
-            ${Array(3).fill(0).map(() => `
+            ${Array(6).fill(0).map(() => `
                 <div class="skeleton-card">
                     <div class="skeleton-thumb"></div>
                     <div class="skeleton-title"></div>
@@ -122,6 +113,7 @@ async function loadHomepageSections() {
     `;
     
     try {
+        // Single API call - returns all sections with their items pre-loaded
         const response = await fetch(`${API_BASE}/homepage/sections`);
         const sections = await response.json();
         
@@ -130,6 +122,7 @@ async function loadHomepageSections() {
             return;
         }
         
+        // Render all sections immediately
         let html = '';
         for (const section of sections) {
             html += renderHomepageSection(section);
@@ -159,7 +152,7 @@ function renderHomepageSection(section) {
         if (section.source_type === 'playlist') {
             return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5500'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎵%3C/text%3E%3C/svg%3E";
         }
-        return getCompilationImage(item, item.type);
+        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff4b2b'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📀%3C/text%3E%3C/svg%3E";
     };
     
     const itemSubtitle = (item) => {
