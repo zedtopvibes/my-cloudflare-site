@@ -108,7 +108,18 @@ async function loadHomepageSections() {
     const container = document.getElementById('homepage-sections-container');
     if (!container) return;
     
-    container.innerHTML = '<div class="loading">Loading...</div>';
+    // Show skeleton loaders immediately to prevent layout shift
+    container.innerHTML = `
+        <div class="skeleton-grid">
+            ${Array(3).fill(0).map(() => `
+                <div class="skeleton-card">
+                    <div class="skeleton-thumb"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-text"></div>
+                </div>
+            `).join('')}
+        </div>
+    `;
     
     try {
         const response = await fetch(`${API_BASE}/homepage/sections`);
