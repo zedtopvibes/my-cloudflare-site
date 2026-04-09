@@ -1,76 +1,31 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
+  const filename = params.filename;
   
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers });
-  }
-
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-      status: 405, 
-      headers: { ...headers, 'Content-Type': 'application/json' }
-    });
-  }
-
   try {
-    const compilationId = params.id;
-    const formData = await request.formData();
-    const cover = formData.get('cover');
-
-    if (!cover) {
-      return new Response(JSON.stringify({ error: 'No cover image uploaded' }), { 
-        status: 400, 
-        headers: { ...headers, 'Content-Type': 'application/json' }
-      });
+    // Look for file in compilations folder
+    const object = await env.AUDIO.get(`compilations/${filename}`);
+    
+    if (!object) {
+      return new Response('Image not found', { status: 404 });
     }
 
-    // Check if compilation exists and get slug
-    const compilation = await env.DB.prepare(
-      'SELECT slug FROM compilations WHERE id = ? AND deleted_at IS NULL'
-    ).bind(compilationId).first();
+    // Determine content type
+    const contentType = object.httpMetadata?.contentType || 
+                       (filename.endsWith('.png') ? 'image/png' : 
+                        filename.endsWith('.jpg') || filename.endsWith('.jpeg') ? 'image/jpeg' : 
+                        filename.endsWith('.webp') ? 'image/webp' : 'image/jpeg');
 
-    if (!compilation) {
-      return new Response(JSON.stringify({ error: 'Compilation not found' }), { 
-        status: 404, 
-        headers: { ...headers, 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Generate filename (no timestamp for cleaner URLs)
-    const extension = cover.name.split('.').pop();
-    const filename = `${compilation.slug}.${extension}`;
-    const r2Path = `compilations/${filename}`;
-
-    // Upload to R2
-    await env.AUDIO.put(r2Path, await cover.arrayBuffer(), {
-      httpMetadata: { contentType: cover.type }
+    return new Response(object.body, {
+      headers: {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=31536000',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
-
-    // Store the FULL API path (with /api) - THIS WORKS
-    const coverUrl = `/api/images/compilations/${filename}`;
-
-    // Update database
-    await env.DB.prepare(
-      'UPDATE compilations SET cover_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).bind(coverUrl, compilationId).run();
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      cover_url: coverUrl,
-      message: 'Cover uploaded successfully'
-    }), { headers: { ...headers, 'Content-Type': 'application/json' } });
 
   } catch (error) {
-    console.error('Error uploading cover:', error);
-    return new Response(JSON.stringify({ error: error.message }), { 
-      status: 500, 
-      headers: { ...headers, 'Content-Type': 'application/json' }
-    });
+    console.error('Error serving image:', error);
+    return new Response('Error loading image', { status: 500 });
   }
 }
