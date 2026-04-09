@@ -42,9 +42,10 @@ export async function onRequest(context) {
       });
     }
 
-    // Generate filename (no timestamp)
+    // Generate filename (matching the pattern from eps)
     const extension = cover.name.split('.').pop();
-    const filename = `${compilation.slug}.${extension}`;
+    const timestamp = Date.now();
+    const filename = `${compilation.slug}-${timestamp}.${extension}`;
     const r2Path = `compilations/${filename}`;
 
     // Upload to R2
@@ -52,8 +53,8 @@ export async function onRequest(context) {
       httpMetadata: { contentType: cover.type }
     });
 
-    // Store the frontend path (no /api prefix)
-    const coverUrl = `/images/compilations/${filename}`;
+    // Store the full API path in D1 (matching the pattern from eps)
+    const coverUrl = `/api/images/compilations/${filename}`;
 
     // Update database
     await env.DB.prepare(
