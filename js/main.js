@@ -31,20 +31,18 @@ function getAlbumArtistDisplay(album) {
 // Stable image fallback - prevents layout shifts and glitching
 function getAlbumImage(album) {
     if (album.cover_url && album.cover_url !== 'null' && album.cover_url !== '') {
-        return album.cover_url;  // Already relative or absolute
+        return album.cover_url;
     }
-    // SVG placeholder with emoji
     if (album.cover_emoji) {
         const encodedEmoji = encodeURIComponent(album.cover_emoji);
         return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5500'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedEmoji}%3C/text%3E%3C/svg%3E`;
     }
-    // Default music note placeholder
     return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎵%3C/text%3E%3C/svg%3E";
 }
 
 function getPlaylistImage(playlist) {
     if (playlist.cover_url && playlist.cover_url !== 'null' && playlist.cover_url !== '') {
-        return playlist.cover_url;  // Already relative or absolute
+        return playlist.cover_url;
     }
     if (playlist.cover_emoji) {
         const encodedEmoji = encodeURIComponent(playlist.cover_emoji);
@@ -57,14 +55,13 @@ function getCompilationImage(compilation) {
     if (compilation.cover_url && compilation.cover_url !== 'null' && compilation.cover_url !== '') {
         return compilation.cover_url;
     }
-    // Different colors based on compilation type
     const colors = {
-        'albums': '%23ff5500',
-        'eps': '%239c27b0',
-        'artists': '%232196f3',
-        'playlists': '%234caf50'
+        'albums': 'ff5500',
+        'eps': '9c27b0',
+        'artists': '2196f3',
+        'playlists': '4caf50'
     };
-    const color = colors[compilation.type] || '%23666';
+    const color = colors[compilation.type] || '666';
     const icons = {
         'albums': '💿',
         'eps': '📀',
@@ -73,7 +70,7 @@ function getCompilationImage(compilation) {
     };
     const icon = icons[compilation.type] || '📁';
     const encodedIcon = encodeURIComponent(icon);
-    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='${color}'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedIcon}%3C/text%3E%3C/svg%3E`;
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23${color}'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedIcon}%3C/text%3E%3C/svg%3E`;
 }
 
 function getArtistImage(artist) {
@@ -309,13 +306,23 @@ async function loadPlaylists() {
 // NEW: Load Compilations
 async function loadCompilations() {
     const container = document.getElementById('compilations-container');
-    if (!container) return;
+    if (!container) {
+        console.log('Compilations container not found on this page');
+        return;
+    }
     
     container.innerHTML = '<div class="loading">Loading compilations...</div>';
     
     try {
+        console.log('Fetching compilations from:', `${API_BASE}/compilations`);
         const response = await fetch(`${API_BASE}/compilations`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const compilations = await response.json();
+        console.log('Compilations received:', compilations);
         
         if (!compilations || compilations.length === 0) {
             container.innerHTML = '<div class="error-message">No compilations found</div>';
@@ -351,6 +358,8 @@ async function loadCompilations() {
                 </a>
             `;
         }).join('');
+        
+        console.log('Compilations loaded successfully');
         
     } catch (error) {
         console.error('Error loading compilations:', error);
@@ -497,7 +506,8 @@ async function loadAllContent() {
     contentLoaded = true;
     console.log('Loading content...');
     
-    await Promise.all([
+    // Load all sections in parallel
+    await Promise.allSettled([
         loadTrending(),
         loadLatestReleases(),
         loadPlaylists(),
@@ -507,6 +517,8 @@ async function loadAllContent() {
         loadArtists(),
         loadGenres()
     ]);
+    
+    console.log('All content loaded');
 }
 
 // ===== HEADER & FOOTER LOADER =====
