@@ -4,7 +4,8 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Cache-Control': 'public, max-age=300' // Cache for 5 minutes
   };
 
   if (request.method === 'OPTIONS') {
@@ -19,7 +20,6 @@ export async function onRequest(context) {
   }
 
   try {
-    // Get section info
     const section = await env.DB.prepare(`
       SELECT source_type, source_id FROM homepage_sections WHERE id = ?
     `).bind(sectionId).first();
@@ -34,7 +34,6 @@ export async function onRequest(context) {
     let items = [];
     
     if (section.source_type === 'playlist') {
-      // Fetch tracks from playlist
       const { results: tracks } = await env.DB.prepare(`
         SELECT 
           t.id, t.title, t.slug, t.artwork_url as cover_url,
@@ -68,7 +67,6 @@ export async function onRequest(context) {
       });
       
     } else if (section.source_type === 'compilation') {
-      // Get compilation type
       const compilation = await env.DB.prepare(`
         SELECT type FROM compilations WHERE id = ?
       `).bind(section.source_id).first();
