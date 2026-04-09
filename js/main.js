@@ -99,35 +99,62 @@ async function loadHomepageSections() {
     const container = document.getElementById('homepage-sections-container');
     if (!container) return;
     
-    // Show skeleton loaders immediately
-    container.innerHTML = `
-        <div class="skeleton-grid">
-            ${Array(6).fill(0).map(() => `
-                <div class="skeleton-card">
-                    <div class="skeleton-thumb"></div>
-                    <div class="skeleton-title"></div>
-                    <div class="skeleton-text"></div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-    
     try {
-        // Single API call - returns all sections with their items pre-loaded
-        const response = await fetch(`${API_BASE}/homepage/sections`);
-        const sections = await response.json();
+        // Step 1: Fetch section metadata only (titles, slugs) - FAST
+        const metadataResponse = await fetch(`${API_BASE}/homepage/sections/metadata`);
+        const sections = await metadataResponse.json();
         
         if (!sections || sections.length === 0) {
             await loadDefaultSections();
             return;
         }
         
-        // Render all sections immediately
+        // Step 2: Immediately render section headers with skeleton loaders
         let html = '';
         for (const section of sections) {
-            html += renderHomepageSection(section);
+            html += `
+                <div class="section-header">
+                    <h2 class="section-title">${escapeHtml(section.title)}</h2>
+                    <a href="/${section.source_type === 'playlist' ? 'playlist' : 'compilation'}/${section.source_slug}" class="see-all-btn">See All</a>
+                </div>
+                <div class="corner">
+                    <div class="music-grid" id="section-grid-${section.id}">
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
+                    </div>
+                </div>
+            `;
         }
         container.innerHTML = html;
+        
+        // Step 3: Fetch content for all sections in parallel
+        const contentPromises = sections.map(async (section) => {
+            try {
+                const contentResponse = await fetch(`${API_BASE}/homepage/section/${section.id}/items`);
+                const items = await contentResponse.json();
+                return { id: section.id, items: items };
+            } catch (err) {
+                console.error(`Error loading content for section ${section.id}:`, err);
+                return { id: section.id, items: [] };
+            }
+        });
+        
+        const sectionsWithContent = await Promise.all(contentPromises);
+        
+        // Step 4: Replace skeleton loaders with actual content
+        for (const sectionContent of sectionsWithContent) {
+            const gridContainer = document.getElementById(`section-grid-${sectionContent.id}`);
+            if (gridContainer && sectionContent.items && sectionContent.items.length > 0) {
+                const section = sections.find(s => s.id === sectionContent.id);
+                gridContainer.innerHTML = renderSectionItems(sectionContent.items, section);
+            } else if (gridContainer) {
+                gridContainer.innerHTML = '<div class="error-message">No items available</div>';
+            }
+        }
         
     } catch (error) {
         console.error('Error loading homepage sections:', error);
@@ -135,8 +162,8 @@ async function loadHomepageSections() {
     }
 }
 
-function renderHomepageSection(section) {
-    if (!section.items || section.items.length === 0) return '';
+function renderSectionItems(items, section) {
+    if (!items || items.length === 0) return '';
     
     const itemUrl = (item) => {
         if (section.source_type === 'playlist') return `/song/${item.slug}`;
@@ -164,32 +191,22 @@ function renderHomepageSection(section) {
         return '';
     };
     
-    return `
-        <div class="section-header">
-            <h2 class="section-title">${escapeHtml(section.title)}</h2>
-            <a href="/${section.source_type === 'playlist' ? 'playlist' : 'compilation'}/${section.source_slug}" class="see-all-btn">See All</a>
-        </div>
-        <div class="corner">
-            <div class="music-grid">
-                ${section.items.map(item => `
-                    <a href="${itemUrl(item)}" class="music-item">
-                        <div class="item-container">
-                            <div class="item-thumb">
-                                <img src="${itemImage(item)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(item.title)}" data-type="${section.source_type === 'playlist' ? 'default' : item.type}" onerror="handleImageError(this)">
-                            </div>
-                            <div class="item-data">
-                                <span class="track-title"><b>${escapeHtml(item.title)}</b></span>
-                                <div class="artist-name">${escapeHtml(itemSubtitle(item))}</div>
-                                <span class="item-meta">
-                                    ${item.duration ? `<b style="color:#ff0000">${formatDuration(item.duration)}</b>` : ''}
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                `).join('')}
+    return items.map(item => `
+        <a href="${itemUrl(item)}" class="music-item">
+            <div class="item-container">
+                <div class="item-thumb">
+                    <img src="${itemImage(item)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(item.title)}" data-type="${section.source_type === 'playlist' ? 'default' : item.type}" onerror="handleImageError(this)">
+                </div>
+                <div class="item-data">
+                    <span class="track-title"><b>${escapeHtml(item.title)}</b></span>
+                    <div class="artist-name">${escapeHtml(itemSubtitle(item))}</div>
+                    <span class="item-meta">
+                        ${item.duration ? `<b style="color:#ff0000">${formatDuration(item.duration)}</b>` : ''}
+                    </span>
+                </div>
             </div>
-        </div>
-    `;
+        </a>
+    `).join('');
 }
 
 async function loadDefaultSections() {
@@ -545,11 +562,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     isInitialized = true;
     
     console.log('DOM ready - initializing...');
-    await loadHeaderAndFooter();
+    
+    // Load header and footer in background
+    loadHeaderAndFooter();
+    
     initializeScrollButton();
     initializeLiveSearch();
     
-    // Load dynamic homepage sections
+    // Load homepage sections with progressive loading
     await loadHomepageSections();
 });
 
