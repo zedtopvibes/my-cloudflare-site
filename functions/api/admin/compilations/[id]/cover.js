@@ -44,15 +44,16 @@ export async function onRequest(context) {
 
     // Generate filename (matching playlist pattern)
     const extension = cover.name.split('.').pop();
-    const filename = `compilations/${compilation.slug}-${Date.now()}.${extension}`;
+    const timestamp = Date.now();
+    const filename = `compilations/${compilation.slug}-${timestamp}.${extension}`;
 
-    // Upload to R2 (using AUDIO bucket like playlists)
+    // Upload to R2 (using AUDIO bucket)
     await env.AUDIO.put(filename, await cover.arrayBuffer(), {
       httpMetadata: { contentType: cover.type }
     });
 
-    // Generate URL (matching playlist pattern)
-    const coverUrl = `/api/compilation-cover/${filename.replace('compilations/', '')}`;
+    // Generate URL - using compilation-cover endpoint
+    const coverUrl = `/api/compilation-cover/${compilation.slug}-${timestamp}.${extension}`;
 
     // Update database
     await env.DB.prepare(
