@@ -7,22 +7,22 @@ export async function onRequest(context) {
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
-
+  
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers });
   }
-
+  
   if (request.method !== 'GET') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
       status: 405, 
       headers 
     });
   }
-
+  
   try {
     const url = new URL(request.url);
-    const type = url.searchParams.get('type'); // 'albums', 'eps', 'artists', 'playlists'
-    const limit = url.searchParams.get('limit') || 10;
+    const type = url.searchParams.get('type');
+    const limit = parseInt(url.searchParams.get('limit')) || 12;
     
     let query = `
       SELECT 
@@ -32,6 +32,7 @@ export async function onRequest(context) {
         c.type,
         c.slug,
         c.cover_url,
+        c.is_featured,
         c.views,
         c.created_at,
         (SELECT COUNT(*) FROM compilation_items WHERE compilation_id = c.id) as item_count
