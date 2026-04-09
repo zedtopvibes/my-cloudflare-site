@@ -1,3 +1,5 @@
+
+
 /* ===== Zedtopvibes.com - Main Stylesheet ===== */
 /* All styles preserved exactly from original */
 
@@ -182,102 +184,6 @@ body {
     display: block;
 }
 
-/* ===== LAYOUT SHIFT PREVENTION ===== */
-
-/* Homepage sections container - reserve space */
-#homepage-sections-container {
-    min-height: 600px;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-}
-
-/* Skeleton loader styles */
-.skeleton-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
-    min-height: 300px;
-}
-
-.skeleton-card {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: skeleton-pulse 1.5s infinite;
-    border-radius: 12px;
-    min-height: 280px;
-}
-
-.skeleton-thumb {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background: #ddd;
-    border-radius: 12px 12px 0 0;
-}
-
-.skeleton-title {
-    height: 16px;
-    width: 80%;
-    margin: 12px auto 8px;
-    background: #ddd;
-    border-radius: 4px;
-}
-
-.skeleton-text {
-    height: 12px;
-    width: 60%;
-    margin: 0 auto;
-    background: #ddd;
-    border-radius: 4px;
-}
-
-@keyframes skeleton-pulse {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* Fixed dimensions for music grid to prevent shift */
-.music-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
-    min-height: 300px;
-}
-
-/* Music item fixed dimensions */
-.music-item {
-    min-height: 280px;
-    background-color: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    display: inline-block;
-    padding: 6px 8px;
-    margin: 0;
-    border: 1px solid #ddd;
-    overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, color 0.25s ease;
-    width: 100%;
-    box-sizing: border-box;
-    vertical-align: top;
-    font-size: 14px;
-    line-height: normal;
-}
-
-/* Fixed aspect ratio for images - prevents layout shift */
-.item-thumb {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-    flex-shrink: 0;
-    margin-right: 0;
-    margin-bottom: 8px;
-}
-
-.item-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 /* Typography */
 h1, h2, h3 {
     padding: 0;
@@ -392,7 +298,6 @@ input[type=search]:focus {
     width: 100%;
     box-sizing: border-box;
     padding: 0;
-    min-height: 40px;
 }
 .section-title {
     color: #fff;
@@ -425,6 +330,101 @@ input[type=search]:focus {
     fill: currentColor;
     margin-left: 4px;
     vertical-align: middle;
+}
+
+/* Music Items Grid */
+.music-item {
+    position: relative;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    display: inline-block;
+    padding: 6px 8px;
+    margin: 0;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+    width: 50%;
+    max-width: 50%;
+    box-sizing: border-box;
+    vertical-align: top;
+    font-size: 14px;
+    line-height: normal;
+    float: left;
+}
+.music-item:nth-child(odd) {
+    border-right: none;
+    clear: left;
+}
+.music-item:nth-child(even) {
+    border-left: none;
+}
+.music-item:nth-child(1) {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 0;
+}
+.music-item:nth-child(2) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 12px;
+}
+.music-item:last-child,
+.music-item:nth-last-child(2) {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+.music-item a, .list-item a {
+    color: #222;
+    text-decoration: none;
+}
+.music-item:hover, a.music-item:focus, a.list-item:focus, a.list-item:hover, button.list-item:focus, button.list-item:hover {
+    color: #233dce;
+    background-color: #f0f4ff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    z-index: 10;
+    position: relative;
+}
+.music-item.active, .music-item.active:focus, .music-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #36f;
+    border-color: #36f;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+.item-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.item-thumb {
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+.item-data {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px !important;
+    font-weight: 600;
+}
+span.item-meta {
+    color: #777 !important;
+    display: block;
+    font-size: 12px !important;
+    margin-top: 2px;
+}
+.roundthumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+    cursor: pointer;
+    filter: brightness(0.95);
+}
+.roundthumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    filter: brightness(1);
 }
 
 /* Badges */
@@ -758,19 +758,20 @@ button:hover {
 
 /* Media Queries */
 @media screen and (min-width: 720px) {
-    .music-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    .music-item {
+        width: 50%;
+        margin: 0;
+        float: left;
     }
 }
 @media screen and (max-width: 719px) {
-    .music-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-        min-height: 260px;
-    }
     .music-item {
-        min-height: 260px;
+        display: block;
+        width: 100%;
+        margin: 0;
+        max-width: 100%;
         border: 1px solid #ddd;
+        float: none;
     }
     .music-item:nth-child(odd),
     .music-item:nth-child(even) {
@@ -793,9 +794,6 @@ button:hover {
     .see-all-btn {
         padding: 6px 10px;
     }
-    .skeleton-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
 }
 @media (max-width: 768px) {
     .scroll-btn {
@@ -805,6 +803,7 @@ button:hover {
         right: 15px;
     }
 }
+
 
 /* ===== UNIVERSAL COMING SOON STYLES ===== */
 .coming-soon {
@@ -862,6 +861,7 @@ button:hover {
     margin: 0;
 }
 
+
 /* ===== ALPHABET NAVIGATION ===== */
 .alphabet-nav {
     display: flex;
@@ -893,31 +893,33 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Detail specific Breadcrumb - no bottom margin */
-.breadcrumb {
-    background: #424242;
-    border-bottom: 1px solid #ff2121;
-    border-radius: 6px;
-    padding: 8px 12px;
-    margin: 0 0 0 0;
-    color: #fff;
-    font-size: 14px;
-    box-shadow: inset 0 -1px red;
-}
-.breadcrumb a {
-    color: #ff9800;
-    text-decoration: none;
-}
-.breadcrumb a:hover {
-    color: #ff4b2b;
-}
-.breadcrumb strong {
-    color: #fff;
-}
 
-/* ===== PAGINATION STYLES - Reduced Spacing ===== */
+   /* Detail specific Breadcrumb - no bottom margin */
+        .breadcrumb {
+            background: #424242;
+            border-bottom: 1px solid #ff2121;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 0 0 0 0;  /* Removed bottom margin */
+            color: #fff;
+            font-size: 14px;
+            box-shadow: inset 0 -1px red;
+        }
+        .breadcrumb a {
+            color: #ff9800;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: #ff4b2b;
+        }
+        .breadcrumb strong {
+            color: #fff;
+        }
+        
+       
+     /* ===== PAGINATION STYLES - Reduced Spacing ===== */
 .page-navi {
-    padding: 2px 6px;
+    padding: 2px 6px;  /* Reduced from 5px 6px 5px */
     margin: 5px 0;
     text-align: center;
     clear: both;
@@ -925,16 +927,16 @@ html {
 .page-numbers, a.page-numbers {
     background: #424242;
     color: #fff;
-    padding: 6px 12px;
+    padding: 6px 12px;  /* Reduced from 8px 14px */
     border-radius: 6px;
     border: 1px solid #555;
     text-decoration: none;
     transition: all 0.25s ease;
     display: inline-block;
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    font-size: 13px;  /* Slightly smaller */
     line-height: normal;
-    margin: 0 1px;
+    margin: 0 1px;  /* Reduced from 0 2px */
 }
 a.page-numbers:hover {
     background: #ff4b2b;
@@ -953,80 +955,155 @@ a.page-numbers:hover {
     color: #ff4b2b;
     font-weight: 600;
     box-shadow: none;
-    padding: 6px 2px;
+    padding: 6px 2px;  /* Reduced from 8px 4px */
 }
 .next.page-numbers, .prev.page-numbers {
     font-weight: 600;
 }
+        
 
-/* Section headers - reduced spacing */
-.section-header {
-    margin: 0;
+        /* Section headers - reduced spacing */
+        .section-header {
+            margin: 0;  /* Remove default margins */
+        }
+        
+        .section-header.section-spacing {
+            margin-top: 0;  /* Remove top margin */
+        }
+        
+        /* Bottom description card - reduced margin */
+        .bottom-description {
+            background-color: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;  /* Removed margin */
+        }
+        
+        /* Tracklist section - remove top spacing */
+        .tracklist-section {
+            margin-top: 0;
+        }
+       
+            .page-numbers, a.page-numbers {
+                padding: 6px 10px;
+                font-size: 13px;
+            }     
+
+
+    /* ===== LAYOUT SHIFT PREVENTION - ADDITIONS ONLY ===== */
+/* These styles ONLY prevent layout shift, they do NOT change the original design */
+
+/* Reserve space for dynamic content - prevents shift when content loads */
+#homepage-sections-container {
+    min-height: 400px;
 }
 
-.section-header.section-spacing {
-    margin-top: 0;
-}
-
-/* Bottom description card - reduced margin */
-.bottom-description {
-    background-color: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 20px;
+/* Skeleton loader styles - temporary while loading */
+.skeleton-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
     width: 100%;
+}
+
+.skeleton-card {
+    width: 50%;
+    display: inline-block;
+    padding: 6px 8px;
+    margin: 0;
     box-sizing: border-box;
-    margin: 0;
+    vertical-align: top;
 }
 
-/* Tracklist section - remove top spacing */
-.tracklist-section {
+.skeleton-thumb {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s infinite;
+    border-radius: 16px;
+    margin-right: 12px;
+    float: left;
+}
+
+.skeleton-title {
+    height: 16px;
+    width: 60%;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.skeleton-text {
+    height: 12px;
+    width: 40%;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-card .item-data {
+    overflow: hidden;
+}
+
+@keyframes skeleton-pulse {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Mobile skeleton adjustments - matches original mobile styles */
+@media screen and (max-width: 719px) {
+    .skeleton-card {
+        width: 100%;
+        display: block;
+    }
+    
+    .skeleton-thumb {
+        float: left;
+    }
+}
+
+@media screen and (min-width: 720px) {
+    .skeleton-card {
+        width: 50%;
+        float: left;
+    }
+    
+    .skeleton-card:nth-child(odd) .skeleton-thumb {
+        margin-right: 12px;
+    }
+}
+
+/* Prevent image loading shift - images maintain original dimensions */
+.roundthumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
+/* Ensure music-item doesn't shift */
+.music-item {
+    /* Original styles preserved, no changes */
+    min-height: 100px; /* Add minimum height to prevent shift */
+}
+
+/* Container for dynamic sections - matches original .corner behavior */
+#homepage-sections-container > .section-header {
     margin-top: 0;
 }
 
-.page-numbers, a.page-numbers {
-    padding: 6px 10px;
-    font-size: 13px;
+#homepage-sections-container > .section-header.section-spacing {
+    margin-top: 25px;
 }
 
-/* ===== GRID LAYOUT FIXES ===== */
-
-/* Fix for music-item inside grid */
-.music-item {
-    display: flex;
-    flex-direction: column;
-}
-
-.item-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-}
-
-.item-data {
-    width: 100%;
-    text-align: center;
-    padding: 8px;
-}
-
-.roundthumb {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    border-radius: 12px;
-}
-
-/* Remove old float styles */
-.music-item:nth-child(odd),
-.music-item:nth-child(even) {
-    border-right: 1px solid #ddd;
-}
-
-@media (max-width: 719px) {
-    .music-item:nth-child(odd),
-    .music-item:nth-child(even) {
-        border: 1px solid #ddd;
-    }
+/* First section should not have top margin */
+#homepage-sections-container > .section-header:first-child {
+    margin-top: 0;
 }
