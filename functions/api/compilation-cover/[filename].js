@@ -3,24 +3,11 @@ export async function onRequest(context) {
   const filename = params.filename;
   
   try {
-    // Try different path variations
-    const paths = [
-      `compilations/${filename}`,
-      filename,
-      `compilations/${filename.split('/').pop()}`
-    ];
-
-    let object = null;
-
-    for (const path of paths) {
-      object = await env.AUDIO.get(path);
-      if (object) {
-        break;
-      }
-    }
-
+    // Look for file in compilations folder
+    const object = await env.AUDIO.get(`compilations/${filename}`);
+    
     if (!object) {
-      return new Response('Cover not found', { status: 404 });
+      return new Response('Image not found', { status: 404 });
     }
 
     // Determine content type
@@ -38,7 +25,7 @@ export async function onRequest(context) {
     });
 
   } catch (error) {
-    console.error('Error serving cover:', error);
-    return new Response('Error loading cover', { status: 500 });
+    console.error('Error serving image:', error);
+    return new Response('Error loading image', { status: 500 });
   }
 }
