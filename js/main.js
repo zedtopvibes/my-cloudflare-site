@@ -53,6 +53,29 @@ function getPlaylistImage(playlist) {
     return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239c27b0'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📋%3C/text%3E%3C/svg%3E";
 }
 
+function getCompilationImage(compilation) {
+    if (compilation.cover_url && compilation.cover_url !== 'null' && compilation.cover_url !== '') {
+        return compilation.cover_url;
+    }
+    // Different colors based on compilation type
+    const colors = {
+        'albums': '%23ff5500',
+        'eps': '%239c27b0',
+        'artists': '%232196f3',
+        'playlists': '%234caf50'
+    };
+    const color = colors[compilation.type] || '%23666';
+    const icons = {
+        'albums': '💿',
+        'eps': '📀',
+        'artists': '🎤',
+        'playlists': '📋'
+    };
+    const icon = icons[compilation.type] || '📁';
+    const encodedIcon = encodeURIComponent(icon);
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='${color}'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedIcon}%3C/text%3E%3C/svg%3E`;
+}
+
 function getArtistImage(artist) {
     return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232196f3'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎤%3C/text%3E%3C/svg%3E";
 }
@@ -83,6 +106,8 @@ function handleImageError(img) {
         img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239c27b0'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📋%3C/text%3E%3C/svg%3E";
     } else if (type === 'artist') {
         img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232196f3'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎤%3C/text%3E%3C/svg%3E";
+    } else if (type === 'compilation') {
+        img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23666'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📁%3C/text%3E%3C/svg%3E";
     } else {
         img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5500'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎵%3C/text%3E%3C/svg%3E";
     }
@@ -281,6 +306,58 @@ async function loadPlaylists() {
     }
 }
 
+// NEW: Load Compilations
+async function loadCompilations() {
+    const container = document.getElementById('compilations-container');
+    if (!container) return;
+    
+    container.innerHTML = '<div class="loading">Loading compilations...</div>';
+    
+    try {
+        const response = await fetch(`${API_BASE}/compilations`);
+        const compilations = await response.json();
+        
+        if (!compilations || compilations.length === 0) {
+            container.innerHTML = '<div class="error-message">No compilations found</div>';
+            return;
+        }
+        
+        const typeLabels = {
+            'albums': 'Albums',
+            'eps': 'EPs',
+            'artists': 'Artists',
+            'playlists': 'Playlists'
+        };
+        
+        container.innerHTML = compilations.slice(0, 6).map(compilation => {
+            const typeLabel = typeLabels[compilation.type] || compilation.type;
+            return `
+                <a href="/compilation/${compilation.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb">
+                            <img src="${getCompilationImage(compilation)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(compilation.title)}"
+                                 data-type="compilation"
+                                 onerror="handleImageError(this)">
+                        </div>
+                        <div class="item-data">
+                            <span class="track-title"><b>${escapeHtml(compilation.title)}</b> <span class="compilation-badge" style="background:#ff4b2b; color:#fff; padding:2px 6px; border-radius:3px; font-size:10px; margin-left:5px;">${typeLabel}</span></span>
+                            <div class="artist-name">${compilation.item_count || 0} items</div>
+                            <span class="item-meta"><b style="color:#ff0000">${formatNumber(compilation.views || 0)} views</b></span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading compilations:', error);
+        container.innerHTML = '<div class="error-message">Compilations unavailable</div>';
+    }
+}
+
 async function loadEPs() {
     const container = document.getElementById('eps-container');
     if (!container) return;
@@ -299,7 +376,6 @@ async function loadEPs() {
         }
         
         container.innerHTML = epsList.slice(0, 6).map(ep => {
-            // Handle artist display for EP (new structure uses artist_name)
             const artistName = ep.artist_name || ep.artist || 'Unknown Artist';
             return `
                 <a href="/ep/${ep.slug}" class="music-item">
@@ -425,6 +501,7 @@ async function loadAllContent() {
         loadTrending(),
         loadLatestReleases(),
         loadPlaylists(),
+        loadCompilations(),  // NEW: Added compilations
         loadAlbums(),
         loadEPs(),
         loadArtists(),
