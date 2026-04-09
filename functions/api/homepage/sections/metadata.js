@@ -3,7 +3,8 @@ export async function onRequest(context) {
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Cache-Control': 'public, max-age=300' // Cache for 5 minutes
   };
 
   if (request.method === 'OPTIONS') {
