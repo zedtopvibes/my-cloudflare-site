@@ -6,7 +6,7 @@ const IMAGE_BASE = '';  // Empty = use same domain as the page
 
 // Prevent multiple initialization
 let isInitialized = false;
-let contentLoaded = false;
+let sectionsData = [];
 
 // ===== HELPER FUNCTIONS =====
 
@@ -22,13 +22,11 @@ function getAlbumArtistDisplay(album) {
     const primary = getPrimaryArtistFromAlbum(album);
     if (primary) return primary.name;
     
-    // Fallback for backward compatibility
     if (album.artist) return album.artist;
     if (album.artist_name) return album.artist_name;
     return 'Unknown Artist';
 }
 
-// Stable image fallback - prevents layout shifts and glitching
 function getAlbumImage(album) {
     if (album.cover_url && album.cover_url !== 'null' && album.cover_url !== '') {
         return album.cover_url;
@@ -79,7 +77,6 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-// Handle image loading errors
 function handleImageError(img) {
     if (img.dataset.fallbackUsed) return;
     img.dataset.fallbackUsed = 'true';
@@ -93,45 +90,32 @@ function handleImageError(img) {
     }
 }
 
-// ===== HOMEPAGE SECTIONS LOADER =====
+// ===== HOMEPAGE SECTIONS - HYBRID APPROACH =====
 
 async function loadHomepageSections() {
     const container = document.getElementById('homepage-sections-container');
     if (!container) return;
     
+    // Step 1: Immediately create placeholder sections (appear instantly)
+    createPlaceholderSections(container);
+    
+    // Step 2: Fetch real section data
     try {
-        // Step 1: Fetch section metadata only (titles, slugs) - FAST
-        const metadataResponse = await fetch(`${API_BASE}/homepage/sections/metadata`);
-        const sections = await metadataResponse.json();
+        const response = await fetch(`${API_BASE}/homepage/sections/metadata`);
+        const sections = await response.json();
         
         if (!sections || sections.length === 0) {
-            await loadDefaultSections();
             return;
         }
         
-        // Step 2: Immediately render section headers with skeleton loaders
-        let html = '';
-        for (const section of sections) {
-            html += `
-                <div class="section-header">
-                    <h2 class="section-title">${escapeHtml(section.title)}</h2>
-                    <a href="/${section.source_type === 'playlist' ? 'playlist' : 'compilation'}/${section.source_slug}" class="see-all-btn">See All</a>
-                </div>
-                <div class="corner">
-                    <div class="music-grid" id="section-grid-${section.id}">
-                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
-                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
-                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
-                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
-                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
-                        <div class="skeleton-card"><div class="skeleton-thumb"></div><div class="skeleton-title"></div><div class="skeleton-text"></div></div>
-                    </div>
-                </div>
-            `;
-        }
-        container.innerHTML = html;
+        sectionsData = sections;
         
-        // Step 3: Fetch content for all sections in parallel
+        // Step 3: Update headers with real data
+        for (const section of sections) {
+            updateSectionHeader(section);
+        }
+        
+        // Step 4: Fetch content for all sections in parallel
         const contentPromises = sections.map(async (section) => {
             try {
                 const contentResponse = await fetch(`${API_BASE}/homepage/section/${section.id}/items`);
@@ -145,25 +129,86 @@ async function loadHomepageSections() {
         
         const sectionsWithContent = await Promise.all(contentPromises);
         
-        // Step 4: Replace skeleton loaders with actual content
+        // Step 5: Update content grids
         for (const sectionContent of sectionsWithContent) {
-            const gridContainer = document.getElementById(`section-grid-${sectionContent.id}`);
-            if (gridContainer && sectionContent.items && sectionContent.items.length > 0) {
-                const section = sections.find(s => s.id === sectionContent.id);
-                gridContainer.innerHTML = renderSectionItems(sectionContent.items, section);
-            } else if (gridContainer) {
-                gridContainer.innerHTML = '<div class="error-message">No items available</div>';
+            const section = sections.find(s => s.id === sectionContent.id);
+            if (section && sectionContent.items && sectionContent.items.length > 0) {
+                updateSectionContent(section, sectionContent.items);
             }
         }
         
     } catch (error) {
         console.error('Error loading homepage sections:', error);
-        await loadDefaultSections();
     }
 }
 
-function renderSectionItems(items, section) {
-    if (!items || items.length === 0) return '';
+function createPlaceholderSections(container) {
+    // Create 3 placeholder sections (will be replaced or updated)
+    let html = '';
+    for (let i = 1; i <= 3; i++) {
+        html += `
+            <div class="section-wrapper" data-section-id="placeholder-${i}">
+                <div class="section-header">
+                    <h2 class="section-title">Loading section...</h2>
+                    <a href="#" class="see-all-btn">See All</a>
+                </div>
+                <div class="corner">
+                    <div class="music-grid" id="section-grid-placeholder-${i}">
+                        ${Array(6).fill(0).map(() => `
+                            <div class="skeleton-card">
+                                <div class="skeleton-thumb"></div>
+                                <div class="skeleton-title"></div>
+                                <div class="skeleton-text"></div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+function updateSectionHeader(section) {
+    // Find or create section wrapper
+    let wrapper = document.querySelector(`.section-wrapper[data-section-id="${section.id}"]`);
+    
+    if (!wrapper) {
+        // Create new wrapper if doesn't exist
+        wrapper = document.createElement('div');
+        wrapper.className = 'section-wrapper';
+        wrapper.setAttribute('data-section-id', section.id);
+        document.getElementById('homepage-sections-container').appendChild(wrapper);
+    }
+    
+    // Update header
+    wrapper.innerHTML = `
+        <div class="section-header">
+            <h2 class="section-title">${escapeHtml(section.title)}</h2>
+            <a href="/${section.source_type === 'playlist' ? 'playlist' : 'compilation'}/${section.source_slug}" class="see-all-btn">See All</a>
+        </div>
+        <div class="corner">
+            <div class="music-grid" id="section-grid-${section.id}">
+                ${Array(6).fill(0).map(() => `
+                    <div class="skeleton-card">
+                        <div class="skeleton-thumb"></div>
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-text"></div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function updateSectionContent(section, items) {
+    const gridContainer = document.getElementById(`section-grid-${section.id}`);
+    if (!gridContainer) return;
+    
+    if (items.length === 0) {
+        gridContainer.innerHTML = '<div class="error-message">No items available</div>';
+        return;
+    }
     
     const itemUrl = (item) => {
         if (section.source_type === 'playlist') return `/song/${item.slug}`;
@@ -191,7 +236,7 @@ function renderSectionItems(items, section) {
         return '';
     };
     
-    return items.map(item => `
+    gridContainer.innerHTML = items.map(item => `
         <a href="${itemUrl(item)}" class="music-item">
             <div class="item-container">
                 <div class="item-thumb">
@@ -209,6 +254,7 @@ function renderSectionItems(items, section) {
     `).join('');
 }
 
+// ===== FALLBACK DEFAULT SECTIONS =====
 async function loadDefaultSections() {
     const container = document.getElementById('homepage-sections-container');
     if (!container) return;
@@ -243,8 +289,6 @@ async function loadDefaultSections() {
     loadLatestReleases();
     loadPlaylists();
 }
-
-// ===== RENDER FUNCTIONS (for fallback) =====
 
 async function loadTrending() {
     const container = document.getElementById('trending-container');
@@ -550,30 +594,23 @@ function searchMusic() {
     return false;
 }
 
-// Make handleImageError globally available for inline onerror
 window.handleImageError = handleImageError;
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async function() {
-    if (isInitialized) {
-        console.log('Already initialized, skipping...');
-        return;
-    }
+    if (isInitialized) return;
     isInitialized = true;
     
     console.log('DOM ready - initializing...');
     
-    // Load header and footer in background
     loadHeaderAndFooter();
-    
     initializeScrollButton();
     initializeLiveSearch();
     
-    // Load homepage sections with progressive loading
+    // Load homepage sections (hybrid approach)
     await loadHomepageSections();
 });
 
-// Make functions globally available
 window.searchMusic = searchMusic;
 window.searchByGenre = searchByGenre;
 window.loadMore = loadMore;
