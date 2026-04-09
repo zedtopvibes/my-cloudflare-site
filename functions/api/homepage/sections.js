@@ -1,0 +1,171 @@
+export async function onRequest(context) {
+  const { request, env } = context;
+  
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json'
+  };
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers });
+  }
+
+  if (request.method !== 'GET') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
+      status: 405, 
+      headers 
+    });
+  }
+
+  try {
+    const { results: sections } = await env.DB.prepare(`
+      SELECT 
+        hs.id,
+        hs.title,
+        hs.source_type,
+        hs.source_id,
+        hs.display_order,
+        CASE 
+          WHEN hs.source_type = 'playlist' THEN p.name
+          WHEN hs.source_type = 'compilation' THEN c.title
+        END as source_title,
+        CASE 
+          WHEN hs.source_type = 'playlist' THEN p.slug
+          WHEN hs.source_type = 'compilation' THEN c.slug
+        END as source_slug,
+        CASE 
+          WHEN hs.source_type = 'playlist' THEN 'playlist'
+          WHEN hs.source_type = 'compilation' THEN c.type
+        END as source_type_display
+      FROM homepage_sections hs
+      LEFT JOIN playlists p ON hs.source_type = 'playlist' AND hs.source_id = p.id AND p.deleted_at IS NULL AND p.status = 'published'
+      LEFT JOIN compilations c ON hs.source_type = 'compilation' AND hs.source_id = c.id AND c.deleted_at IS NULL AND c.status = 'published'
+      WHERE hs.is_visible = 1 AND (p.id IS NOT NULL OR c.id IS NOT NULL)
+      ORDER BY hs.display_order ASC
+    `).all();
+    
+    // For each section, fetch items
+    for (const section of sections) {
+      if (section.source_type === 'playlist') {
+        // Fetch tracks from playlist
+        const { results: tracks } = await env.DB.prepare(`
+          SELECT 
+            t.id, t.title, t.slug, t.artwork_url as cover_url,
+            t.duration,
+            json_group_array(
+              json_object('id', a.id, 'name', a.name, 'is_primary', ta.is_primary)
+            ) as artists
+          FROM playlist_tracks pt
+          JOIN tracks t ON pt.track_id = t.id
+          LEFT JOIN track_artists ta ON t.id = ta.track_id
+          LEFT JOIN artists a ON ta.artist_id = a.id
+          WHERE pt.playlist_id = ? AND t.deleted_at IS NULL AND t.status = 'published'
+          GROUP BY t.id
+          ORDER BY pt.position
+          LIMIT 6
+        `).bind(section.source_id).all();
+        
+        section.items = tracks.map(track => {
+          let artists = [];
+          try { artists = JSON.parse(track.artists); } catch(e) {}
+          const primaryArtist = artists.find(a => a.is_primary === 1) || artists[0];
+          return {
+            id: track.id,
+            title: track.title,
+            slug: track.slug,
+            cover_url: track.cover_url,
+            duration: track.duration,
+            artist: primaryArtist?.name || 'Unknown Artist',
+            type: 'track'
+          };
+        });
+        
+      } else if (section.source_type === 'compilation') {
+        // Fetch items from compilation based on type
+        const compilation = await env.DB.prepare(`
+          SELECT type FROM compilations WHERE id = ?
+        `).bind(section.source_id).first();
+        
+        if (compilation) {
+          const { results: items } = await env.DB.prepare(`
+            SELECT ci.item_id
+            FROM compilation_items ci
+            WHERE ci.compilation_id = ?
+            LIMIT 6
+          `).bind(section.source_id).all();
+          
+          const itemIds = items.map(i => i.item_id).join(',');
+          
+          if (compilation.type === 'albums') {
+            const { results: albums } = await env.DB.prepare(`
+              SELECT a.id, a.title, a.slug, a.cover_url, ar.name as artist_name
+              FROM albums a
+              LEFT JOIN artists ar ON a.artist_id = ar.id
+              WHERE a.id IN (${itemIds}) AND a.deleted_at IS NULL AND a.status = 'published'
+            `).all();
+            section.items = albums.map(album => ({
+              id: album.id,
+              title: album.title,
+              slug: album.slug,
+              cover_url: album.cover_url,
+              artist: album.artist_name || 'Various Artists',
+              type: 'album'
+            }));
+          } else if (compilation.type === 'eps') {
+            const { results: eps } = await env.DB.prepare(`
+              SELECT e.id, e.title, e.slug, e.cover_url, ar.name as artist_name
+              FROM eps e
+              LEFT JOIN artists ar ON e.artist_id = ar.id
+              WHERE e.id IN (${itemIds}) AND e.deleted_at IS NULL AND e.status = 'published'
+            `).all();
+            section.items = eps.map(ep => ({
+              id: ep.id,
+              title: ep.title,
+              slug: ep.slug,
+              cover_url: ep.cover_url,
+              artist: ep.artist_name || 'Various Artists',
+              type: 'ep'
+            }));
+          } else if (compilation.type === 'artists') {
+            const { results: artists } = await env.DB.prepare(`
+              SELECT id, name, slug, image_url as cover_url, country
+              FROM artists
+              WHERE id IN (${itemIds}) AND deleted_at IS NULL AND status = 'published'
+            `).all();
+            section.items = artists.map(artist => ({
+              id: artist.id,
+              title: artist.name,
+              slug: artist.slug,
+              cover_url: artist.cover_url,
+              artist: artist.country || 'Artist',
+              type: 'artist'
+            }));
+          } else if (compilation.type === 'playlists') {
+            const { results: playlists } = await env.DB.prepare(`
+              SELECT id, name, slug, cover_url, created_by
+              FROM playlists
+              WHERE id IN (${itemIds}) AND deleted_at IS NULL AND status = 'published'
+            `).all();
+            section.items = playlists.map(playlist => ({
+              id: playlist.id,
+              title: playlist.name,
+              slug: playlist.slug,
+              cover_url: playlist.cover_url,
+              artist: playlist.created_by || 'Zedtopvibes',
+              type: 'playlist'
+            }));
+          }
+        }
+      }
+    }
+    
+    return new Response(JSON.stringify(sections), { headers });
+    
+  } catch (error) {
+    console.error('Error fetching homepage sections:', error);
+    return new Response(JSON.stringify({ error: error.message }), { 
+      status: 500, 
+      headers 
+    });
+  }
+}
