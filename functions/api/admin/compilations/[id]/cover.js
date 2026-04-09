@@ -42,10 +42,9 @@ export async function onRequest(context) {
       });
     }
 
-    // Generate filename (matching the pattern from eps)
+    // Generate filename (no timestamp for cleaner URLs)
     const extension = cover.name.split('.').pop();
-    const timestamp = Date.now();
-    const filename = `${compilation.slug}-${timestamp}.${extension}`;
+    const filename = `${compilation.slug}.${extension}`;
     const r2Path = `compilations/${filename}`;
 
     // Upload to R2
@@ -53,7 +52,7 @@ export async function onRequest(context) {
       httpMetadata: { contentType: cover.type }
     });
 
-    // Store the full API path in D1 (matching the pattern from eps)
+    // Store the FULL API path (with /api) - THIS WORKS
     const coverUrl = `/api/images/compilations/${filename}`;
 
     // Update database
