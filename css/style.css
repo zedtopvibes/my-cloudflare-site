@@ -992,26 +992,14 @@ a.page-numbers:hover {
             }     
 
 
-/* ===== LAYOUT SHIFT PREVENTION - ADDED STYLES ===== */
-/* These styles ONLY prevent layout shift, they do NOT change the original design */
+/* ===== COOL SKELETON LOADER WITH SHIMMER EFFECT ===== */
+/* Modern, professional, and visually appealing */
 
-/* Reserve space for dynamic content containers */
-#homepage-sections-container,
-#trending-container,
-#latest-container,
-#playlists-container,
-#albums-container,
-#eps-container,
-#artists-container,
-#genres-container {
-    min-height: 200px;
-}
-
-/* Skeleton loader styles - temporary while content loads */
 .skeleton-grid {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+    gap: 0;
 }
 
 .skeleton-card {
@@ -1021,56 +1009,171 @@ a.page-numbers:hover {
     margin: 0;
     box-sizing: border-box;
     vertical-align: top;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Animated shimmer overlay */
+.skeleton-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.6), 
+        transparent
+    );
+    animation: shimmer-sweep 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
 }
 
 .skeleton-thumb {
     width: 80px;
     height: 80px;
-    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-    background-size: 200% 100%;
-    animation: skeleton-pulse 1.5s infinite;
+    background: linear-gradient(135deg, #e0e0e0, #c0c0c0);
     border-radius: 16px;
     margin-right: 12px;
     float: left;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Inner shimmer for thumb */
+.skeleton-thumb::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.5), 
+        transparent
+    );
+    animation: shimmer-sweep 2s ease-in-out infinite 0.3s;
 }
 
 .skeleton-title {
     height: 16px;
-    width: 60%;
-    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-    background-size: 200% 100%;
-    animation: skeleton-pulse 1.5s infinite;
-    border-radius: 4px;
-    margin-bottom: 8px;
+    width: 70%;
+    background: linear-gradient(90deg, #e8e8e8, #d0d0d0);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
 }
 
 .skeleton-text {
     height: 12px;
-    width: 40%;
-    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-    background-size: 200% 100%;
-    animation: skeleton-pulse 1.5s infinite;
-    border-radius: 4px;
-}
-
-.skeleton-card .item-data {
+    width: 50%;
+    background: linear-gradient(90deg, #ececec, #d8d8d8);
+    border-radius: 6px;
+    margin-top: 6px;
+    position: relative;
     overflow: hidden;
 }
 
-@keyframes skeleton-pulse {
+.skeleton-text.secondary {
+    width: 40%;
+}
+
+/* Shimmer animation */
+@keyframes shimmer-sweep {
+    0% {
+        left: -100%;
+    }
+    50% {
+        left: 100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Wave effect for variety */
+.skeleton-wave {
+    background: linear-gradient(
+        90deg,
+        #e0e0e0 0%,
+        #f0f0f0 20%,
+        #e0e0e0 40%,
+        #d0d0d0 60%,
+        #e0e0e0 80%,
+        #e0e0e0 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-wave 1.8s ease-in-out infinite;
+}
+
+@keyframes skeleton-wave {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
 }
 
-/* Mobile skeleton adjustments - matches original mobile styles */
+/* Glowing skeleton effect for premium look */
+.skeleton-glow {
+    background: #e8e8e8;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.8), 
+        transparent
+    );
+    animation: shimmer-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes shimmer-glow {
+    0% { left: -150%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* Colorful skeleton - matches your brand */
+.skeleton-thumb.album {
+    background: linear-gradient(135deg, #ff5500, #ff8c42);
+}
+
+.skeleton-thumb.playlist {
+    background: linear-gradient(135deg, #9c27b0, #ce93d8);
+}
+
+.skeleton-thumb.artist {
+    background: linear-gradient(135deg, #2196f3, #64b5f6);
+}
+
+.skeleton-thumb.ep {
+    background: linear-gradient(135deg, #4caf50, #81c784);
+}
+
+/* Responsive skeleton */
 @media screen and (max-width: 719px) {
     .skeleton-card {
         width: 100%;
         display: block;
+        margin-bottom: 8px;
     }
     
     .skeleton-thumb {
         float: left;
+        margin-right: 12px;
     }
 }
 
@@ -1080,24 +1183,95 @@ a.page-numbers:hover {
         float: left;
     }
     
+    /* Odd card thumbs align left */
     .skeleton-card:nth-child(odd) .skeleton-thumb {
         margin-right: 12px;
     }
 }
 
-/* Prevent image loading shift - images maintain original dimensions */
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+    .skeleton-card {
+        background: #2a2a2a;
+    }
+    
+    .skeleton-thumb {
+        background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
+    }
+    
+    .skeleton-title,
+    .skeleton-text {
+        background: linear-gradient(90deg, #3a3a3a, #2a2a2a);
+    }
+}
+
+/* CLS Reduction - Reserve space for content */
+#homepage-sections-container,
+#trending-container,
+#latest-container,
+#playlists-container,
+#albums-container,
+#eps-container,
+#artists-container,
+#genres-container,
+.music-grid {
+    min-height: 280px;
+}
+
+.section-header {
+    min-height: 48px;
+}
+
+.music-item {
+    min-height: 110px;
+}
+
 .roundthumb {
     width: 80px;
     height: 80px;
-    object-fit: cover;
+    flex-shrink: 0;
 }
 
-/* Ensure music-item doesn't shift during loading */
-.music-item {
+.item-thumb {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+}
+
+.item-data {
+    min-height: 80px;
+}
+
+.artist-name {
+    min-height: 18px;
+}
+
+.item-meta {
+    min-height: 18px;
+}
+
+#footer-placeholder,
+.site-footer,
+.main-footer {
     min-height: 100px;
 }
 
-/* Section headers container - reserve space */
-.section-header {
-    min-height: 40px;
+#header-placeholder {
+    min-height: 44px;
+}
+
+img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+/* Mobile adjustments for CLS */
+@media screen and (max-width: 719px) {
+    .music-item {
+        min-height: 100px;
+    }
+    
+    .skeleton-card {
+        min-height: 100px;
+    }
 }
