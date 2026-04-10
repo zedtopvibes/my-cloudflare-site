@@ -6,6 +6,7 @@ const IMAGE_BASE = '';  // Empty = use same domain as the page
 
 // Prevent multiple initialization
 let isInitialized = false;
+let contentLoaded = false;
 
 // ===== HELPER FUNCTIONS =====
 
@@ -43,6 +44,28 @@ function getPlaylistImage(playlist) {
         return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239c27b0'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedEmoji}%3C/text%3E%3C/svg%3E`;
     }
     return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239c27b0'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📋%3C/text%3E%3C/svg%3E";
+}
+
+function getCompilationImage(compilation) {
+    if (compilation.cover_url && compilation.cover_url !== 'null' && compilation.cover_url !== '') {
+        return compilation.cover_url;
+    }
+    const colors = {
+        'albums': 'ff5500',
+        'eps': '9c27b0',
+        'artists': '2196f3',
+        'playlists': '4caf50'
+    };
+    const color = colors[compilation.type] || '666';
+    const icons = {
+        'albums': '💿',
+        'eps': '📀',
+        'artists': '🎤',
+        'playlists': '📋'
+    };
+    const icon = icons[compilation.type] || '📁';
+    const encodedIcon = encodeURIComponent(icon);
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23${color}'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedIcon}%3C/text%3E%3C/svg%3E`;
 }
 
 function getArtistImage(artist) {
@@ -86,293 +109,47 @@ function handleImageError(img) {
     }
 }
 
-// ===== SKELETON LOADER FUNCTIONS =====
-
-function showSkeletonLoader(container) {
-    container.innerHTML = `
-        <div class="skeleton-grid">
-            ${Array(6).fill(0).map(() => `
-                <div class="skeleton-card">
-                    <div class="skeleton-thumb"></div>
-                    <div class="skeleton-title"></div>
-                    <div class="skeleton-text"></div>
-                    <div class="skeleton-text secondary"></div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-// ===== HOMEPAGE SECTIONS LOADER =====
-
-async function loadHomepageSections() {
-    const container = document.getElementById('homepage-sections-container');
-    if (!container) return;
-    
-    // Show skeleton loader immediately
-    showSkeletonLoader(container);
-    
-    try {
-        const response = await fetch(`${API_BASE}/homepage/sections`);
-        const sections = await response.json();
-        
-        if (!sections || sections.length === 0) {
-            await loadDefaultSections();
-            return;
-        }
-        
-        let html = '';
-        for (const section of sections) {
-            html += `
-                <div class="section-header">
-                    <h2 class="section-title">${escapeHtml(section.title)}</h2>
-                    <a href="/${section.source_type === 'playlist' ? 'playlist' : 'compilation'}/${section.source_slug}" class="see-all-btn">See All</a>
-                </div>
-                <div class="corner">
-                    <div class="music-grid">
-                        ${renderSectionItems(section.items, section)}
-                    </div>
-                </div>
-            `;
-        }
-        container.innerHTML = html;
-        
-    } catch (error) {
-        console.error('Error loading homepage sections:', error);
-        await loadDefaultSections();
-    }
-}
-
-function renderSectionItems(items, section) {
-    if (!items || items.length === 0) return '<div class="error-message">No items available</div>';
-    
-    const itemUrl = (item) => {
-        if (section.source_type === 'playlist') return `/song/${item.slug}`;
-        if (item.type === 'album') return `/album/${item.slug}`;
-        if (item.type === 'ep') return `/ep/${item.slug}`;
-        if (item.type === 'artist') return `/artist/${item.slug}`;
-        if (item.type === 'playlist') return `/playlist/${item.slug}`;
-        return '#';
-    };
-    
-    const itemImage = (item) => {
-        if (item.cover_url) return item.cover_url;
-        if (section.source_type === 'playlist') {
-            return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5500'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎵%3C/text%3E%3C/svg%3E";
-        }
-        return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff4b2b'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📀%3C/text%3E%3C/svg%3E";
-    };
-    
-    const itemSubtitle = (item) => {
-        if (section.source_type === 'playlist') return item.artist || 'Unknown Artist';
-        if (item.type === 'album') return item.artist || 'Various Artists';
-        if (item.type === 'ep') return item.artist || 'Various Artists';
-        if (item.type === 'artist') return item.artist || 'Artist';
-        if (item.type === 'playlist') return item.artist || 'Playlist';
-        return '';
-    };
-    
-    return items.map(item => `
-        <a href="${itemUrl(item)}" class="music-item">
-            <div class="item-container">
-                <div class="item-thumb">
-                    <img src="${itemImage(item)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(item.title)}" data-type="${section.source_type === 'playlist' ? 'default' : item.type}" onerror="handleImageError(this)">
-                </div>
-                <div class="item-data">
-                    <span class="track-title"><b>${escapeHtml(item.title)}</b></span>
-                    <div class="artist-name">${escapeHtml(itemSubtitle(item))}</div>
-                    <span class="item-meta">
-                        ${item.duration ? `<b style="color:#ff0000">${formatDuration(item.duration)}</b>` : ''}
-                    </span>
-                </div>
-            </div>
-        </a>
-    `).join('');
-}
-
-async function loadDefaultSections() {
-    const container = document.getElementById('homepage-sections-container');
-    if (!container) return;
-    
-    // Show skeleton loader while loading default sections
-    showSkeletonLoader(container);
-    
-    // Load trending section
-    const trendingContainer = document.createElement('div');
-    trendingContainer.id = 'trending-container';
-    await loadTrendingIntoTrendingContainer(trendingContainer);
-    
-    // Load latest releases section
-    const latestContainer = document.createElement('div');
-    latestContainer.id = 'latest-container';
-    await loadLatestReleasesIntoLatestContainer(latestContainer);
-    
-    // Load playlists section
-    const playlistsContainer = document.createElement('div');
-    playlistsContainer.id = 'playlists-container';
-    await loadPlaylistsIntoPlaylistsContainer(playlistsContainer);
-    
-    container.innerHTML = `
-        <div class="section-header">
-            <h2 class="section-title">Trending Now</h2>
-            <a href="#" class="see-all-btn" onclick="searchByGenre('trending'); return false;">See All</a>
-        </div>
-        <div class="corner">
-            <div class="music-grid" id="trending-container"></div>
-        </div>
-        
-        <div class="section-header section-spacing">
-            <h2 class="section-title">Latest Releases</h2>
-            <a href="#" class="see-all-btn" onclick="loadMore(2); return false;">See All</a>
-        </div>
-        <div class="corner">
-            <div class="music-grid" id="latest-container"></div>
-        </div>
-        
-        <div class="section-header section-spacing">
-            <h2 class="section-title">Playlists</h2>
-            <a href="/playlists.html" class="see-all-btn">See All</a>
-        </div>
-        <div class="corner">
-            <div class="music-grid" id="playlists-container"></div>
-        </div>
-    `;
-    
-    // Actually load the content
-    loadTrending();
-    loadLatestReleases();
-    loadPlaylists();
-}
-
-// Helper functions for default sections
-async function loadTrendingIntoTrendingContainer(container) {
-    try {
-        const response = await fetch(`${API_BASE}/albums`);
-        const albums = await response.json();
-        const trending = [...albums]
-            .sort((a, b) => (b.plays || 0) - (a.plays || 0))
-            .slice(0, 6);
-        
-        if (trending && trending.length > 0) {
-            container.innerHTML = trending.map(album => {
-                const artistName = getAlbumArtistDisplay(album);
-                return `
-                    <a href="/album/${album.slug}" class="music-item">
-                        <div class="item-container">
-                            <div class="item-thumb">
-                                <img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" data-type="album" onerror="handleImageError(this)">
-                            </div>
-                            <div class="item-data">
-                                <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                                <div class="artist-name">${escapeHtml(artistName)}</div>
-                                <span class="item-meta"><b style="color:#ff0000">${album.plays ? formatNumber(album.plays) + ' plays' : 'Trending'}</b><span class="hot-badge" style="background:#ff9800; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">🔥 Hot</span></span>
-                            </div>
-                        </div>
-                    </a>
-                `;
-            }).join('');
-        }
-    } catch (error) {
-        console.error('Error loading trending:', error);
-        container.innerHTML = '<div class="error-message">Failed to load trending</div>';
-    }
-}
-
-async function loadLatestReleasesIntoLatestContainer(container) {
-    try {
-        const response = await fetch(`${API_BASE}/albums`);
-        const albums = await response.json();
-        const latest = [...albums]
-            .filter(a => a.release_date)
-            .sort((a, b) => new Date(b.release_date) - new Date(a.release_date))
-            .slice(0, 6);
-        
-        if (latest && latest.length > 0) {
-            container.innerHTML = latest.map(album => {
-                const artistName = getAlbumArtistDisplay(album);
-                return `
-                    <a href="/album/${album.slug}" class="music-item">
-                        <div class="item-container">
-                            <div class="item-thumb">
-                                <img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" data-type="album" onerror="handleImageError(this)">
-                            </div>
-                            <div class="item-data">
-                                <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                                <div class="artist-name">${escapeHtml(artistName)}</div>
-                                <span class="item-meta"><b style="color:#ff0000">Released:</b> ${album.release_date ? new Date(album.release_date).getFullYear() : 'TBA'}<span class="new-badge" style="background:#4caf50; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">New</span></span>
-                            </div>
-                        </div>
-                    </a>
-                `;
-            }).join('');
-        }
-    } catch (error) {
-        console.error('Error loading latest releases:', error);
-        container.innerHTML = '<div class="error-message">Failed to load latest releases</div>';
-    }
-}
-
-async function loadPlaylistsIntoPlaylistsContainer(container) {
-    try {
-        const response = await fetch(`${API_BASE}/playlists`);
-        const playlists = await response.json();
-        
-        if (playlists && playlists.length > 0) {
-            container.innerHTML = playlists.slice(0, 6).map(playlist => `
-                <a href="/playlist/${playlist.slug}" class="music-item">
-                    <div class="item-container">
-                        <div class="item-thumb">
-                            <img src="${getPlaylistImage(playlist)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(playlist.name)}" data-type="playlist" onerror="handleImageError(this)">
-                        </div>
-                        <div class="item-data">
-                            <span class="track-title"><b>${escapeHtml(playlist.name)}</b> <span class="playlist-badge">Playlist</span></span>
-                            <div class="artist-name">${escapeHtml(playlist.created_by || 'Various Artists')}</div>
-                            <span class="item-meta"><b style="color:#ff0000">${playlist.track_count || 0} songs</b></span>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Error loading playlists:', error);
-        container.innerHTML = '<div class="error-message">Playlists unavailable</div>';
-    }
-}
-
 // ===== RENDER FUNCTIONS =====
 
-async function loadTrending() {
-    const container = document.getElementById('trending-container');
+async function loadCompilations() {
+    const container = document.getElementById('compilations-container');
     if (!container) return;
     
-    // Show skeleton loader
-    showSkeletonLoader(container);
+    container.innerHTML = '<div class="loading">Loading compilations...</div>';
     
     try {
-        const response = await fetch(`${API_BASE}/albums`);
-        const albums = await response.json();
+        const response = await fetch(`${API_BASE}/compilations`);
+        const compilations = await response.json();
         
-        const trending = [...albums]
-            .sort((a, b) => (b.plays || 0) - (a.plays || 0))
-            .slice(0, 6);
-        
-        if (!trending || trending.length === 0) {
-            container.innerHTML = '<div class="error-message">No trending content</div>';
+        if (!compilations || compilations.length === 0) {
+            container.innerHTML = '<div class="error-message">No compilations found</div>';
             return;
         }
         
-        container.innerHTML = trending.map(album => {
-            const artistName = getAlbumArtistDisplay(album);
+        const typeLabels = {
+            'albums': 'Albums',
+            'eps': 'EPs',
+            'artists': 'Artists',
+            'playlists': 'Playlists'
+        };
+        
+        container.innerHTML = compilations.slice(0, 6).map(compilation => {
+            const typeLabel = typeLabels[compilation.type] || compilation.type;
             return `
-                <a href="/album/${album.slug}" class="music-item">
+                <a href="/compilation/${compilation.slug}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" data-type="album" onerror="handleImageError(this)">
+                            <img src="${getCompilationImage(compilation)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(compilation.title)}"
+                                 data-type="compilation"
+                                 onerror="handleImageError(this)">
                         </div>
                         <div class="item-data">
-                            <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                            <div class="artist-name">${escapeHtml(artistName)}</div>
-                            <span class="item-meta"><b style="color:#ff0000">${album.plays ? formatNumber(album.plays) + ' plays' : 'Trending'}</b><span class="hot-badge" style="background:#ff9800; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">🔥 Hot</span></span>
+                            <span class="track-title"><b>${escapeHtml(compilation.title)}</b> <span class="compilation-badge" style="background:#ff4b2b; color:#fff; padding:2px 6px; border-radius:3px; font-size:10px; margin-left:5px;">${typeLabel}</span></span>
+                            <div class="artist-name">${compilation.item_count || 0} items</div>
+                            <span class="item-meta"><b style="color:#ff0000">${formatNumber(compilation.views || 0)} views</b></span>
                         </div>
                     </div>
                 </a>
@@ -380,8 +157,55 @@ async function loadTrending() {
         }).join('');
         
     } catch (error) {
-        console.error('Error loading trending:', error);
-        container.innerHTML = '<div class="error-message">Failed to load trending</div>';
+        console.error('Error loading compilations:', error);
+        container.innerHTML = '<div class="error-message">Compilations unavailable</div>';
+    }
+}
+
+async function loadAlbums() {
+    const container = document.getElementById('albums-container');
+    if (!container) return;
+    
+    container.innerHTML = '<div class="loading">Loading albums...</div>';
+    
+    try {
+        const response = await fetch(`${API_BASE}/albums`);
+        const albums = await response.json();
+        
+        if (!albums || albums.length === 0) {
+            container.innerHTML = '<div class="error-message">No albums found</div>';
+            return;
+        }
+        
+        container.innerHTML = albums.slice(0, 6).map(album => {
+            const artistName = getAlbumArtistDisplay(album);
+            return `
+                <a href="/album/${album.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb">
+                            <img src="${getAlbumImage(album)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(album.title)}"
+                                 data-type="album"
+                                 onerror="handleImageError(this)">
+                        </div>
+                        <div class="item-data">
+                            <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
+                            <div class="artist-name">${escapeHtml(artistName)}</div>
+                            <span class="item-meta">
+                                <b style="color:#ff0000">${album.track_count || 0} tracks</b>
+                                ${album.release_date ? `<span style="margin-left:8px">${new Date(album.release_date).getFullYear()}</span>` : ''}
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading albums:', error);
+        container.innerHTML = '<div class="error-message">Failed to load albums</div>';
     }
 }
 
@@ -389,8 +213,7 @@ async function loadLatestReleases() {
     const container = document.getElementById('latest-container');
     if (!container) return;
     
-    // Show skeleton loader
-    showSkeletonLoader(container);
+    container.innerHTML = '<div class="loading">Loading latest releases...</div>';
     
     try {
         const response = await fetch(`${API_BASE}/albums`);
@@ -412,12 +235,20 @@ async function loadLatestReleases() {
                 <a href="/album/${album.slug}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" data-type="album" onerror="handleImageError(this)">
+                            <img src="${getAlbumImage(album)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(album.title)}"
+                                 data-type="album"
+                                 onerror="handleImageError(this)">
                         </div>
                         <div class="item-data">
                             <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
                             <div class="artist-name">${escapeHtml(artistName)}</div>
-                            <span class="item-meta"><b style="color:#ff0000">Released:</b> ${album.release_date ? new Date(album.release_date).getFullYear() : 'TBA'}<span class="new-badge" style="background:#4caf50; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">New</span></span>
+                            <span class="item-meta">
+                                <b style="color:#ff0000">Released:</b> ${album.release_date ? new Date(album.release_date).getFullYear() : 'TBA'}
+                                <span class="new-badge" style="background:#4caf50; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">New</span>
+                            </span>
                         </div>
                     </div>
                 </a>
@@ -430,12 +261,62 @@ async function loadLatestReleases() {
     }
 }
 
+async function loadTrending() {
+    const container = document.getElementById('trending-container');
+    if (!container) return;
+    
+    container.innerHTML = '<div class="loading">Loading trending...</div>';
+    
+    try {
+        const response = await fetch(`${API_BASE}/albums`);
+        const albums = await response.json();
+        
+        const trending = [...albums]
+            .sort((a, b) => (b.plays || 0) - (a.plays || 0))
+            .slice(0, 6);
+        
+        if (!trending || trending.length === 0) {
+            container.innerHTML = '<div class="error-message">No trending content</div>';
+            return;
+        }
+        
+        container.innerHTML = trending.map(album => {
+            const artistName = getAlbumArtistDisplay(album);
+            return `
+                <a href="/album/${album.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb">
+                            <img src="${getAlbumImage(album)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(album.title)}"
+                                 data-type="album"
+                                 onerror="handleImageError(this)">
+                        </div>
+                        <div class="item-data">
+                            <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
+                            <div class="artist-name">${escapeHtml(artistName)}</div>
+                            <span class="item-meta">
+                                <b style="color:#ff0000">${album.plays ? formatNumber(album.plays) + ' plays' : 'Trending'}</b>
+                                <span class="hot-badge" style="background:#ff9800; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">🔥 Hot</span>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading trending:', error);
+        container.innerHTML = '<div class="error-message">Failed to load trending</div>';
+    }
+}
+
 async function loadPlaylists() {
     const container = document.getElementById('playlists-container');
     if (!container) return;
     
-    // Show skeleton loader
-    showSkeletonLoader(container);
+    container.innerHTML = '<div class="loading">Loading playlists...</div>';
     
     try {
         const response = await fetch(`${API_BASE}/playlists`);
@@ -450,7 +331,12 @@ async function loadPlaylists() {
             <a href="/playlist/${playlist.slug}" class="music-item">
                 <div class="item-container">
                     <div class="item-thumb">
-                        <img src="${getPlaylistImage(playlist)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(playlist.name)}" data-type="playlist" onerror="handleImageError(this)">
+                        <img src="${getPlaylistImage(playlist)}" 
+                             width="80" height="80" 
+                             class="roundthumb" 
+                             alt="${escapeHtml(playlist.name)}"
+                             data-type="playlist"
+                             onerror="handleImageError(this)">
                     </div>
                     <div class="item-data">
                         <span class="track-title"><b>${escapeHtml(playlist.name)}</b> <span class="playlist-badge">Playlist</span></span>
@@ -467,53 +353,11 @@ async function loadPlaylists() {
     }
 }
 
-async function loadAlbums() {
-    const container = document.getElementById('albums-container');
-    if (!container) return;
-    
-    showSkeletonLoader(container);
-    
-    try {
-        const response = await fetch(`${API_BASE}/albums`);
-        const albums = await response.json();
-        
-        if (!albums || albums.length === 0) {
-            container.innerHTML = '<div class="error-message">No albums found</div>';
-            return;
-        }
-        
-        container.innerHTML = albums.slice(0, 6).map(album => {
-            const artistName = getAlbumArtistDisplay(album);
-            return `
-                <a href="/album/${album.slug}" class="music-item">
-                    <div class="item-container">
-                        <div class="item-thumb">
-                            <img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" data-type="album" onerror="handleImageError(this)">
-                        </div>
-                        <div class="item-data">
-                            <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                            <div class="artist-name">${escapeHtml(artistName)}</div>
-                            <span class="item-meta">
-                                <b style="color:#ff0000">${album.track_count || 0} tracks</b>
-                                ${album.release_date ? `<span style="margin-left:8px">${new Date(album.release_date).getFullYear()}</span>` : ''}
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            `;
-        }).join('');
-        
-    } catch (error) {
-        console.error('Error loading albums:', error);
-        container.innerHTML = '<div class="error-message">Failed to load albums</div>';
-    }
-}
-
 async function loadEPs() {
     const container = document.getElementById('eps-container');
     if (!container) return;
     
-    showSkeletonLoader(container);
+    container.innerHTML = '<div class="loading">Loading EPs...</div>';
     
     try {
         const response = await fetch(`${API_BASE}/eps`);
@@ -531,7 +375,12 @@ async function loadEPs() {
                 <a href="/ep/${ep.slug}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <img src="${getAlbumImage(ep)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(ep.title)}" data-type="album" onerror="handleImageError(this)">
+                            <img src="${getAlbumImage(ep)}" 
+                                 width="80" height="80" 
+                                 class="roundthumb" 
+                                 alt="${escapeHtml(ep.title)}"
+                                 data-type="album"
+                                 onerror="handleImageError(this)">
                         </div>
                         <div class="item-data">
                             <span class="track-title"><b>${escapeHtml(ep.title)}</b> <span class="ep-badge">EP</span></span>
@@ -553,7 +402,7 @@ async function loadArtists() {
     const container = document.getElementById('artists-container');
     if (!container) return;
     
-    showSkeletonLoader(container);
+    container.innerHTML = '<div class="loading">Loading artists...</div>';
     
     try {
         const response = await fetch(`${API_BASE}/artists`);
@@ -568,7 +417,12 @@ async function loadArtists() {
             <a href="/artist/${artist.slug}" class="music-item">
                 <div class="item-container">
                     <div class="item-thumb">
-                        <img src="${getArtistImage(artist)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(artist.name)}" data-type="artist" onerror="handleImageError(this)">
+                        <img src="${getArtistImage(artist)}" 
+                             width="80" height="80" 
+                             class="roundthumb" 
+                             alt="${escapeHtml(artist.name)}"
+                             data-type="artist"
+                             onerror="handleImageError(this)">
                     </div>
                     <div class="item-data">
                         <span class="track-title"><b>${escapeHtml(artist.name)}</b> <span class="artist-badge">Artist</span></span>
@@ -589,7 +443,7 @@ async function loadGenres() {
     const container = document.getElementById('genres-container');
     if (!container) return;
     
-    showSkeletonLoader(container);
+    container.innerHTML = '<div class="loading">Loading genres...</div>';
     
     try {
         const response = await fetch(`${API_BASE}/albums`);
@@ -629,10 +483,19 @@ async function loadGenres() {
 }
 
 async function loadAllContent() {
+    if (contentLoaded) {
+        console.log('Content already loaded, skipping...');
+        return;
+    }
+    
+    contentLoaded = true;
+    console.log('Loading content...');
+    
     await Promise.all([
         loadTrending(),
         loadLatestReleases(),
         loadPlaylists(),
+        loadCompilations(),
         loadAlbums(),
         loadEPs(),
         loadArtists(),
@@ -825,17 +688,17 @@ window.handleImageError = handleImageError;
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async function() {
-    if (isInitialized) return;
+    if (isInitialized) {
+        console.log('Already initialized, skipping...');
+        return;
+    }
     isInitialized = true;
     
     console.log('DOM ready - initializing...');
-    
     await loadHeaderAndFooter();
     initializeScrollButton();
     initializeLiveSearch();
-    
-    // Load homepage sections with skeleton loaders
-    await loadHomepageSections();
+    await loadAllContent();
 });
 
 window.searchMusic = searchMusic;
