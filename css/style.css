@@ -1,5 +1,3 @@
-
-
 /* ===== Zedtopvibes.com - Main Stylesheet ===== */
 /* All styles preserved exactly from original */
 
@@ -994,19 +992,25 @@ a.page-numbers:hover {
             }     
 
 
-    /* ===== LAYOUT SHIFT PREVENTION - ADDITIONS ONLY ===== */
+/* ===== LAYOUT SHIFT PREVENTION - ADDED STYLES ===== */
 /* These styles ONLY prevent layout shift, they do NOT change the original design */
 
-/* Reserve space for dynamic content - prevents shift when content loads */
-#homepage-sections-container {
-    min-height: 400px;
+/* Reserve space for dynamic content containers */
+#homepage-sections-container,
+#trending-container,
+#latest-container,
+#playlists-container,
+#albums-container,
+#eps-container,
+#artists-container,
+#genres-container {
+    min-height: 200px;
 }
 
-/* Skeleton loader styles - temporary while loading */
+/* Skeleton loader styles - temporary while content loads */
 .skeleton-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 0;
     width: 100%;
 }
 
@@ -1088,22 +1092,12 @@ a.page-numbers:hover {
     object-fit: cover;
 }
 
-/* Ensure music-item doesn't shift */
+/* Ensure music-item doesn't shift during loading */
 .music-item {
-    /* Original styles preserved, no changes */
-    min-height: 100px; /* Add minimum height to prevent shift */
+    min-height: 100px;
 }
 
-/* Container for dynamic sections - matches original .corner behavior */
-#homepage-sections-container > .section-header {
-    margin-top: 0;
-}
-
-#homepage-sections-container > .section-header.section-spacing {
-    margin-top: 25px;
-}
-
-/* First section should not have top margin */
-#homepage-sections-container > .section-header:first-child {
-    margin-top: 0;
+/* Section headers container - reserve space */
+.section-header {
+    min-height: 40px;
 }
