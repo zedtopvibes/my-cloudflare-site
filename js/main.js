@@ -1,50 +1,40 @@
-// ===== Zedtopvibes.com - Main JavaScript with Live API Integration =====
-// Uses relative paths - works on any domain (custom domain or pages.dev)
+// ===== Zedtopvibes.com - Main JavaScript =====
 
 const API_BASE = '/api';
-const IMAGE_BASE = '';  // Empty = use same domain as the page
 
 // Prevent multiple initialization
 let isInitialized = false;
-let contentLoaded = false;
 
 // ===== HELPER FUNCTIONS =====
 
-// Helper function to get primary artist from album
 function getPrimaryArtistFromAlbum(album) {
     if (!album.artists || album.artists.length === 0) return null;
     const primary = album.artists.find(a => a.is_primary === 1);
     return primary || album.artists[0];
 }
 
-// Helper function to get artist display name from album
 function getAlbumArtistDisplay(album) {
     const primary = getPrimaryArtistFromAlbum(album);
     if (primary) return primary.name;
-    
-    // Fallback for backward compatibility
     if (album.artist) return album.artist;
     if (album.artist_name) return album.artist_name;
     return 'Unknown Artist';
 }
 
-// Stable image fallback - prevents layout shifts and glitching
 function getAlbumImage(album) {
     if (album.cover_url && album.cover_url !== 'null' && album.cover_url !== '') {
-        return album.cover_url;  // Already relative or absolute
+        return album.cover_url;
     }
-    // SVG placeholder with emoji
     if (album.cover_emoji) {
         const encodedEmoji = encodeURIComponent(album.cover_emoji);
         return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5500'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedEmoji}%3C/text%3E%3C/svg%3E`;
     }
-    // Default music note placeholder
     return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎵%3C/text%3E%3C/svg%3E";
 }
 
 function getPlaylistImage(playlist) {
     if (playlist.cover_url && playlist.cover_url !== 'null' && playlist.cover_url !== '') {
-        return playlist.cover_url;  // Already relative or absolute
+        return playlist.cover_url;
     }
     if (playlist.cover_emoji) {
         const encodedEmoji = encodeURIComponent(playlist.cover_emoji);
@@ -64,6 +54,13 @@ function formatNumber(num) {
     return num.toString();
 }
 
+function formatDuration(seconds) {
+    if (!seconds) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
 function escapeHtml(str) {
     if (!str) return '';
     return String(str)
@@ -74,7 +71,6 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-// Handle image loading errors
 function handleImageError(img) {
     if (img.dataset.fallbackUsed) return;
     img.dataset.fallbackUsed = 'true';
@@ -111,12 +107,7 @@ async function loadAlbums() {
                 <a href="/album/${album.slug}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <img src="${getAlbumImage(album)}" 
-                                 width="80" height="80" 
-                                 class="roundthumb" 
-                                 alt="${escapeHtml(album.title)}"
-                                 data-type="album"
-                                 onerror="handleImageError(this)">
+                            <img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" data-type="album" onerror="handleImageError(this)">
                         </div>
                         <div class="item-data">
                             <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
@@ -163,12 +154,7 @@ async function loadLatestReleases() {
                 <a href="/album/${album.slug}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <img src="${getAlbumImage(album)}" 
-                                 width="80" height="80" 
-                                 class="roundthumb" 
-                                 alt="${escapeHtml(album.title)}"
-                                 data-type="album"
-                                 onerror="handleImageError(this)">
+                            <img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" data-type="album" onerror="handleImageError(this)">
                         </div>
                         <div class="item-data">
                             <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
@@ -214,12 +200,7 @@ async function loadTrending() {
                 <a href="/album/${album.slug}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <img src="${getAlbumImage(album)}" 
-                                 width="80" height="80" 
-                                 class="roundthumb" 
-                                 alt="${escapeHtml(album.title)}"
-                                 data-type="album"
-                                 onerror="handleImageError(this)">
+                            <img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" data-type="album" onerror="handleImageError(this)">
                         </div>
                         <div class="item-data">
                             <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
@@ -259,12 +240,7 @@ async function loadPlaylists() {
             <a href="/playlist/${playlist.slug}" class="music-item">
                 <div class="item-container">
                     <div class="item-thumb">
-                        <img src="${getPlaylistImage(playlist)}" 
-                             width="80" height="80" 
-                             class="roundthumb" 
-                             alt="${escapeHtml(playlist.name)}"
-                             data-type="playlist"
-                             onerror="handleImageError(this)">
+                        <img src="${getPlaylistImage(playlist)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(playlist.name)}" data-type="playlist" onerror="handleImageError(this)">
                     </div>
                     <div class="item-data">
                         <span class="track-title"><b>${escapeHtml(playlist.name)}</b> <span class="playlist-badge">Playlist</span></span>
@@ -290,7 +266,6 @@ async function loadEPs() {
     try {
         const response = await fetch(`${API_BASE}/eps`);
         const eps = await response.json();
-        
         const epsList = Array.isArray(eps) ? eps : (eps.results || []);
         
         if (!epsList || epsList.length === 0) {
@@ -299,18 +274,12 @@ async function loadEPs() {
         }
         
         container.innerHTML = epsList.slice(0, 6).map(ep => {
-            // Handle artist display for EP (new structure uses artist_name)
             const artistName = ep.artist_name || ep.artist || 'Unknown Artist';
             return `
                 <a href="/ep/${ep.slug}" class="music-item">
                     <div class="item-container">
                         <div class="item-thumb">
-                            <img src="${getAlbumImage(ep)}" 
-                                 width="80" height="80" 
-                                 class="roundthumb" 
-                                 alt="${escapeHtml(ep.title)}"
-                                 data-type="album"
-                                 onerror="handleImageError(this)">
+                            <img src="${getAlbumImage(ep)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(ep.title)}" data-type="album" onerror="handleImageError(this)">
                         </div>
                         <div class="item-data">
                             <span class="track-title"><b>${escapeHtml(ep.title)}</b> <span class="ep-badge">EP</span></span>
@@ -347,12 +316,7 @@ async function loadArtists() {
             <a href="/artist/${artist.slug}" class="music-item">
                 <div class="item-container">
                     <div class="item-thumb">
-                        <img src="${getArtistImage(artist)}" 
-                             width="80" height="80" 
-                             class="roundthumb" 
-                             alt="${escapeHtml(artist.name)}"
-                             data-type="artist"
-                             onerror="handleImageError(this)">
+                        <img src="${getArtistImage(artist)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(artist.name)}" data-type="artist" onerror="handleImageError(this)">
                     </div>
                     <div class="item-data">
                         <span class="track-title"><b>${escapeHtml(artist.name)}</b> <span class="artist-badge">Artist</span></span>
@@ -413,14 +377,6 @@ async function loadGenres() {
 }
 
 async function loadAllContent() {
-    if (contentLoaded) {
-        console.log('Content already loaded, skipping...');
-        return;
-    }
-    
-    contentLoaded = true;
-    console.log('Loading content...');
-    
     await Promise.all([
         loadTrending(),
         loadLatestReleases(),
@@ -613,25 +569,21 @@ function searchMusic() {
     return false;
 }
 
-// Make handleImageError globally available for inline onerror
 window.handleImageError = handleImageError;
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async function() {
-    if (isInitialized) {
-        console.log('Already initialized, skipping...');
-        return;
-    }
+    if (isInitialized) return;
     isInitialized = true;
     
     console.log('DOM ready - initializing...');
+    
     await loadHeaderAndFooter();
     initializeScrollButton();
     initializeLiveSearch();
     await loadAllContent();
 });
 
-// Make functions globally available
 window.searchMusic = searchMusic;
 window.searchByGenre = searchByGenre;
 window.loadMore = loadMore;
