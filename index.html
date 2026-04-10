@@ -4,187 +4,226 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     
-    <!-- ===== SEO META TAGS ===== -->
+    <!-- ===== SEO META TAGS (STATIC) ===== -->
     <title>Zedtopvibes · Discover New Music, Playlists & Artists</title>
-    <meta name="description" content="Zedtopvibes - Your ultimate destination for discovering new music, artists, playlists, albums, compilations and EPs. Stream and explore the best music from around the world.">
-    <meta name="keywords" content="music, playlists, albums, artists, EPs, compilations, streaming, discover music, new releases, trending songs, best of">
+    <meta name="description" content="Zedtopvibes - Your ultimate destination for discovering new music, artists, playlists, albums, compilations and EPs.">
+    <meta name="keywords" content="music, playlists, albums, artists, EPs, compilations, streaming, discover music, new releases">
     <meta name="author" content="Zedtopvibes">
     <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://zedtopvibes.com">
     <meta property="og:title" content="Zedtopvibes - Music Discovery">
     <meta property="og:description" content="Discover new music, artists, compilations and playlists from around the world">
     <meta property="og:image" content="https://zedtopvibes.com/og-image.jpg">
-    
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://zedtopvibes.com">
     <meta property="twitter:title" content="Zedtopvibes - Music Discovery">
     <meta property="twitter:description" content="Discover new music, artists, compilations and playlists from around the world">
     <meta property="twitter:image" content="https://zedtopvibes.com/og-image.jpg">
-    
-    <!-- Canonical URL -->
     <link rel="canonical" href="https://zedtopvibes.com">
-    
-    <!-- Language -->
-    <meta http-equiv="content-language" content="en-us">
-    
-    <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     
-    <link rel="stylesheet" href="/css/style.css">
-    
+    <!-- Critical CSS inline (no render block) -->
     <style>
-        /* Additional inline styles for static content */
-        .static-content {
-            min-height: 280px;
-        }
-        .static-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 6px 8px;
-            border: 1px solid #ddd;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-        .static-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
-        }
-        .static-thumb {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            object-fit: cover;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        .static-title {
-            font-weight: 600;
-            font-size: 14px;
-            color: #000;
-            margin-bottom: 4px;
-        }
-        .static-artist {
-            font-size: 12px;
-            color: #666;
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:#eee;color:#3e3e3e}
+        .header{height:38px;background:#333;padding:3px;display:flex;align-items:center;justify-content:center;position:relative}
+        .hamburger-btn{position:absolute;left:12px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;padding:8px 6px;width:28px;height:28px}
+        .hamburger-btn span{display:block;width:100%;height:3px;background:#fff;border-radius:4px}
+        .section-header{display:flex;justify-content:space-between;align-items:center;background:#424242;border-bottom:1px solid #ff2121;border-radius:6px;width:100%}
+        .section-title{color:#fff;padding:6px 12px;font-size:16px;font-weight:600}
+        .see-all-btn{color:#ff9800;padding:6px 15px;font-size:13px;font-weight:600;text-decoration:none}
+        .corner{width:100%;overflow:hidden}
+        .music-grid{width:100%;display:flex;flex-wrap:wrap}
+        .music-item{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.08);display:flex;padding:6px 8px;margin:0;border:1px solid #ddd;width:50%;box-sizing:border-box}
+        .item-container{display:flex;align-items:center;width:100%}
+        .item-thumb{flex-shrink:0;margin-right:12px}
+        .roundthumb{width:80px;height:80px;border-radius:16px;object-fit:cover;background:linear-gradient(135deg,#e0e0e0,#c0c0c0)}
+        .item-data{flex:1;min-width:0}
+        .track-title{font-weight:600;font-size:14px;color:#000;margin-bottom:4px}
+        .artist-name{color:#666;font-size:12px}
+        .item-meta{color:#777;font-size:12px;display:block;margin-top:2px}
+        .section-spacing{margin-top:25px}
+        .loading-placeholder{text-align:center;padding:30px;color:#666}
+        @media(max-width:719px){.music-item{width:100%}}
     </style>
+    
+    <!-- Load full CSS asynchronously -->
+    <link rel="preload" href="/css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
+    
+    <!-- Font Awesome (async) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+    
+    <!-- Preconnect for faster API calls -->
+    <link rel="preconnect" href="/api">
 </head>
 <body>
-    <!-- Header loads dynamically -->
     <div id="header-placeholder"></div>
 
-    <!-- ===== TRENDING NOW SECTION ===== -->
-    <div class="section-header" id="trending">
+    <!-- ===== STATIC CONTAINERS WITH PLACEHOLDER CONTENT ===== -->
+    <!-- Each container has static structure, only content will be replaced -->
+    
+    <!-- TRENDING NOW SECTION -->
+    <div class="section-header">
         <h2 class="section-title">Trending Now</h2>
         <a href="#" class="see-all-btn" onclick="searchByGenre('trending'); return false;">See All</a>
     </div>
     <div class="corner">
         <div class="music-grid" id="trending-container">
-            <div class="loading">Loading trending...</div>
+            <!-- Static placeholder items - will be replaced -->
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
         </div>
     </div>
 
-    <!-- ===== LATEST RELEASES SECTION ===== -->
-    <div class="section-header section-spacing" id="latest">
+    <!-- LATEST RELEASES SECTION -->
+    <div class="section-header section-spacing">
         <h2 class="section-title">Latest Releases</h2>
         <a href="#" class="see-all-btn" onclick="loadMore(2); return false;">See All</a>
     </div>
     <div class="corner">
         <div class="music-grid" id="latest-container">
-            <div class="loading">Loading latest releases...</div>
+            <!-- Same static placeholders -->
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
         </div>
     </div>
     
-    <!-- ===== PLAYLISTS SECTION ===== -->
-    <div class="section-header section-spacing" id="playlists">
+    <!-- PLAYLISTS SECTION -->
+    <div class="section-header section-spacing">
         <h2 class="section-title">Playlists</h2>
         <a href="/playlists.html" class="see-all-btn">See All</a>
     </div>
     <div class="corner">
         <div class="music-grid" id="playlists-container">
-            <div class="loading">Loading playlists...</div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
         </div>
     </div>
     
-    <!-- ===== COMPILATIONS SECTION ===== -->
-    <div class="section-header section-spacing" id="compilations">
-        <h2 class="section-title">
-            <i class="fas fa-layer-group" style="margin-right: 8px;"></i>
-            Featured Compilations
-        </h2>
+    <!-- COMPILATIONS SECTION -->
+    <div class="section-header section-spacing">
+        <h2 class="section-title"><i class="fas fa-layer-group"></i> Featured Compilations</h2>
         <a href="/compilations.html" class="see-all-btn">See All</a>
     </div>
     <div class="corner">
         <div class="music-grid" id="compilations-container">
-            <div class="loading">Loading compilations...</div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
         </div>
     </div>
     
-    <!-- ===== ALBUMS SECTION ===== -->
-    <div class="section-header section-spacing" id="albums">
+    <!-- ALBUMS SECTION -->
+    <div class="section-header section-spacing">
         <h2 class="section-title">Albums</h2>
         <a href="/albums.html" class="see-all-btn">See All</a>
     </div>
     <div class="corner">
         <div class="music-grid" id="albums-container">
-            <div class="loading">Loading albums...</div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
         </div>
     </div>
     
-    <!-- ===== EPS SECTION ===== -->
-    <div class="section-header section-spacing" id="eps">
+    <!-- EPS SECTION -->
+    <div class="section-header section-spacing">
         <h2 class="section-title">EPs</h2>
         <a href="/eps.html" class="see-all-btn">See All</a>
     </div>
     <div class="corner">
         <div class="music-grid" id="eps-container">
-            <div class="loading">Loading EPs...</div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
         </div>
     </div>
     
-    <!-- ===== ARTISTS SECTION ===== -->
-    <div class="section-header section-spacing" id="artists">
+    <!-- ARTISTS SECTION -->
+    <div class="section-header section-spacing">
         <h2 class="section-title">Artists</h2>
         <a href="/artists.html" class="see-all-btn">See All</a>
     </div>
     <div class="corner">
         <div class="music-grid" id="artists-container">
-            <div class="loading">Loading artists...</div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
         </div>
     </div>
     
-    <!-- ===== MUSIC GENRES SECTION ===== -->
-    <div class="section-header section-spacing" id="genres">
+    <!-- GENRES SECTION -->
+    <div class="section-header section-spacing">
         <h2 class="section-title">Music Genres</h2>
         <a href="#" class="see-all-btn" onclick="searchByGenre('all'); return false;">See All</a>
     </div>
     <div class="corner">
         <div class="music-grid" id="genres-container">
-            <div class="loading">Loading genres...</div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
+            <div class="music-item static-placeholder"><div class="item-container"><div class="item-thumb"><div class="roundthumb" style="background:linear-gradient(135deg,#e0e0e0,#c0c0c0)"></div></div><div class="item-data"><div class="track-title">Loading...</div><div class="artist-name">—</div></div></div></div>
         </div>
     </div>
 
-    <!-- Footer loads dynamically -->
     <div id="footer-placeholder"></div>
 
+    <!-- Efficient JavaScript - Single API call for all data -->
     <script>
-        // ===== ALL JAVASCRIPT INCLUDED INLINE =====
+        // Shared data cache
+        let cachedData = {};
         
-        const API_BASE = '/api';
+        // Helper functions
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
         
-        // ===== HELPER FUNCTIONS =====
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
         
-        function getPrimaryArtistFromAlbum(album) {
+        function getPrimaryArtist(album) {
             if (!album.artists || album.artists.length === 0) return null;
             const primary = album.artists.find(a => a.is_primary === 1);
             return primary || album.artists[0];
         }
         
-        function getAlbumArtistDisplay(album) {
-            const primary = getPrimaryArtistFromAlbum(album);
+        function getArtistName(album) {
+            const primary = getPrimaryArtist(album);
             if (primary) return primary.name;
             if (album.artist) return album.artist;
             if (album.artist_name) return album.artist_name;
@@ -192,641 +231,251 @@
         }
         
         function getAlbumImage(album) {
-            if (album.cover_url && album.cover_url !== 'null' && album.cover_url !== '') {
-                return album.cover_url;
-            }
-            if (album.cover_emoji) {
-                const encodedEmoji = encodeURIComponent(album.cover_emoji);
-                return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5500'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedEmoji}%3C/text%3E%3C/svg%3E`;
-            }
-            return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23333'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎵%3C/text%3E%3C/svg%3E";
+            if (album.cover_url && album.cover_url !== 'null') return album.cover_url;
+            return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5500'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎵%3C/text%3E%3C/svg%3E";
         }
         
         function getPlaylistImage(playlist) {
-            if (playlist.cover_url && playlist.cover_url !== 'null' && playlist.cover_url !== '') {
-                return playlist.cover_url;
-            }
-            if (playlist.cover_emoji) {
-                const encodedEmoji = encodeURIComponent(playlist.cover_emoji);
-                return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239c27b0'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedEmoji}%3C/text%3E%3C/svg%3E`;
-            }
+            if (playlist.cover_url && playlist.cover_url !== 'null') return playlist.cover_url;
             return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239c27b0'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📋%3C/text%3E%3C/svg%3E";
         }
         
         function getCompilationImage(compilation) {
-            if (compilation.cover_url && compilation.cover_url !== 'null' && compilation.cover_url !== '') {
-                return compilation.cover_url;
-            }
-            const colors = {
-                'albums': 'ff5500',
-                'eps': '9c27b0',
-                'artists': '2196f3',
-                'playlists': '4caf50'
-            };
-            const color = colors[compilation.type] || '666';
-            const icons = {
-                'albums': '💿',
-                'eps': '📀',
-                'artists': '🎤',
-                'playlists': '📋'
-            };
-            const icon = icons[compilation.type] || '📁';
-            const encodedIcon = encodeURIComponent(icon);
-            return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23${color}'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodedIcon}%3C/text%3E%3C/svg%3E`;
+            if (compilation.cover_url && compilation.cover_url !== 'null') return compilation.cover_url;
+            const color = { albums: 'ff5500', eps: '9c27b0', artists: '2196f3', playlists: '4caf50' }[compilation.type] || '666';
+            const icon = { albums: '💿', eps: '📀', artists: '🎤', playlists: '📋' }[compilation.type] || '📁';
+            return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23${color}'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E${encodeURIComponent(icon)}%3C/text%3E%3C/svg%3E`;
         }
         
         function getArtistImage(artist) {
+            if (artist.image_url && artist.image_url !== 'null') return artist.image_url;
             return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232196f3'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎤%3C/text%3E%3C/svg%3E";
         }
         
-        function formatNumber(num) {
-            if (!num || num === 0) return '0';
-            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-            return num.toString();
-        }
-        
-        function formatDuration(seconds) {
-            if (!seconds) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
-        
-        function handleImageError(img) {
-            if (img.dataset.fallbackUsed) return;
-            img.dataset.fallbackUsed = 'true';
-            const type = img.dataset.type || 'default';
-            if (type === 'playlist') {
-                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%239c27b0'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E📋%3C/text%3E%3C/svg%3E";
-            } else if (type === 'artist') {
-                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232196f3'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎤%3C/text%3E%3C/svg%3E";
-            } else {
-                img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5500'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='white' font-size='40'%3E🎵%3C/text%3E%3C/svg%3E";
-            }
-        }
-        
-        // ===== LOAD FUNCTIONS =====
-        
-        async function loadCompilations() {
-            const container = document.getElementById('compilations-container');
-            if (!container) return;
-            
-            container.innerHTML = '<div class="loading">Loading compilations...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/compilations`);
-                const compilations = await response.json();
-                
-                if (!compilations || compilations.length === 0) {
-                    container.innerHTML = '<div class="error-message">No compilations found</div>';
-                    return;
-                }
-                
-                const typeLabels = {
-                    'albums': 'Albums',
-                    'eps': 'EPs',
-                    'artists': 'Artists',
-                    'playlists': 'Playlists'
-                };
-                
-                container.innerHTML = compilations.slice(0, 6).map(compilation => {
-                    const typeLabel = typeLabels[compilation.type] || compilation.type;
-                    return `
-                        <a href="/compilation/${compilation.slug}" class="music-item">
-                            <div class="item-container">
-                                <div class="item-thumb">
-                                    <img src="${getCompilationImage(compilation)}" 
-                                         width="80" height="80" 
-                                         class="roundthumb" 
-                                         alt="${escapeHtml(compilation.title)}"
-                                         data-type="compilation"
-                                         onerror="handleImageError(this)">
-                                </div>
-                                <div class="item-data">
-                                    <span class="track-title"><b>${escapeHtml(compilation.title)}</b> <span class="compilation-badge" style="background:#ff4b2b; color:#fff; padding:2px 6px; border-radius:3px; font-size:10px; margin-left:5px;">${typeLabel}</span></span>
-                                    <div class="artist-name">${compilation.item_count || 0} items</div>
-                                    <span class="item-meta"><b style="color:#ff0000">${formatNumber(compilation.views || 0)} views</b></span>
-                                </div>
-                            </div>
-                        </a>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('Error loading compilations:', error);
-                container.innerHTML = '<div class="error-message">Compilations unavailable</div>';
-            }
-        }
-        
-        async function loadAlbums() {
-            const container = document.getElementById('albums-container');
-            if (!container) return;
-            
-            container.innerHTML = '<div class="loading">Loading albums...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/albums`);
-                const albums = await response.json();
-                
-                if (!albums || albums.length === 0) {
-                    container.innerHTML = '<div class="error-message">No albums found</div>';
-                    return;
-                }
-                
-                container.innerHTML = albums.slice(0, 6).map(album => {
-                    const artistName = getAlbumArtistDisplay(album);
-                    return `
-                        <a href="/album/${album.slug}" class="music-item">
-                            <div class="item-container">
-                                <div class="item-thumb">
-                                    <img src="${getAlbumImage(album)}" 
-                                         width="80" height="80" 
-                                         class="roundthumb" 
-                                         alt="${escapeHtml(album.title)}"
-                                         data-type="album"
-                                         onerror="handleImageError(this)">
-                                </div>
-                                <div class="item-data">
-                                    <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                                    <div class="artist-name">${escapeHtml(artistName)}</div>
-                                    <span class="item-meta">
-                                        <b style="color:#ff0000">${album.track_count || 0} tracks</b>
-                                        ${album.release_date ? `<span style="margin-left:8px">${new Date(album.release_date).getFullYear()}</span>` : ''}
-                                    </span>
-                                </div>
-                            </div>
-                        </a>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('Error loading albums:', error);
-                container.innerHTML = '<div class="error-message">Failed to load albums</div>';
-            }
-        }
-        
-        async function loadLatestReleases() {
-            const container = document.getElementById('latest-container');
-            if (!container) return;
-            
-            container.innerHTML = '<div class="loading">Loading latest releases...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/albums`);
-                const albums = await response.json();
-                
-                const latest = [...albums]
-                    .filter(a => a.release_date)
-                    .sort((a, b) => new Date(b.release_date) - new Date(a.release_date))
-                    .slice(0, 6);
-                
-                if (!latest || latest.length === 0) {
-                    container.innerHTML = '<div class="error-message">No releases found</div>';
-                    return;
-                }
-                
-                container.innerHTML = latest.map(album => {
-                    const artistName = getAlbumArtistDisplay(album);
-                    return `
-                        <a href="/album/${album.slug}" class="music-item">
-                            <div class="item-container">
-                                <div class="item-thumb">
-                                    <img src="${getAlbumImage(album)}" 
-                                         width="80" height="80" 
-                                         class="roundthumb" 
-                                         alt="${escapeHtml(album.title)}"
-                                         data-type="album"
-                                         onerror="handleImageError(this)">
-                                </div>
-                                <div class="item-data">
-                                    <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                                    <div class="artist-name">${escapeHtml(artistName)}</div>
-                                    <span class="item-meta">
-                                        <b style="color:#ff0000">Released:</b> ${album.release_date ? new Date(album.release_date).getFullYear() : 'TBA'}
-                                        <span class="new-badge" style="background:#4caf50; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">New</span>
-                                    </span>
-                                </div>
-                            </div>
-                        </a>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('Error loading latest releases:', error);
-                container.innerHTML = '<div class="error-message">Failed to load latest releases</div>';
-            }
-        }
-        
-        async function loadTrending() {
+        // Render functions
+        function renderTrending(albums) {
             const container = document.getElementById('trending-container');
             if (!container) return;
-            
-            container.innerHTML = '<div class="loading">Loading trending...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/albums`);
-                const albums = await response.json();
-                
-                const trending = [...albums]
-                    .sort((a, b) => (b.plays || 0) - (a.plays || 0))
-                    .slice(0, 6);
-                
-                if (!trending || trending.length === 0) {
-                    container.innerHTML = '<div class="error-message">No trending content</div>';
-                    return;
-                }
-                
-                container.innerHTML = trending.map(album => {
-                    const artistName = getAlbumArtistDisplay(album);
-                    return `
-                        <a href="/album/${album.slug}" class="music-item">
-                            <div class="item-container">
-                                <div class="item-thumb">
-                                    <img src="${getAlbumImage(album)}" 
-                                         width="80" height="80" 
-                                         class="roundthumb" 
-                                         alt="${escapeHtml(album.title)}"
-                                         data-type="album"
-                                         onerror="handleImageError(this)">
-                                </div>
-                                <div class="item-data">
-                                    <span class="track-title"><b>${escapeHtml(album.title)}</b></span>
-                                    <div class="artist-name">${escapeHtml(artistName)}</div>
-                                    <span class="item-meta">
-                                        <b style="color:#ff0000">${album.plays ? formatNumber(album.plays) + ' plays' : 'Trending'}</b>
-                                        <span class="hot-badge" style="background:#ff9800; color:#fff; padding:2px 6px; margin-left:5px; border-radius:3px; font-size:11px;">🔥 Hot</span>
-                                    </span>
-                                </div>
-                            </div>
-                        </a>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('Error loading trending:', error);
-                container.innerHTML = '<div class="error-message">Failed to load trending</div>';
-            }
+            const trending = [...albums].sort((a, b) => (b.plays || 0) - (a.plays || 0)).slice(0, 6);
+            container.innerHTML = trending.map(album => `
+                <a href="/album/${album.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb"><img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" loading="lazy"></div>
+                        <div class="item-data">
+                            <div class="track-title"><b>${escapeHtml(album.title)}</b></div>
+                            <div class="artist-name">${escapeHtml(getArtistName(album))}</div>
+                            <span class="item-meta"><b style="color:#ff0000">${formatNumber(album.plays)} plays</b></span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
         }
         
-        async function loadPlaylists() {
+        function renderLatestReleases(albums) {
+            const container = document.getElementById('latest-container');
+            if (!container) return;
+            const latest = [...albums].filter(a => a.release_date).sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).slice(0, 6);
+            container.innerHTML = latest.map(album => `
+                <a href="/album/${album.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb"><img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" loading="lazy"></div>
+                        <div class="item-data">
+                            <div class="track-title"><b>${escapeHtml(album.title)}</b></div>
+                            <div class="artist-name">${escapeHtml(getArtistName(album))}</div>
+                            <span class="item-meta"><b style="color:#ff0000">${album.release_date ? new Date(album.release_date).getFullYear() : 'TBA'}</b></span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+        
+        function renderAlbums(albums) {
+            const container = document.getElementById('albums-container');
+            if (!container) return;
+            const displayAlbums = albums.slice(0, 6);
+            container.innerHTML = displayAlbums.map(album => `
+                <a href="/album/${album.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb"><img src="${getAlbumImage(album)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(album.title)}" loading="lazy"></div>
+                        <div class="item-data">
+                            <div class="track-title"><b>${escapeHtml(album.title)}</b></div>
+                            <div class="artist-name">${escapeHtml(getArtistName(album))}</div>
+                            <span class="item-meta"><b style="color:#ff0000">${album.track_count || 0} tracks</b></span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+        
+        function renderPlaylists(playlists) {
             const container = document.getElementById('playlists-container');
             if (!container) return;
-            
-            container.innerHTML = '<div class="loading">Loading playlists...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/playlists`);
-                const playlists = await response.json();
-                
-                if (!playlists || playlists.length === 0) {
-                    container.innerHTML = '<div class="error-message">No playlists found</div>';
-                    return;
-                }
-                
-                container.innerHTML = playlists.slice(0, 6).map(playlist => `
-                    <a href="/playlist/${playlist.slug}" class="music-item">
-                        <div class="item-container">
-                            <div class="item-thumb">
-                                <img src="${getPlaylistImage(playlist)}" 
-                                     width="80" height="80" 
-                                     class="roundthumb" 
-                                     alt="${escapeHtml(playlist.name)}"
-                                     data-type="playlist"
-                                     onerror="handleImageError(this)">
-                            </div>
-                            <div class="item-data">
-                                <span class="track-title"><b>${escapeHtml(playlist.name)}</b> <span class="playlist-badge">Playlist</span></span>
-                                <div class="artist-name">${escapeHtml(playlist.created_by || 'Various Artists')}</div>
-                                <span class="item-meta"><b style="color:#ff0000">${playlist.track_count || 0} songs</b></span>
-                            </div>
+            const displayPlaylists = (playlists || []).slice(0, 6);
+            container.innerHTML = displayPlaylists.map(playlist => `
+                <a href="/playlist/${playlist.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb"><img src="${getPlaylistImage(playlist)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(playlist.name)}" loading="lazy"></div>
+                        <div class="item-data">
+                            <div class="track-title"><b>${escapeHtml(playlist.name)}</b></div>
+                            <div class="artist-name">${escapeHtml(playlist.created_by || 'Various Artists')}</div>
+                            <span class="item-meta"><b style="color:#ff0000">${playlist.track_count || 0} songs</b></span>
                         </div>
-                    </a>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Error loading playlists:', error);
-                container.innerHTML = '<div class="error-message">Playlists unavailable</div>';
-            }
+                    </div>
+                </a>
+            `).join('');
         }
         
-        async function loadEPs() {
+        function renderCompilations(compilations) {
+            const container = document.getElementById('compilations-container');
+            if (!container) return;
+            const displayCompilations = (compilations || []).slice(0, 6);
+            const typeLabels = { albums: 'Albums', eps: 'EPs', artists: 'Artists', playlists: 'Playlists' };
+            container.innerHTML = displayCompilations.map(comp => `
+                <a href="/compilation/${comp.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb"><img src="${getCompilationImage(comp)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(comp.title)}" loading="lazy"></div>
+                        <div class="item-data">
+                            <div class="track-title"><b>${escapeHtml(comp.title)}</b></div>
+                            <div class="artist-name">${comp.item_count || 0} items</div>
+                            <span class="item-meta"><b style="color:#ff0000">${typeLabels[comp.type] || comp.type}</b></span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+        
+        function renderEPs(eps) {
             const container = document.getElementById('eps-container');
             if (!container) return;
-            
-            container.innerHTML = '<div class="loading">Loading EPs...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/eps`);
-                const eps = await response.json();
-                const epsList = Array.isArray(eps) ? eps : (eps.results || []);
-                
-                if (!epsList || epsList.length === 0) {
-                    container.innerHTML = '<div class="error-message">No EPs found</div>';
-                    return;
-                }
-                
-                container.innerHTML = epsList.slice(0, 6).map(ep => {
-                    const artistName = ep.artist_name || ep.artist || 'Unknown Artist';
-                    return `
-                        <a href="/ep/${ep.slug}" class="music-item">
-                            <div class="item-container">
-                                <div class="item-thumb">
-                                    <img src="${getAlbumImage(ep)}" 
-                                         width="80" height="80" 
-                                         class="roundthumb" 
-                                         alt="${escapeHtml(ep.title)}"
-                                         data-type="album"
-                                         onerror="handleImageError(this)">
-                                </div>
-                                <div class="item-data">
-                                    <span class="track-title"><b>${escapeHtml(ep.title)}</b> <span class="ep-badge">EP</span></span>
-                                    <div class="artist-name">${escapeHtml(artistName)}</div>
-                                    <span class="item-meta"><b style="color:#ff0000">${ep.track_count || 0} tracks</b></span>
-                                </div>
-                            </div>
-                        </a>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('Error loading EPs:', error);
-                container.innerHTML = '<div class="error-message">EPs unavailable</div>';
-            }
+            const epsList = Array.isArray(eps) ? eps : (eps.results || []);
+            const displayEps = epsList.slice(0, 6);
+            container.innerHTML = displayEps.map(ep => `
+                <a href="/ep/${ep.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb"><img src="${getAlbumImage(ep)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(ep.title)}" loading="lazy"></div>
+                        <div class="item-data">
+                            <div class="track-title"><b>${escapeHtml(ep.title)}</b></div>
+                            <div class="artist-name">${escapeHtml(ep.artist_name || ep.artist || 'Unknown Artist')}</div>
+                            <span class="item-meta"><b style="color:#ff0000">${ep.track_count || 0} tracks</b></span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
         }
         
-        async function loadArtists() {
+        function renderArtists(artists) {
             const container = document.getElementById('artists-container');
             if (!container) return;
-            
-            container.innerHTML = '<div class="loading">Loading artists...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/artists`);
-                const artists = await response.json();
-                
-                if (!artists || artists.length === 0) {
-                    container.innerHTML = '<div class="error-message">No artists found</div>';
-                    return;
-                }
-                
-                container.innerHTML = artists.slice(0, 6).map(artist => `
-                    <a href="/artist/${artist.slug}" class="music-item">
-                        <div class="item-container">
-                            <div class="item-thumb">
-                                <img src="${getArtistImage(artist)}" 
-                                     width="80" height="80" 
-                                     class="roundthumb" 
-                                     alt="${escapeHtml(artist.name)}"
-                                     data-type="artist"
-                                     onerror="handleImageError(this)">
-                            </div>
-                            <div class="item-data">
-                                <span class="track-title"><b>${escapeHtml(artist.name)}</b> <span class="artist-badge">Artist</span></span>
-                                <div class="artist-name">${artist.track_count || 0} tracks</div>
-                                <span class="item-meta"><b style="color:#ff0000">${artist.genres?.[0] || 'Artist'}</b></span>
-                            </div>
+            const displayArtists = (artists || []).slice(0, 6);
+            container.innerHTML = displayArtists.map(artist => `
+                <a href="/artist/${artist.slug}" class="music-item">
+                    <div class="item-container">
+                        <div class="item-thumb"><img src="${getArtistImage(artist)}" width="80" height="80" class="roundthumb" alt="${escapeHtml(artist.name)}" loading="lazy"></div>
+                        <div class="item-data">
+                            <div class="track-title"><b>${escapeHtml(artist.name)}</b></div>
+                            <div class="artist-name">${artist.track_count || 0} tracks</div>
+                            <span class="item-meta"><b style="color:#ff0000">${artist.genres?.[0] || 'Artist'}</b></span>
                         </div>
-                    </a>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Error loading artists:', error);
-                container.innerHTML = '<div class="error-message">Artists unavailable</div>';
-            }
+                    </div>
+                </a>
+            `).join('');
         }
         
-        async function loadGenres() {
+        function renderGenres(albums) {
             const container = document.getElementById('genres-container');
             if (!container) return;
-            
-            container.innerHTML = '<div class="loading">Loading genres...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/albums`);
-                const albums = await response.json();
-                
-                const genreMap = new Map();
-                albums.forEach(album => {
-                    if (album.genre && album.genre !== 'null') {
-                        const count = genreMap.get(album.genre) || 0;
-                        genreMap.set(album.genre, count + 1);
-                    }
-                });
-                
-                const genres = Array.from(genreMap.entries()).map(([name, count]) => ({ name, count }));
-                
-                if (!genres || genres.length === 0) {
-                    container.innerHTML = '<div class="error-message">No genres found</div>';
-                    return;
+            const genreMap = new Map();
+            albums.forEach(album => {
+                if (album.genre && album.genre !== 'null') {
+                    genreMap.set(album.genre, (genreMap.get(album.genre) || 0) + 1);
                 }
+            });
+            const genres = Array.from(genreMap.entries()).map(([name, count]) => ({ name, count }));
+            container.innerHTML = genres.map(genre => `
+                <a href="#" class="music-item" onclick="searchByGenre('${genre.name.toLowerCase()}'); return false;">
+                    <div class="item-container" style="display:flex;align-items:center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="#007bff" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm1.5-7.5a.5.5 0 0 1-.5.5H6.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L6.707 7.5H9a.5.5 0 0 1 .5.5z"></path>
+                        </svg>
+                        <strong style="font-size:15px;color:#000;margin-left:6px;">${escapeHtml(genre.name)}</strong>
+                        <span style="margin-left:4px; color:#ff4b2b; font-weight:600;">(${genre.count})</span>
+                    </div>
+                </a>
+            `).join('');
+        }
+        
+        // Main load function - SINGLE API CALL for albums (reused across sections)
+        async function loadAllContent() {
+            try {
+                // Fetch all unique data in parallel
+                const [albumsRes, playlistsRes, epsRes, artistsRes, compilationsRes] = await Promise.all([
+                    fetch('/api/albums'),
+                    fetch('/api/playlists'),
+                    fetch('/api/eps'),
+                    fetch('/api/artists'),
+                    fetch('/api/compilations')
+                ]);
                 
-                container.innerHTML = genres.map(genre => `
-                    <a class="music-item" href="#" onclick="searchByGenre('${genre.name.toLowerCase()}'); return false;">
-                        <div class="item-container" style="display:flex;align-items:center;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="#007bff" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm1.5-7.5a.5.5 0 0 1-.5.5H6.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L6.707 7.5H9a.5.5 0 0 1 .5.5z"></path>
-                            </svg>
-                            <strong style="font-size:15px;color:#000;margin-left:6px;">${escapeHtml(genre.name)}</strong>
-                            <span style="margin-left:4px; color:#ff4b2b; font-weight:600;">(${genre.count})</span>
-                        </div>
-                    </a>
-                `).join('');
+                const albums = await albumsRes.json();
+                const playlists = await playlistsRes.json();
+                const eps = await epsRes.json();
+                const artists = await artistsRes.json();
+                const compilations = await compilationsRes.json();
+                
+                // Render all sections from fetched data (reused)
+                renderTrending(albums);
+                renderLatestReleases(albums);
+                renderAlbums(albums);
+                renderPlaylists(playlists);
+                renderCompilations(compilations);
+                renderEPs(eps);
+                renderArtists(artists);
+                renderGenres(albums);
                 
             } catch (error) {
-                console.error('Error loading genres:', error);
-                container.innerHTML = '<div class="error-message">Genres unavailable</div>';
+                console.error('Error loading content:', error);
             }
         }
         
-        async function loadAllContent() {
-            await Promise.all([
-                loadTrending(),
-                loadLatestReleases(),
-                loadPlaylists(),
-                loadCompilations(),
-                loadAlbums(),
-                loadEPs(),
-                loadArtists(),
-                loadGenres()
-            ]);
-        }
-        
-        // ===== HEADER & FOOTER LOADER =====
+        // Header & Footer loader
         async function loadHeaderAndFooter() {
             try {
-                const [headerData, footerData] = await Promise.all([
+                const [header, footer] = await Promise.all([
                     fetch('/header.html').then(r => r.text()),
                     fetch('/footer.html').then(r => r.text())
                 ]);
-                
-                const headerPlaceholder = document.getElementById('header-placeholder');
-                const footerPlaceholder = document.getElementById('footer-placeholder');
-                
-                if (headerPlaceholder) headerPlaceholder.innerHTML = headerData;
-                if (footerPlaceholder) footerPlaceholder.innerHTML = footerData;
-                
+                document.getElementById('header-placeholder').innerHTML = header;
+                document.getElementById('footer-placeholder').innerHTML = footer;
                 setTimeout(initializeSidebar, 100);
-            } catch (error) {
-                console.log('Header/footer files not found:', error);
-            }
+            } catch(e) { console.log('Header/footer not found'); }
         }
         
-        // ===== SIDEBAR FUNCTIONS =====
         function initializeSidebar() {
             const hamburger = document.getElementById('hamburgerBtn');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             const closeBtn = document.getElementById('closeSidebarBtn');
-
             if (hamburger && sidebar && overlay && closeBtn) {
-                hamburger.addEventListener('click', openSidebar);
-                closeBtn.addEventListener('click', closeSidebar);
-                overlay.addEventListener('click', closeSidebar);
-                
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-                        closeSidebar();
-                    }
+                hamburger.addEventListener('click', () => {
+                    sidebar.classList.add('open');
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+                closeBtn.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
                 });
             }
         }
         
-        function openSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            if (sidebar && overlay) {
-                sidebar.classList.add('open');
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            if (sidebar && overlay) {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-        
-        // ===== SCROLL BUTTON =====
-        function initializeScrollButton() {
-            const scrollButton = document.getElementById('scrollBtn');
-            if (!scrollButton) return;
-            
-            const progressCircle = scrollButton.querySelector('.progress');
-            if (progressCircle) {
-                const circumference = 2 * Math.PI * progressCircle.r.baseVal.value;
-                progressCircle.style.strokeDasharray = circumference;
-            }
-        
-            const handleScroll = () => {
-                const scrollTop = window.scrollY || document.documentElement.scrollTop;
-                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                const scrollPercentage = (scrollHeight > 0) ? (scrollTop / scrollHeight) * 100 : 0;
-                scrollButton.style.setProperty('--progress', scrollPercentage);
-                
-                if (scrollTop < 50) {
-                    scrollButton.classList.add('scroll-at-top');
-                } else {
-                    scrollButton.classList.remove('scroll-at-top');
-                }
-            };
-        
-            const handleClick = () => {
-                const isAtTop = scrollButton.classList.contains('scroll-at-top');
-                window.scrollTo({
-                    top: isAtTop ? document.body.scrollHeight : 0,
-                    behavior: 'smooth'
-                });
-            };
-        
-            window.addEventListener('scroll', handleScroll, { passive: true });
-            scrollButton.addEventListener('click', handleClick);
-            handleScroll();
-        }
-        
-        // ===== LIVE SEARCH =====
-        function initializeLiveSearch() {
-            const searchInput = document.getElementById('searchInput');
-            if (!searchInput) return;
-            
-            const resultsDiv = document.getElementById('liveSearchResults');
-            if (!resultsDiv) return;
-            
-            let debounceTimer;
-            
-            searchInput.addEventListener('input', async function(e) {
-                clearTimeout(debounceTimer);
-                const term = e.target.value.trim();
-                
-                if (term.length < 2) {
-                    resultsDiv.innerHTML = '';
-                    return;
-                }
-                
-                debounceTimer = setTimeout(async () => {
-                    resultsDiv.innerHTML = '<div class="loading-small">Searching...</div>';
-                    
-                    try {
-                        const albumsRes = await fetch(`${API_BASE}/albums`);
-                        const albums = await albumsRes.json();
-                        
-                        const results = albums.filter(album => {
-                            const artistName = getAlbumArtistDisplay(album);
-                            return album.title.toLowerCase().includes(term.toLowerCase()) ||
-                                   artistName.toLowerCase().includes(term.toLowerCase());
-                        }).slice(0, 5);
-                        
-                        if (results.length > 0) {
-                            resultsDiv.innerHTML = `
-                                <ul class="live-search-list">
-                                    ${results.map(item => {
-                                        const artistName = getAlbumArtistDisplay(item);
-                                        return `
-                                            <li>
-                                                <a href="/album/${item.slug}">
-                                                    ${escapeHtml(item.title)} - ${escapeHtml(artistName)}
-                                                </a>
-                                            </li>
-                                        `;
-                                    }).join('')}
-                                </ul>
-                            `;
-                        } else {
-                            resultsDiv.innerHTML = '<div class="no-results">No results found</div>';
-                        }
-                    } catch (error) {
-                        console.error('Search error:', error);
-                        resultsDiv.innerHTML = '<div class="error-message">Search failed</div>';
-                    }
-                }, 300);
-            });
-            
-            document.addEventListener('click', function(e) {
-                if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
-                    resultsDiv.innerHTML = '';
-                }
-            });
-        }
-        
-        // ===== GLOBAL FUNCTIONS =====
         function searchByGenre(genre) {
             window.location.href = `/genre/${genre}`;
-            closeSidebar();
             return false;
         }
         
@@ -835,26 +484,12 @@
             return false;
         }
         
-        function searchMusic() {
-            const searchTerm = document.getElementById('searchInput')?.value;
-            if (searchTerm) {
-                window.location.href = `/search?q=${encodeURIComponent(searchTerm)}`;
-            }
-            return false;
-        }
-        
-        window.handleImageError = handleImageError;
-        window.searchMusic = searchMusic;
         window.searchByGenre = searchByGenre;
         window.loadMore = loadMore;
-        window.closeSidebar = closeSidebar;
         
-        // ===== INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('DOM ready - initializing...');
+        // Start loading
+        document.addEventListener('DOMContentLoaded', async () => {
             await loadHeaderAndFooter();
-            initializeScrollButton();
-            initializeLiveSearch();
             await loadAllContent();
         });
     </script>
