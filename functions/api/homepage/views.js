@@ -1,5 +1,5 @@
 export async function onRequest(context) {
-  const { env } = context;
+  const { request, env } = context;  // ← Added 'request' here
   const headers = { 'Content-Type': 'application/json' };
 
   if (request.method !== 'POST') {
@@ -9,7 +9,6 @@ export async function onRequest(context) {
   }
 
   try {
-    // Simple increment - always +1, no restrictions
     const result = await env.DB.prepare(`
       UPDATE homepage_views 
       SET total_views = total_views + 1,
