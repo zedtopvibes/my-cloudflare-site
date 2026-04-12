@@ -3,7 +3,7 @@ export async function onRequest(context) {
   const pathname = url.pathname;
   
   const redirectPaths = new Set([
-    '/playlists', '/albums', '/artists', '/tracks', 
+    '/playlists', /playlists.html', /playlist.html', /playlist', /albums', '/artists', '/tracks', 
     '/genres', '/charts', '/radio', '/podcasts', 
     '/favorites', '/history', '/following', '/liked', 
     '/recent', '/stats', '/settings'
