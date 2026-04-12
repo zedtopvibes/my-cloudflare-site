@@ -12,8 +12,8 @@ export async function onRequest(context) {
     }
     
     try {
-        // Query all stats in parallel
-        const [tracksStats, albumsStats, epsStats, artistsStats, playlistsStats] = await Promise.all([
+        // Query all stats in parallel (including homepage_views)
+        const [tracksStats, albumsStats, epsStats, artistsStats, playlistsStats, homepageStats] = await Promise.all([
             env.DB.prepare(`
                 SELECT 
                     COUNT(*) as total,
@@ -49,6 +49,13 @@ export async function onRequest(context) {
                     COUNT(*) as total,
                     COALESCE(SUM(views), 0) as total_views
                 FROM playlists
+            `).first(),
+            
+            // NEW: Get homepage views
+            env.DB.prepare(`
+                SELECT COALESCE(total_views, 0) as total_views
+                FROM homepage_views 
+                WHERE id = 1
             `).first()
         ]);
         
@@ -57,7 +64,8 @@ export async function onRequest(context) {
                          albumsStats.total_views + 
                          epsStats.total_views + 
                          artistsStats.total_views + 
-                         playlistsStats.total_views;
+                         playlistsStats.total_views +
+                         (homepageStats?.total_views || 0);
         
         const response = {
             success: true,
@@ -83,6 +91,9 @@ export async function onRequest(context) {
                 playlists: {
                     total: playlistsStats.total || 0,
                     total_views: playlistsStats.total_views || 0
+                },
+                homepage: {
+                    total_views: homepageStats?.total_views || 0
                 },
                 total_views: totalViews
             }
