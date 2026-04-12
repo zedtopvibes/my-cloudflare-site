@@ -8,16 +8,26 @@ export async function onRequest(context) {
     '/playlist', '/playlists', '/song',
     '/test-css', '/test-shared'
   ]);
+
+  // 🚫 NOINDEX ONLY (no redirect)
+  if (pathname.startsWith('/api') || pathname.startsWith('/admin')) {
+    const response = await context.next();
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return response;
+  }
   
+  // 🔁 REDIRECT + NOINDEX
   if (redirectPaths.has(pathname)) {
-    // 302 = Found (Temporal Redirect)
-    return Response.redirect(new URL('/', url.origin).toString(), 302);
+    const response = Response.redirect(new URL('/', url.origin).toString(), 302);
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return response;
   }
   
   try {
     return await context.next();
   } catch (error) {
-    // Fallback also uses 302 to prevent aggressive browser caching
-    return Response.redirect(new URL('/', url.origin).toString(), 302);
+    const response = Response.redirect(new URL('/', url.origin).toString(), 302);
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return response;
   }
 }
