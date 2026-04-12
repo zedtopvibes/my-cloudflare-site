@@ -2,14 +2,19 @@ export async function onRequest(context) {
   const { request, env } = context;
   const headers = { 'Content-Type': 'application/json' };
 
-  // Allow both GET and POST
-  if (request.method !== 'GET' && request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
-      status: 405, headers 
-    });
+  // GET request = just return the count (don't increment)
+  if (request.method === 'GET') {
+    const result = await env.DB.prepare(`
+      SELECT total_views FROM homepage_views WHERE id = 1
+    `).first();
+    
+    return new Response(JSON.stringify({ 
+      total_views: result?.total_views || 0 
+    }), { headers });
   }
 
-  try {
+  // POST request = increment the count (real homepage view)
+  if (request.method === 'POST') {
     const result = await env.DB.prepare(`
       UPDATE homepage_views 
       SET total_views = total_views + 1,
@@ -24,10 +29,9 @@ export async function onRequest(context) {
       success: true, 
       total_views: totalViews 
     }), { headers });
-    
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { 
-      status: 500, headers 
-    });
   }
+
+  return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
+    status: 405, headers 
+  });
 }
