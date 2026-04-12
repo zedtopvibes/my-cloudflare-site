@@ -4,7 +4,7 @@ export async function onRequest(context) {
   
   const redirectPaths = new Set([
     '/album', '/albums', '/artist', '/artists',
-    '/compilation', '/ep', /eps', /compilations', '/genre', '/page',
+    '/compilation', '/ep', '/eps', '/compilations', '/genre', '/page',
     '/playlist', '/playlists', '/song',
     '/test-css', '/test-shared'
   ]);
