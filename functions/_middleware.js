@@ -3,10 +3,10 @@ export async function onRequest(context) {
   const pathname = url.pathname;
   
   const redirectPaths = new Set([
-    '/playlists', '/albums', '/artists', '/tracks', 
-    '/genres', '/charts', '/radio', '/podcasts', 
-    '/favorites', '/history', '/following', '/liked', 
-    '/recent', '/stats', '/settings'
+    '/album', '/albums', '/artist', '/artists',
+    '/compilation', '/ep', '/genre', '/page',
+    '/playlist', '/playlists', '/song',
+    '/test-css', '/test-shared'
   ]);
   
   if (redirectPaths.has(pathname)) {
