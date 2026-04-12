@@ -1,22 +1,23 @@
 export async function onRequest(context) {
   const url = new URL(context.request.url);
+  const pathname = url.pathname;
   
-  // Don't redirect admin paths
-  if (url.pathname.startsWith('/admin')) {
-    return context.next();
-  }
-  
-  // List of paths to redirect
-  const redirectPaths = [
+  const redirectPaths = new Set([
     '/playlists', '/albums', '/artists', '/tracks', 
     '/genres', '/charts', '/radio', '/podcasts', 
     '/favorites', '/history', '/following', '/liked', 
     '/recent', '/stats', '/settings'
-  ];
+  ]);
   
-  if (redirectPaths.includes(url.pathname)) {
-    return Response.redirect('/', 301);
+  if (redirectPaths.has(pathname)) {
+    // 302 = Found (Temporal Redirect)
+    return Response.redirect(new URL('/', url.origin).toString(), 302);
   }
   
-  return context.next();
+  try {
+    return await context.next();
+  } catch (error) {
+    // Fallback also uses 302 to prevent aggressive browser caching
+    return Response.redirect(new URL('/', url.origin).toString(), 302);
+  }
 }
