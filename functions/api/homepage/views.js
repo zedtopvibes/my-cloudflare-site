@@ -1,8 +1,9 @@
 export async function onRequest(context) {
-  const { request, env } = context;  // ← Added 'request' here
+  const { request, env } = context;
   const headers = { 'Content-Type': 'application/json' };
 
-  if (request.method !== 'POST') {
+  // Allow both GET and POST
+  if (request.method !== 'GET' && request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { 
       status: 405, headers 
     });
