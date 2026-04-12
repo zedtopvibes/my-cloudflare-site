@@ -9,25 +9,24 @@ export async function onRequest(context) {
     '/test-css', '/test-shared'
   ]);
 
-  // 🚫 NOINDEX ONLY (no redirect)
+  // 1. Handle API/Admin (Modify headers of a successful request)
   if (pathname.startsWith('/api') || pathname.startsWith('/admin')) {
     const response = await context.next();
-    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
-    return response;
+    // We clone or create a new response if the original is immutable
+    const newResponse = new Response(response.body, response);
+    newResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return newResponse;
   }
   
-  // 🔁 REDIRECT + NOINDEX
+  // 2. Handle Redirects (Return the redirect immediately)
+  // Don't try to set headers on a redirect; it's not allowed/needed.
   if (redirectPaths.has(pathname)) {
-    const response = Response.redirect(new URL('/', url.origin).toString(), 302);
-    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
-    return response;
+    return Response.redirect(new URL('/', url.origin).toString(), 302);
   }
   
   try {
     return await context.next();
   } catch (error) {
-    const response = Response.redirect(new URL('/', url.origin).toString(), 302);
-    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
-    return response;
+    return Response.redirect(new URL('/', url.origin).toString(), 302);
   }
 }
