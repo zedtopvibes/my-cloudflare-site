@@ -8,17 +8,31 @@ export default {
     const method = request.method;
     
     try {
+      // Require /api prefix for all endpoints
+      if (!path.startsWith('/api/')) {
+        return new Response(JSON.stringify({ 
+          error: 'API endpoints must start with /api/',
+          example: '/api/auth/signup'
+        }), {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      
+      // Remove /api prefix for routing
+      const route = path.replace('/api', '');
+      
       // Public endpoints
-      if (path === '/api/auth/signup' && method === 'POST') {
+      if (route === '/auth/signup' && method === 'POST') {
         return handleSignup(request, env);
       }
       
-      if (path === '/api/auth/login' && method === 'POST') {
+      if (route === '/auth/login' && method === 'POST') {
         return handleLogin(request, env);
       }
       
       // Protected endpoints (require authentication)
-      if (path === '/api/auth/me' && method === 'GET') {
+      if (route === '/auth/me' && method === 'GET') {
         const auth = await requireAuth(request, env);
         if (auth.error) {
           return new Response(JSON.stringify({ error: auth.error }), {
@@ -29,7 +43,7 @@ export default {
         return handleMe(request, env, auth.user);
       }
       
-      if (path === '/api/auth/logout' && method === 'POST') {
+      if (route === '/auth/logout' && method === 'POST') {
         return handleLogout(request, env);
       }
       
