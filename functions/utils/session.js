@@ -42,4 +42,4 @@ export async function getSessionFromCookie(request, env) {
   const token = extractTokenFromCookie(cookieHeader);
   if (!token) return null;
   return await getSession(env, token);
-}
+} 
