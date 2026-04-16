@@ -1,23 +1,26 @@
 import { getUserById } from '../../utils/db.js';
-import { getSessionFromCookie } from '../../utils/session.js'; 
+import { getSessionFromCookie } from '../../utils/session.js';
 
 export async function onRequest(context) {
   const { request, env } = context;
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
   
-  // Handle preflight OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers });
   }
   
+  if (request.method !== 'GET') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers
+    });
+  }
+  
   try {
-    // Get session from cookie
     const session = await getSessionFromCookie(request, env);
     
     if (!session) {
@@ -27,7 +30,6 @@ export async function onRequest(context) {
       });
     }
     
-    // Get user details
     const user = await getUserById(env, session.user_id);
     
     if (!user) {
@@ -38,7 +40,12 @@ export async function onRequest(context) {
     }
     
     return new Response(JSON.stringify({ 
-      user: user
+      user: {
+        id: user.id,
+        email: user.email,
+        verified: user.verified,
+        created_at: user.created_at
+      }
     }), {
       status: 200,
       headers
