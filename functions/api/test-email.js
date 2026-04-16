@@ -8,35 +8,6 @@ export async function onRequest(context) {
   try {
     const { email } = await request.json();
     
-    // Beautiful HTML design for test email
-    const htmlDesign = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
-          .container { max-width: 500px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; text-align: center; }
-          .header h1 { color: white; margin: 0; }
-          .content { padding: 40px; text-align: center; }
-          .button { background: #667eea; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>🎵 ZedTopVibes</h1>
-          </div>
-          <div class="content">
-            <h2>✅ Success!</h2>
-            <p>Your Resend integration is working perfectly!</p>
-            <p style="margin-top: 20px; font-size: 12px; color: #999;">Sent at: ${new Date().toLocaleString()}</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-    
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -44,10 +15,10 @@ export async function onRequest(context) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'verify@zedtopvibes.com',
+        from: 'ZedTopVibes.Com <verify@zedtopvibes.com>',  // ← Updated here
         to: email,
-        subject: '✅ Test Successful - ZedTopVibes',
-        html: htmlDesign
+        subject: 'Test from ZedTopVibes',
+        html: '<h1>Success!</h1><p>Your Resend is working!</p>'
       })
     });
     
