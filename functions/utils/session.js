@@ -1,7 +1,7 @@
 export function generateSessionToken() {
   const array = new Uint8Array(64);
   crypto.getRandomValues(array);
-  return Array.from(array).map(b =>  b.toString(16).padStart(2, '0')).join('');
+  return Array.from(array).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 export async function createSession(env, userId, email) {
@@ -9,7 +9,7 @@ export async function createSession(env, userId, email) {
   const sessionData = { user_id: userId, email: email };
   
   await env.SESSION_KV.put(`session:${token}`, JSON.stringify(sessionData), {
-    expirationTtl: 604800 // 7 days
+    expirationTtl: 604800
   });
   
   return token;
@@ -40,8 +40,6 @@ export function extractTokenFromCookie(cookieHeader) {
 export async function getSessionFromCookie(request, env) {
   const cookieHeader = request.headers.get('Cookie');
   const token = extractTokenFromCookie(cookieHeader);
-  
   if (!token) return null;
-  
   return await getSession(env, token);
 }
