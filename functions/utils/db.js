@@ -15,19 +15,14 @@ export async function createUser(env, email, passwordHash, salt) {
   return await stmt.bind(email.toLowerCase(), passwordHash, salt).first();
 }
 
-export async function verifyUserByToken(env, token) {
-  const stmt = env.DB.prepare(
-    'UPDATE users SET verified = TRUE, verified_at = CURRENT_TIMESTAMP WHERE verification_token = ? RETURNING id, email'
-  );
-  return await stmt.bind(token).first();
-}
-
 export async function setVerificationToken(env, userId, token) {
   const stmt = env.DB.prepare('UPDATE users SET verification_token = ? WHERE id = ?');
   return await stmt.bind(token, userId).run();
 }
 
-export async function getUserByVerificationToken(env, token) {
-  const stmt = env.DB.prepare('SELECT * FROM users WHERE verification_token = ?');
+export async function verifyUserByToken(env, token) {
+  const stmt = env.DB.prepare(
+    'UPDATE users SET verified = TRUE, verified_at = CURRENT_TIMESTAMP WHERE verification_token = ? RETURNING id, email'
+  );
   return await stmt.bind(token).first();
 }
