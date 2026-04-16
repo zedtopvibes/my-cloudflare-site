@@ -1,25 +1,30 @@
-import { createUser, getUserByEmail } from '../../utils/db.js';
+import { createUser, getUserByEmail, setVerificationToken } from '../../utils/db.js';
 import { hashPassword, generateSalt } from '../../utils/password.js';
- 
+import { sendVerificationEmail } from '../../utils/email.js';
+
 export async function onRequest(context) {
   const { request, env } = context;
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
   
-  // Handle preflight OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers });
+  }
+  
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers
+    });
   }
   
   try {
     const { email, password } = await request.json();
     
-    // Validation
+    // Validate email
     if (!email || !password) {
       return new Response(JSON.stringify({ error: 'Email and password required' }), {
         status: 400,
@@ -56,10 +61,22 @@ export async function onRequest(context) {
     const passwordHash = await hashPassword(password, salt);
     const user = await createUser(env, email, passwordHash, salt);
     
+    // Generate verification token
+    const verificationToken = crypto.randomUUID();
+    await setVerificationToken(env, user.id, verificationToken);
+    
+    // Store in KV with 24h expiry
+    await env.SESSION_KV.put(`verify:${verificationToken}`, user.id, {
+      expirationTtl: 86400
+    });
+    
+    // Send verification email
+    await sendVerificationEmail(env, email, verificationToken, email.split('@')[0]);
+    
     return new Response(JSON.stringify({ 
       success: true, 
-      message: 'User created successfully',
-      user: { id: user.id, email: user.email, created_at: user.created_at }
+      message: 'User created. Please check your email to verify your account.',
+      user: { id: user.id, email: user.email }
     }), {
       status: 201,
       headers
