@@ -1,6 +1,6 @@
-import { createUser, getUserByEmail, setVerificationToken } from '../../utils/db.js';
+import { createUser, getUserByEmail } from '../../utils/db.js';
 import { hashPassword, generateSalt } from '../../utils/password.js';
-import { sendVerificationEmail } from '../../utils/email.js';
+import { sendVerificationCode } from '../../utils/email.js';
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -24,7 +24,6 @@ export async function onRequest(context) {
   try {
     const { email, password } = await request.json();
     
-    // Validate email
     if (!email || !password) {
       return new Response(JSON.stringify({ error: 'Email and password required' }), {
         status: 400,
@@ -47,7 +46,6 @@ export async function onRequest(context) {
       });
     }
     
-    // Check if user exists
     const existingUser = await getUserByEmail(env, email);
     if (existingUser) {
       return new Response(JSON.stringify({ error: 'Email already registered' }), {
@@ -56,27 +54,25 @@ export async function onRequest(context) {
       });
     }
     
-    // Create user
     const salt = generateSalt();
     const passwordHash = await hashPassword(password, salt);
     const user = await createUser(env, email, passwordHash, salt);
     
-    // Generate verification token
-    const verificationToken = crypto.randomUUID();
-    await setVerificationToken(env, user.id, verificationToken);
+    // Generate 6-digit verification code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Store in KV with 24h expiry
-    await env.SESSION_KV.put(`verify:${verificationToken}`, user.id, {
-      expirationTtl: 86400
+    // Store code in KV with 15 min expiry
+    await env.SESSION_KV.put(`verify:${email}`, code, {
+      expirationTtl: 900
     });
     
-    // Send verification email
-    await sendVerificationEmail(env, email, verificationToken, email.split('@')[0]);
+    // Send verification code email
+    await sendVerificationCode(env, email, code, email.split('@')[0]);
     
     return new Response(JSON.stringify({ 
       success: true, 
-      message: 'User created. Please check your email to verify your account.',
-      user: { id: user.id, email: user.email }
+      message: 'Verification code sent to your email. Please verify to complete signup.',
+      email: email
     }), {
       status: 201,
       headers
