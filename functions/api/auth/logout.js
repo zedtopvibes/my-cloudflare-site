@@ -1,5 +1,5 @@
 import { deleteSession, clearSessionCookie, extractTokenFromCookie } from '../../utils/session.js';
-
+ 
 export async function onRequest(context) {
   const { request, env } = context;
   
