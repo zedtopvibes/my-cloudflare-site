@@ -1,6 +1,6 @@
 import { createUser, getUserByEmail } from '../../utils/db.js';
 import { hashPassword, generateSalt } from '../../utils/password.js';
-
+ 
 export async function onRequest(context) {
   const { request, env } = context;
   
