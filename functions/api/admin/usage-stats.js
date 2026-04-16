@@ -3,7 +3,7 @@ export async function onRequest(context) {
     
     try {
         const ACCOUNT_ID = env.CLOUDFLARE_ACCOUNT_ID;
-        const BUCKET_NAME = "AUDIO";
+        const BUCKET_NAME = "zedtopvibes-audio";  // ← Fixed!
         const API_TOKEN = env.CF_API_TOKEN;
         
         const response = await fetch(
