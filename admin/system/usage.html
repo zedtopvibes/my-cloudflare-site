@@ -54,7 +54,6 @@
         
         .stat-card.primary-gradient {
             background: linear-gradient(135deg, #1f6f9f 0%, #2f8ed0 100%);
-            color: white;
         }
         
         .stat-card.primary-gradient .stat-value,
@@ -129,6 +128,7 @@
             padding: 10px;
             background: white;
             border-radius: 8px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
         }
         
         .stats-row-item .label {
@@ -140,6 +140,76 @@
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--primary-blue);
+        }
+        
+        .pricing-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .pricing-item {
+            color: var(--gray);
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .pricing-item i {
+            color: var(--primary-blue);
+            width: 18px;
+        }
+        
+        .pricing-item strong {
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-left: 3px solid #28a745;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success i {
+            color: #155724;
+            font-size: 1rem;
+        }
+        
+        .alert-success span {
+            color: #155724;
+            font-size: 0.85rem;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-warning i {
+            color: #856404;
+            font-size: 1rem;
+        }
+        
+        .alert-warning span {
+            color: #856404;
+            font-size: 0.85rem;
         }
         
         .loading {
@@ -177,14 +247,31 @@
             align-items: center;
             gap: 8px;
             font-size: 0.8rem;
+            font-weight: 500;
             margin-bottom: 20px;
             transition: all 0.2s;
+            color: var(--gray);
         }
         
         .refresh-btn:hover {
             background: var(--primary-blue);
             color: white;
             border-color: var(--primary-blue);
+        }
+        
+        .list-item {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+        
+        .list-item i {
+            color: var(--primary-blue);
+            width: 20px;
+            font-size: 0.9rem;
         }
         
         @media (min-width: 768px) {
@@ -305,14 +392,14 @@
                             </div>
                         </div>
                         ${r2.exceeded_free_tier ? `
-                            <div style="background: #fff3cd; border-left: 3px solid #ffc107; padding: 10px; margin-top: 15px; border-radius: 6px;">
-                                <i class="fas fa-exclamation-triangle" style="color: #856404;"></i>
-                                <span style="color: #856404; font-size: 0.85rem;"> You have exceeded the free tier. Additional charges apply.</span>
+                            <div class="alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>You have exceeded the free tier. Additional charges apply.</span>
                             </div>
                         ` : `
-                            <div style="background: #d4edda; border-left: 3px solid #28a745; padding: 10px; margin-top: 15px; border-radius: 6px;">
-                                <i class="fas fa-check-circle" style="color: #155724;"></i>
-                                <span style="color: #155724; font-size: 0.85rem;"> You are within the free tier. No charges apply.</span>
+                            <div class="alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                <span>You are within the free tier. No charges apply.</span>
                             </div>
                         `}
                     </div>
@@ -333,23 +420,37 @@
                                 <div class="value">10M/month free</div>
                             </div>
                         </div>
-                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(31,111,159,0.1);">
-                            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                                <span><i class="fas fa-tag"></i> Overage Storage: <strong>$0.015 per GB/month</strong></span>
-                                <span><i class="fas fa-tag"></i> Class A Overage: <strong>$0.01 per million</strong></span>
-                                <span><i class="fas fa-tag"></i> Class B Overage: <strong>$0.01 per million</strong></span>
-                            </div>
+                        <div class="pricing-row">
+                            <span class="pricing-item">
+                                <i class="fas fa-tag"></i> Overage Storage: <strong>$0.015 per GB/month</strong>
+                            </span>
+                            <span class="pricing-item">
+                                <i class="fas fa-tag"></i> Class A Overage: <strong>$0.01 per million</strong>
+                            </span>
+                            <span class="pricing-item">
+                                <i class="fas fa-tag"></i> Class B Overage: <strong>$0.01 per million</strong>
+                            </span>
                         </div>
                     </div>
                     
                     <div class="info-card">
                         <h3><i class="fas fa-question-circle"></i> About This Page</h3>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
-                            <li style="padding: 6px 0;"><i class="fas fa-check-circle" style="color: var(--success); margin-right: 8px;"></i> R2 usage is fetched directly from Cloudflare API</li>
-                            <li style="padding: 6px 0;"><i class="fas fa-check-circle" style="color: var(--success); margin-right: 8px;"></i> Includes all audio files uploaded to your bucket</li>
-                            <li style="padding: 6px 0;"><i class="fas fa-check-circle" style="color: var(--success); margin-right: 8px;"></i> Updates every time you refresh the page</li>
-                            <li style="padding: 6px 0;"><i class="fas fa-chart-line" style="color: var(--primary-blue); margin-right: 8px;"></i> Costs are estimated based on current Cloudflare pricing</li>
-                        </ul>
+                        <div class="list-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>R2 usage is fetched directly from Cloudflare API</span>
+                        </div>
+                        <div class="list-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Includes all audio files uploaded to your bucket</span>
+                        </div>
+                        <div class="list-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Updates every time you refresh the page</span>
+                        </div>
+                        <div class="list-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Costs are estimated based on current Cloudflare pricing</span>
+                        </div>
                     </div>
                 `;
                 
