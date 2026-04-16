@@ -5,7 +5,7 @@ export async function hashPassword(password, salt) {
   return Array.from(new Uint8Array(hash))
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');
-}
+} 
 
 export function generateSalt() {
   const array = new Uint8Array(32);
