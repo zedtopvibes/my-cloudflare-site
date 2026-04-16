@@ -1,5 +1,5 @@
 export async function sendVerificationCode(env, email, code, userName = 'User') {
-  const siteUrl = 'https://zedtopvibes.com';
+  const siteUrl = 'https://zedtopvibes.com'; 
   
   const html = `
     <!DOCTYPE html>
