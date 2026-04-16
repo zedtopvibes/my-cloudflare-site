@@ -330,6 +330,7 @@
                 }
                 
                 const r2 = result.data.r2;
+                const d1 = result.data.d1;
                 const totalGB = parseFloat(r2.total_gb);
                 const freeLimit = 10;
                 const percentUsed = Math.min(100, (totalGB / freeLimit) * 100);
@@ -340,6 +341,15 @@
                 
                 const lastUpdated = new Date(result.data.timestamp).toLocaleString();
                 
+                // D1 stats
+                const d1SizeGB = parseFloat(d1.database_size_gb || 0);
+                const d1FreeLimit = 5;
+                const d1PercentUsed = Math.min(100, (d1SizeGB / d1FreeLimit) * 100);
+                
+                let d1ProgressClass = 'progress-fill';
+                if (d1PercentUsed > 90) d1ProgressClass += ' danger';
+                else if (d1PercentUsed > 75) d1ProgressClass += ' warning';
+                
                 container.innerHTML = `
                     <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
                         <button class="refresh-btn" onclick="loadUsageStats()">
@@ -347,11 +357,12 @@
                         </button>
                     </div>
                     
+                    <!-- R2 STATS SECTION -->
                     <div class="stats-grid">
                         <div class="stat-card primary-gradient">
                             <div class="stat-icon"><i class="fas fa-hdd"></i></div>
                             <div class="stat-value">${r2.total_gb} GB</div>
-                            <div class="stat-label">Total Storage Used</div>
+                            <div class="stat-label">R2 Storage Used</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-file"></i></div>
@@ -394,12 +405,12 @@
                         ${r2.exceeded_free_tier ? `
                             <div class="alert-warning">
                                 <i class="fas fa-exclamation-triangle"></i>
-                                <span>You have exceeded the free tier. Additional charges apply.</span>
+                                <span>You have exceeded the R2 free tier. Additional charges apply.</span>
                             </div>
                         ` : `
                             <div class="alert-success">
                                 <i class="fas fa-check-circle"></i>
-                                <span>You are within the free tier. No charges apply.</span>
+                                <span>You are within the R2 free tier. No charges apply.</span>
                             </div>
                         `}
                     </div>
@@ -433,6 +444,79 @@
                         </div>
                     </div>
                     
+                    <!-- D1 STATS SECTION -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-database"></i> D1 Database Statistics</h3>
+                        ${d1.metrics_available ? `
+                            <div class="stats-row">
+                                <div class="stats-row-item">
+                                    <div class="label">Database Size</div>
+                                    <div class="value">${d1.database_size_gb} GB</div>
+                                </div>
+                                <div class="stats-row-item">
+                                    <div class="label">Free Remaining</div>
+                                    <div class="value">${d1.remaining_free_gb} GB</div>
+                                </div>
+                                <div class="stats-row-item">
+                                    <div class="label">Free Limit</div>
+                                    <div class="value">5 GB</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="${d1ProgressClass}" style="width: ${d1PercentUsed}%;">
+                                    ${d1PercentUsed > 15 ? `${d1PercentUsed.toFixed(1)}%` : ''}
+                                </div>
+                            </div>
+                            <div class="stats-row" style="margin-top: 15px;">
+                                <div class="stats-row-item">
+                                    <div class="label">Total Queries</div>
+                                    <div class="value">${d1.query_count.toLocaleString()}</div>
+                                </div>
+                                <div class="stats-row-item">
+                                    <div class="label">Rows Read</div>
+                                    <div class="value">${d1.rows_read.toLocaleString()}</div>
+                                </div>
+                                <div class="stats-row-item">
+                                    <div class="label">Rows Written</div>
+                                    <div class="value">${d1.rows_written.toLocaleString()}</div>
+                                </div>
+                            </div>
+                            ${d1.exceeded_free_tier ? `
+                                <div class="alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>You have exceeded the D1 free tier (5 GB). Additional charges apply ($0.75/GB).</span>
+                                </div>
+                            ` : `
+                                <div class="alert-success">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>You are within the D1 free tier (5 GB). No charges apply.</span>
+                                </div>
+                            `}
+                            <div class="pricing-row" style="margin-top: 12px;">
+                                <span class="pricing-item">
+                                    <i class="fas fa-tag"></i> D1 Overage: <strong>$0.75 per GB/month</strong>
+                                </span>
+                                <span class="pricing-item">
+                                    <i class="fas fa-tag"></i> Query charges: <strong>First 5 billion free</strong>
+                                </span>
+                            </div>
+                        ` : `
+                            <div class="alert-warning">
+                                <i class="fas fa-info-circle"></i>
+                                <span>D1 Metrics API not available. Add "D1 Read" permission to your API token.</span>
+                            </div>
+                            <div class="list-item">
+                                <i class="fas fa-database"></i>
+                                <span>Database: ${d1.database_name}</span>
+                            </div>
+                            <div class="list-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>Database ID: ${d1.database_id}</span>
+                            </div>
+                        `}
+                    </div>
+                    
+                    <!-- ABOUT SECTION -->
                     <div class="info-card">
                         <h3><i class="fas fa-question-circle"></i> About This Page</h3>
                         <div class="list-item">
@@ -441,7 +525,7 @@
                         </div>
                         <div class="list-item">
                             <i class="fas fa-check-circle"></i>
-                            <span>Includes all audio files uploaded to your bucket</span>
+                            <span>D1 metrics include database size and query statistics</span>
                         </div>
                         <div class="list-item">
                             <i class="fas fa-check-circle"></i>
@@ -474,4 +558,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
