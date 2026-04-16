@@ -1,18 +1,22 @@
 import { deleteSession, clearSessionCookie, extractTokenFromCookie } from '../../utils/session.js';
- 
+
 export async function onRequest(context) {
   const { request, env } = context;
   
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
   };
   
-  // Handle preflight OPTIONS request
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers });
+  }
+  
+  if (request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers
+    });
   }
   
   try {
