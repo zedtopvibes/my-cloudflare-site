@@ -1,5 +1,5 @@
 export async function getUserByEmail(env, email) {
-  const stmt = env.DB.prepare('SELECT * FROM users WHERE email = ?');
+  const stmt = env.DB.prepare('SELECT * FROM users WHERE email = ?'); 
   return await stmt.bind(email.toLowerCase()).first();
 }
 
