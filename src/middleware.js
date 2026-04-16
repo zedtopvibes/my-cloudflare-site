@@ -1,16 +1,28 @@
+import { extractTokenFromCookie, getSession } from './session.js';
+
 export async function requireAuth(request, env) {
-  const cookie = request.headers.get('Cookie');
-  const token = extractTokenFromCookie(cookie); // 'session_token=abc123'
+  const cookieHeader = request.headers.get('Cookie');
+  const token = extractTokenFromCookie(cookieHeader);
   
   if (!token) {
-    return { error: 'Unauthorized', status: 401 };
+    return { error: 'Authentication required', status: 401 };
   }
   
-  const session = await env.SESSION_KV.get(`session:${token}`, 'json');
+  const session = await getSession(env, token);
   
   if (!session) {
-    return { error: 'Session expired', status: 401 };
+    return { error: 'Session expired or invalid', status: 401 };
   }
   
-  return { user: session };
+  return { user: session, token };
+}
+
+export async function optionalAuth(request, env) {
+  const cookieHeader = request.headers.get('Cookie');
+  const token = extractTokenFromCookie(cookieHeader);
+  
+  if (!token) return { user: null };
+  
+  const session = await getSession(env, token);
+  return { user: session || null };
 }
