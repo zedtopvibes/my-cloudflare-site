@@ -16,4 +16,4 @@ export function generateSalt() {
 export async function verifyPassword(password, hash, salt) {
   const newHash = await hashPassword(password, salt);
   return newHash === hash;
-}
+} 
