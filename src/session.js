@@ -35,4 +35,4 @@ export function extractTokenFromCookie(cookieHeader) {
   if (!cookieHeader) return null;
   const match = cookieHeader.match(/session_token=([^;]+)/);
   return match ? match[1] : null;
-}
+} 
