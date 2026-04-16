@@ -1,5 +1,5 @@
 import { getUserById } from '../../utils/db.js';
-import { getSessionFromCookie } from '../../utils/session.js';
+import { getSessionFromCookie } from '../../utils/session.js'; 
 
 export async function onRequest(context) {
   const { request, env } = context;
