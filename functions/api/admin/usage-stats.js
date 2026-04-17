@@ -1,4 +1,6 @@
 // /functions/api/admin/usage-stats.js
+// Get R2 + D1 usage statistics
+
 export async function onRequest(context) {
     const { env } = context;
     
@@ -10,68 +12,16 @@ export async function onRequest(context) {
         const DATABASE_ID = "73f2a3ac-0d13-454b-9e77-36d5a78c1762";
         
         // Get R2 stats
-        const r2Response = await fetch(
-            `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET_NAME}/usage`,
-            {
-                headers: {
-                    "Authorization": `Bearer ${R2_TOKEN}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+        const r2Stats = await getR2Stats(ACCOUNT_ID, R2_TOKEN, BUCKET_NAME);
         
-        const r2Data = await r2Response.json();
-        const usage = r2Data.result;
-        const totalBytes = usage.payloadSize || 0;
-        const totalGB = totalBytes / (1024 * 1024 * 1024);
-        
-        // Get D1 database info (correct endpoint)
-        const d1Response = await fetch(
-            `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${DATABASE_ID}`,
-            {
-                headers: {
-                    "Authorization": `Bearer ${D1_TOKEN}`,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        
-        const d1Data = await d1Response.json();
-        
-        // Get D1 database size (if available)
-        let databaseSizeGB = 0;
-        if (d1Data.success && d1Data.result) {
-            const sizeBytes = d1Data.result.size_bytes || d1Data.result.file_size || 0;
-            databaseSizeGB = sizeBytes / (1024 * 1024 * 1024);
-        }
+        // Get D1 stats
+        const d1Stats = await getD1Stats(ACCOUNT_ID, D1_TOKEN, DATABASE_ID);
         
         return Response.json({
             success: true,
             data: {
-                r2: {
-                    total_bytes: totalBytes,
-                    total_gb: totalGB.toFixed(2),
-                    total_mb: (totalBytes / (1024 * 1024)).toFixed(2),
-                    total_objects: usage.objectCount || 0,
-                    free_tier_limit_gb: 10,
-                    remaining_free_gb: Math.max(0, 10 - totalGB).toFixed(2),
-                    exceeded_free_tier: totalGB > 10,
-                    estimated_monthly_cost: Math.max(0, (totalGB - 10) * 0.015).toFixed(4)
-                },
-                d1: {
-                    database_id: DATABASE_ID,
-                    database_name: d1Data.result?.name || "zedtopvibes-db",
-                    database_size_bytes: d1Data.result?.size_bytes || 0,
-                    database_size_gb: databaseSizeGB.toFixed(2),
-                    num_tables: d1Data.result?.num_tables || 0,
-                    version: d1Data.result?.version || "unknown",
-                    raw_response: d1Data,
-                    note: "D1 metrics API not available. Using database info endpoint.",
-                    free_tier_limit_gb: 5,
-                    remaining_free_gb: Math.max(0, 5 - databaseSizeGB).toFixed(2),
-                    exceeded_free_tier: databaseSizeGB > 5,
-                    estimated_monthly_cost: Math.max(0, (databaseSizeGB - 5) * 0.75).toFixed(2)
-                },
+                r2: r2Stats,
+                d1: d1Stats,
                 timestamp: new Date().toISOString()
             }
         });
@@ -82,5 +32,93 @@ export async function onRequest(context) {
             success: false,
             error: error.message
         }, { status: 500 });
+    }
+}
+
+async function getR2Stats(accountId, apiToken, bucketName) {
+    const response = await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${accountId}/r2/buckets/${bucketName}/usage`,
+        {
+            headers: {
+                "Authorization": `Bearer ${apiToken}`,
+                "Content-Type": "application/json",
+            },
+        }
+    );
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+        throw new Error(data.errors?.[0]?.message || 'Failed to fetch R2 usage');
+    }
+    
+    const usage = data.result;
+    const totalBytes = usage.payloadSize || 0;
+    const totalGB = totalBytes / (1024 * 1024 * 1024);
+    
+    return {
+        total_bytes: totalBytes,
+        total_gb: totalGB.toFixed(2),
+        total_mb: (totalBytes / (1024 * 1024)).toFixed(2),
+        total_objects: usage.objectCount || 0,
+        free_tier_limit_gb: 10,
+        remaining_free_gb: Math.max(0, 10 - totalGB).toFixed(2),
+        exceeded_free_tier: totalGB > 10,
+        estimated_monthly_cost: Math.max(0, (totalGB - 10) * 0.015).toFixed(4)
+    };
+}
+
+async function getD1Stats(accountId, apiToken, databaseId) {
+    try {
+        const response = await fetch(
+            `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${apiToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+            return {
+                database_id: databaseId,
+                metrics_available: false,
+                error_message: data.errors?.[0]?.message || 'Failed to fetch D1 info'
+            };
+        }
+        
+        const result = data.result;
+        const sizeBytes = result.file_size || 0;
+        const sizeGB = sizeBytes / (1024 * 1024 * 1024);
+        const sizeMB = sizeBytes / (1024 * 1024);
+        const freeLimit = 5;
+        
+        return {
+            database_id: databaseId,
+            database_name: result.name || "zedtopvibes-db",
+            metrics_available: true,
+            created_at: result.created_at,
+            version: result.version,
+            region: result.running_in_region,
+            num_tables: result.num_tables || 0,
+            database_size_bytes: sizeBytes,
+            database_size_mb: sizeMB.toFixed(2),
+            database_size_gb: sizeGB.toFixed(4),
+            free_tier_limit_gb: freeLimit,
+            remaining_free_gb: Math.max(0, freeLimit - sizeGB).toFixed(4),
+            exceeded_free_tier: sizeGB > freeLimit,
+            estimated_monthly_cost: Math.max(0, (sizeGB - freeLimit) * 0.75).toFixed(4)
+        };
+        
+    } catch (error) {
+        console.error('Error fetching D1 stats:', error);
+        return {
+            database_id: databaseId,
+            metrics_available: false,
+            error_message: error.message
+        };
     }
 }
