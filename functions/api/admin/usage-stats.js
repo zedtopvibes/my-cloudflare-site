@@ -6,13 +6,14 @@ export async function onRequest(context) {
     
     try {
         const ACCOUNT_ID = env.CLOUDFLARE_ACCOUNT_ID;
-        const API_TOKEN = env.CF_API_TOKEN;
+        const R2_TOKEN = env.CF_API_TOKEN;      // Your existing R2 token
+        const D1_TOKEN = env.D1_API_TOKEN;       // Your new D1 token
         
         // Get R2 stats
-        const r2Stats = await getR2Stats(ACCOUNT_ID, API_TOKEN);
+        const r2Stats = await getR2Stats(ACCOUNT_ID, R2_TOKEN);
         
         // Get D1 stats
-        const d1Stats = await getD1Stats(ACCOUNT_ID, API_TOKEN);
+        const d1Stats = await getD1Stats(ACCOUNT_ID, D1_TOKEN);
         
         return Response.json({
             success: true,
@@ -84,18 +85,20 @@ async function getD1Stats(accountId, apiToken) {
         const data = await response.json();
         
         if (!data.success) {
-            // Fallback to basic info if metrics API fails
+            console.log('D1 API error:', data.errors);
             return {
                 database_id: DATABASE_ID,
                 database_name: "zedtopvibes-db",
-                note: "Metrics API requires D1 Read permission",
-                metrics_available: false
+                metrics_available: false,
+                error_message: data.errors?.[0]?.message || 'Permission denied',
+                required_permission: "Account → D1 → Read"
             };
         }
         
         const metrics = data.result;
         const sizeBytes = metrics.databaseSizeBytes || 0;
         const sizeGB = sizeBytes / (1024 * 1024 * 1024);
+        const freeLimit = 5;
         
         return {
             database_id: DATABASE_ID,
@@ -109,10 +112,10 @@ async function getD1Stats(accountId, apiToken) {
             query_count: metrics.queryCount || 0,
             rows_read: metrics.rowsRead || 0,
             rows_written: metrics.rowsWritten || 0,
-            free_tier_limit_gb: 5,  // D1 free tier is 5 GB
-            remaining_free_gb: Math.max(0, 5 - sizeGB).toFixed(2),
-            exceeded_free_tier: sizeGB > 5,
-            estimated_monthly_cost: Math.max(0, (sizeGB - 5) * 0.75).toFixed(2) // $0.75/GB
+            free_tier_limit_gb: freeLimit,
+            remaining_free_gb: Math.max(0, freeLimit - sizeGB).toFixed(2),
+            exceeded_free_tier: sizeGB > freeLimit,
+            estimated_monthly_cost: Math.max(0, (sizeGB - freeLimit) * 0.75).toFixed(2)
         };
         
     } catch (error) {
@@ -120,8 +123,8 @@ async function getD1Stats(accountId, apiToken) {
         return {
             database_id: DATABASE_ID,
             database_name: "zedtopvibes-db",
-            error: error.message,
-            metrics_available: false
+            metrics_available: false,
+            error_message: error.message
         };
     }
 }
