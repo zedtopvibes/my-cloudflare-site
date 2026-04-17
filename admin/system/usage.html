@@ -11,6 +11,49 @@
     <link rel="stylesheet" href="/admin/shared/styles.css">
     <style>
         /* ========== SYSTEM USAGE PAGE SPECIFIC STYLES ========== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-title i {
+            color: var(--primary-blue);
+        }
+        
+        .refresh-btn {
+            background: var(--light-gray);
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: var(--gray);
+        }
+        
+        .refresh-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -237,28 +280,6 @@
             opacity: 0.3;
         }
         
-        .refresh-btn {
-            background: var(--light-gray);
-            border: 1px solid #ddd;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-            transition: all 0.2s;
-            color: var(--gray);
-        }
-        
-        .refresh-btn:hover {
-            background: var(--primary-blue);
-            color: white;
-            border-color: var(--primary-blue);
-        }
-        
         .list-item {
             padding: 8px 0;
             display: flex;
@@ -293,6 +314,10 @@
             }
             .stat-card .stat-icon {
                 font-size: 1.2rem;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -354,7 +379,11 @@
                 const createdDate = d1.created_at ? new Date(d1.created_at).toLocaleDateString() : 'Unknown';
                 
                 container.innerHTML = `
-                    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <i class="fas fa-chart-line"></i>
+                            <span>System Usage Statistics</span>
+                        </div>
                         <button class="refresh-btn" onclick="loadUsageStats()">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
@@ -529,6 +558,15 @@
             } catch (error) {
                 console.error('Error loading usage stats:', error);
                 container.innerHTML = `
+                    <div class="page-header">
+                        <div class="page-title">
+                            <i class="fas fa-chart-line"></i>
+                            <span>System Usage Statistics</span>
+                        </div>
+                        <button class="refresh-btn" onclick="loadUsageStats()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
                     <div class="empty-state">
                         <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i>
                         <h3>Failed to Load Usage Stats</h3>
