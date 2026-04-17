@@ -1,27 +1,42 @@
-// /functions/api/admin/test-d1.js
 export async function onRequest(context) {
     const { env } = context;
     
     const ACCOUNT_ID = env.CLOUDFLARE_ACCOUNT_ID;
     const D1_TOKEN = env.D1_API_TOKEN;
     const DATABASE_ID = "73f2a3ac-0d13-454b-9e77-36d5a78c1762";
+
+    // 1. Check if environment variables actually exist
+    if (!ACCOUNT_ID || !D1_TOKEN) {
+        return Response.json({ 
+            error: "Missing configuration. Check your Pages Environment Variables." 
+        }, { status: 500 });
+    }
     
-    const response = await fetch(
-        `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${DATABASE_ID}/metrics`,
-        {
-            headers: {
-                "Authorization": `Bearer ${D1_TOKEN}`,
-                "Content-Type": "application/json",
+    try {
+        const apiResponse = await fetch(
+            `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${DATABASE_ID}/metrics`,
+            {
+                method: "GET", // Good practice to be explicit
+                headers: {
+                    "Authorization": `Bearer ${D1_TOKEN}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        
+        const data = await apiResponse.json();
+        
+        // 2. Return the full API payload so you can see Cloudflare's specific error messages
+        return Response.json({
+            debug: {
+                url: `.../d1/database/${DATABASE_ID}/metrics`,
+                account_id_exists: !!ACCOUNT_ID,
             },
-        }
-    );
-    
-    const data = await response.json();
-    
-    return Response.json({
-        url: `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/d1/database/${DATABASE_ID}/metrics`,
-        account_id: ACCOUNT_ID,
-        database_id: DATABASE_ID,
-        response: data
-    });
+            api_status: apiResponse.status,
+            api_data: data
+        });
+
+    } catch (err) {
+        return Response.json({ error: err.message }, { status: 500 });
+    }
 }
