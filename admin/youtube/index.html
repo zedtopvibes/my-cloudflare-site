@@ -169,7 +169,7 @@
                         </div>
                     </div>
 
-                    <!-- Best Day, Auto Target, Weekly Subs, Achievements Row (4 cards) -->
+                    <!-- Best Day, Auto Target, Monthly Gain, Achievements Row (4 cards) -->
                     <div class="views-grid" style="margin-bottom: 24px;">
                         <!-- Best Day Card -->
                         <div class="best-day-card">
@@ -187,11 +187,11 @@
                             <div id="remainingToTarget" style="font-size: 0.7rem; color: var(--gray);">—</div>
                         </div>
 
-                        <!-- Weekly Subs Card -->
+                        <!-- Monthly Gain Card (changed from Weekly to Monthly) -->
                         <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
-                            <div class="stat-value" id="weeklySubGain">—</div>
-                            <div class="stat-label">Subs (Last 7 Days)</div>
+                            <div class="stat-icon"><i class="fas fa-calendar-month"></i></div>
+                            <div class="stat-value" id="monthlyGain">—</div>
+                            <div class="stat-label">Monthly Gain</div>
                         </div>
 
                         <!-- Achievements Counter Card (Clickable) -->
@@ -487,14 +487,16 @@
                     document.getElementById('totalVideos').innerHTML = 'No data';
                 }
                 
-                const weeklyResponse = await fetch('/api/admin/yt-stats/weekly/summary', {
+                // Fetch weekly and monthly gains from the summary endpoint
+                const summaryResponse = await fetch('/api/admin/yt-stats/weekly/summary', {
                     credentials: 'include'
                 });
-                const weeklyResult = await weeklyResponse.json();
-                if (weeklyResult.success && weeklyResult.data) {
-                    const weeklyGain = weeklyResult.data.weekly_gain;
+                const summaryResult = await summaryResponse.json();
+                if (summaryResult.success && summaryResult.data) {
+                    const weeklyGain = summaryResult.data.weekly_gain;
+                    const monthlyGain = summaryResult.data.monthly_gain;
                     document.getElementById('weeklyGain').innerHTML = (weeklyGain >= 0 ? '+' : '') + weeklyGain.toLocaleString();
-                    document.getElementById('weeklySubGain').innerHTML = (weeklyGain >= 0 ? '+' : '') + weeklyGain.toLocaleString();
+                    document.getElementById('monthlyGain').innerHTML = (monthlyGain >= 0 ? '+' : '') + monthlyGain.toLocaleString();
                 }
                 
             } catch (error) {
