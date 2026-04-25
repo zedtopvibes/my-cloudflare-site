@@ -7,7 +7,7 @@ export async function onRequest(context) {
     };
     
     try {
-        // Get all stats ordered by date (oldest first for calculation)
+        // Get all stats ordered by date (oldest first)
         const results = await env.DB.prepare(
             'SELECT * FROM yt_stats ORDER BY date ASC'
         ).all();
@@ -17,55 +17,63 @@ export async function onRequest(context) {
         if (!allStats || allStats.length === 0) {
             return new Response(JSON.stringify({ 
                 success: true, 
-                data: { weekly_gain: 0, message: 'No data available' }
+                data: { 
+                    weekly_gain: 0, 
+                    monthly_gain: 0,
+                    message: 'No data available' 
+                }
             }), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json', ...corsHeaders }
             });
         }
         
-        // Get today's date and date from 7 days ago
-        const today = new Date().toISOString().split('T')[0];
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
-        
-        // Find the most recent record (should be today or latest available)
+        // Get latest record
         const latestRecord = allStats[allStats.length - 1];
         
-        // Find record from 7 days ago (or closest date within range)
-        let oldRecord = null;
-        let closestDate = null;
-        
-        for (let i = 0; i < allStats.length; i++) {
-            const recordDate = allStats[i].date;
-            if (recordDate <= sevenDaysAgoStr) {
-                oldRecord = allStats[i];
-                closestDate = recordDate;
+        // Helper function to find closest record within days range
+        function findRecordFromDaysAgo(days) {
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() - days);
+            const targetDateStr = targetDate.toISOString().split('T')[0];
+            
+            let closestRecord = null;
+            for (let i = 0; i < allStats.length; i++) {
+                if (allStats[i].date <= targetDateStr) {
+                    closestRecord = allStats[i];
+                }
             }
+            return closestRecord || allStats[0];
         }
         
-        // If no record from 7 days ago, use the earliest available
-        if (!oldRecord && allStats.length > 0) {
-            oldRecord = allStats[0];
-        }
+        // Get records from 7 days and 30 days ago
+        const weeklyOldRecord = findRecordFromDaysAgo(7);
+        const monthlyOldRecord = findRecordFromDaysAgo(30);
         
-        // Calculate weekly gain
+        // Calculate gains
         let weeklyGain = 0;
-        if (latestRecord && oldRecord && latestRecord.date !== oldRecord.date) {
-            weeklyGain = latestRecord.subscribers - oldRecord.subscribers;
+        let monthlyGain = 0;
+        
+        if (latestRecord && weeklyOldRecord && latestRecord.date !== weeklyOldRecord.date) {
+            weeklyGain = latestRecord.subscribers - weeklyOldRecord.subscribers;
         } else if (allStats.length >= 2) {
-            // Fallback: use difference between latest and second latest
             weeklyGain = allStats[allStats.length - 1].subscribers - allStats[allStats.length - 2].subscribers;
+        }
+        
+        if (latestRecord && monthlyOldRecord && latestRecord.date !== monthlyOldRecord.date) {
+            monthlyGain = latestRecord.subscribers - monthlyOldRecord.subscribers;
+        } else if (allStats.length >= 2) {
+            monthlyGain = allStats[allStats.length - 1].subscribers - allStats[allStats.length - 2].subscribers;
         }
         
         return new Response(JSON.stringify({ 
             success: true, 
             data: { 
                 weekly_gain: weeklyGain,
+                monthly_gain: monthlyGain,
                 current_subs: latestRecord?.subscribers || 0,
-                previous_subs: oldRecord?.subscribers || 0,
-                start_date: oldRecord?.date || null,
+                weekly_start_date: weeklyOldRecord?.date || null,
+                monthly_start_date: monthlyOldRecord?.date || null,
                 end_date: latestRecord?.date || null
             }
         }), {
