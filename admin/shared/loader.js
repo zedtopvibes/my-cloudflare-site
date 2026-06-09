@@ -1,76 +1,65 @@
+
 // ========== SHARED LOADER ==========
+// This file loads all shared components and provides common functions
+
+// Load all shared components
 async function loadSharedComponents() {
     // Load sidebar
     const sidebarResp = await fetch('/admin/shared/sidebar.html');
     const sidebarHtml = await sidebarResp.text();
     document.body.insertAdjacentHTML('afterbegin', sidebarHtml);
     
-    // Sidebar open/close functionality
+    // Setup sidebar functionality
     const menuBtn = document.getElementById('mobileMenuBtn');
     const sidebar = document.getElementById('adminSidebar');
     const overlay = document.getElementById('sidebarOverlay');
     const closeBtn = document.getElementById('closeSidebar');
     
-    function closeSidebar() {
+    function closeSidebarFunction() {
         sidebar.classList.remove('open');
         if (overlay) overlay.classList.remove('active');
         document.body.style.overflow = '';
     }
     
-    function openSidebar() {
+    function openSidebarFunction() {
         sidebar.classList.add('open');
         if (overlay) overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
     
-    if (menuBtn) menuBtn.onclick = openSidebar;
-    if (closeBtn) closeBtn.onclick = closeSidebar;
-    if (overlay) overlay.onclick = closeSidebar;
+    if (menuBtn) {
+        menuBtn.onclick = openSidebarFunction;
+    }
     
-    // Close sidebar on mobile when clicking a link
+    if (closeBtn) {
+        closeBtn.onclick = closeSidebarFunction;
+    }
+    
+    if (overlay) {
+        overlay.onclick = closeSidebarFunction;
+    }
+    
+    // Close sidebar when clicking on a link (mobile)
     const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
     sidebarLinks.forEach(link => {
         link.addEventListener('click', () => {
             if (window.innerWidth < 768) {
-                closeSidebar();
+                closeSidebarFunction();
             }
         });
     });
     
-    // =========================================================
-    // ACCORDION DROPDOWN FUNCTIONALITY (BUBBLE-SAFE FIX)
-    // =========================================================
-    if (sidebar) {
-        const dropdowns = sidebar.querySelectorAll('.nav-dropdown');
-        
-        dropdowns.forEach(dropdown => {
-            const toggle = dropdown.querySelector('.nav-dropdown-toggle');
-            if (toggle) {
-                toggle.addEventListener('click', (e) => {
-                    // Check if this specific item is already open
-                    const isOpen = dropdown.classList.contains('open');
-                    
-                    // 1. Close ALL dropdowns first
-                    dropdowns.forEach(d => d.classList.remove('open'));
-                    
-                    // 2. Toggle state cleanly based on previous check
-                    if (!isOpen) {
-                        dropdown.classList.add('open');
-                    }
-                });
-            }
-        });
-    }
-    // =========================================================
-    
     // Load header
     const headerResp = await fetch('/admin/shared/header.html');
     let headerHtml = await headerResp.text();
+    
+    // Replace title and icon from data attributes
     const headerContainer = document.getElementById('admin-header');
     if (headerContainer) {
         const title = headerContainer.dataset.title || 'Admin';
         const icon = headerContainer.dataset.icon || 'cog';
-        headerHtml = headerHtml.replace('[TITLE]', title).replace('[ICON]', icon);
+        headerHtml = headerHtml.replace('[TITLE]', title);
+        headerHtml = headerHtml.replace('[ICON]', icon);
         headerContainer.innerHTML = headerHtml;
     }
     
@@ -81,6 +70,31 @@ async function loadSharedComponents() {
     if (footerContainer) {
         footerContainer.innerHTML = footerHtml;
     }
+    
+    // Setup dropdown functionality for Analytics (closed by default)
+    const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
+    const dropdown = document.querySelector('.nav-dropdown');
+    
+    // Ensure dropdown starts closed
+    if (dropdown) {
+        dropdown.classList.remove('open');
+    }
+    
+    if (dropdownToggle) {
+        dropdownToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const parentDropdown = dropdownToggle.closest('.nav-dropdown');
+            parentDropdown.classList.toggle('open');
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const openDropdown = document.querySelector('.nav-dropdown.open');
+        if (openDropdown && !openDropdown.contains(e.target)) {
+            openDropdown.classList.remove('open');
+        }
+    });
 }
 
 // ========== SHARED HELPER FUNCTIONS ==========
@@ -91,7 +105,6 @@ function formatFileSize(bytes) {
 }
 
 function formatDuration(seconds) {
-    if (!seconds) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
