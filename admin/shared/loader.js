@@ -1,68 +1,79 @@
 // ========== SHARED LOADER ==========
 async function loadSharedComponents() {
-    // Load sidebar
-    const sidebarResp = await fetch('/admin/shared/sidebar.html');
-    const sidebarHtml = await sidebarResp.text();
-    document.body.insertAdjacentHTML('afterbegin', sidebarHtml);
-    
-    // Sidebar open/close
+    // 1. Fetch and inject all HTML files (Sequential Execution)
+    try {
+        const sidebarResp = await fetch('/admin/shared/sidebar.html');
+        const sidebarHtml = await sidebarResp.text();
+        document.body.insertAdjacentHTML('afterbegin', sidebarHtml);
+        
+        const headerResp = await fetch('/admin/shared/header.html');
+        let headerHtml = await headerResp.text();
+        const headerContainer = document.getElementById('admin-header');
+        if (headerContainer) {
+            const title = headerContainer.dataset.title || 'Admin';
+            const icon = headerContainer.dataset.icon || 'cog';
+            headerHtml = headerHtml.replace('[TITLE]', title).replace('[ICON]', icon);
+            headerContainer.innerHTML = headerHtml;
+        }
+        
+        const footerResp = await fetch('/admin/shared/footer.html');
+        const footerHtml = await footerResp.text();
+        document.getElementById('admin-footer').innerHTML = footerHtml;
+    } catch (err) {
+        console.error("Error loading shared fragments:", err);
+    }
+
+    // 2. Sidebar Mobile View Mechanics
     const menuBtn = document.getElementById('mobileMenuBtn');
     const sidebar = document.getElementById('adminSidebar');
     const overlay = document.getElementById('sidebarOverlay');
     const closeBtn = document.getElementById('closeSidebar');
     
     function closeSidebar() {
-        sidebar.classList.remove('open');
+        if (sidebar) sidebar.classList.remove('open');
         if (overlay) overlay.classList.remove('active');
         document.body.style.overflow = '';
     }
     function openSidebar() {
-        sidebar.classList.add('open');
+        if (sidebar) sidebar.classList.add('open');
         if (overlay) overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
+    
     if (menuBtn) menuBtn.onclick = openSidebar;
     if (closeBtn) closeBtn.onclick = closeSidebar;
     if (overlay) overlay.onclick = closeSidebar;
-    
-    // Load header
-    const headerResp = await fetch('/admin/shared/header.html');
-    let headerHtml = await headerResp.text();
-    const headerContainer = document.getElementById('admin-header');
-    if (headerContainer) {
-        const title = headerContainer.dataset.title || 'Admin';
-        const icon = headerContainer.dataset.icon || 'cog';
-        headerHtml = headerHtml.replace('[TITLE]', title).replace('[ICON]', icon);
-        headerContainer.innerHTML = headerHtml;
-    }
-    
-    // Load footer
-    const footerResp = await fetch('/admin/shared/footer.html');
-    document.getElementById('admin-footer').innerHTML = await footerResp.text();
-    
-    // ========== FIXED: Enable ALL dropdowns sequentially ==========
-    // Since all 'await' fetches above are finished, the entire DOM is guaranteed to be ready here.
-    const allToggles = document.querySelectorAll('.nav-dropdown-toggle');
-    
-    allToggles.forEach(toggle => {
-        // Clone and replace to remove old listeners cleanly
-        const newToggle = toggle.cloneNode(true);
-        toggle.parentNode.replaceChild(newToggle, toggle);
-        
-        newToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const parent = newToggle.closest('.nav-dropdown');
-            parent.classList.toggle('open');
-        });
-    });
-    
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', (e) => {
-        document.querySelectorAll('.nav-dropdown.open').forEach(drop => {
-            if (!drop.contains(e.target)) drop.classList.remove('open');
-        });
-    });
 }
+
+// ========== FIXED: Global Event Delegation for Nav Dropdowns ==========
+// This handles any nav-dropdown clicks safely, no matter how fast or slow the HTML renders.
+document.addEventListener('click', (e) => {
+    // Check if the click target is a toggle button (or an icon inside it)
+    const toggle = e.target.closest('.nav-dropdown-toggle');
+    
+    if (toggle) {
+        e.stopPropagation();
+        const parent = toggle.closest('.nav-dropdown');
+        
+        if (parent) {
+            // Optional: Close all other open dropdowns first (Accordion Behavior)
+            document.querySelectorAll('.nav-dropdown.open').forEach(openDropdown => {
+                if (openDropdown !== parent) {
+                    openDropdown.classList.remove('open');
+                }
+            });
+            // Toggle current dropdown
+            parent.classList.toggle('open');
+        }
+    } else {
+        // If the user clicks anywhere else outside, close all active dropdowns
+        document.querySelectorAll('.nav-dropdown.open').forEach(openDropdown => {
+            if (!openDropdown.contains(e.target)) {
+                openDropdown.classList.remove('open');
+            }
+        });
+    }
+});
 
 // Helper functions (keep as they are)
 function formatFileSize(bytes) {
@@ -96,6 +107,7 @@ function showStatus(type, message) {
     setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
 }
 
+// Initialization Check
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadSharedComponents);
 } else {
