@@ -40,27 +40,26 @@ async function loadSharedComponents() {
     const footerResp = await fetch('/admin/shared/footer.html');
     document.getElementById('admin-footer').innerHTML = await footerResp.text();
     
-    // ===== FIX: Enable ALL dropdowns =====
-    // Wait for DOM to be fully ready
-    setTimeout(() => {
-        const allToggles = document.querySelectorAll('.nav-dropdown-toggle');
-        allToggles.forEach(toggle => {
-            toggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const parent = toggle.closest('.nav-dropdown');
-                parent.classList.toggle('open');
+    // ========== FIX: Wait for FULL sidebar render ==========
+    // Use requestAnimationFrame + setTimeout to ensure ALL elements are ready
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            const allToggles = document.querySelectorAll('.nav-dropdown-toggle');
+            allToggles.forEach(toggle => {
+                // Clean slate: clone to remove old listeners
+                const newToggle = toggle.cloneNode(true);
+                toggle.parentNode.replaceChild(newToggle, toggle);
+                newToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const parent = newToggle.closest('.nav-dropdown');
+                    parent.classList.toggle('open');
+                });
             });
-        });
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', (e) => {
-            document.querySelectorAll('.nav-dropdown.open').forEach(drop => {
-                if (!drop.contains(e.target)) drop.classList.remove('open');
-            });
-        });
-    }, 50);
+        }, 0);
+    });
 }
 
-// Helper functions (unchanged)
+// Helper functions (keep as is)
 function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
