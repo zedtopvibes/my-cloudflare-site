@@ -39,25 +39,25 @@ async function loadSharedComponents() {
     // Load footer
     const footerResp = await fetch('/admin/shared/footer.html');
     document.getElementById('admin-footer').innerHTML = await footerResp.text();
-    
-    // ========== FIX: Wait for FULL sidebar render ==========
-    // Use requestAnimationFrame + setTimeout to ensure ALL elements are ready
-    requestAnimationFrame(() => {
-        setTimeout(() => {
-            const allToggles = document.querySelectorAll('.nav-dropdown-toggle');
-            allToggles.forEach(toggle => {
-                // Clean slate: clone to remove old listeners
-                const newToggle = toggle.cloneNode(true);
-                toggle.parentNode.replaceChild(newToggle, toggle);
-                newToggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const parent = newToggle.closest('.nav-dropdown');
-                    parent.classList.toggle('open');
-                });
-            });
-        }, 0);
-    });
 }
+
+// ========== EVENT DELEGATION: ONE LISTENER FOR ALL DROPDOWNS ==========
+// This runs immediately and works for ALL dropdowns, even those loaded later
+document.addEventListener('click', (e) => {
+    // Find if the clicked element is a dropdown toggle OR inside one
+    const toggle = e.target.closest('.nav-dropdown-toggle');
+    if (toggle) {
+        e.stopPropagation();
+        const parent = toggle.closest('.nav-dropdown');
+        parent.classList.toggle('open');
+    }
+    
+    // Close dropdowns when clicking outside
+    const openDropdown = document.querySelector('.nav-dropdown.open');
+    if (openDropdown && !openDropdown.contains(e.target) && !e.target.closest('.nav-dropdown-toggle')) {
+        openDropdown.classList.remove('open');
+    }
+});
 
 // Helper functions (keep as is)
 function formatFileSize(bytes) {
