@@ -70,7 +70,8 @@ async function loadSharedComponents() {
         footerContainer.innerHTML = footerHtml;
     }
     
-    // Setup dropdown functionality for ALL dropdowns
+    // ========== FIX: Setup ALL dropdowns ==========
+    // Get ALL dropdown toggles (Content, Stats, Tools)
     const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
     
     // Ensure all dropdowns start closed
@@ -78,11 +79,17 @@ async function loadSharedComponents() {
         dropdown.classList.remove('open');
     });
     
-    // Add click handler to each dropdown toggle
+    // Add click handler to EACH dropdown toggle
     dropdownToggles.forEach(toggle => {
         toggle.addEventListener('click', (e) => {
             e.stopPropagation();
             const parentDropdown = toggle.closest('.nav-dropdown');
+            // Toggle only this dropdown, close others
+            document.querySelectorAll('.nav-dropdown.open').forEach(openDropdown => {
+                if (openDropdown !== parentDropdown) {
+                    openDropdown.classList.remove('open');
+                }
+            });
             parentDropdown.classList.toggle('open');
         });
     });
