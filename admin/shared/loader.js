@@ -1,81 +1,65 @@
 // ========== SHARED LOADER ==========
 async function loadSharedComponents() {
-    // 1. Fetch and inject all HTML files (Sequential Execution)
-    try {
-        const sidebarResp = await fetch('/admin/shared/sidebar.html');
-        const sidebarHtml = await sidebarResp.text();
-        document.body.insertAdjacentHTML('afterbegin', sidebarHtml);
-        
-        const headerResp = await fetch('/admin/shared/header.html');
-        let headerHtml = await headerResp.text();
-        const headerContainer = document.getElementById('admin-header');
-        if (headerContainer) {
-            const title = headerContainer.dataset.title || 'Admin';
-            const icon = headerContainer.dataset.icon || 'cog';
-            headerHtml = headerHtml.replace('[TITLE]', title).replace('[ICON]', icon);
-            headerContainer.innerHTML = headerHtml;
-        }
-        
-        const footerResp = await fetch('/admin/shared/footer.html');
-        const footerHtml = await footerResp.text();
-        document.getElementById('admin-footer').innerHTML = footerHtml;
-    } catch (err) {
-        console.error("Error loading shared fragments:", err);
-    }
-
-    // 2. Sidebar Mobile View Mechanics
+    // Load sidebar
+    const sidebarResp = await fetch('/admin/shared/sidebar.html');
+    const sidebarHtml = await sidebarResp.text();
+    document.body.insertAdjacentHTML('afterbegin', sidebarHtml);
+    
+    // Sidebar open/close
     const menuBtn = document.getElementById('mobileMenuBtn');
     const sidebar = document.getElementById('adminSidebar');
     const overlay = document.getElementById('sidebarOverlay');
     const closeBtn = document.getElementById('closeSidebar');
     
     function closeSidebar() {
-        if (sidebar) sidebar.classList.remove('open');
+        sidebar.classList.remove('open');
         if (overlay) overlay.classList.remove('active');
         document.body.style.overflow = '';
     }
     function openSidebar() {
-        if (sidebar) sidebar.classList.add('open');
+        sidebar.classList.add('open');
         if (overlay) overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
-    
     if (menuBtn) menuBtn.onclick = openSidebar;
     if (closeBtn) closeBtn.onclick = closeSidebar;
     if (overlay) overlay.onclick = closeSidebar;
+    
+    // Load header
+    const headerResp = await fetch('/admin/shared/header.html');
+    let headerHtml = await headerResp.text();
+    const headerContainer = document.getElementById('admin-header');
+    if (headerContainer) {
+        const title = headerContainer.dataset.title || 'Admin';
+        const icon = headerContainer.dataset.icon || 'cog';
+        headerHtml = headerHtml.replace('[TITLE]', title).replace('[ICON]', icon);
+        headerContainer.innerHTML = headerHtml;
+    }
+    
+    // Load footer
+    const footerResp = await fetch('/admin/shared/footer.html');
+    document.getElementById('admin-footer').innerHTML = await footerResp.text();
 }
 
-// ========== FIXED: Global Event Delegation for Nav Dropdowns ==========
-// This handles any nav-dropdown clicks safely, no matter how fast or slow the HTML renders.
+// ========== EVENT DELEGATION: ONE LISTENER FOR ALL DROPDOWNS ==========
+// This runs immediately and works for ALL dropdowns, even those loaded later
 document.addEventListener('click', (e) => {
-    // Check if the click target is a toggle button (or an icon inside it)
+    // Find if the clicked element is a dropdown toggle OR inside one
     const toggle = e.target.closest('.nav-dropdown-toggle');
-    
     if (toggle) {
         e.stopPropagation();
         const parent = toggle.closest('.nav-dropdown');
-        
-        if (parent) {
-            // Optional: Close all other open dropdowns first (Accordion Behavior)
-            document.querySelectorAll('.nav-dropdown.open').forEach(openDropdown => {
-                if (openDropdown !== parent) {
-                    openDropdown.classList.remove('open');
-                }
-            });
-            // Toggle current dropdown
-            parent.classList.toggle('open');
-        }
-    } else {
-        // If the user clicks anywhere else outside, close all active dropdowns
-        document.querySelectorAll('.nav-dropdown.open').forEach(openDropdown => {
-            if (!openDropdown.contains(e.target)) {
-                openDropdown.classList.remove('open');
-            }
-        });
+        parent.classList.toggle('open');
+    }
+    
+    // Close dropdowns when clicking outside
+    const openDropdown = document.querySelector('.nav-dropdown.open');
+    if (openDropdown && !openDropdown.contains(e.target) && !e.target.closest('.nav-dropdown-toggle')) {
+        openDropdown.classList.remove('open');
     }
 });
 
-// Helper functions (keep as they are)
+// Helper functions (keep as is)
 function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -107,7 +91,6 @@ function showStatus(type, message) {
     setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
 }
 
-// Initialization Check
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadSharedComponents);
 } else {
