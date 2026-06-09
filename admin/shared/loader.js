@@ -36,6 +36,34 @@ async function loadSharedComponents() {
             }
         });
     });
+
+    // ==========================================
+    // FIX: ACCORDION DROPDOWN FUNCTIONALITY
+    // ==========================================
+    const dropdowns = document.querySelectorAll('.nav-dropdown');
+    
+    dropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector('.nav-dropdown-toggle');
+        
+        if (toggle) {
+            toggle.addEventListener('click', (e) => {
+                // Prevent unexpected behavior
+                e.preventDefault(); 
+                
+                // Check if the clicked dropdown is already open
+                const isOpen = dropdown.classList.contains('open');
+                
+                // 1. Close ALL dropdowns first (This achieves the accordion "one open others close" rule)
+                dropdowns.forEach(d => d.classList.remove('open'));
+                
+                // 2. If the clicked one wasn't open, open it now
+                if (!isOpen) {
+                    dropdown.classList.add('open');
+                }
+            });
+        }
+    });
+    // ==========================================
     
     // Load header
     const headerResp = await fetch('/admin/shared/header.html');
