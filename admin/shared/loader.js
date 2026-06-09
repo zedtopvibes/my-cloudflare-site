@@ -44,28 +44,24 @@ async function loadSharedComponents() {
         const title = headerContainer.dataset.title || 'Admin';
         let icon = headerContainer.dataset.icon || 'cog';
         
-        // Handle special brand icons
-        let iconValue = icon;
-        if (icon === 'fab fa-telegram') iconValue = 'telegram';
-        if (icon === 'fab fa-youtube') iconValue = 'youtube';
+        // Handle brand icons (fab) vs solid icons (fas)
+        let iconPrefix = 'fas';
+        let iconName = icon;
         
+        if (icon.startsWith('fab ')) {
+            iconPrefix = 'fab';
+            iconName = icon.replace('fab ', '');
+        } else if (icon.startsWith('fas ')) {
+            iconPrefix = 'fas';
+            iconName = icon.replace('fas ', '');
+        }
+        
+        // Replace placeholders
         headerHtml = headerHtml.replace('[TITLE]', title);
-        headerHtml = headerHtml.replace('[ICON]', iconValue);
-        headerContainer.innerHTML = headerHtml;
+        headerHtml = headerHtml.replace('[ICON_PREFIX]', iconPrefix);
+        headerHtml = headerHtml.replace('[ICON_NAME]', iconName);
         
-        // Fix brand icons after insertion
-        if (icon === 'fab fa-telegram') {
-            const headerIcon = headerContainer.querySelector('h1 i');
-            if (headerIcon) {
-                headerIcon.className = 'fab fa-telegram';
-            }
-        }
-        if (icon === 'fab fa-youtube') {
-            const headerIcon = headerContainer.querySelector('h1 i');
-            if (headerIcon) {
-                headerIcon.className = 'fab fa-youtube';
-            }
-        }
+        headerContainer.innerHTML = headerHtml;
     }
     
     // Load footer
@@ -96,7 +92,7 @@ async function loadSharedComponents() {
     });
 }
 
-// Helper functions
+// Helper functions (keep as-is)
 function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
