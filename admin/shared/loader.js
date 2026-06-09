@@ -1,7 +1,4 @@
 // ========== SHARED LOADER ==========
-// This file loads all shared components and provides common functions
-
-// Load all shared components
 async function loadSharedComponents() {
     // Load sidebar
     const sidebarResp = await fetch('/admin/shared/sidebar.html');
@@ -26,25 +23,15 @@ async function loadSharedComponents() {
         document.body.style.overflow = 'hidden';
     }
     
-    if (menuBtn) {
-        menuBtn.onclick = openSidebarFunction;
-    }
+    if (menuBtn) menuBtn.onclick = openSidebarFunction;
+    if (closeBtn) closeBtn.onclick = closeSidebarFunction;
+    if (overlay) overlay.onclick = closeSidebarFunction;
     
-    if (closeBtn) {
-        closeBtn.onclick = closeSidebarFunction;
-    }
-    
-    if (overlay) {
-        overlay.onclick = closeSidebarFunction;
-    }
-    
-    // Close sidebar when clicking on a link (mobile)
+    // Close sidebar on mobile when clicking a link
     const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
     sidebarLinks.forEach(link => {
         link.addEventListener('click', () => {
-            if (window.innerWidth < 768) {
-                closeSidebarFunction();
-            }
+            if (window.innerWidth < 768) closeSidebarFunction();
         });
     });
     
@@ -52,28 +39,33 @@ async function loadSharedComponents() {
     const headerResp = await fetch('/admin/shared/header.html');
     let headerHtml = await headerResp.text();
     
-    // Replace title and icon from data attributes
     const headerContainer = document.getElementById('admin-header');
     if (headerContainer) {
         const title = headerContainer.dataset.title || 'Admin';
         let icon = headerContainer.dataset.icon || 'cog';
         
-        // Handle different icon types
-        let iconClass = '';
-        if (icon.startsWith('fab fa-') || icon.startsWith('fas fa-') || icon.startsWith('far fa-')) {
-            // Icon already has full class (e.g., "fab fa-telegram")
-            iconClass = icon;
-        } else if (icon === 'telegram') {
-            // Special case for Telegram brand icon
-            iconClass = 'fab fa-telegram';
-        } else {
-            // Default to solid icon
-            iconClass = `fas fa-${icon}`;
-        }
+        // Handle special brand icons
+        let iconValue = icon;
+        if (icon === 'fab fa-telegram') iconValue = 'telegram';
+        if (icon === 'fab fa-youtube') iconValue = 'youtube';
         
         headerHtml = headerHtml.replace('[TITLE]', title);
-        headerHtml = headerHtml.replace('[ICON_CLASS]', iconClass);
+        headerHtml = headerHtml.replace('[ICON]', iconValue);
         headerContainer.innerHTML = headerHtml;
+        
+        // Fix brand icons after insertion
+        if (icon === 'fab fa-telegram') {
+            const headerIcon = headerContainer.querySelector('h1 i');
+            if (headerIcon) {
+                headerIcon.className = 'fab fa-telegram';
+            }
+        }
+        if (icon === 'fab fa-youtube') {
+            const headerIcon = headerContainer.querySelector('h1 i');
+            if (headerIcon) {
+                headerIcon.className = 'fab fa-youtube';
+            }
+        }
     }
     
     // Load footer
@@ -84,15 +76,10 @@ async function loadSharedComponents() {
         footerContainer.innerHTML = footerHtml;
     }
     
-    // Setup dropdown functionality for Analytics (closed by default)
+    // Setup dropdown functionality
     const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
     const dropdown = document.querySelector('.nav-dropdown');
-    
-    // Ensure dropdown starts closed
-    if (dropdown) {
-        dropdown.classList.remove('open');
-    }
-    
+    if (dropdown) dropdown.classList.remove('open');
     if (dropdownToggle) {
         dropdownToggle.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -101,7 +88,6 @@ async function loadSharedComponents() {
         });
     }
     
-    // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         const openDropdown = document.querySelector('.nav-dropdown.open');
         if (openDropdown && !openDropdown.contains(e.target)) {
@@ -110,7 +96,7 @@ async function loadSharedComponents() {
     });
 }
 
-// ========== SHARED HELPER FUNCTIONS ==========
+// Helper functions
 function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -148,7 +134,6 @@ function showStatus(type, message) {
     setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
 }
 
-// Auto-initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadSharedComponents);
 } else {
