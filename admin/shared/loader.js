@@ -36,34 +36,35 @@ async function loadSharedComponents() {
             }
         });
     });
-
-    // ==========================================
-    // FIX: ACCORDION DROPDOWN FUNCTIONALITY
-    // ==========================================
-    const dropdowns = document.querySelectorAll('.nav-dropdown');
     
-    dropdowns.forEach(dropdown => {
-        const toggle = dropdown.querySelector('.nav-dropdown-toggle');
-        
-        if (toggle) {
-            toggle.addEventListener('click', (e) => {
-                // Prevent unexpected behavior
-                e.preventDefault(); 
-                
-                // Check if the clicked dropdown is already open
-                const isOpen = dropdown.classList.contains('open');
-                
-                // 1. Close ALL dropdowns first (This achieves the accordion "one open others close" rule)
-                dropdowns.forEach(d => d.classList.remove('open'));
-                
-                // 2. If the clicked one wasn't open, open it now
-                if (!isOpen) {
-                    dropdown.classList.add('open');
-                }
-            });
-        }
-    });
-    // ==========================================
+    // =========================================================
+    // ACCORDION DROPDOWN FUNCTIONALITY (FIXED VIA DELEGATION)
+    // =========================================================
+    if (sidebar) {
+        sidebar.addEventListener('click', (e) => {
+            // Find if the click happened on or inside a dropdown toggle
+            const toggle = e.target.closest('.nav-dropdown-toggle');
+            if (!toggle) return; // If not a toggle, ignore the click
+            
+            e.preventDefault();
+            
+            // Get the current dropdown wrapper parent element
+            const currentDropdown = toggle.closest('.nav-dropdown');
+            const isOpen = currentDropdown.classList.contains('open');
+            
+            // Find all dropdown wrappers inside the sidebar
+            const allDropdowns = sidebar.querySelectorAll('.nav-dropdown');
+            
+            // 1. Close ALL dropdowns first (One open, others close)
+            allDropdowns.forEach(d => d.classList.remove('open'));
+            
+            // 2. If the clicked one wasn't open, open it now
+            if (!isOpen) {
+                currentDropdown.classList.add('open');
+            }
+        });
+    }
+    // =========================================================
     
     // Load header
     const headerResp = await fetch('/admin/shared/header.html');
