@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Coming Soon - Admin | ZEDTOPVIBES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/admin/shared/styles.css">
+    <style>
+        .coming-soon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .coming-soon-icon {
+            font-size: 5rem;
+            color: var(--primary-blue);
+            margin-bottom: 24px;
+            opacity: 0.4;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+            100% { opacity: 0.4; transform: scale(1); }
+        }
+        
+        .coming-soon-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+        
+        .coming-soon-message {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+        
+        .coming-soon-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(31, 111, 159, 0.1);
+        }
+        
+        .coming-soon-card i {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+        
+        .coming-soon-card span {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .back-link {
+            margin-top: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        
+        .back-link:hover {
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <main class="admin-main">
+            <div class="admin-container">
+                <div id="admin-header" data-title="Coming Soon" data-icon="cog"></div>
+                
+                <div class="admin-content">
+                    <div class="coming-soon-container">
+                        <div class="coming-soon-icon" id="pageIcon">
+                            <i class="fas fa-cog fa-spin"></i>
+                        </div>
+                        <h1 class="coming-soon-title" id="pageTitle">Coming Soon</h1>
+                        <p class="coming-soon-message" id="pageMessage">This feature is currently under development.</p>
+                        <div class="coming-soon-card">
+                            <i class="fas fa-clock"></i>
+                            <span>Expected release: Soon</span>
+                        </div>
+                        <a href="javascript:history.back()" class="back-link">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Go Back</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div id="admin-footer"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/admin/shared/loader.js"></script>
+    <script>
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const featureTitle = urlParams.get('title');
+        const featureIcon = urlParams.get('icon');
+        
+        // Update page title
+        if (featureTitle) {
+            document.title = `${featureTitle} - Coming Soon | ZEDTOPVIBES`;
+            document.getElementById('pageTitle').textContent = featureTitle;
+            document.getElementById('pageMessage').textContent = `"${featureTitle}" feature is currently under development.`;
+        }
+        
+        // Update icon
+        if (featureIcon) {
+            const iconElement = document.getElementById('pageIcon');
+            iconElement.innerHTML = `<i class="fas fa-${featureIcon}"></i>`;
+        }
+        
+        // Update header
+        const headerContainer = document.getElementById('admin-header');
+        if (featureTitle) {
+            headerContainer.setAttribute('data-title', featureTitle);
+        }
+        if (featureIcon) {
+            headerContainer.setAttribute('data-icon', featureIcon);
+        }
+    </script>
+</body>
+</html>
