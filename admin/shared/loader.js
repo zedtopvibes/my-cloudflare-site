@@ -39,27 +39,32 @@ async function loadSharedComponents() {
     // Load footer
     const footerResp = await fetch('/admin/shared/footer.html');
     document.getElementById('admin-footer').innerHTML = await footerResp.text();
-}
-
-// ========== EVENT DELEGATION: ONE LISTENER FOR ALL DROPDOWNS ==========
-// This runs immediately and works for ALL dropdowns, even those loaded later
-document.addEventListener('click', (e) => {
-    // Find if the clicked element is a dropdown toggle OR inside one
-    const toggle = e.target.closest('.nav-dropdown-toggle');
-    if (toggle) {
-        e.stopPropagation();
-        const parent = toggle.closest('.nav-dropdown');
-        parent.classList.toggle('open');
-    }
+    
+    // ========== FIXED: Enable ALL dropdowns sequentially ==========
+    // Since all 'await' fetches above are finished, the entire DOM is guaranteed to be ready here.
+    const allToggles = document.querySelectorAll('.nav-dropdown-toggle');
+    
+    allToggles.forEach(toggle => {
+        // Clone and replace to remove old listeners cleanly
+        const newToggle = toggle.cloneNode(true);
+        toggle.parentNode.replaceChild(newToggle, toggle);
+        
+        newToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const parent = newToggle.closest('.nav-dropdown');
+            parent.classList.toggle('open');
+        });
+    });
     
     // Close dropdowns when clicking outside
-    const openDropdown = document.querySelector('.nav-dropdown.open');
-    if (openDropdown && !openDropdown.contains(e.target) && !e.target.closest('.nav-dropdown-toggle')) {
-        openDropdown.classList.remove('open');
-    }
-});
+    document.addEventListener('click', (e) => {
+        document.querySelectorAll('.nav-dropdown.open').forEach(drop => {
+            if (!drop.contains(e.target)) drop.classList.remove('open');
+        });
+    });
+}
 
-// Helper functions (keep as is)
+// Helper functions (keep as they are)
 function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
