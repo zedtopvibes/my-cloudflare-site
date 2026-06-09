@@ -1,4 +1,3 @@
-
 // ========== SHARED LOADER ==========
 // This file loads all shared components and provides common functions
 
@@ -57,9 +56,23 @@ async function loadSharedComponents() {
     const headerContainer = document.getElementById('admin-header');
     if (headerContainer) {
         const title = headerContainer.dataset.title || 'Admin';
-        const icon = headerContainer.dataset.icon || 'cog';
+        let icon = headerContainer.dataset.icon || 'cog';
+        
+        // Handle different icon types
+        let iconClass = '';
+        if (icon.startsWith('fab fa-') || icon.startsWith('fas fa-') || icon.startsWith('far fa-')) {
+            // Icon already has full class (e.g., "fab fa-telegram")
+            iconClass = icon;
+        } else if (icon === 'telegram') {
+            // Special case for Telegram brand icon
+            iconClass = 'fab fa-telegram';
+        } else {
+            // Default to solid icon
+            iconClass = `fas fa-${icon}`;
+        }
+        
         headerHtml = headerHtml.replace('[TITLE]', title);
-        headerHtml = headerHtml.replace('[ICON]', icon);
+        headerHtml = headerHtml.replace('[ICON_CLASS]', iconClass);
         headerContainer.innerHTML = headerHtml;
     }
     
