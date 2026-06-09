@@ -70,29 +70,30 @@ async function loadSharedComponents() {
         footerContainer.innerHTML = footerHtml;
     }
     
-    // Setup dropdown functionality for Analytics (closed by default)
-    const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
-    const dropdown = document.querySelector('.nav-dropdown');
+    // Setup dropdown functionality for ALL dropdowns
+    const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
     
-    // Ensure dropdown starts closed
-    if (dropdown) {
+    // Ensure all dropdowns start closed
+    document.querySelectorAll('.nav-dropdown').forEach(dropdown => {
         dropdown.classList.remove('open');
-    }
+    });
     
-    if (dropdownToggle) {
-        dropdownToggle.addEventListener('click', (e) => {
+    // Add click handler to each dropdown toggle
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
             e.stopPropagation();
-            const parentDropdown = dropdownToggle.closest('.nav-dropdown');
+            const parentDropdown = toggle.closest('.nav-dropdown');
             parentDropdown.classList.toggle('open');
         });
-    }
+    });
     
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
-        const openDropdown = document.querySelector('.nav-dropdown.open');
-        if (openDropdown && !openDropdown.contains(e.target)) {
-            openDropdown.classList.remove('open');
-        }
+        document.querySelectorAll('.nav-dropdown.open').forEach(openDropdown => {
+            if (!openDropdown.contains(e.target)) {
+                openDropdown.classList.remove('open');
+            }
+        });
     });
 }
 
@@ -104,6 +105,7 @@ function formatFileSize(bytes) {
 }
 
 function formatDuration(seconds) {
+    if (!seconds) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
